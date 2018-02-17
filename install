@@ -13,4 +13,4 @@ git submodule update --init --recursive "${DOTBOT_DIR}"
 
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
 
-sudo apt install vim git zsh fonts-powerline
+sudo apt install vim git tmux zsh fonts-powerline
