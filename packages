@@ -5,3 +5,9 @@ apt install vim git tmux zsh fonts-powerline
 apt install build-essential firmware-linux linux-headers-amd64
 # nvidia driver requirements
 apt install pkg-config xserver-xorg-dev 
+# python stuff
+apt install python-pip
+pip install pygments
+# puppet stuff
+apt install ruby
+gem install puppet-lint
