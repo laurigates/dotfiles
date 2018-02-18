@@ -6,6 +6,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.inputrc: inputrc
     ~/.tmux.conf: tmux.conf
     ~/.vim_runtime: vim_runtime
     ~/.vimrc: vimrc
