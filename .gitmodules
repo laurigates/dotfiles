@@ -3,7 +3,7 @@
 	url = https://github.com/anishathalye/dotbot
 [submodule "vim_runtime"]
 	path = vim_runtime
-	url = https://github.com/amix/vimrc.git
+	url = git@gitlab.com:lauri.gates/vimrc.git
 [submodule "oh-my-zsh"]
 	path = oh-my-zsh
 	url = git://github.com/robbyrussell/oh-my-zsh.git
