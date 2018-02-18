@@ -5,11 +5,14 @@
 - clean: ['~']
 
 - link:
+    ~/.dotfiles: ''
     ~/.tmux.conf: tmux.conf
     ~/.vim_runtime: vim_runtime
     ~/.vimrc: vimrc
     ~/.oh-my-zsh: oh-my-zsh
     ~/.zshrc: zshrc
+    ~/.bashrc: bashrc
+    ~/.bash_profile: bash_profile
     ~/.gitconfig: gitconfig
 
 - shell:

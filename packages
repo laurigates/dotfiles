@@ -1,0 +1,3 @@
+#!/bin/bash
+apt install vim git tmux zsh fonts-powerline
+apt install build-essential firmware-linux linux-headers-amd64
