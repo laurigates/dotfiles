@@ -7,3 +7,6 @@
 [submodule "oh-my-zsh"]
 	path = oh-my-zsh
 	url = git://github.com/robbyrussell/oh-my-zsh.git
+[submodule "gnome-terminal-colors"]
+	path = gnome-terminal-colors
+	url = https://github.com/Anthony25/gnome-terminal-colors-solarized
