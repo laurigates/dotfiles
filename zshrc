@@ -60,7 +60,7 @@ HIST_STAMPS="dd.mm.yyyy"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git colorize extract z
+  git colorize extract z zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
