@@ -14,6 +14,7 @@
     ~/.zshrc: zshrc
     ~/.bashrc: bashrc
     ~/.bash_profile: bash_profile
+    ~/.profile: profile
     ~/.gitconfig: gitconfig
 
 - shell:
