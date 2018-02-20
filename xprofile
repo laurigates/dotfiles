@@ -1,0 +1,1 @@
+setxkbmap -option "nbsp:none"

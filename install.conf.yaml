@@ -15,6 +15,7 @@
     ~/.bashrc: bashrc
     ~/.bash_profile: bash_profile
     ~/.profile: profile
+    ~/.xprofile: xprofile
     ~/.gitconfig: gitconfig
 
 - shell:
