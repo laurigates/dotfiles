@@ -1,1 +1,3 @@
 set bell-style none
+set colored-stats on
+set colored-completion-prefix on
