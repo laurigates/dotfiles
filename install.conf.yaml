@@ -9,6 +9,7 @@
     ~/.inputrc: inputrc
     ~/.tmux.conf: tmux.conf
     ~/.vim_runtime: vim_runtime
+    ~/.vim_runtime/sources_non_forked/vim-puppet: vim-puppet
     ~/.vim_runtime/my_configs.vim: my_configs.vim
     ~/.vimrc: vimrc
     ~/.oh-my-zsh: oh-my-zsh
