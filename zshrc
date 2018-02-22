@@ -1,3 +1,4 @@
+ZSH_TMUX_AUTOSTART="true"
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -60,7 +61,7 @@ HIST_STAMPS="dd.mm.yyyy"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git colorize extract z zsh-autosuggestions zsh-syntax-highlighting
+  git colorize extract z zsh-autosuggestions zsh-syntax-highlighting common-aliases debian sudo ssh-agent per-directory-history tmux
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -94,4 +95,3 @@ export EDITOR='vim'
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-export TERM=xterm-256color
