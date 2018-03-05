@@ -20,6 +20,7 @@
     ~/.zshrc: zshrc
     ~/.bashrc: bashrc
     ~/.bash_profile: bash_profile
+    ~/.bash-git-prompt: bash-git-prompt
     ~/.profile: profile
     ~/.xprofile: xprofile
     ~/.gitconfig: gitconfig
