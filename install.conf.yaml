@@ -24,6 +24,7 @@
     ~/.profile: profile
     ~/.xprofile: xprofile
     ~/.gitconfig: gitconfig
+    ~/.ssh/config: ssh/config
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
