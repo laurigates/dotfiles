@@ -7,23 +7,23 @@
 
 - link:
     ~/.dotfiles: ''
-    ~/.inputrc: inputrc
-    ~/.tmux.conf: tmux.conf
-    ~/.vim_runtime: vim_runtime
-    ~/.vim_runtime/my_plugins/vim-puppet: vim-puppet
-    ~/.vim_runtime/my_plugins/vim-ruby: vim-ruby
-    ~/.vim_runtime/my_configs.vim: my_configs.vim
-    ~/.vimrc: vimrc
-    ~/.oh-my-zsh: oh-my-zsh
-    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh-autosuggestions
-    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting: zsh-syntax-highlighting
-    ~/.zshrc: zshrc
-    ~/.bashrc: bashrc
-    ~/.bash_profile: bash_profile
-    ~/.bash-git-prompt: bash-git-prompt
-    ~/.profile: profile
-    ~/.xprofile: xprofile
-    ~/.gitconfig: gitconfig
+    ~/.tmux.conf: tmux/tmux.conf
+    ~/.vim_runtime: vim/vim_runtime
+    ~/.vim_runtime/my_plugins/vim-puppet: vim/vim-puppet
+    ~/.vim_runtime/my_plugins/vim-ruby: vim/vim-ruby
+    ~/.vim_runtime/my_configs.vim: vim/my_configs.vim
+    ~/.vimrc: vim/vimrc
+    ~/.zshrc: zsh/zshrc
+    ~/.oh-my-zsh: zsh/oh-my-zsh
+    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
+    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting: zsh/zsh-syntax-highlighting
+    ~/.bashrc: bash/bashrc
+    ~/.bash_profile: bash/bash_profile
+    ~/.bash-git-prompt: bash/bash-git-prompt
+    ~/.inputrc: general/inputrc
+    ~/.profile: general/profile
+    ~/.xprofile: general/xprofile
+    ~/.gitconfig: git/gitconfig
     ~/.ssh/config: ssh/config
 
 - shell:

@@ -2,23 +2,23 @@
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 [submodule "vim_runtime"]
-	path = vim_runtime
+	path = vim/vim_runtime
 	url = https://github.com/amix/vimrc
 [submodule "oh-my-zsh"]
-	path = oh-my-zsh
+	path = zsh/oh-my-zsh
 	url = git://github.com/robbyrussell/oh-my-zsh.git
 [submodule "bash-git-prompt"]
-	path = bash-git-prompt
+	path = bash/bash-git-prompt
 	url = https://github.com/magicmonty/bash-git-prompt.git
 [submodule "zsh-autosuggestions"]
-	path = zsh-autosuggestions
+	path = zsh/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
 [submodule "vim-puppet"]
-	path = vim-puppet
+	path = vim/vim-puppet
 	url = https://github.com/rodjek/vim-puppet
 [submodule "zsh-syntax-highlighting"]
-	path = zsh-syntax-highlighting
+	path = zsh/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
 [submodule "vim-ruby"]
-	path = vim-ruby
+	path = vim/vim-ruby
 	url = https://github.com/vim-ruby/vim-ruby.git
