@@ -9,6 +9,6 @@ apt install pkg-config xserver-xorg-dev
 apt install python-pip
 pip install pygments
 # puppet stuff
-apt install ruby
+apt install ruby ruby-dev
 gem install puppet-lint
 pip install yamllint
