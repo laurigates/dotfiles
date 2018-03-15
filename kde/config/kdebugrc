@@ -1,0 +1,8 @@
+[KSharedDataCache]
+InfoOutput=4
+
+[kaccessibleapp]
+InfoOutput=4
+
+[kwalletd]
+InfoOutput=4

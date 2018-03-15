@@ -25,6 +25,7 @@
     ~/.xprofile: general/xprofile
     ~/.gitconfig: git/gitconfig
     ~/.ssh/config: ssh/config
+    ~/.kde/share/config: kde/config
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
