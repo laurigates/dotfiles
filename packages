@@ -11,4 +11,5 @@ pip install pygments
 # puppet stuff
 apt install ruby ruby-dev
 gem install puppet-lint
+gem install ruby-bundler
 pip install yamllint
