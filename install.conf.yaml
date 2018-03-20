@@ -26,6 +26,8 @@
     ~/.ssh/config: ssh/config
     ~/.kde/share/config: kde/config
     ~/.config/i3: i3
+    ~/.local/share/konsole: local/share/konsole
+    ~/.config/konsolerc: config/konsolerc
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
