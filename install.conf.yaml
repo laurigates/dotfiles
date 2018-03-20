@@ -23,7 +23,6 @@
     ~/.inputrc: general/inputrc
     ~/.profile: general/profile
     ~/.xprofile: general/xprofile
-    ~/.gitconfig: git/gitconfig
     ~/.ssh/config: ssh/config
     ~/.kde/share/config: kde/config
     ~/.config/i3: i3
