@@ -24,7 +24,7 @@
     ~/.profile: general/profile
     ~/.xprofile: general/xprofile
     ~/.ssh/config: ssh/config
-    ~/.kde/share/config: kde/config
+    ~/.kde/share/config/kdeglobals: kde/share/config/kdeglobals
     ~/.config/i3: i3
     ~/.local/share/konsole: local/share/konsole
     ~/.config/konsolerc: config/konsolerc

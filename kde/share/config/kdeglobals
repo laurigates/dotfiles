@@ -1,3 +1,6 @@
+[$Version]
+update_info=kdeui.upd:kde4/migrate_from_kde3_icon_theme,kded.upd:kde3.0
+
 [ColorEffects:Disabled]
 Color=56,56,56
 ColorAmount=0
