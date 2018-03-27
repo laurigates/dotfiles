@@ -63,7 +63,13 @@ HIST_STAMPS="dd.mm.yyyy"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git colorize extract z zsh-autosuggestions zsh-syntax-highlighting common-aliases debian sudo per-directory-history tmux kitchen colored-man-pages bundler vagrant pip python virtualenv nmap
+  git tmux
+  colorize extract per-directory-history
+  zsh-autosuggestions zsh-syntax-highlighting
+  common-aliases debian sudo z
+  colored-man-pages
+  kitchen bundler vagrant pip python virtualenv
+  nmap taskwarrior
 )
 
 source $ZSH/oh-my-zsh.sh
