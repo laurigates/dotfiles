@@ -25,7 +25,12 @@
     ~/.xprofile: general/xprofile
     ~/.ssh/config: ssh/config
     ~/.kde/share/config/kdeglobals: kde/share/config/kdeglobals
-    ~/.config/i3: i3
+    ~/.config/i3/config:
+        create: true
+        path: i3/i3/config
+    ~/.config/i3status/config:
+        create: true
+        path: i3/i3status/config
     ~/.local/share/konsole: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
 
