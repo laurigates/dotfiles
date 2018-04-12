@@ -4,4 +4,8 @@ nnoremap <F2> gg=GggvG:call puppet#align#AlignHashrockets()<CR>
 autocmd FileType python nnoremap <buffer> <F9> :exec '!python3' shellescape(@%, 1)<cr>
 
 # bash-like completion for wildmenu
+set wildmenu
 set wildmode=list:longest
+
+# enable recursive find
+set path+=**
