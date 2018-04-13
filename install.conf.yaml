@@ -33,7 +33,9 @@
     ~/.config/i3status/config:
         create: true
         path: i3/i3status/config
-    ~/.local/share/konsole: local/share/konsole
+    ~/.local/share/konsole:
+        create: true
+        path: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
 
 - shell:
