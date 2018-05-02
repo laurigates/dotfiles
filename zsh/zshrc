@@ -64,7 +64,7 @@ HIST_STAMPS="dd.mm.yyyy"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git tmux
-  colorize extract per-directory-history
+  colorize extract
   zsh-autosuggestions zsh-syntax-highlighting
   common-aliases debian sudo z
   colored-man-pages
