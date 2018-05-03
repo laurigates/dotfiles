@@ -54,6 +54,7 @@ COMPLETION_WAITING_DOTS="true"
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # HIST_STAMPS="mm/dd/yyyy"
 HIST_STAMPS="dd.mm.yyyy"
+HISTFILE="$HOME/.zsh_history_dir/$(hostname -f)"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
