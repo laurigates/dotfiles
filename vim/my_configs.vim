@@ -9,3 +9,6 @@ set wildmode=list:longest
 
 " enable recursive find
 set path+=**
+
+" disable vim-go version check warnings
+let g:go_version_warning = 0
