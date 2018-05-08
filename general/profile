@@ -23,3 +23,6 @@ fi
 
 # Disable non-breaking space
 setxkbmap -option "nbsp:none"
+
+# Set a more secure umask
+umask 077
