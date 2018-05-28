@@ -12,13 +12,13 @@ Recent URLs[$e]=file:///usr/share/desktop-base/lines-theme/wallpaper/contents/im
 ShowMenuBarByDefault=false
 
 [MainWindow]
-Height 1200=912
+Height 1200=1167
 Height 1920=1891
 MenuBar=Disabled
 State=AAAA/wAAAAD9AAAAAAAAB4AAAASTAAAABAAAAAQAAAAIAAAACPwAAAAA
 ToolBarsMovable=Disabled
 Width 1200=1308
-Width 1920=1316
+Width 1920=1912
 Window-Maximized 1200x1920=true
 
 [TabBar]

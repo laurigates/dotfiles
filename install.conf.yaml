@@ -7,6 +7,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux.conf: tmux/tmux.conf
     ~/.vim_runtime: vim/vim_runtime
     ~/.vim_runtime/my_plugins/vim-puppet: vim/vim-puppet
@@ -24,6 +25,7 @@
     ~/.inputrc: general/inputrc
     ~/.profile: general/profile
     ~/.xprofile: general/xprofile
+    ~/.xmodmap: general/xmodmap
     ~/.ssh/config: ssh/config
     ~/.kde/share/config/kdeglobals:
         create: true

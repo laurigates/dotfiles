@@ -22,3 +22,6 @@
 [submodule "vim-ruby"]
 	path = vim/vim-ruby
 	url = https://github.com/vim-ruby/vim-ruby.git
+[submodule "tmux/tmux-themepack"]
+	path = tmux/tmux-themepack
+	url = https://github.com/jimeh/tmux-themepack.git
