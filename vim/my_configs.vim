@@ -12,3 +12,7 @@ set path+=**
 
 " disable vim-go version check warnings
 let g:go_version_warning = 0
+
+" more natural split opening
+set splitbelow
+set splitright
