@@ -109,6 +109,3 @@ prompt_context() {
       prompt_segment black default "%(!.%{%F{yellow}%}.)$USER@$(hostname -f)"
   fi
 }
-
-# Disable non-breaking space
-setxkbmap -option "nbsp:none"

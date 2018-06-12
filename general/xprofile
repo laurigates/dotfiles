@@ -1,1 +1,3 @@
+# Disable non-breaking space
+xmodmap "$HOME/.xmodmap"
 setxkbmap -option "nbsp:none"

@@ -26,6 +26,3 @@ export VISUAL=vim
 
 # set vi -mode for bash
 #set -o vi
-
-# disable non-breaking space with altgr+space (fixes the problem with non-breaking space causing an invalid command when pressing space quickly after the pipe character)
-setxkbmap -option "nbsp:none"

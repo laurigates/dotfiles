@@ -21,9 +21,5 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-# Disable non-breaking space
-xmodmap "$HOME/.xmodmap"
-setxkbmap -option "nbsp:none"
-
 # Set a more secure umask
 umask 077
