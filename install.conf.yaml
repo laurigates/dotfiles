@@ -14,6 +14,9 @@
     ~/.vim_runtime/my_plugins/vim-ruby: vim/vim-ruby
     ~/.vim_runtime/my_configs.vim: vim/my_configs.vim
     ~/.vimrc: vim/vimrc
+    ~/.config/nvim/init.vim:
+        create: true
+        path: vim/vimrc
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
