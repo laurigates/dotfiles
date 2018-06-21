@@ -25,3 +25,6 @@
 [submodule "tmux/tmux-themepack"]
 	path = tmux/tmux-themepack
 	url = https://github.com/jimeh/tmux-themepack.git
+[submodule "vim/vimwiki"]
+	path = vim/vimwiki
+	url = https://github.com/vimwiki/vimwiki.git

@@ -12,6 +12,7 @@
     ~/.vim_runtime: vim/vim_runtime
     ~/.vim_runtime/my_plugins/vim-puppet: vim/vim-puppet
     ~/.vim_runtime/my_plugins/vim-ruby: vim/vim-ruby
+    ~/.vim_runtime/my_plugins/vimwiki: vim/vimwiki
     ~/.vim_runtime/my_configs.vim: vim/my_configs.vim
     ~/.vimrc: vim/vimrc
     ~/.config/nvim/init.vim:
