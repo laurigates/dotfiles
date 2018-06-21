@@ -1,6 +1,6 @@
-if [ "$XDG_CURRENT_DESKTOP" = "KDE" ] || [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
-  ZSH_TMUX_AUTOSTART="true"
-fi
+#if [ "$XDG_CURRENT_DESKTOP" = "KDE" ] || [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+#  ZSH_TMUX_AUTOSTART="true"
+#fi
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH:/opt/puppetlabs/bin
 
