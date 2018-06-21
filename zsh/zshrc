@@ -69,7 +69,7 @@ plugins=(
   zsh-autosuggestions zsh-syntax-highlighting
   common-aliases debian sudo z
   colored-man-pages
-  kitchen bundler vagrant pip python virtualenv
+  kitchen bundler vagrant pip python virtualenv cake
   nmap taskwarrior
 )
 
