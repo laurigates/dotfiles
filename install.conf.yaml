@@ -7,8 +7,11 @@
 
 - link:
     ~/.dotfiles: ''
-    ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux.conf: tmux/tmux.conf
+    ~/.tmux-themepack: tmux/tmux-themepack
+    ~/.tmux/plugins:
+        create: true
+        path: tmux/tmux-plugins
     ~/.vim_runtime: vim/vim_runtime
     ~/.vim_runtime/my_plugins/vim-puppet: vim/vim-puppet
     ~/.vim_runtime/my_plugins/vim-ruby: vim/vim-ruby
