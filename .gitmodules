@@ -28,3 +28,9 @@
 [submodule "vim/vimwiki"]
 	path = vim/vimwiki
 	url = https://github.com/vimwiki/vimwiki.git
+[submodule "vim/targets.vim"]
+	path = vim/targets.vim
+	url = https://github.com/wellle/targets.vim.git
+[submodule "vim/terminus"]
+	path = vim/terminus
+	url = https://github.com/wincent/terminus.git
