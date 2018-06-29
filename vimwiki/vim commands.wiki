@@ -1,0 +1,41 @@
+= most recently used =
+,f = opens a panel with the most recently used files
+
+= indent whole document =
+gg=G
+
+= indent line =
+==
+
+= align puppet rockets =
+'<,'>call puppet#align#AlignHashrockets()
+
+= motions =
+t = to, goes up to the character specified
+f = find, goes on top of the character specified
+:h word-motions
+
+= paste toggle =
+:set paste
+:set nopaste
+http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
+
+= editing remote files =
+http://vim.wikia.com/wiki/Editing_remote_files_via_scp_in_vim
+
+= jump to matching brace =
+%
+
+= using vim tab pages =
+http://vim.wikia.com/wiki/Using_tab_pages
+
+= commentary.vim =
+gcc = comment out line
+gcap = comment out paragraph
+
+= yank stack =
+after pasting with p, press C-p or C-n to cycle through the yank stack
+
+= join lines =
+J
+gJ

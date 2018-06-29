@@ -7,6 +7,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/vimwiki: vimwiki
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux/plugins:
