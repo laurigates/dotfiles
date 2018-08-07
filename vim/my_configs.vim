@@ -27,3 +27,6 @@ set splitright
 
 " Press Space to turn off highlighting and clear any message already displayed.
 :nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+
+" Integrate vim clipboard with system clipboard
+set clipboard+=unnamedplus
