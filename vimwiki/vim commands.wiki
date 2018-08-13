@@ -1,5 +1,25 @@
+= insert mode shortcuts =
+C+w to delete the last word typed
+C+u to delete everything typed in the current insert mode session
+C+c to stop inserting
+
+= delete until search =
+`d/mystring`
+if search pattern is already defined
+`dn`
+
 = most recently used =
 ,f = opens a panel with the most recently used files
+
+= splits =
+Swap top/bottom or left/right split
+C+W R
+
+Breat out current window into a new tabview
+C+W T
+
+Close every window in the current tabview but the current one
+C+W o
 
 = indent whole document =
 gg=G
@@ -39,3 +59,9 @@ after pasting with p, press C-p or C-n to cycle through the yank stack
 = join lines =
 J
 gJ
+
+= ctrlp =
+C+f to open fuzzy finder
+C+k, C+j to move up and down
+C+t to open selected file in a new tab
+C+x, C+v to open in a split

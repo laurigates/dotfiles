@@ -1,2 +1,5 @@
 = list all key bindings =
 tmux list-keys or <prefix>:list-keys
+
+= switching windows =
+`C+b <number>` switch to specified window number
