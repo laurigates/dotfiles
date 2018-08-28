@@ -122,3 +122,5 @@ prompt_context() {
 # This doesn't seem to work when set via xprofile
 xmodmap "$HOME/.xmodmap"
 setxkbmap -option "nbsp:none"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

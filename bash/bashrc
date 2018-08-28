@@ -118,3 +118,5 @@ export PS1="\[\033[38;5;47m\]\u\[$(tput sgr0)\]\[\033[38;5;39m\]@\[\033[38;5;47m
 # git prompt
 GIT_PROMPT_ONLY_IN_REPO=1
 source ~/.bash-git-prompt/gitprompt.sh
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

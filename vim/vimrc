@@ -1,13 +1,50 @@
-set runtimepath+=~/.vim_runtime
+call plug#begin('~/.local/share/nvim/plugged')
 
-source ~/.vim_runtime/vimrcs/basic.vim
-source ~/.vim_runtime/vimrcs/filetypes.vim
-source ~/.vim_runtime/vimrcs/plugins_config.vim
-source ~/.vim_runtime/vimrcs/extended.vim
+" LanguageClient-neovim
+Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
 
-try
-source ~/.vim_runtime/my_configs.vim
-catch
-endtry
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
 
-set visualbell
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-tmux'
+Plug 'ncm2/ncm2-path'
+Plug 'ncm2/ncm2-jedi'
+Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
+Plug 'ncm2/ncm2-cssomni'
+Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
+
+" php-language-server
+Plug 'felixfbecker/php-language-server', {'do': 'composer install && composer run-script parse-stubs'}
+
+" vim-lsp
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+
+" ncm2-vim-lsp
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'ncm2/ncm2-vim-lsp'
+
+" Include Phpactor
+Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
+Plug 'phpactor/ncm2-phpactor'
+
+" Plugin outside ~/.vim/plugged with post-update hook
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+call plug#end()
+
+" Required for operations modifying multiple buffers like rename.
+set hidden
+
+au User lsp_setup call lsp#register_server({                                    
+     \ 'name': 'php-language-server',                                            
+     \ 'cmd': {server_info->['php', expand('~/.vim/plugged/php-language-server/bin/php-language-server.php')]},
+     \ 'whitelist': ['php'],                                                     
+     \ })
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+" IMPORTANTE: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
