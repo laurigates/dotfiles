@@ -1,3 +1,25 @@
+= surround =
+`cst<h3` change a tag under cursor to <h3>
+`ysiw"` surround a word with quotes
+`dst` delete surrounding tag under cursor
+
+= tabular =
+`:Tab /=`
+before:
+one = 1
+two = 2
+three = 3
+four = 4
+
+after
+one   = 1
+two   = 2
+three = 3
+four  = 4
+
+= gitgutter =
+`,d` toggles git diff display
+
 = insert mode shortcuts =
 C+w to delete the last word typed
 C+u to delete everything typed in the current insert mode session
@@ -9,7 +31,7 @@ if search pattern is already defined
 `dn`
 
 = most recently used =
-,f = opens a panel with the most recently used files
+`,f` = opens a panel with the most recently used files
 
 = splits =
 Swap top/bottom or left/right split
