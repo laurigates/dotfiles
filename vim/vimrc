@@ -1,5 +1,4 @@
 call plug#begin('~/.local/share/nvim/plugged')
-
 " LanguageClient-neovim
 Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
 
@@ -48,8 +47,8 @@ Plug 'marcweber/vim-addon-mw-utils'
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 
-" php-language-server
-Plug 'felixfbecker/php-language-server', {'do': 'composer install && composer run-script parse-stubs'}
+" PHP
+Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
 
 " vim-lsp
 Plug 'prabirshrestha/async.vim'
@@ -100,17 +99,25 @@ Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-surround'
 
 " Lightline
-Plug 'itchyny/lightline.vim'
+" Plug 'itchyny/lightline.vim'
+
+" Airline
+Plug 'vim-airline/vim-airline'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Themes
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Gotham theme
+Plug 'whatyouhide/vim-gotham'
+" One
+Plug 'joshdick/onedark.vim'
 call plug#end()
+
+" Automatically start language servers.
+let g:LanguageClient_autoStart = 1
 
 " Required for operations modifying multiple buffers like rename.
 set hidden
-
-au User lsp_setup call lsp#register_server({                                    
-     \ 'name': 'php-language-server',                                            
-     \ 'cmd': {server_info->['php', expand('~/.vim/plugged/php-language-server/bin/php-language-server.php')]},
-     \ 'whitelist': ['php'],                                                     
-     \ })
 
 " enable ncm2 for all buffers
 autocmd BufEnter * call ncm2#enable_for_buffer()
@@ -148,20 +155,47 @@ nnoremap <C-F> :Files<CR>
 " Integrate vim clipboard with system clipboard
 set clipboard+=unnamedplus
 
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" suppress the annoying 'match x of y', 'The only match' and 'Pattern not
+" found' messages
+set shortmess+=c
+
+let g:lsp_signs_enabled = 1         " enable signs
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 7 lines to the cursor - when moving vertically using j/k
-set so=7
 
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en' 
+" Set 12 lines to the cursor - when moving vertically using j/k
+set so=12
+
+let $LANG='en_US.utf8'
+
 set langmenu=en
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
 
+" more natural split opening
+set splitbelow
+set splitright
+
 " Turn on the Wild menu
 set wildmenu
+
+" enable recursive find
+set path+=**
+
+" automatic relative/absolute line numbering
+set number relativenumber
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
 
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
@@ -213,8 +247,19 @@ set novisualbell
 set t_vb=
 set tm=500
 
+" Lightline related
+" let g:lightline = {
+"       \ 'colorscheme': 'wombat',
+"       \ }
+set noshowmode
+
+" Airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+
 " Add a bit extra margin to the left
-set foldcolumn=1
+" set foldcolumn=1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -223,9 +268,10 @@ set foldcolumn=1
 syntax enable 
 
 " Color scheme
-colorscheme peaksea
-
+set termguicolors
 set background=dark
+let g:onedark_terminal_italics=1
+colorscheme onedark
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
