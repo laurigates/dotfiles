@@ -7,6 +7,7 @@
 
 - shell:
   - mkdir -p ~/.local/share/nvim/plugged
+  - [git submodule update --init --recursive, Installing submodules]
 
 - link:
     ~/.dotfiles: ''
@@ -23,6 +24,9 @@
     ~/.local/share/nvim/site/autoload/plug.vim:
         create: true
         path: vim/vim-plug/plug.vim
+    ~/.config/nvim/colors/peaksea.vim:
+        create: true
+        path: vim/peaksea/colors/peaksea.vim
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
@@ -50,5 +54,3 @@
         path: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
 
-- shell:
-    - [git submodule update --init --recursive, Installing submodules]

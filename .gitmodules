@@ -43,3 +43,6 @@
 [submodule "vim/vim-plug"]
 	path = vim/vim-plug
 	url = https://github.com/junegunn/vim-plug.git
+[submodule "vim/peaksea"]
+	path = vim/peaksea
+	url = https://github.com/vim-scripts/peaksea.git

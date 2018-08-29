@@ -8,11 +8,45 @@ Plug 'roxma/nvim-yarp'
 
 Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-tmux'
+
+" Yank stack
+Plug 'maxbrunsfeld/vim-yankstack'
+
+Plug 'michaeljsmith/vim-indent-object'
+
+Plug 'tpope/vim-repeat'
+
+" Smooth scrolling
+Plug 'yuttie/comfortable-motion.vim'
+
+" Enhanced terminal integration
+Plug 'wincent/terminus'
+
+" insert mode completion of words in adjacent tmux panes
+" Plug 'wellle/tmux-complete.vim'
+Plug 'wellle/targets.vim'
+
+" Insert or delete brackets, parens, quotes in pair.
+" Plug 'jiangmiao/auto-pairs'
+
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+
 Plug 'ncm2/ncm2-path'
 Plug 'ncm2/ncm2-jedi'
 Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
 Plug 'ncm2/ncm2-cssomni'
 Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
+Plug 'ncm2/ncm2-snipmate'
+Plug 'ncm2/ncm2-html-subscope'
+Plug 'ncm2/ncm2-tagprefix'
+Plug 'jsfaint/gen_tags.vim'
+
+" snipmate dependencies
+Plug 'tomtom/tlib_vim'
+Plug 'marcweber/vim-addon-mw-utils'
+Plug 'garbas/vim-snipmate'
+Plug 'honza/vim-snippets'
 
 " php-language-server
 Plug 'felixfbecker/php-language-server', {'do': 'composer install && composer run-script parse-stubs'}
@@ -26,12 +60,47 @@ Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'ncm2/ncm2-vim-lsp'
 
+" asyncomplete
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
 " Include Phpactor
 Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
 Plug 'phpactor/ncm2-phpactor'
 
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
+" Vimwiki
+Plug 'vimwiki/vimwiki'
+
+" Commenting support (gc)
+Plug 'tpope/vim-commentary'
+
+" Ruby support (plays nicely with tpope/rbenv-ctags)
+Plug 'vim-ruby/vim-ruby'
+
+" Javascript support
+Plug 'pangloss/vim-javascript'
+
+" JSON Syntax file
+Plug 'elzr/vim-json'
+
+" Puppet syntax
+Plug 'rodjek/vim-puppet'
+
+" Git changes shown on line numbers
+Plug 'airblade/vim-gitgutter'
+
+" Browse tags of current file
+Plug 'majutsushi/tagbar'
+
+" Surround (cs"')
+Plug 'tpope/vim-surround'
+
+" Lightline
+Plug 'itchyny/lightline.vim'
 call plug#end()
 
 " Required for operations modifying multiple buffers like rename.
@@ -48,3 +117,15 @@ autocmd BufEnter * call ncm2#enable_for_buffer()
 
 " IMPORTANTE: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
+
+""" Personal configs
+let mapleader = ","
+
+" Open fzf file search
+nnoremap <C-f> :Files<CR>
+
+" Integrate vim clipboard with system clipboard
+set clipboard+=unnamedplus
+
+" Color scheme
+" colorscheme peaksea
