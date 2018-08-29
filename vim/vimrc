@@ -118,15 +118,6 @@ autocmd BufEnter * call ncm2#enable_for_buffer()
 " IMPORTANTE: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
 
-" Open fzf file search
-nnoremap <C-f> :Files<CR>
-
-" Integrate vim clipboard with system clipboard
-set clipboard+=unnamedplus
-
-" Color scheme
- colorscheme peaksea
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -149,7 +140,13 @@ nmap <leader>w :w!<cr>
 
 " :W sudo saves the file 
 " (useful for handling the permission-denied error)
-command W w !sudo tee % > /dev/null
+" command W w !sudo tee % > /dev/null
+
+" Open fzf file search
+nnoremap <C-F> :Files<CR>
+
+" Integrate vim clipboard with system clipboard
+set clipboard+=unnamedplus
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -224,6 +221,9 @@ set foldcolumn=1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax enable 
+
+" Color scheme
+colorscheme peaksea
 
 set background=dark
 
