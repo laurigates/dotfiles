@@ -27,7 +27,7 @@ Plug 'wincent/terminus'
 Plug 'wellle/targets.vim'
 
 " Insert or delete brackets, parens, quotes in pair.
-" Plug 'jiangmiao/auto-pairs'
+Plug 'jiangmiao/auto-pairs'
 
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
@@ -141,6 +141,9 @@ nmap <leader>w :w!<cr>
 " :W sudo saves the file 
 " (useful for handling the permission-denied error)
 " command W w !sudo tee % > /dev/null
+
+" Disable mappings that override fzf mapping
+let g:comfortable_motion_no_default_key_mappings = 1
 
 " Open fzf file search
 nnoremap <C-F> :Files<CR>
