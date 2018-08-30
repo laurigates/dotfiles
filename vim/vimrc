@@ -1,6 +1,9 @@
 call plug#begin('~/.local/share/nvim/plugged')
 " LanguageClient-neovim
-Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
@@ -109,12 +112,14 @@ Plug 'vim-airline/vim-airline'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gotham theme
 Plug 'whatyouhide/vim-gotham'
+
 " One
 Plug 'joshdick/onedark.vim'
 call plug#end()
 
 " Automatically start language servers.
 let g:LanguageClient_autoStart = 1
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 
 " Required for operations modifying multiple buffers like rename.
 set hidden
