@@ -18,9 +18,6 @@ Plug 'michaeljsmith/vim-indent-object'
 
 Plug 'tpope/vim-repeat'
 
-" Smooth scrolling
-Plug 'yuttie/comfortable-motion.vim'
-
 " Enhanced terminal integration
 Plug 'wincent/terminus'
 
@@ -104,28 +101,55 @@ Plug 'tpope/vim-surround'
 " Airline
 Plug 'vim-airline/vim-airline'
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Themes
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Gotham theme
 Plug 'whatyouhide/vim-gotham'
 
 " One
 Plug 'joshdick/onedark.vim'
+
 call plug#end()
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""
+" LanguageClient & LanguageServer
+"""""""""""""""""""""""""""""""""""
+" Required for operations modifying multiple buffers like rename.
+set hidden
 
 " Automatically start language servers.
 let g:LanguageClient_autoStart = 1
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 
-" Required for operations modifying multiple buffers like rename.
-set hidden
+let g:lsp_signs_enabled = 1         " enable signs
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
 
+"""""""""""""""""""""""""""""""""""
+" NCM2
+"""""""""""""""""""""""""""""""""""
 " enable ncm2 for all buffers
 autocmd BufEnter * call ncm2#enable_for_buffer()
 
 " IMPORTANTE: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
+
+" suppress the annoying 'match x of y', 'The only match' and 'Pattern not
+" found' messages
+set shortmess+=c
+
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+"""""""""""""""""""""""""""""""""""
+" fzf
+"""""""""""""""""""""""""""""""""""
+" Disable mappings that override fzf mapping
+let g:comfortable_motion_no_default_key_mappings = 1
+
+" Open fzf file search
+nnoremap <C-F> :Files<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -151,25 +175,8 @@ nmap <leader>w :w!<cr>
 " (useful for handling the permission-denied error)
 " command W w !sudo tee % > /dev/null
 
-" Disable mappings that override fzf mapping
-let g:comfortable_motion_no_default_key_mappings = 1
-
-" Open fzf file search
-nnoremap <C-F> :Files<CR>
-
 " Integrate vim clipboard with system clipboard
 set clipboard+=unnamedplus
-
-" Use <TAB> to select the popup menu:
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-" suppress the annoying 'match x of y', 'The only match' and 'Pattern not
-" found' messages
-set shortmess+=c
-
-let g:lsp_signs_enabled = 1         " enable signs
-let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -178,11 +185,9 @@ let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal 
 " Set 12 lines to the cursor - when moving vertically using j/k
 set so=12
 
-let $LANG='en_US.utf8'
+" let $LANG='en_US.utf8'
 
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
+" set langmenu=en
 
 " more natural split opening
 set splitbelow
@@ -214,7 +219,7 @@ endif
 set ruler
 
 " Height of the command bar
-set cmdheight=2
+set cmdheight=1
 
 " A buffer becomes hidden when it is abandoned
 set hid
