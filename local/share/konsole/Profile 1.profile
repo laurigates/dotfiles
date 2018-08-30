@@ -10,7 +10,7 @@ Name=Profile 1
 Parent=FALLBACK/
 
 [Keyboard]
-KeyBindings=default
+KeyBindings=linux
 
 [Scrolling]
 ScrollBarPosition=2
