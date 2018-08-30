@@ -6,8 +6,9 @@
 - clean: ['~']
 
 - shell:
-  - mkdir -p ~/.local/share/nvim/plugged
-  - [git submodule update --init --recursive, Installing submodules]
+  - [mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory]
+  - [git submodule update --init --remote --recursive, Installing submodules]
+  - [nvim +PlugInstall +UpdateRemotePlugins +qa]
 
 - link:
     ~/.dotfiles: ''
@@ -24,9 +25,6 @@
     ~/.local/share/nvim/site/autoload/plug.vim:
         create: true
         path: vim/vim-plug/plug.vim
-    ~/.config/nvim/colors/peaksea.vim:
-        create: true
-        path: vim/peaksea/colors/peaksea.vim
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
