@@ -2,7 +2,7 @@
 DefaultProfile=Profile 1.profile
 
 [Favorite Profiles]
-Favorites=
+Favorites=Profile 1.profile
 
 [KFileDialog Settings]
 Recent Files[$e]=1920x1200.svg,file:///usr/share/desktop-base/lines-theme/lockscreen/contents/images/1920x1200.svg,file:///usr/share/desktop-base/lines-theme/wallpaper/contents/images/1920x1200.svg,file:///usr/share/desktop-base/lines-theme/wallpaper/contents/images/1920x1080.svg

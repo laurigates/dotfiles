@@ -122,6 +122,7 @@ Theme=breeze-dark
 ColorScheme=Breeze
 DoubleClickInterval=400
 LookAndFeelPackage=org.kde.breezedark.desktop
+ShowDeleteCommand=false
 ShowIconsInMenuItems=true
 ShowIconsOnPushButtons=true
 SingleClick=true
