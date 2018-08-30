@@ -120,7 +120,9 @@ prompt_context() {
 
 # Disable non-breaking space
 # This doesn't seem to work when set via xprofile
-xmodmap "$HOME/.xmodmap"
-setxkbmap -option "nbsp:none"
+if [[ ! -z $DISPLAY ]]; then
+    xmodmap "$HOME/.xmodmap"
+    setxkbmap -option "nbsp:none"
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
