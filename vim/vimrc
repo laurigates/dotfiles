@@ -101,9 +101,6 @@ Plug 'majutsushi/tagbar'
 " Surround (cs"')
 Plug 'tpope/vim-surround'
 
-" Lightline
-" Plug 'itchyny/lightline.vim'
-
 " Airline
 Plug 'vim-airline/vim-airline'
 
