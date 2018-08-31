@@ -325,6 +325,13 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Prevent moving the cursor when changing focus to vim
+augroup NO_CURSOR_MOVE_ON_FOCUS
+  au!
+  au FocusLost * let g:oldmouse=&mouse | set mouse=
+  au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
+augroup END
+
 " Smart way to move between windows
 map <C-j> <C-W>j
 map <C-k> <C-W>k
