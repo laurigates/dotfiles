@@ -41,6 +41,9 @@ Plug 'ncm2/ncm2-html-subscope'
 Plug 'ncm2/ncm2-tagprefix'
 Plug 'jsfaint/gen_tags.vim'
 
+" vim-easymotion
+Plug 'easymotion/vim-easymotion'
+
 " snipmate dependencies
 Plug 'tomtom/tlib_vim'
 Plug 'marcweber/vim-addon-mw-utils'
