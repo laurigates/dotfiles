@@ -13,6 +13,9 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.config/alacritty/alacritty.yml:
+        create: true
+        path: alacritty/alacritty.yml
     ~/vimwiki: vimwiki
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
