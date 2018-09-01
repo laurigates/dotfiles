@@ -9,7 +9,7 @@
   - [mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory]
   - [mkdir -p ~/.zsh_history_dir, Creating zsh history directory]
   - [git submodule update --init --remote --recursive, Installing submodules]
-  - [nvim +PlugInstall +UpdateRemotePlugins +qa Installing nvim plugins]
+  - [nvim +PlugInstall +UpdateRemotePlugins +qa --headless, Installing nvim plugins]
 
 - link:
     ~/.dotfiles: ''
