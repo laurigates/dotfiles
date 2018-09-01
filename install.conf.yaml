@@ -16,16 +16,16 @@
     ~/.config/alacritty/alacritty.yml:
         create: true
         path: alacritty/alacritty.yml
-    ~/vimwiki: vimwiki
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux/plugins:
         create: true
         path: tmux/tmux-plugins
+    ~/vimwiki: vimwiki
     ~/.vimrc: vim/vimrc
     ~/.config/nvim/init.vim:
         create: true
-        path: vim/vimrc
+        path: vim/init.vim
     ~/.local/share/nvim/site/autoload/plug.vim:
         create: true
         path: vim/vim-plug/plug.vim
@@ -55,4 +55,3 @@
         create: true
         path: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
-
