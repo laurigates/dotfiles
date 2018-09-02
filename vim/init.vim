@@ -154,6 +154,13 @@ let g:comfortable_motion_no_default_key_mappings = 1
 " Open fzf file search
 nnoremap <C-F> :Files<CR>
 
+"""""""""""""""""""""""""""""""""""
+" Airline
+"""""""""""""""""""""""""""""""""""
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -184,7 +191,6 @@ set clipboard+=unnamedplus
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " Set 12 lines to the cursor - when moving vertically using j/k
 set so=12
 
@@ -262,13 +268,10 @@ set tm=500
 
 set noshowmode
 
-" Airline
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-
 " Add a bit extra margin to the left
 " set foldcolumn=1
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -308,7 +311,6 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
