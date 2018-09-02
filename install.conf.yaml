@@ -22,7 +22,7 @@
         create: true
         path: tmux/tmux-plugins
     ~/vimwiki: vimwiki
-    ~/.vimrc: vim/vimrc
+    ~/.vimrc: vim/init.vim
     ~/.config/nvim/init.vim:
         create: true
         path: vim/init.vim
