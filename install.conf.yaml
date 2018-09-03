@@ -9,20 +9,23 @@
   - [mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory]
   - [mkdir -p ~/.zsh_history_dir, Creating zsh history directory]
   - [git submodule update --init --remote --recursive, Installing submodules]
-  - [nvim +PlugInstall +UpdateRemotePlugins +qa]
+  - [nvim +PlugInstall +UpdateRemotePlugins +qa --headless, Installing nvim plugins]
 
 - link:
     ~/.dotfiles: ''
-    ~/vimwiki: vimwiki
+    ~/.config/alacritty/alacritty.yml:
+        create: true
+        path: alacritty/alacritty.yml
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux/plugins:
         create: true
         path: tmux/tmux-plugins
-    ~/.vimrc: vim/vimrc
+    ~/vimwiki: vimwiki
+    ~/.vimrc: vim/init.vim
     ~/.config/nvim/init.vim:
         create: true
-        path: vim/vimrc
+        path: vim/init.vim
     ~/.local/share/nvim/site/autoload/plug.vim:
         create: true
         path: vim/vim-plug/plug.vim
@@ -52,4 +55,3 @@
         create: true
         path: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
-
