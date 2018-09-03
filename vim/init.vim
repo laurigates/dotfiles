@@ -11,6 +11,9 @@ Plug 'roxma/nvim-yarp'
 Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-tmux'
 
+" Dictionary completion
+Plug 'filipekiss/ncm2-look.vim'
+
 " Yank stack
 Plug 'maxbrunsfeld/vim-yankstack'
 
@@ -95,6 +98,12 @@ Plug 'rodjek/vim-puppet'
 " Git changes shown on line numbers
 Plug 'airblade/vim-gitgutter'
 
+" vim-fugitive
+Plug 'tpope/vim-fugitive'
+
+" vim-unimpaired
+Plug 'tpope/vim-unimpaired'
+
 " Browse tags of current file
 Plug 'majutsushi/tagbar'
 
@@ -115,6 +124,16 @@ call plug#end()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""
+" vim-unimpaired
+"""""""""""""""""""""""""""""""""""
+nmap < [
+nmap > ]
+omap < [
+omap > ]
+xmap < [
+xmap > ]
+
 """""""""""""""""""""""""""""""""""
 " LanguageClient & LanguageServer
 """""""""""""""""""""""""""""""""""
