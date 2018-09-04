@@ -1,3 +1,6 @@
+= find under cursor =
+Press `*` to find the word under the cursor
+
 = surround =
 `cst<h3` change a tag under cursor to <h3>
 `ysiw"` surround a word with quotes
