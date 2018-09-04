@@ -127,12 +127,12 @@ call plug#end()
 """""""""""""""""""""""""""""""""""
 " vim-unimpaired
 """""""""""""""""""""""""""""""""""
-nmap < [
-nmap > ]
-omap < [
-omap > ]
-xmap < [
-xmap > ]
+" nmap < [
+" nmap > ]
+" omap < [
+" omap > ]
+" xmap < [
+" xmap > ]
 
 """""""""""""""""""""""""""""""""""
 " LanguageClient & LanguageServer
