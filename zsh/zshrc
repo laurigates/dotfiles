@@ -124,3 +124,5 @@ if [[ ! -z $DISPLAY ]]; then
     xmodmap "$HOME/.xmodmap"
     setxkbmap -option "nbsp:none"
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

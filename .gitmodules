@@ -1,9 +1,6 @@
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
-[submodule "vim_runtime"]
-	path = vim/vim_runtime
-	url = https://github.com/amix/vimrc
 [submodule "oh-my-zsh"]
 	path = zsh/oh-my-zsh
 	url = git://github.com/robbyrussell/oh-my-zsh.git
@@ -13,30 +10,21 @@
 [submodule "zsh-autosuggestions"]
 	path = zsh/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
-[submodule "vim-puppet"]
-	path = vim/vim-puppet
-	url = https://github.com/rodjek/vim-puppet
 [submodule "zsh-syntax-highlighting"]
 	path = zsh/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
-[submodule "vim-ruby"]
-	path = vim/vim-ruby
-	url = https://github.com/vim-ruby/vim-ruby.git
 [submodule "tmux/tmux-themepack"]
 	path = tmux/tmux-themepack
 	url = https://github.com/jimeh/tmux-themepack.git
 [submodule "vim/vimwiki"]
 	path = vim/vimwiki
 	url = https://github.com/vimwiki/vimwiki.git
-[submodule "vim/targets.vim"]
-	path = vim/targets.vim
-	url = https://github.com/wellle/targets.vim.git
-[submodule "vim/terminus"]
-	path = vim/terminus
-	url = https://github.com/wincent/terminus.git
 [submodule "tmux/tmux-plugins/tpm"]
 	path = tmux/tmux-plugins/tpm
 	url = https://github.com/tmux-plugins/tpm.git
 [submodule "tmux/tmux-plugins/tmux-sensible"]
 	path = tmux/tmux-plugins/tmux-sensible
 	url = https://github.com/tmux-plugins/tmux-sensible.git
+[submodule "vim/vim-plug"]
+	path = vim/vim-plug
+	url = https://github.com/junegunn/vim-plug.git

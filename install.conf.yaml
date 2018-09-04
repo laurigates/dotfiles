@@ -5,25 +5,33 @@
 
 - clean: ['~']
 
+- shell:
+  - [mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory]
+  - [mkdir -p ~/.zsh_history_dir, Creating zsh history directory]
+  - [git submodule update --init --remote --recursive, Installing submodules]
+  - [nvim +PlugInstall +UpdateRemotePlugins +qa --headless, Installing nvim plugins]
+
 - link:
     ~/.dotfiles: ''
-    ~/vimwiki: vimwiki
+    ~/.config/alacritty/alacritty.yml:
+        create: true
+        path: alacritty/alacritty.yml
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux/plugins:
         create: true
         path: tmux/tmux-plugins
-    ~/.vim_runtime: vim/vim_runtime
-    ~/.vim_runtime/my_plugins/vim-puppet: vim/vim-puppet
-    ~/.vim_runtime/my_plugins/vim-ruby: vim/vim-ruby
-    ~/.vim_runtime/my_plugins/vimwiki: vim/vimwiki
-    ~/.vim_runtime/my_plugins/targets.vim: vim/targets.vim
-    ~/.vim_runtime/my_plugins/terminus: vim/terminus
-    ~/.vim_runtime/my_configs.vim: vim/my_configs.vim
-    ~/.vimrc: vim/vimrc
+    ~/vimwiki: vimwiki
     ~/.config/nvim/init.vim:
         create: true
-        path: vim/vimrc
+        path: vim/init.vim
+    ~/.local/share/nvim/site/autoload/plug.vim:
+        create: true
+        path: vim/vim-plug/plug.vim
+    ~/.vimrc: vim/init.vim
+    ~/.vim/autoload/plug.vim:
+        create: true
+        path: vim/vim-plug/plug.vim
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
@@ -50,6 +58,3 @@
         create: true
         path: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
-
-- shell:
-    - [git submodule update --init --recursive, Installing submodules]
