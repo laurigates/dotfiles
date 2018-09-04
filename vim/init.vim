@@ -147,6 +147,14 @@ nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 let g:lsp_signs_enabled = 1         " enable signs
 let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
 
+if executable('javascript-typescript-stdio')
+    au User lsp_setup call lsp#register_server({
+        \'name': 'javascript-typescript-stdio',
+        \'cmd': 'javascript-typescript-stdio',
+        \'whitelist': ['javascript'],
+        \})
+endif
+
 """""""""""""""""""""""""""""""""""
 " NCM2
 """""""""""""""""""""""""""""""""""
