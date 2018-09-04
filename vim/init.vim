@@ -179,6 +179,9 @@ nnoremap <C-F> :Files<CR>
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+" show tab numbers
+let g:airline#extensions#tabline#tab_nr_type = 1
+" let g:airline#extensions#tabline#buffer_nr_show = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -289,8 +292,6 @@ set noshowmode
 
 " Add a bit extra margin to the left
 " set foldcolumn=1
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
