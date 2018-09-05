@@ -45,12 +45,9 @@
     ~/.kde/share/config/kdeglobals:
         create: true
         path: kde/share/config/kdeglobals
-    ~/.config/i3/config:
+    ~/.i3/config:
         create: true
-        path: i3/i3/config
-    ~/.config/i3status/config:
-        create: true
-        path: i3/i3status/config
+        path: i3/config
     ~/.local/share/konsole:
         create: true
         path: local/share/konsole
