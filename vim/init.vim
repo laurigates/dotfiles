@@ -127,12 +127,12 @@ call plug#end()
 """""""""""""""""""""""""""""""""""
 " vim-unimpaired
 """""""""""""""""""""""""""""""""""
-nmap < [
-nmap > ]
-omap < [
-omap > ]
-xmap < [
-xmap > ]
+" nmap < [
+" nmap > ]
+" omap < [
+" omap > ]
+" xmap < [
+" xmap > ]
 
 """""""""""""""""""""""""""""""""""
 " LanguageClient & LanguageServer
@@ -146,6 +146,11 @@ nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 
 let g:lsp_signs_enabled = 1         " enable signs
 let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+
+" Register javascript language server
+let g:LanguageClient_serverCommands = {
+    \'javascript': ['/usr/local/bin/javascript-typescript-stdio']
+    \}
 
 """""""""""""""""""""""""""""""""""
 " NCM2
@@ -179,6 +184,9 @@ nnoremap <C-F> :Files<CR>
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+" show tab numbers
+let g:airline#extensions#tabline#tab_nr_type = 1
+" let g:airline#extensions#tabline#buffer_nr_show = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -289,8 +297,6 @@ set noshowmode
 
 " Add a bit extra margin to the left
 " set foldcolumn=1
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts

@@ -1,6 +1,8 @@
 = My knowledge base =
 * [[Annoyances]]
 * [[Useful commands]]
+* [[TODO]]
+* [[zsh]]
 * [[tmux]]
 * [[vim commands]]
 * [[rocket.chat]]

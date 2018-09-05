@@ -22,11 +22,14 @@
         create: true
         path: tmux/tmux-plugins
     ~/vimwiki: vimwiki
-    ~/.vimrc: vim/init.vim
     ~/.config/nvim/init.vim:
         create: true
         path: vim/init.vim
     ~/.local/share/nvim/site/autoload/plug.vim:
+        create: true
+        path: vim/vim-plug/plug.vim
+    ~/.vimrc: vim/init.vim
+    ~/.vim/autoload/plug.vim:
         create: true
         path: vim/vim-plug/plug.vim
     ~/.zshrc: zsh/zshrc
