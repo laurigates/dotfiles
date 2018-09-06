@@ -1,0 +1,3 @@
+= keyboard =
+Keyboard configuration /etc/default/keyboard
+udevadm trigger --subsystem-match=input --action=change
