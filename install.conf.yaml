@@ -49,6 +49,7 @@
     ~/.i3/config:
         create: true
         path: i3/config
+    ~/.i3blocks.conf: i3/i3blocks.conf
     ~/.xinitrc: X/xinitrc
     ~/.xprofile: X/xprofile
     ~/.config/compton.conf: X/compton.conf
