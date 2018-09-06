@@ -6,3 +6,6 @@ alias deploy='sudo r10k deploy environment -v info'
 
 # easy vimrc editing
 alias vimrc='vim ~/.vimrc'
+
+# workaround for problems that are caused by tmux passing tmux-256color as TERM over SSH
+alias ssh='TERM=xterm-256color ssh'
