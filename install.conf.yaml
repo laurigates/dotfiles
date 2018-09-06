@@ -42,8 +42,6 @@
     ~/.bash-git-prompt: bash/bash-git-prompt
     ~/.inputrc: general/inputrc
     ~/.profile: general/profile
-    ~/.xprofile: general/xprofile
-    ~/.xmodmap: general/xmodmap
     ~/.ssh/config: ssh/config
     ~/.kde/share/config/kdeglobals:
         create: true
@@ -52,6 +50,9 @@
         create: true
         path: i3/config
     ~/.xinitrc: X/xinitrc
+    ~/.xprofile: X/xprofile
+    ~/.xmodmap: X/xmodmap
+    ~/.config/compton.conf: X/compton.conf
     ~/.local/share/konsole:
         create: true
         path: local/share/konsole
