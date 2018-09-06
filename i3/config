@@ -89,6 +89,12 @@ exec export TERMINAL=alacritty
 # bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Return exec alacritty
 
+#logout with confirmation
+# qdbus org.kde.ksmserver /KSMServer logout 1 3 3
+
+#logout without confirmation
+# qdbus org.kde.ksmserver /KSMServer logout 0 3 3
+
 # lock screen
 bindsym Control+$alt+l exec i3lock -c 000000 -d
 

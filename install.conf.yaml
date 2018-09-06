@@ -51,6 +51,7 @@
     ~/.i3/config:
         create: true
         path: i3/config
+    ~/.xinitrc: X/xinitrc
     ~/.local/share/konsole:
         create: true
         path: local/share/konsole
