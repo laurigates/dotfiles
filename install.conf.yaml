@@ -51,7 +51,6 @@
         path: i3/config
     ~/.xinitrc: X/xinitrc
     ~/.xprofile: X/xprofile
-    ~/.xmodmap: X/xmodmap
     ~/.config/compton.conf: X/compton.conf
     ~/.local/share/konsole:
         create: true
