@@ -85,10 +85,6 @@ exec setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
 # set terminal preference
 exec export TERMINAL=alacritty
 
-# Compositor (Animations, Shadows, Transparency)
-# xcompmgr -C
-exec compton -cCFb --backend glx --vsync opengl
-
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Return exec alacritty
@@ -113,11 +109,13 @@ bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='rofi -combi-modi w
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
+focus_follows_mouse no
+
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+odiaeresis focus right
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -126,10 +124,10 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+odiaeresis move right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -138,10 +136,10 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # split in horizontal orientation
-bindsym $mod+h split h
+bindsym $mod+Ctrl+h split h
 
 # split in vertical orientation
-bindsym $mod+v split v
+bindsym $mod+Ctrl+v split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -180,7 +178,7 @@ set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
-set $ws10 "10"
+set $ws10 ""
 
 workspace $ws1 output DVI-I-1
 workspace $ws2 output HDMI-0
@@ -189,6 +187,7 @@ workspace $ws3 output DVI-D-0
 assign [class="^Google-chrome$"] $ws1
 assign [class="^Alacritty$"] $ws2
 assign [class="^Thunderbird$"] $ws3
+assign [class="^google play music desktop player$"] $ws10
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
