@@ -3,7 +3,7 @@ packages=(
 fonts-font-awesome fonts-hack fonts-powerline
 zsh
 tmux tmuxinator
-i3 rofi compton
+i3 i3-wm i3blocks i3lock i3lock-fancy i3status rofi compton
 git
 playerctl google-play-music-desktop-player
 )
@@ -19,3 +19,4 @@ for package in ${packages[@]}; do
         echo "$package found."
     fi
 done
+
