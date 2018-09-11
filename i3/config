@@ -36,7 +36,7 @@ set $base0E #c0b7f9
 set $base0F #fcc09e
 
 # ## Themes               border    background  text      indicator
-client.focused            #586e75   #dedede     #         #268bd2
+client.focused            #586e75   #dedede     #ffffff   #268bd2
 client.focused_inactive   #073642   #ededed     #93a1a1   #002b36
 client.unfocused          #002b36   #002b36     #586e75   #002b36
 client.urgent             #dc322f   #dc322f     #fdf6e3   #dc322f
@@ -47,6 +47,7 @@ bar {
   font pango:hack, FontAwesome 10
   status_command i3blocks
   position bottom
+  tray_padding 2
 
   # strip_workspace_numbers yes
   # height 25
