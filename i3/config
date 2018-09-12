@@ -186,9 +186,10 @@ workspace $ws2 output HDMI-0
 workspace $ws3 output DVI-D-0
 
 assign [class="^Google-chrome$"] $ws1
+assign [title="^Weechat"] $ws3
 assign [class="^Alacritty$"] $ws2
 assign [class="^Thunderbird$"] $ws3
-assign [class="^google play music desktop player$"] $ws10
+assign [class="^Google Play Music Desktop Player$"] $ws10
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
