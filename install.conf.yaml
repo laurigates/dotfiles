@@ -51,6 +51,9 @@
         create: true
         path: i3/config
     ~/.i3blocks.conf: i3/i3blocks.conf
+    ~/.config/dunst/dunstrc:
+        create: true
+        path: i3/dunstrc
     ~/.xinitrc: X/xinitrc
     ~/.xsessionrc: X/xsessionrc
     ~/.Xresources: X/Xresources
