@@ -52,6 +52,7 @@
         path: i3/config
     ~/.i3blocks.conf: i3/i3blocks.conf
     ~/.xinitrc: X/xinitrc
+    ~/.xsessionrc: X/xsessionrc
     ~/.Xresources: X/Xresources
     ~/.config/compton.conf: X/compton.conf
     ~/.local/share/konsole:
