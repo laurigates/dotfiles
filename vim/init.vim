@@ -122,6 +122,8 @@ Plug 'joshdick/onedark.vim'
 
 call plug#end()
 
+set nocompatible
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -161,10 +163,10 @@ endif
 if has('nvim')
 " enable ncm2 for all buffers
 autocmd BufEnter * call ncm2#enable_for_buffer()
-endif
 
 " IMPORTANTE: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
+endif
 
 " suppress the annoying 'match x of y', 'The only match' and 'Pattern not
 " found' messages
@@ -311,10 +313,17 @@ syntax enable
 
 " Color scheme
 " set Vim-specific sequences for RGB colors
+set t_Co=256
+
+if exists('t_8f') && exists('t_8b')
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 
+if exists('termguicolors')
 set termguicolors
+endif
+
 set background=dark
 let g:onedark_terminal_italics=1
 colorscheme onedark
