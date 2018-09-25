@@ -1,6 +1,6 @@
 [global]
     font = "Noto Sans 10"
-    markup = yes
+    markup = full
     format = "<b>%s</b>\n%b"
     sort = yes
     indicate_hidden = yes
