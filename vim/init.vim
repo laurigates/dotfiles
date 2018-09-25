@@ -315,12 +315,12 @@ syntax enable
 " set Vim-specific sequences for RGB colors
 set t_Co=256
 
-if exists('t_8f') && exists('t_8b')
+if exists('&t_8f') && exists('&t_8b')
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 
-if exists('termguicolors')
+if exists('&termguicolors')
 set termguicolors
 endif
 
