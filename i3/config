@@ -97,7 +97,7 @@ bindsym $mod+Return exec alacritty
 # qdbus org.kde.ksmserver /KSMServer logout 0 3 3
 
 # lock screen
-bindsym Control+$alt+l exec i3lock -c 000000 -d
+bindsym Control+$alt+l exec i3lock -c 000000 -d && playerctl pause
 
 # kill focused window
 bindsym $mod+Shift+q kill
