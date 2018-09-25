@@ -1,19 +1,4 @@
 call plug#begin('~/.local/share/nvim/plugged')
-" LanguageClient-neovim
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-tmux'
-
-" Dictionary completion
-Plug 'filipekiss/ncm2-look.vim'
-
 " Yank stack
 Plug 'maxbrunsfeld/vim-yankstack'
 
@@ -34,6 +19,28 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
+" vim-easymotion
+Plug 'easymotion/vim-easymotion'
+
+" snipmate dependencies
+Plug 'tomtom/tlib_vim'
+Plug 'marcweber/vim-addon-mw-utils'
+Plug 'garbas/vim-snipmate'
+Plug 'honza/vim-snippets'
+
+if has('nvim')
+" LanguageClient-neovim
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
+Plug 'roxma/nvim-yarp'
+
+" NCM2
+Plug 'ncm2/ncm2'
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-tmux'
 Plug 'ncm2/ncm2-path'
 Plug 'ncm2/ncm2-jedi'
 Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
@@ -43,15 +50,8 @@ Plug 'ncm2/ncm2-snipmate'
 Plug 'ncm2/ncm2-html-subscope'
 Plug 'ncm2/ncm2-tagprefix'
 Plug 'jsfaint/gen_tags.vim'
-
-" vim-easymotion
-Plug 'easymotion/vim-easymotion'
-
-" snipmate dependencies
-Plug 'tomtom/tlib_vim'
-Plug 'marcweber/vim-addon-mw-utils'
-Plug 'garbas/vim-snipmate'
-Plug 'honza/vim-snippets'
+" Dictionary completion
+Plug 'filipekiss/ncm2-look.vim'
 
 " PHP
 Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
@@ -72,6 +72,7 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 " Include Phpactor
 Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
 Plug 'phpactor/ncm2-phpactor'
+endif
 
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -140,6 +141,7 @@ call plug#end()
 " Required for operations modifying multiple buffers like rename.
 set hidden
 
+if has('nvim')
 " Automatically start language servers.
 let g:LanguageClient_autoStart = 1
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
@@ -151,12 +153,15 @@ let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal 
 let g:LanguageClient_serverCommands = {
     \'javascript': ['/usr/local/bin/javascript-typescript-stdio']
     \}
+endif
 
 """""""""""""""""""""""""""""""""""
 " NCM2
 """""""""""""""""""""""""""""""""""
+if has('nvim')
 " enable ncm2 for all buffers
 autocmd BufEnter * call ncm2#enable_for_buffer()
+endif
 
 " IMPORTANTE: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
@@ -305,6 +310,10 @@ set noshowmode
 syntax enable 
 
 " Color scheme
+" set Vim-specific sequences for RGB colors
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
 set termguicolors
 set background=dark
 let g:onedark_terminal_italics=1
