@@ -8,6 +8,7 @@
 - shell:
   - [mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory]
   - [mkdir -p ~/.zsh_history_dir, Creating zsh history directory]
+  - [mkdir -p ~/.i3, Creating i3 configuration directory]
   - [git submodule update --init --remote --recursive, Installing submodules]
   - [nvim +PlugInstall +UpdateRemotePlugins +qa --headless, Installing nvim plugins]
 
@@ -47,15 +48,12 @@
     ~/.kde/share/config/kdeglobals:
         create: true
         path: kde/share/config/kdeglobals
-    ~/.i3/config:
-        create: true
-        path: i3/config
     ~/.i3blocks.conf: i3/i3blocks.conf
     ~/.config/dunst/dunstrc:
         create: true
         path: i3/dunstrc
     ~/.xinitrc: X/xinitrc
-    ~/.xsessionrc: X/xsessionrc
+    ~/.xsessionrc: X/xinitrc
     ~/.Xresources: X/Xresources
     ~/.config/compton.conf: X/compton.conf
     ~/.local/share/konsole:

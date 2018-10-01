@@ -9,4 +9,7 @@ export QT_PLUGIN_PATH=$HOME/.kde4/lib/kde4/plugins/:/usr/lib/kde4/plugins/
 XDG_CURRENT_DESKTOP=kde
 export DESKTOP_SESSION=kde
 
-exec i3
+# Create i3 config from base and local
+cat $HOME/.dotfiles/i3/config.base \
+    $HOME/.dotfiles/i3/config.local > $HOME/.i3/config
+exec /usr/bin/i3

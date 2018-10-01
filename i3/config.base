@@ -90,6 +90,9 @@ exec export TERMINAL=alacritty
 # bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Return exec alacritty
 
+# dolphin
+# bindsym $mod+e exec dolphin
+
 #logout with confirmation
 # qdbus org.kde.ksmserver /KSMServer logout 1 3 3
 
@@ -163,9 +166,6 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 # Disable title
-# for_window [class="^Google-chrome$"] border pixel 0
-# for_window [class="^Thunderbird$"] border pixel 0
-# for_window [class="^alacritty$"] border pixel 0
 for_window [class="^.*$"] border pixel 0
 
 # Define names for default workspaces for which we configure key bindings later on.
@@ -180,17 +180,6 @@ set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 ""
-
-workspace $ws1 output DVI-I-1
-workspace $ws10 output DVI-I-1
-workspace $ws2 output HDMI-0
-workspace $ws3 output DVI-D-0
-
-assign [class="^Google-chrome$"] $ws1
-assign [title="^Weechat"] $ws3
-assign [class="^Alacritty$"] $ws2
-assign [class="^Thunderbird$"] $ws3
-assign [class="^Google Play Music Desktop Player$"] $ws10
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
