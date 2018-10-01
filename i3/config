@@ -182,6 +182,7 @@ set $ws9 "9"
 set $ws10 ""
 
 workspace $ws1 output DVI-I-1
+workspace $ws10 output DVI-I-1
 workspace $ws2 output HDMI-0
 workspace $ws3 output DVI-D-0
 
