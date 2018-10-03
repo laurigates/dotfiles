@@ -1,3 +1,9 @@
+= jumping =
+Press Ctrl-O to jump back to the previous (older) location.
+Press Ctrl-I (same as Tab) to jump forward to the next (newer) location.
+Display the jump list for the current window with:
+`:jumps`
+
 = find under cursor =
 Press `*` to find the word under the cursor
 
@@ -5,6 +11,7 @@ Press `*` to find the word under the cursor
 `cst<h3` change a tag under cursor to <h3>
 `ysiw"` surround a word with quotes
 `dst` delete surrounding tag under cursor
+`da<` delete tag under cursor
 
 = tabular =
 `:Tab /=`

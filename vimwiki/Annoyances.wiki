@@ -5,3 +5,6 @@
 
 = zsh =
 * For some reason remote path completion doesn't work
+
+= ssh =
+* Home & end don't work over ssh
