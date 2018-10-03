@@ -45,8 +45,8 @@
     ~/.bashrc: bash/bashrc
     ~/.bash_profile: bash/bash_profile
     ~/.bash-git-prompt: bash/bash-git-prompt
-    ~/.inputrc: general/inputrc
-    ~/.profile: general/profile
+    ~/.inputrc: terminal/inputrc
+    ~/.profile: terminal/profile
     ~/.ssh/config: ssh/config
     ~/.kde/share/config/kdeglobals:
         create: true
