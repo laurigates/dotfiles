@@ -16,7 +16,10 @@
     ~/.dotfiles: ''
     ~/.config/alacritty/alacritty.yml:
         create: true
-        path: alacritty/alacritty.yml
+        path: terminal/alacritty.yml
+    ~/.config/kitty/kitty.conf:
+        create: true
+        path: terminal/kitty.conf
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
     ~/.tmux/plugins:
