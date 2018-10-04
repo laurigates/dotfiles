@@ -75,6 +75,10 @@ plugins=(
   nmap taskwarrior
 )
 
+# Prevent autosuggestions for large buffers (when pasting to command line for example)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
