@@ -23,3 +23,6 @@ fi
 
 # Set a more secure umask
 umask 077
+
+# Configure ctrl+o to open selected file in vim
+export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(vim {})+abort'"
