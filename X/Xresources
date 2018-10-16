@@ -9,3 +9,15 @@ rofi.combi-modi:    window,drun,run,ssh
 rofi.theme:         solarized
 rofi.font:          hack 10
 rofi.modi:          combi,window,drun,run,ssh
+
+## Cursor
+Xcursor.size: 16
+
+##
+Xft.dpi: 92
+Xft.autohint: 1
+Xft.lcdfilter:  lcddefault
+Xft.hintstyle:  hintfull
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
