@@ -153,7 +153,8 @@ let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal 
 
 " Register javascript language server
 let g:LanguageClient_serverCommands = {
-    \'javascript': ['/usr/local/bin/javascript-typescript-stdio']
+    \'javascript': ['javascript-typescript-stdio'],
+    \'python': ['pyls']
     \}
 endif
 
