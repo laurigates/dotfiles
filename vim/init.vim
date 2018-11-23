@@ -14,7 +14,7 @@ Plug 'wincent/terminus'
 Plug 'wellle/targets.vim'
 
 " Insert or delete brackets, parens, quotes in pair.
-Plug 'jiangmiao/auto-pairs'
+" Plug 'jiangmiao/auto-pairs'
 
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
