@@ -9,3 +9,9 @@ alias vimrc='vim ~/.vimrc'
 
 # workaround for problems that are caused by tmux passing tmux-256color as TERM over SSH
 alias ssh='TERM=xterm-256color ssh'
+
+# use bat if it exists
+type bat >/dev/null 2>&1 && alias cat="bat"
+
+# fzf preview
+alias preview="fzf --preview 'bat --color \"always\" {}'"
