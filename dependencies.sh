@@ -11,7 +11,7 @@ playerctl google-play-music-desktop-player
 # both for pip and pip3
 pythonpackages=(
 neovim
-python-language-server
+python-language-server[all]
 )
 
 for package in ${aptpackages[@]}; do
@@ -31,8 +31,8 @@ for package in ${pythonpackages[@]}; do
         echo "$package is missing. Install it (y/n)?"
         read answer
         if [ "$answer" != "${answer#[Yy]}" ]; then
-            pip install $package
-            pip3 install $package
+            pip install --upgrade $package
+            pip3 install --upgrade $package
         fi
     else
         echo "$package found."
