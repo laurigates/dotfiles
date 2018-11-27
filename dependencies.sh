@@ -11,7 +11,7 @@ playerctl google-play-music-desktop-player
 # both for pip and pip3
 pythonpackages=(
 neovim
-python-language-server[all]
+python-language-server[all] jedi
 tmuxinator
 )
 
