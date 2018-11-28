@@ -48,6 +48,7 @@ bar {
   status_command i3blocks
   position bottom
   tray_padding 2
+  tray_output primary
 
   # strip_workspace_numbers yes
   # height 25
