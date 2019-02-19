@@ -306,6 +306,9 @@ set noshowmode
 " Add a bit extra margin to the left
 " set foldcolumn=1
 
+" Vertical diff in Gdiff
+set diffopt+=vertical
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
