@@ -6,6 +6,7 @@
 * [[tmux]]
 * [[vim commands]]
 * [[rocket.chat]]
+* [[irc]]
 * [[VPN]]
 * [[Hexchat]]
 * [[File conversion]]

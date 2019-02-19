@@ -1,2 +1,9 @@
 = Commands =
 `z`
+
+= Hotkeys =
+`Ctrl+t` list files+folders in current directory (e.g., git commit <CTRL+T>, select a few files using <TAB>, finally <Return>)
+
+`Ctrl+r` search history of shell commands
+
+`Alt+c` fuzzy change directory
