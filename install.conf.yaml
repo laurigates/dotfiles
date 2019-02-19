@@ -14,6 +14,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.env: terminal/env
     ~/.config/alacritty/alacritty.yml:
         create: true
         path: terminal/alacritty.yml

@@ -1,0 +1,10 @@
+export PATH=$HOME/bin:/usr/local/bin:$PATH:/opt/puppetlabs/bin:$HOME/.cargo/bin:$HOME/.local/bin
+
+# Set a more secure umask
+umask 077
+
+# Configure ctrl+o to open selected file in vim
+export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(vim {})+abort'"
+
+# Preview directory tree when using Alt+C
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
