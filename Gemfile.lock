@@ -1,0 +1,46 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    erubis (2.7.0)
+    facter (2.5.1)
+    fast_gettext (1.1.2)
+    hiera (3.5.0)
+    hocon (1.2.5)
+    httpclient (2.8.3)
+    locale (2.1.2)
+    msgpack (1.2.7)
+    multi_json (1.13.1)
+    neovim (0.8.0)
+      msgpack (~> 1.1)
+      multi_json (~> 1.0)
+    puppet (6.3.0)
+      facter (> 2.0.1, < 4)
+      fast_gettext (~> 1.1.2)
+      hiera (>= 3.2.1, < 4)
+      httpclient (~> 2.8)
+      locale (~> 2.1)
+      multi_json (~> 1.10)
+      puppet-resource_api (~> 1.5)
+      semantic_puppet (~> 1.0)
+    puppet-lint (2.3.6)
+    puppet-resource_api (1.8.0)
+      hocon (>= 1.0)
+    semantic_puppet (1.0.2)
+    thor (0.20.3)
+    tmuxinator (0.15.0)
+      erubis (~> 2.6)
+      thor (~> 0.19, >= 0.15.0)
+      xdg (~> 2.2, >= 2.2.3)
+    xdg (2.2.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  neovim
+  puppet
+  puppet-lint
+  tmuxinator
+
+BUNDLED WITH
+   2.0.1

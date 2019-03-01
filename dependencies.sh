@@ -8,13 +8,6 @@ git
 playerctl google-play-music-desktop-player
 )
 
-# both for pip and pip3
-pythonpackages=(
-neovim
-python-language-server[all] jedi
-tmuxinator
-)
-
 for package in ${aptpackages[@]}; do
     if ! dpkg -s $package > /dev/null 2>&1; then
         echo "$package is missing. Install it (y/n)?"
@@ -27,16 +20,6 @@ for package in ${aptpackages[@]}; do
     fi
 done
 
-for package in ${pythonpackages[@]}; do
-    if ! pip show $package > /dev/null 2>&1 || ! pip3 show $package > /dev/null 2>&1; then
-        echo "$package is missing. Install it (y/n)?"
-        read answer
-        if [ "$answer" != "${answer#[Yy]}" ]; then
-            pip install --upgrade $package
-            pip3 install --upgrade $package
-        fi
-    else
-        echo "$package found."
-    fi
-done
-
+pip install --upgrade -r requirements.txt
+pip3 install --upgrade -r requirements.txt
+bundle install

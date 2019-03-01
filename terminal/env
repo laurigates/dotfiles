@@ -1,4 +1,5 @@
-export PATH=$HOME/bin:/usr/local/bin:$PATH:/opt/puppetlabs/bin:$HOME/.cargo/bin:$HOME/.local/bin
+export PATH=$HOME/.rbenv/bin:$HOME/.gem/bin:$HOME/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+export GEM_HOME=$HOME/.gem
 
 # Set a more secure umask
 umask 077

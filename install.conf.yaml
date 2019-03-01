@@ -15,6 +15,10 @@
 - link:
     ~/.dotfiles: ''
     ~/.env: terminal/env
+    ~/.rbenv: ruby/rbenv
+    ~/.rbenv/plugins/ruby-build:
+        create: true
+        path: ruby/ruby-build
     ~/.config/alacritty/alacritty.yml:
         create: true
         path: terminal/alacritty.yml

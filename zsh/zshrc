@@ -156,3 +156,13 @@ if [[ ! -z $DISPLAY ]]; then
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# kitty
+autoload -Uz compinit
+compinit
+
+# Completion for kitty
+kitty + complete setup zsh | source /dev/stdin
+
+# Load rbenv
+eval "$(rbenv init -)"
