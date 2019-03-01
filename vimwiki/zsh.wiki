@@ -7,3 +7,5 @@
 `Ctrl+r` search history of shell commands
 
 `Alt+c` fuzzy change directory
+
+`Ctrl+x a` expands all aliases
