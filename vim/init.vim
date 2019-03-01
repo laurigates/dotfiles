@@ -78,6 +78,9 @@ endif
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
+" Run ack in vim
+Plug 'mileszs/ack.vim'
+
 " Vimwiki
 Plug 'vimwiki/vimwiki'
 
