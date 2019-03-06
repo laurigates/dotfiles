@@ -1,5 +1,11 @@
-export PATH=$HOME/.rbenv/bin:$HOME/.gem/bin:$HOME/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
-export GEM_HOME=$HOME/.gem
+export PATH=$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+# Load rbenv
+eval "$(rbenv init -)"
+
+# should not be used with rbenv as it already sets them and these will override the values
+# export GEM_HOME=$HOME/.gems
+# export GEM_PATH=$HOME/.gems
 
 # Set a more secure umask
 umask 077

@@ -164,5 +164,4 @@ compinit
 # Completion for kitty
 kitty + complete setup zsh | source /dev/stdin
 
-# Load rbenv
-eval "$(rbenv init -)"
+[ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
