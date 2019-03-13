@@ -162,6 +162,9 @@ autoload -Uz compinit
 compinit
 
 # Completion for kitty
-kitty + complete setup zsh | source /dev/stdin
+if type kitty > /dev/null; then
+    kitty + complete setup zsh | source /dev/stdin
+fi
 
+# rbenv completions
 [ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
