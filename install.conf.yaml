@@ -14,6 +14,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.ctags.d: general/ctags.d
     ~/.env: terminal/env
     ~/.rbenv: ruby/rbenv
     ~/.rbenv/plugins/ruby-build:

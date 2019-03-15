@@ -6,6 +6,8 @@ tmux
 i3 i3-wm i3blocks i3lock i3lock-fancy i3status rofi compton wmctrl x11-xserver-utils dunst feh
 git
 playerctl google-play-music-desktop-player
+xsel
+universal-ctags global
 )
 
 for package in ${aptpackages[@]}; do
