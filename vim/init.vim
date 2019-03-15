@@ -18,6 +18,7 @@ Plug 'wellle/targets.vim'
 
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
+Plug 'mrk21/yaml-vim'
 
 " vim-easymotion
 Plug 'easymotion/vim-easymotion'
@@ -312,6 +313,10 @@ set noshowmode
 " Vertical diff in Gdiff
 set diffopt+=vertical
 
+" Markdown display options
+let g:vim_markdown_folding_level = 6
+let g:vim_markdown_toc_autofit = 1
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -362,6 +367,8 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
+
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
