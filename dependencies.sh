@@ -8,6 +8,7 @@ git
 playerctl google-play-music-desktop-player
 xsel
 universal-ctags global
+ripgrep
 )
 
 for package in ${aptpackages[@]}; do

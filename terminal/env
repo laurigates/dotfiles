@@ -13,5 +13,8 @@ umask 077
 # Configure ctrl+o to open selected file in vim
 export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(vim {})+abort'"
 
+# Use ripgrep to exclude files in gitignore and give faster performance
+export FZF_DEFAULT_COMMAND="rg --files --hidden"
+
 # Preview directory tree when using Alt+C
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
