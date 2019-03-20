@@ -1,3 +1,22 @@
+= external commands =
+
+`:!ls` to run ls
+`:r!ls` to read output into vim
+
+= markdown =
+
+`:Toc` to display table of contents
+
+= sessions =
+
+`:mksession .vim-session` to save current session to a file
+`:source .vim-session` to load the saved session
+`vim -S .vim-session` launch vim with a saved session
+
+= Rg =
+
+`:Rg`
+
 = Ack =
 
 `:Ack`
