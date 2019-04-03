@@ -9,7 +9,6 @@ git
 playerctl google-play-music-desktop-player
 xsel
 universal-ctags global
-ripgrep
 )
 
 for package in ${aptpackages[@]}; do
@@ -24,6 +23,6 @@ for package in ${aptpackages[@]}; do
     fi
 done
 
-pip install --upgrade -r requirements.txt
-pip3 install --upgrade -r requirements.txt
-bundle install
+cargo install bat
+cargo install lsd
+cargo install ripgrep

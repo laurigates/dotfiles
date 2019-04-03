@@ -6,16 +6,18 @@
 - clean: ['~']
 
 - shell:
-  - [mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory]
-  - [mkdir -p ~/.zsh_history_dir, Creating zsh history directory]
-  - [mkdir -p ~/.i3, Creating i3 configuration directory]
-  - [git submodule update --init --remote, Installing submodules]
-  - [nvim +PlugInstall +UpdateRemotePlugins +qa --headless, Installing nvim plugins]
+  - [ mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory ]
+  - [ mkdir -p ~/.zsh_history_dir, Creating zsh history directory ]
+  - [ mkdir -p ~/.i3, Creating i3 configuration directory ]
+  - [ git submodule update --init --remote, Installing submodules ]
 
 - link:
     ~/.dotfiles: ''
     ~/.ctags.d: general/ctags.d
     ~/.env: terminal/env
+    ~/.local/share/fonts/hack:
+        create: true
+        path: fonts/hack
     ~/.rbenv: ruby/rbenv
     ~/.rbenv/plugins/ruby-build:
         create: true
@@ -69,3 +71,12 @@
         create: true
         path: local/share/konsole
     ~/.config/konsolerc: config/konsolerc
+
+- shell:
+  - [ nvim +PlugInstall +PlugUpdate +UpdateRemotePlugins +qa --headless, Installing nvim plugins ]
+  - [ fonts/download.sh, Downloading fonts ]
+  - [ fc-cache -f -v, Rebuilding font cache ]
+  - [ strip ~/.cargo/bin/*, Stripping cargo binaries ]
+  - [ pip install --upgrade -r requirements.txt, Installing python requirements ]
+  - [ pip3 install --upgrade -r requirements.txt, Installing python3 requirements ]
+  - [ bundle install, Installing ruby bundle ]
