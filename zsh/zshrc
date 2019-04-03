@@ -1,3 +1,7 @@
+# http://blog.askesis.pl/post/2017/04/how-to-debug-zsh-startup-time.html
+# uncomment this and zprof at the end of this file to profile zsh startup
+#zmodload zsh/zprof
+
 #if [ "$XDG_CURRENT_DESKTOP" = "KDE" ] || [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 #  ZSH_TMUX_AUTOSTART="true"
 #fi
@@ -168,3 +172,5 @@ fi
 
 # rbenv completions
 [ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
+
+#zprof
