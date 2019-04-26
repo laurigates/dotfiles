@@ -1,4 +1,9 @@
+# Set the desktop background color
 exec --no-startup-id xsetroot -solid "#000000"
+# Compton is incompatible with the way xsetroot sets the color
+# https://github.com/chjj/compton/issues/162
+exec --no-startup-id hsetroot -solid "#000000"
+
 set $mod Mod4
 set $alt Mod1
 # Font for window titles. Will also be used by the bar unless a different font
@@ -252,3 +257,5 @@ for_window [class="krunner"] floating enable, border none
 for_window [class="Kmix"] floating enable, border none
 for_window [class="Klipper"] floating enable, border none
 for_window [class="Plasmoidviewer"] floating enable, border none
+# Autostart
+exec --no-startup-id compton -b
