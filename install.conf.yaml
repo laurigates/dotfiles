@@ -22,9 +22,6 @@
     ~/.rbenv/plugins/ruby-build:
         create: true
         path: ruby/ruby-build
-    ~/.config/alacritty/alacritty.yml:
-        create: true
-        path: terminal/alacritty.yml
     ~/.config/kitty/kitty.conf:
         create: true
         path: terminal/kitty.conf
@@ -56,9 +53,6 @@
     ~/.inputrc: terminal/inputrc
     ~/.profile: terminal/profile
     ~/.ssh/config: ssh/config
-    ~/.kde/share/config/kdeglobals:
-        create: true
-        path: kde/share/config/kdeglobals
     ~/.i3blocks.conf: i3/i3blocks.conf
     ~/.config/dunst/dunstrc:
         create: true
@@ -67,10 +61,6 @@
     ~/.xsessionrc: X/xinitrc
     ~/.Xresources: X/Xresources
     ~/.config/compton.conf: X/compton.conf
-    ~/.local/share/konsole:
-        create: true
-        path: local/share/konsole
-    ~/.config/konsolerc: config/konsolerc
 
 - shell:
   - [ nvim +PlugInstall +PlugUpdate +UpdateRemotePlugins +qa --headless, Installing nvim plugins ]
