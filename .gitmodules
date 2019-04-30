@@ -34,3 +34,6 @@
 [submodule "ruby/ruby-build"]
 	path = ruby/ruby-build
 	url = https://github.com/rbenv/ruby-build.git
+[submodule "i3/i3blocks-contrib"]
+	path = i3/i3blocks-contrib
+	url = https://github.com/vivien/i3blocks-contrib.git

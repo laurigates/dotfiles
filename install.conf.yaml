@@ -53,6 +53,7 @@
     ~/.inputrc: terminal/inputrc
     ~/.profile: terminal/profile
     ~/.ssh/config: ssh/config
+    ~/i3blocks-contrib: i3/i3blocks-contrib
     ~/.i3blocks.conf: i3/i3blocks.conf
     ~/.config/dunst/dunstrc:
         create: true
