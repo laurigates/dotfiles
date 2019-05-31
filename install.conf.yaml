@@ -65,6 +65,7 @@
     ~/.config/compton.conf: X/compton.conf
 
 - shell:
+  - [ i3/build-config.sh, Building i3 config ]
   - [ nvim +PlugInstall +PlugUpdate +UpdateRemotePlugins +qa --headless, Installing nvim plugins ]
   - [ fonts/download.sh, Downloading fonts ]
   - [ fc-cache -f -v, Rebuilding font cache ]
