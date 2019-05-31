@@ -9,6 +9,7 @@
   - [ mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory ]
   - [ mkdir -p ~/.zsh_history_dir, Creating zsh history directory ]
   - [ mkdir -p ~/.i3, Creating i3 configuration directory ]
+  - [ mkdir -p ~/.cargo/bin, Creating cargo configuration directory ]
   - [ git submodule update --init --remote, Installing submodules ]
 
 - link:
@@ -68,6 +69,6 @@
   - [ fonts/download.sh, Downloading fonts ]
   - [ fc-cache -f -v, Rebuilding font cache ]
   - [ strip ~/.cargo/bin/*, Stripping cargo binaries ]
-  - [ pip install --upgrade -r requirements.txt, Installing python requirements ]
-  - [ pip3 install --upgrade -r requirements.txt, Installing python3 requirements ]
-  - [ bundle install, Installing ruby bundle ]
+  - [ pip install --user --upgrade -r requirements.txt, Installing python requirements ]
+  - [ pip3 install --user --upgrade -r requirements.txt, Installing python3 requirements ]
+  - [ bundle install --path=vendor/bundle, Installing ruby bundle ]
