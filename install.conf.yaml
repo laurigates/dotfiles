@@ -72,4 +72,4 @@
   - [ strip ~/.cargo/bin/*, Stripping cargo binaries ]
   - [ pip install --user --upgrade -r requirements.txt, Installing python requirements ]
   - [ pip3 install --user --upgrade -r requirements.txt, Installing python3 requirements ]
-  - [ bundle install --path=vendor/bundle, Installing ruby bundle ]
+  - [ bundle install, Installing ruby bundle ]
