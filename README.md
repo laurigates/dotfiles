@@ -3,10 +3,8 @@
 vim git tmux zsh
 build-essential firmware-linux linux-headers-amd64
 
-## Puppet development packages
-apt: ruby ruby-dev
-gems: puppet-lint ruby-bundler
-pip: yamllint
+## rustc & cargo
+curl https://sh.rustup.rs -sSf | sh
 
 ## zsh requirements
 pip: pygments (colorize plugin)
