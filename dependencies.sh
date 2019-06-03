@@ -27,3 +27,4 @@ done
 cargo install bat
 cargo install lsd
 cargo install ripgrep
+cargo install fd-find
