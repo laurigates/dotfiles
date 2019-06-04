@@ -1,3 +1,12 @@
+= FZF =
+
+== Find ==
+
+`C+f` find files
+`C+o` open file in tab
+`C+x` open file in split
+`C+v` open file in vertical split
+
 = external commands =
 
 `:!ls` to run ls
@@ -98,13 +107,13 @@ if search pattern is already defined
 = splits =
 
 Swap top/bottom or left/right split
-`C+W R`
+`C+w R`
 
 Breat out current window into a new tabview
-`C+W T`
+`C+w T`
 
 Close every window in the current tabview but the current one
-`C+W o`
+`C+w o`
 
 = indent whole document =
 
@@ -147,7 +156,10 @@ comment out paragraph
 
 = yank stack =
 
-after pasting with p, press C-p or C-n to cycle through the yank stack
+Allows you to cycle through yanked text so you can yank multiple things on to the stack instead of only one.
+
+`Alt+p` cycle backward
+`Alt+Shift+p` cycle forward
 
 = join lines =
 

@@ -6,6 +6,3 @@
 *Configure yankstack
 *Configure vim-unimpaired
 *Configure javascript-typescript-langserver
-
-= tmux =
-*Configure tmuxinator

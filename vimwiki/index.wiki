@@ -1,13 +1,38 @@
 = My knowledge base =
+
+== General ==
+
 * [[Annoyances]]
 * [[Useful commands]]
 * [[TODO]]
+
+== Terminal ==
+
 * [[bash]]
 * [[zsh]]
 * [[tmux]]
+* [[git]]
+
+== Window management ==
+
+* i3
+* compton
+* rofi
+* dunst
+* xprop
+* wmctrl
+
+== File management ==
+
+* [[rg]]
+* [[fd-find]]
+* [[ranger]]
+* [[File conversion]]
+
+* pet
 * [[vim commands]]
 * [[rocket.chat]]
 * [[irc]]
 * [[VPN]]
-* [[File conversion]]
 * [[Debian]]
+* [[Taskwarrior]]
