@@ -1,7 +1,7 @@
 [global]
     font = "Noto Sans"
     markup = full
-    format = "<b>%a: %s</b>\n%b"
+    format = "<span size='larger'>%a</span>\n<b>%s</b>\n<span>%b</span>"
     sort = yes
     indicate_hidden = yes
     alignment = left
@@ -9,9 +9,9 @@
     show_age_threshold = 60
     word_wrap = yes
     ignore_newline = no
-    geometry = "500x5-0-45"
+    geometry = "500x5-5-50"
     shrink = yes
-    transparency = 90
+    transparency = 10
     idle_threshold = 120
     monitor = 1
     follow = none
@@ -19,13 +19,13 @@
     line_height = 0
     separator_height = 2
     padding = 8
-    horizontal_padding = 8
+    horizontal_padding = 16
     separator_color = "#585858"
     startup_notification = false
     # https://github.com/knopwob/dunst/issues/26#issuecomment-36159395
     #icon_position = left
     #icon_folders = /usr/share/icons/elementary/actions/16/
-    frame_width = 1
+    frame_width = 3
     frame_color = "#757575"
 
 [shortcuts]
