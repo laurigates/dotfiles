@@ -1,3 +1,7 @@
+# unalias some unwanted aliases from plugins
+unalias fd
+unalias ff
+
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
