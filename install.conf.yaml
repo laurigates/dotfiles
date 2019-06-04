@@ -70,6 +70,5 @@
   - [ fonts/download.sh, Downloading fonts ]
   - [ fc-cache -f -v, Rebuilding font cache ]
   - [ strip ~/.cargo/bin/*, Stripping cargo binaries ]
-  - [ pip install --user --upgrade -r requirements.txt, Installing python requirements ]
-  - [ pip3 install --user --upgrade -r requirements.txt, Installing python3 requirements ]
-  - [ bundle install, Installing ruby bundle ]
+  - [ setup/python.sh, Checking python environment ]
+  - [ setup/ruby.sh, Checking ruby environment ]
