@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if command -v cargo; then
+if command -v cargo > /dev/null; then
     mkdir -p ~/.cargo/bin
     # only run strip if binaries exist
     if [ $(find ~/.cargo/bin -type f | wc -l) -gt 0 ]; then

@@ -1,7 +1,11 @@
 export PATH=$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
 
-# Load rbenv
+# ruby environment
 eval "$(rbenv init -)"
+
+# nodejs environment
+source /usr/share/nvm/init-nvm.sh
+export PATH=$PATH:~/.yarn/bin
 
 # should not be used with rbenv as it already sets them and these will override the values
 # export GEM_HOME=$HOME/.gems

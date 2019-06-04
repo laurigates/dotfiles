@@ -64,9 +64,31 @@
     ~/.config/compton.conf: X/compton.conf
 
 - shell:
-  - [ i3/build-config.sh, Building i3 config ]
-  - [ setup/nvim.sh, Checking nvim ]
-  - [ setup/fonts.sh, Checking fonts ]
-  - [ setup/rust.sh, Checking rust environment ]
-  - [ setup/python.sh, Checking python environment ]
-  - [ setup/ruby.sh, Checking ruby environment ]
+  - 
+    command: setup/i3.sh
+    description: Checking i3
+    stdout: true
+  - 
+    command: setup/nvim.sh
+    description: Checking nvim
+    stdout: true
+  - 
+    command: setup/fonts.sh
+    description: Checking fonts
+    stdout: true
+  - 
+    command: setup/rust.sh
+    description: Checking rust environment
+    stdout: true
+  - 
+    command: setup/python.sh
+    description: Checking python environment
+    stdout: true
+  - 
+    command: setup/ruby.sh
+    description: Checking ruby environment
+    stdout: true
+  - 
+    command: setup/nodejs.sh
+    description: Checking nodejs environment
+    stdout: true

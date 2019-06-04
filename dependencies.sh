@@ -1,5 +1,6 @@
 #!/bin/bash -e
 aptpackages=(
+powerline
 fonts-font-awesome fonts-hack fonts-powerline
 zsh
 tmux
@@ -10,6 +11,7 @@ git
 playerctl google-play-music-desktop-player
 xsel
 universal-ctags global
+nvm
 )
 
 for package in ${aptpackages[@]}; do
