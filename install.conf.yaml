@@ -9,7 +9,6 @@
   - [ mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory ]
   - [ mkdir -p ~/.zsh_history_dir, Creating zsh history directory ]
   - [ mkdir -p ~/.i3, Creating i3 configuration directory ]
-  - [ mkdir -p ~/.cargo/bin, Creating cargo configuration directory ]
   - [ git submodule update --init --remote, Installing submodules ]
 
 - link:
@@ -66,9 +65,8 @@
 
 - shell:
   - [ i3/build-config.sh, Building i3 config ]
-  - [ nvim +PlugInstall +PlugUpdate +UpdateRemotePlugins +qa --headless, Installing nvim plugins ]
-  - [ fonts/download.sh, Downloading fonts ]
-  - [ fc-cache -f -v, Rebuilding font cache ]
-  - [ strip ~/.cargo/bin/*, Stripping cargo binaries ]
+  - [ setup/nvim.sh, Checking nvim ]
+  - [ setup/fonts.sh, Checking fonts ]
+  - [ setup/rust.sh, Checking rust environment ]
   - [ setup/python.sh, Checking python environment ]
   - [ setup/ruby.sh, Checking ruby environment ]
