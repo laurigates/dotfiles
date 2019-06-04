@@ -42,7 +42,7 @@ bar {
   font pango:Noto Sans, FontAwesome 10
   status_command i3blocks
   position bottom
-  tray_padding 2
+  tray_padding 4
   tray_output primary
 
   # strip_workspace_numbers yes
@@ -163,6 +163,7 @@ bindsym $mod+a focus parent
 
 # Disable title
 for_window [class="^.*$"] border pixel 0
+for_window [window_type="dialog"] border pixel 1
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
@@ -237,6 +238,6 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Autostart
-exec --no-startup-id compton -b
+exec_always --no-startup-id "killall -q compton; compton -b"
 
 for_window [class="Yad"] floating enable
