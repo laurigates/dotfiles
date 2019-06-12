@@ -230,6 +230,12 @@ nmap <leader>w :w!<cr>
 " Integrate vim clipboard with system clipboard
 " set clipboard+=unnamedplus
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => FileType autocmds
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -331,12 +337,12 @@ syntax enable
 set t_Co=256
 
 if exists('&t_8f') && exists('&t_8b')
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 
 if exists('&termguicolors')
-set termguicolors
+    set termguicolors
 endif
 
 set background=dark
@@ -370,8 +376,6 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
-
-autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
