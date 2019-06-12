@@ -1,0 +1,4 @@
+= xsel =
+
+stdout to clipboard
+`echo asd | xsel --input -b`

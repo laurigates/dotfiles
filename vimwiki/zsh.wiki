@@ -1,7 +1,19 @@
-= Commands =
-`z`
+= zsh =
 
-= Hotkeys =
+== Commands ==
+
+`z`
+`type` is a nice zsh builtin implementation of `which` or `whence`
+
+== Globbing ==
+
+`du -sh *` won't include hidden files
+`du -sh *(D)` will include hidden files
+
+Press tab after `*(` for suggestions
+
+== Hotkeys ==
+
 `Ctrl+t` list files+folders in current directory (e.g., git commit <CTRL+T>, select a few files using <TAB>, finally <Return>)
 
 `Ctrl+r` search history of shell commands
@@ -10,5 +22,6 @@
 
 `Ctrl+x a` expands all aliases
 
-= Links =
+== Links ==
+
 http://reasoniamhere.com/2014/01/11/outrageously-useful-tips-to-master-your-z-shell/

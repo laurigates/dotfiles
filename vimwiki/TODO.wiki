@@ -1,5 +1,5 @@
 = vim =
-*Configure vim-fugitive
+
 *Test & configure vim-targets & vim-indent-object
 *Configure fzf keybinds
 *Configure ncm2-look

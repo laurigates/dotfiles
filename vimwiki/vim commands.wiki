@@ -124,9 +124,11 @@ Close every window in the current tabview but the current one
 `==`
 
 = align puppet rockets =
+
 `'<,'>call puppet#align#AlignHashrockets()`
 
 = motions =
+
 t = to, goes up to the character specified
 f = find, goes on top of the character specified
 :h word-motions
@@ -138,12 +140,15 @@ f = find, goes on top of the character specified
 http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 
 = editing remote files =
+
 http://vim.wikia.com/wiki/Editing_remote_files_via_scp_in_vim
 
 = jump to matching brace =
+
 `%`
 
 = using vim tab pages =
+
 http://vim.wikia.com/wiki/Using_tab_pages
 
 = commentary.vim =

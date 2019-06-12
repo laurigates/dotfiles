@@ -21,3 +21,11 @@ Diff two stashes
 
 Show stash creation dates
 `git stash list --date=local`
+
+Checkout a specific file from a stash
+`git checkout stash@{0} -- <filename>`
+
+= Log =
+
+Show log of changes to a file
+`git log -p -- /path/to/file`

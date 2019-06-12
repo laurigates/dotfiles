@@ -2,9 +2,12 @@
 * When searching, all instances of the search are highlighted because of some goddamn plugin and I'm not sure how to unhighlight them without doing another search. This is annoying when doing a search and replace as you can't see which instance is selected
 * When inputting a $ sign for example in a php file, quickly typing number 1,2,3 results in a set of parentheses, brackets etc. autopairs?
 * ale php langserver doesn't seem to work
+* xsel or xclip? xclip produces errors, xsel doesn't seem to work as expected all of the time
+    * https://github.com/neovim/neovim/issues/2642
 
 = zsh =
 * For some reason remote path completion doesn't work
+    * The fix is to either not have a password protected ssh key or start ssh-agent and ssh-add
 
 = ssh =
 * Home & end don't work over ssh

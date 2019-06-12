@@ -4,6 +4,10 @@
 
 * [[Annoyances]]
 * [[Useful commands]]
+* [[Debian]]
+* [[Taskwarrior]]
+* [[rocket.chat]]
+* [[irc]]
 * [[TODO]]
 
 == Terminal ==
@@ -12,15 +16,26 @@
 * [[zsh]]
 * [[tmux]]
 * [[git]]
+* [[yank]]
+* [[xsel]]
+* [[pet]]
+
+== Editors ==
+
+* [[vim commands]]
+
+== Package management ==
+
+* [[apt]]
 
 == Window management ==
 
-* i3
-* compton
-* rofi
-* dunst
-* xprop
-* wmctrl
+* [[i3]]
+* [[compton]]
+* [[rofi]]
+* [[dunst]]
+* [[xprop]]
+* [[wmctrl]]
 
 == File management ==
 
@@ -28,11 +43,3 @@
 * [[fd-find]]
 * [[ranger]]
 * [[File conversion]]
-
-* pet
-* [[vim commands]]
-* [[rocket.chat]]
-* [[irc]]
-* [[VPN]]
-* [[Debian]]
-* [[Taskwarrior]]
