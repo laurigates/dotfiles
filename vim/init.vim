@@ -124,6 +124,9 @@ Plug 'whatyouhide/vim-gotham'
 " One
 Plug 'joshdick/onedark.vim'
 
+" Markdown Preview
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+
 call plug#end()
 
 set nocompatible
