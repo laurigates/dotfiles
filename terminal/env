@@ -1,17 +1,17 @@
-export PATH=$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
+export PATH=/opt/puppetlabs/puppet/bin:$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
 
 # ruby environment
 eval "$(rbenv init -)"
 
 # nodejs environment
-source /usr/share/nvm/init-nvm.sh
+source /usr/share/nvm/init-nvm.sh &>/dev/null
 export PATH=$PATH:~/.yarn/bin
 
 # should not be used with rbenv as it already sets them and these will override the values
 # export GEM_HOME=$HOME/.gems
 # export GEM_PATH=$HOME/.gems
 
-# Set a more secure umask
+# Set default umask
 umask 022
 
 # Configure ctrl+o to open selected file in vim
