@@ -15,7 +15,7 @@ alias vimrc='vim ~/.vimrc'
 alias ssh='TERM=xterm-256color ssh'
 
 # use bat if it exists
-type bat >/dev/null 2>&1 && alias cat="bat"
+#type bat >/dev/null 2>&1 && alias cat="bat"
 
 # fzf preview
 alias preview="fzf --preview 'bat --color \"always\" {}'"
