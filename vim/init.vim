@@ -228,7 +228,7 @@ nmap <leader>w :w!<cr>
 " command W w !sudo tee % > /dev/null
 
 " Integrate vim clipboard with system clipboard
-set clipboard=unnamedplus
+" set clipboard+=unnamedplus
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
