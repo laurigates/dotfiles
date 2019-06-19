@@ -4,7 +4,10 @@ export PATH=/opt/puppetlabs/puppet/bin:$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/b
 eval "$(rbenv init -)"
 
 # nodejs environment
-source /usr/share/nvm/init-nvm.sh &>/dev/null
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 export PATH=$PATH:~/.yarn/bin
 
 # should not be used with rbenv as it already sets them and these will override the values
@@ -22,3 +25,5 @@ export FZF_DEFAULT_COMMAND="rg --files --hidden"
 
 # Preview directory tree when using Alt+C
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+
+# vim:ft=sh
