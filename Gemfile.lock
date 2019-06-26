@@ -1,21 +1,39 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ast (2.4.0)
+    backport (1.1.1)
     erubis (2.7.0)
     facter (2.5.1)
-    fast_gettext (1.1.2)
+    fast_gettext (1.8.0)
     hiera (3.5.0)
     hocon (1.2.5)
+    htmlentities (4.3.4)
     httpclient (2.8.3)
+    jaro_winkler (1.5.3)
+    kramdown (1.17.0)
     locale (2.1.2)
-    msgpack (1.2.7)
+    mdl (0.5.0)
+      kramdown (~> 1.12, >= 1.12.0)
+      mixlib-cli (~> 1.7, >= 1.7.0)
+      mixlib-config (~> 2.2, >= 2.2.1)
+    mini_portile2 (2.4.0)
+    mixlib-cli (1.7.0)
+    mixlib-config (2.2.18)
+      tomlrb
+    msgpack (1.3.0)
     multi_json (1.13.1)
-    neovim (0.8.0)
+    neovim (0.8.1)
       msgpack (~> 1.1)
       multi_json (~> 1.0)
-    puppet (6.3.0)
+    nokogiri (1.10.3)
+      mini_portile2 (~> 2.4.0)
+    parallel (1.17.0)
+    parser (2.6.3.0)
+      ast (~> 2.4.0)
+    puppet (6.5.0)
       facter (> 2.0.1, < 4)
-      fast_gettext (~> 1.1.2)
+      fast_gettext (~> 1.1)
       hiera (>= 3.2.1, < 4)
       httpclient (~> 2.8)
       locale (~> 2.1)
@@ -23,24 +41,53 @@ GEM
       puppet-resource_api (~> 1.5)
       semantic_puppet (~> 1.0)
     puppet-lint (2.3.6)
-    puppet-resource_api (1.8.0)
+    puppet-resource_api (1.8.4)
       hocon (>= 1.0)
+    rainbow (3.0.0)
+    reverse_markdown (1.1.0)
+      nokogiri
+    rubocop (0.72.0)
+      jaro_winkler (~> 1.5.1)
+      parallel (~> 1.10)
+      parser (>= 2.6)
+      rainbow (>= 2.2.2, < 4.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 1.7)
+    ruby-progressbar (1.10.1)
     semantic_puppet (1.0.2)
+    solargraph (0.34.0)
+      backport (~> 1.1)
+      bundler (>= 1.17.2)
+      htmlentities (~> 4.3, >= 4.3.4)
+      jaro_winkler (~> 1.5)
+      kramdown (~> 1.16)
+      parser (~> 2.3)
+      reverse_markdown (~> 1.0, >= 1.0.5)
+      rubocop (~> 0.52)
+      thor (~> 0.19, >= 0.19.4)
+      tilt (~> 2.0)
+      yard (~> 0.9)
     thor (0.20.3)
-    tmuxinator (0.15.0)
+    tilt (2.0.9)
+    tmuxinator (1.1.1)
       erubis (~> 2.6)
       thor (~> 0.19, >= 0.15.0)
-      xdg (~> 2.2, >= 2.2.3)
-    xdg (2.2.3)
+      xdg (~> 2.2, >= 2.2.5)
+    tomlrb (1.2.8)
+    unicode-display_width (1.6.0)
+    xdg (2.2.5)
+    yard (0.9.19)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  mdl
   neovim
   puppet
   puppet-lint
+  solargraph
   tmuxinator
 
 BUNDLED WITH
-   2.0.1
+   2.0.2

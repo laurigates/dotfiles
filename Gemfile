@@ -8,5 +8,7 @@ gem 'neovim'
 gem 'tmuxinator'
 gem 'puppet'
 gem 'puppet-lint'
+gem 'solargraph'
+gem 'mdl'
 
 # gem "rails"
