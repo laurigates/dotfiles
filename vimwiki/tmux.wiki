@@ -4,5 +4,9 @@ tmux list-keys or <prefix>:list-keys
 
 = switching windows =
 
-`C+b <number>` switch to tab number. Works for single digit tabs.
-`C+b '` switch to prompted tab number. Works for any tab.
+`Ctrl+b <number>` switch to tab number. Works for single digit tabs.
+`Ctrl+b '` switch to prompted tab number. Works for any tab.
+
+= move window =
+
+`Ctrl+b .` to move the current window to the prompted number.
