@@ -72,12 +72,16 @@ plugins=(
   git
   colorize extract
   zsh-autosuggestions zsh-syntax-highlighting
-  common-aliases debian sudo z
+  common-aliases debian sudo z systemd
   colored-man-pages
-  kitchen bundler vagrant
+  kitchen vagrant
   pip python virtualenv
   cake composer
   nmap taskwarrior
+  nvm npm yarn
+  ruby gem bundler rbenv
+  fd ripgrep
+  docker docker-compose
 )
 
 # Prevent autosuggestions for large buffers (when pasting to command line for example)
