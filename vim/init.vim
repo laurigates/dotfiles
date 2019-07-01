@@ -88,6 +88,9 @@ Plug 'vimwiki/vimwiki'
 " Commenting support (gc)
 Plug 'tpope/vim-commentary'
 
+" Unit testing
+Plug 'janko/vim-test'
+
 " Ruby support (plays nicely with tpope/rbenv-ctags)
 Plug 'vim-ruby/vim-ruby'
 
@@ -188,7 +191,7 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " fzf
 """""""""""""""""""""""""""""""""""
 " Disable mappings that override fzf mapping
-let g:comfortable_motion_no_default_key_mappings = 1
+" let g:comfortable_motion_no_default_key_mappings = 1
 
 " Open fzf file search
 nnoremap <C-F> :Files<CR>
@@ -235,6 +238,8 @@ nmap <leader>w :w!<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+" a bit annoying since the focus stays on the toc after opening a file
+"autocmd FileType markdown Toc
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -389,11 +394,11 @@ set noswapfile
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Prevent moving the cursor when changing focus to vim
-augroup NO_CURSOR_MOVE_ON_FOCUS
-  au!
-  au FocusLost * let g:oldmouse=&mouse | set mouse=
-  au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
-augroup END
+" augroup NO_CURSOR_MOVE_ON_FOCUS
+"   au!
+"   au FocusLost * let g:oldmouse=&mouse | set mouse=
+"   au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
+" augroup END
 
 " Smart way to move between windows
 map <C-j> <C-W>j
@@ -432,9 +437,9 @@ endtry
 " => Command mode related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Bash like keys for the command line
-cnoremap <C-A>		<Home>
-cnoremap <C-E>		<End>
-cnoremap <C-K>		<C-U>
+cnoremap <C-A> <Home>
+cnoremap <C-E> <End>
+cnoremap <C-K> <C-U>
 
 cnoremap <C-P> <Up>
 cnoremap <C-N> <Down>
