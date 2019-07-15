@@ -1,4 +1,3 @@
 neovim
 pynvim
 python-language-server[all]
-jedi
