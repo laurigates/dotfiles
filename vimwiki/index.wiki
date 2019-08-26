@@ -9,6 +9,7 @@
 * [[rocket.chat]]
 * [[irc]]
 * [[TODO]]
+* [[DNS]]
 
 == Terminal ==
 
@@ -20,6 +21,7 @@
 * [[xsel]]
 * [[pet]]
 * [[fzf]]
+* [[glances]]
 
 == Editors ==
 

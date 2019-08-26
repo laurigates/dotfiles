@@ -2,9 +2,22 @@
 
 tmux list-keys or <prefix>:list-keys
 
+= moving windows =
+
+`move-window` or `movew`
+
+`movew -t puppet:`
+
+`movew -t puppet:1`
+
+`movew -s 3 -t puppet:1` (`-s` for source, `-t` for target)
+
+`movew -s <source> -t <session>:<window number>`
+
 = switching windows =
 
 `Ctrl+b <number>` switch to tab number. Works for single digit tabs.
+
 `Ctrl+b '` switch to prompted tab number. Works for any tab.
 
 = move window =

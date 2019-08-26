@@ -29,3 +29,11 @@ Checkout a specific file from a stash
 
 Show log of changes to a file
 `git log -p -- /path/to/file`
+
+Show a list of which commits are on one branch, but not another
+`git log --no-merges oldbranch ^newbranch`
+
+= Branches =
+
+List branches not merged to master
+`git branch --no-merged master`
