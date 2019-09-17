@@ -22,7 +22,7 @@ Plug 'godlygeek/tabular'
 Plug 'mrk21/yaml-vim'
 
 " vim-easymotion
-Plug 'easymotion/vim-easymotion'
+" Plug 'easymotion/vim-easymotion'
 
 " snipmate dependencies
 Plug 'tomtom/tlib_vim'
