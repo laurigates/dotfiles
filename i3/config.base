@@ -96,7 +96,7 @@ bindsym $mod+Return exec kitty
 # qdbus org.kde.ksmserver /KSMServer logout 0 3 3
 
 # lock screen
-bindsym Control+$alt+l exec "i3lock -c 000000 -d; playerctl pause; sleep 5 && xset dpms force off"
+bindsym Control+$alt+l exec "notify-send DUNST_COMMAND_PAUSE; playerctl pause; xset dpms force off; i3lock --nofork -c 000000 -d; notify-send DUNST_COMMAND_RESUME"
 
 # kill focused window
 bindsym $mod+Shift+q kill
