@@ -99,12 +99,6 @@ export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 # export LC_ALL="en_US.UTF-8"
 
-if command -v nvim >/dev/null 2>&1; then
-    export EDITOR='nvim'
-else
-    export EDITOR='vim'
-fi
-
 # allow the use of the Home/End keys
 bindkey "\e[1~" beginning-of-line
 bindkey "\e[4~" end-of-line
@@ -129,13 +123,6 @@ bindkey "\e[5C" forward-word
 bindkey "\e[5D" backward-word
 bindkey "\e\e[C" forward-word
 bindkey "\e\e[D" backward-word
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"

@@ -14,9 +14,5 @@ source ~/.env
 # write host history in separate files
 export HISTFILE="${HOME}/.bash_history/$(hostname -f)"
 
-# set vim as default editor
-export EDITOR=vim
-export VISUAL=vim
-
 # set vi -mode for bash
 #set -o vi

@@ -1,5 +1,15 @@
 export PATH=/opt/puppetlabs/puppet/bin:$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
 
+if command -v nvim >/dev/null 2>&1; then
+    export EDITOR='nvim'
+    export VISUAL='nvim'
+    export SUDO_EDITOR='nvim'
+else
+    export EDITOR='vim'
+    export VISUAL='vim'
+    export SUDO_EDITOR='vim'
+fi
+
 # ruby environment
 eval "$(rbenv init -)"
 
