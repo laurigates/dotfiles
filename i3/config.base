@@ -74,7 +74,7 @@ bar {
 # font, it doesn’t scale on retina/hidpi displays.
 
 # Use Mouse+$mod to drag floating windows to their wanted position
-floating_modifier $mod
+# floating_modifier $mod
 
 # set keyboard map
 exec setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
