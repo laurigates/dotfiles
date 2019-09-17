@@ -1,15 +1,81 @@
 # Packages
+
 ## General
-vim git tmux zsh
-build-essential firmware-linux linux-headers-amd64
+
+xsel
+git
+
+## i3
+
+i3 i3-wm
+i3status i3blocks i3blocks-contrib
+compton hsetroot
+i3lock i3lock-fancy
+rofi
+dunst
+wmctrl x11-xserver-utils
+
+### i3blocks calendar
+
+yad xdotool
+
+## terminal
+
+kitty
+tmux
+tmuxinator
+ripgrep
+fd-find
+bat
+lsd
+jq
+task tasksh
+pet
+
+## zsh
+
+zsh
+pygments (colorize plugin)
+powerline (vim, tmux theme)
+
+## neovim
+
+nvim
+universal-ctags global
+
+## nodejs
+
+nvm
+
+## music
+
+playerctl google-play-music-desktop-player
+
+## email
+
+thunderbird
 
 ## rustc & cargo
+
 curl https://sh.rustup.rs -sSf | sh
 
-## zsh requirements
-pip: pygments (colorize plugin)
-apt: fonts-powerline (zsh theme)
-apt: powerline (vim, tmux theme)
+# TODO
 
-## tmux requirements
-apt: xclip (to integrate copying with x selection)
+- Display or log errors from dotfiles setup scripts
+- Pre-cleanup existing configuration files (.bashrc, .bash_profile, .profile)
+- Source the .env file at start of dotfiles installation
+- themes
+  - qt5ct
+  - gtk2
+  - gtk3
+  - kvantum
+
+- local mail delivery (postfix)
+  - root alias
+- sysctl optimizations (swappiness)
+
+- dnsmasq, openresolv, systemd-resolvd
+
+- set primary display with `xrandr --output DVI-D-0 --primary` for i3blocks tray to work
+
+- systemd-swap
