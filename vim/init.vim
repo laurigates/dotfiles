@@ -17,7 +17,8 @@ Plug 'wellle/targets.vim'
 " Plug 'jiangmiao/auto-pairs'
 
 Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
+" markdown plugin is currently broken, folds open and close randomly on other actions
+" Plug 'plasticboy/vim-markdown'
 Plug 'mrk21/yaml-vim'
 
 " vim-easymotion
@@ -328,8 +329,8 @@ set noshowmode
 set diffopt+=vertical
 
 " Markdown display options
-let g:vim_markdown_folding_level = 6
-let g:vim_markdown_toc_autofit = 1
+" let g:vim_markdown_folding_level = 2
+" let g:vim_markdown_toc_autofit = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
