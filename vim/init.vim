@@ -52,6 +52,8 @@ Plug 'ncm2/ncm2-snipmate'
 Plug 'ncm2/ncm2-html-subscope'
 Plug 'ncm2/ncm2-tagprefix'
 Plug 'jsfaint/gen_tags.vim'
+Plug 'ncm2/ncm2-gtags'
+
 " Dictionary completion
 Plug 'filipekiss/ncm2-look.vim'
 
@@ -74,6 +76,7 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 " Include Phpactor
 Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
 Plug 'phpactor/ncm2-phpactor'
+
 endif
 
 " Plugin outside ~/.vim/plugged with post-update hook
@@ -103,6 +106,7 @@ Plug 'elzr/vim-json'
 
 " Puppet syntax
 Plug 'rodjek/vim-puppet'
+Plug 'lingua-pupuli/puppet-editor-services'
 
 " Git changes shown on line numbers
 Plug 'airblade/vim-gitgutter'
@@ -164,9 +168,12 @@ let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal 
 
 " Register javascript language server
 let g:LanguageClient_serverCommands = {
-    \'javascript': ['javascript-typescript-stdio'],
-    \'python': ['pyls']
-    \}
+    \ 'javascript': ['javascript-typescript-stdio'],
+    \ 'python': ['pyls'],
+    \ 'ruby': ['~/.rbenv/shims/solargraph'],
+    \ 'puppet': ['ruby', '~/.local/share/nvim/plugged/puppet-editor-services/puppet-languageserver', '--stdio', '--timeout=0', '--no-stop', '--puppet-settings=--moduledir,site:modules'],
+    \ 'yaml': ['yaml-language-server', '--stdio'],
+    \ }
 endif
 
 """""""""""""""""""""""""""""""""""
