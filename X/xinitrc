@@ -3,14 +3,14 @@
 # Merge colors and settings
 xrdb ~/.Xresources
 
-# Force KDE environment when running i3
 export QT_QPA_PLATFORMTHEME="qt5ct"
-
-# XDG_CURRENT_DESKTOP=kde
-export DESKTOP_SESSION=kde
 
 # Create i3 config from base and local
 cat $HOME/.dotfiles/i3/config.base \
     $HOME/.dotfiles/i3/config.local > $HOME/.i3/config
+
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+eval $(/usr/bin/gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg)
+export SSH_AUTH_SOCK
 
 exec /usr/bin/dbus-launch --exit-with-session i3
