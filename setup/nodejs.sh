@@ -16,7 +16,6 @@ else
 fi
 
 if command -v npm > /dev/null; then
-    npm install -g yarn
     npm install -g yaml-language-server
     npm install -g neovim
 else
