@@ -40,6 +40,10 @@
 * [[xprop]]
 * [[wmctrl]]
 
+== Storage ==
+
+* [[lvm]]
+
 == File management ==
 
 * [[rg]]
