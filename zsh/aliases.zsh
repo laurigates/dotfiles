@@ -19,3 +19,5 @@ alias ssh='TERM=xterm-256color ssh'
 
 # fzf preview
 alias preview="fzf --preview 'bat --color \"always\" {}'"
+
+alias icat="kitty +kitten icat"
