@@ -1,4 +1,5 @@
 # https://www.jamesridgway.co.uk/blog/dotfiles-with-github-travis-ci-and-docker
+# https://github.com/jamesridgway/dotfiles
 FROM debian:latest
 MAINTAINER Lauri Gates
 
