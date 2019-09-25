@@ -1,0 +1,13 @@
+/dotbot
+/zsh/oh-my-zsh
+/zsh/zsh-autosuggestions
+/zsh/zsh-syntax-highlighting
+/tmux/tmux-themepack
+/tmux/tmux-plugins/tpm
+/tmux/tmux-plugins/tmux-sensible
+/bash/bash-git-prompt
+/vim/vimwiki
+/vim/vim-plug
+/ruby/rbenv
+/ruby/ruby-build
+/i3/i3blocks-contrib
