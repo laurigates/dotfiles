@@ -3,6 +3,7 @@ exec --no-startup-id xsetroot -solid "#000000"
 # Compton is incompatible with the way xsetroot sets the color
 # https://github.com/chjj/compton/issues/162
 exec --no-startup-id hsetroot -solid "#000000"
+exec_always --no-startup-id "feh -r --randomize --bg-fill ~/Pictures/Wallpapers/"
 
 set $mod Mod4
 set $alt Mod1
@@ -36,13 +37,17 @@ client.focused_inactive   #073642   #ededed     #93a1a1   #002b36
 client.unfocused          #002b36   #002b36     #586e75   #002b36
 client.urgent             #dc322f   #dc322f     #fdf6e3   #dc322f
 
-# ## Status Bar
+gaps inner 10
+# gaps outer 5
+smart_gaps on
+
+# Status Bar
 bar {
   # output DP-0
   font pango:Noto Sans, FontAwesome 10
   status_command i3blocks
   position bottom
-  tray_padding 4
+  tray_padding 6
   tray_output primary
 
   # strip_workspace_numbers yes
