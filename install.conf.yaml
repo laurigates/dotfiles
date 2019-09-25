@@ -6,9 +6,12 @@
 - clean: ['~']
 
 - shell:
+  - [ setup/cleanup.sh, Cleaning up existing configuration ]
   - [ mkdir -p ~/.local/share/nvim/plugged, Creating nvim plugin directory ]
   - [ mkdir -p ~/.zsh_history_dir, Creating zsh history directory ]
   - [ mkdir -p ~/.i3, Creating i3 configuration directory ]
+  - [ mkdir -p ~/.ssh, Creating ~/.ssh directory ]
+  - [ mkdir -p ~/.config, Creating ~/.config directory ]
   - [ git submodule update --init --remote, Installing submodules ]
 
 - link:
@@ -43,10 +46,6 @@
         path: vim/vim-plug/plug.vim
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
-    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
-    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting: zsh/zsh-syntax-highlighting
-    ~/.oh-my-zsh/custom/aliases.zsh: zsh/aliases.zsh
-    ~/.oh-my-zsh/custom/tmuxinator.zsh: zsh/tmuxinator.zsh
     ~/.bashrc: bash/bashrc
     ~/.bash_profile: bash/bash_profile
     ~/.bash-git-prompt: bash/bash-git-prompt
@@ -62,6 +61,12 @@
     ~/.xsessionrc: X/xinitrc
     ~/.Xresources: X/Xresources
     ~/.config/compton.conf: X/compton.conf
+
+- link:
+    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
+    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting: zsh/zsh-syntax-highlighting
+    ~/.oh-my-zsh/custom/aliases.zsh: zsh/aliases.zsh
+    ~/.oh-my-zsh/custom/tmuxinator.zsh: zsh/tmuxinator.zsh
 
 - shell:
   - 
