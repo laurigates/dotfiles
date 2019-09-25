@@ -59,6 +59,11 @@ thunderbird
 
 curl https://sh.rustup.rs -sSf | sh
 
+## php
+
+phan
+phpactor
+
 # TODO
 
 - Display or log errors from dotfiles setup scripts
@@ -79,3 +84,6 @@ curl https://sh.rustup.rs -sSf | sh
 - set primary display with `xrandr --output DVI-D-0 --primary` for i3blocks tray to work
 
 - systemd-swap
+
+Symlink /home/lgates/.local/share/nvim/plugged/phpactor under /usr/local/bin
+Phpactor dependencies not installed. Run `composer install` (https://getcomposer.org) in "/home/lgates/.local/share/nvim/plugged/phpactor"
