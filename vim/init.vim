@@ -245,7 +245,9 @@ nmap <leader>w :w!<cr>
 " => FileType autocmds
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+autocmd BufRead,BufNewFile *.eyaml set filetype=yaml
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
 " a bit annoying since the focus stays on the toc after opening a file
 "autocmd FileType markdown Toc
 
