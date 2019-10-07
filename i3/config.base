@@ -32,13 +32,13 @@ set $base0E #c0b7f9
 set $base0F #fcc09e
 
 # ## Themes               border    background  text      indicator
-client.focused            #586e75   #dedede     #ffffff   #268bd2
-client.focused_inactive   #073642   #ededed     #93a1a1   #002b36
+client.focused            #586e75   #365f9c     #ffffff   #268bd2
+client.focused_inactive   #073642   #1f324f     #93a1a1   #002b36
 client.unfocused          #002b36   #002b36     #586e75   #002b36
 client.urgent             #dc322f   #dc322f     #fdf6e3   #dc322f
 
-gaps inner 10
-# gaps outer 5
+gaps inner 6
+gaps outer 2
 smart_gaps on
 
 # Status Bar
@@ -167,8 +167,7 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 # Disable title
-for_window [class="^.*$"] border pixel 0
-for_window [window_type="dialog"] border pixel 1
+for_window [class=".*"] border pixel 2
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
