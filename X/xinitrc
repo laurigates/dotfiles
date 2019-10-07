@@ -42,6 +42,5 @@ session=${1:-i3}
 
 case $session in
     i3   ) exec i3;;
-    sway ) exec sway;;
     *    ) exec $1;;
 esac
