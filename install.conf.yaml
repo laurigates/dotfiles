@@ -46,11 +46,6 @@
         path: vim/vim-plug/plug.vim
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
-    ~/.bashrc: bash/bashrc
-    ~/.bash_profile: bash/bash_profile
-    ~/.bash-git-prompt: bash/bash-git-prompt
-    ~/.inputrc: terminal/inputrc
-    ~/.profile: terminal/profile
     ~/.ssh/config: ssh/config
     ~/i3blocks-contrib: i3/i3blocks-contrib
     ~/.i3blocks.conf: i3/i3blocks.conf
