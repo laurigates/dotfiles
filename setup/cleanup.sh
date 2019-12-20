@@ -3,10 +3,19 @@
 # check if files are not symbolic, meaning they
 # are the default files and not symlinked to the
 # dotfiles repo files
-if [[ -f ~/.profile ]] && [[ ! -h ~/.profile ]]; then
-  mv ~/.profile ~/.profile.old 
-fi
 
-if [[ -f ~/.bashrc ]] && [[ ! -h ~/.bashrc ]]; then
-  mv ~/.bashrc ~/.bashrc.old 
-fi
+conffiles=(
+    "~/.config/dunst/dunstrc"
+    "~/.profile"
+    "~/.bashrc"
+    "~/.xinitrc"
+    "~/.Xresources"
+    "~/.config/compton.conf"
+)
+
+for conffile in "${conffiles[@]}"
+do
+  if eval "test -f $conffile && test ! -L $conffile"; then
+    eval "mv -v $conffile $conffile.old"
+  fi
+done
