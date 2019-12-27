@@ -10,6 +10,9 @@
 * [[irc]]
 * [[TODO]]
 * [[DNS]]
+* [[hardware]]
+* [[network]]
+* [[kernel]]
 
 == Terminal ==
 
@@ -39,6 +42,9 @@
 * [[dunst]]
 * [[xprop]]
 * [[wmctrl]]
+* [[dbus-broker]]
+* [[swaywm]]
+* [[ArandR]]
 
 == Storage ==
 
@@ -46,7 +52,13 @@
 
 == File management ==
 
+* [[find]]
 * [[rg]]
 * [[fd-find]]
 * [[ranger]]
 * [[File conversion]]
+
+== Audio ==
+
+* [[pulseaudio]]
+* [[alsa]]

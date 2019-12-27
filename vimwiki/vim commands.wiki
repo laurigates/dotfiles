@@ -1,5 +1,12 @@
 = Vim commands =
 
+== Terminal ==
+
+== Yank ==
+
+`:%y+` yank the whole file to the default register
+`:%y"r` yank the whole file to the r-register
+
 == FZF ==
 
 `:W` open window selector

@@ -1,0 +1,4 @@
+inxi
+dmidecode
+lspci
+lsusb

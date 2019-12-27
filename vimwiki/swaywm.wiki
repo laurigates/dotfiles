@@ -1,0 +1,3 @@
+```
+swaymsg -t get_outputs
+```
