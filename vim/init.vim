@@ -1,4 +1,7 @@
 call plug#begin('~/.local/share/nvim/plugged')
+" Completions
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
 " Yank stack
 Plug 'maxbrunsfeld/vim-yankstack'
 
@@ -24,6 +27,8 @@ Plug 'mrk21/yaml-vim'
 " vim-easymotion
 " Plug 'easymotion/vim-easymotion'
 
+Plug 'justinmk/vim-sneak'
+
 " snipmate dependencies
 Plug 'tomtom/tlib_vim'
 Plug 'marcweber/vim-addon-mw-utils'
@@ -31,60 +36,16 @@ Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 
 if has('nvim')
-" LanguageClient-neovim
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-
-Plug 'roxma/nvim-yarp'
-
-" NCM2
-Plug 'ncm2/ncm2'
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-tmux'
-Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-jedi'
-Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
-Plug 'ncm2/ncm2-cssomni'
-Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
-Plug 'ncm2/ncm2-snipmate'
-Plug 'ncm2/ncm2-html-subscope'
-Plug 'ncm2/ncm2-tagprefix'
 Plug 'jsfaint/gen_tags.vim'
-Plug 'ncm2/ncm2-gtags'
-
-" Dictionary completion
-Plug 'filipekiss/ncm2-look.vim'
-
-" PHP
-Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
-
-" vim-lsp
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-
-" ncm2-vim-lsp
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'ncm2/ncm2-vim-lsp'
-
-" asyncomplete
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 " Include Phpactor
 Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
-Plug 'phpactor/ncm2-phpactor'
 
 endif
 
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-
-" Run ack in vim
-" Plug 'mileszs/ack.vim'
 
 " Vimwiki
 Plug 'vimwiki/vimwiki'
@@ -97,6 +58,9 @@ Plug 'janko/vim-test'
 
 " Ruby support (plays nicely with tpope/rbenv-ctags)
 Plug 'vim-ruby/vim-ruby'
+
+" Rspec tests
+Plug 'thoughtbot/vim-rspec'
 
 " Javascript support
 Plug 'pangloss/vim-javascript'
@@ -142,67 +106,146 @@ set nocompatible
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""
-" vim-unimpaired
-"""""""""""""""""""""""""""""""""""
-" nmap < [
-" nmap > ]
-" omap < [
-" omap > ]
-" xmap < [
-" xmap > ]
 
-"""""""""""""""""""""""""""""""""""
-" LanguageClient & LanguageServer
-"""""""""""""""""""""""""""""""""""
-" Required for operations modifying multiple buffers like rename.
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Sneak
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:sneak#label = 1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Coc
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" if hidden is not set, TextEdit might fail.
 set hidden
+" transparency for coc menu
+set pumblend=10
 
-if has('nvim')
-" Automatically start language servers.
-let g:LanguageClient_autoStart = 1
-nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
 
-let g:lsp_signs_enabled = 1         " enable signs
-let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+" Better display for messages
+set cmdheight=2
 
-" Register javascript language server
-let g:LanguageClient_serverCommands = {
-    \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'python': ['pyls'],
-    \ 'ruby': ['~/.rbenv/shims/solargraph'],
-    \ 'puppet': ['ruby', '~/.local/share/nvim/plugged/puppet-editor-services/puppet-languageserver', '--stdio', '--timeout=0', '--no-stop', '--puppet-settings=--moduledir,site:modules'],
-    \ 'yaml': ['yaml-language-server', '--stdio'],
-    \ }
-endif
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
 
-"""""""""""""""""""""""""""""""""""
-" NCM2
-"""""""""""""""""""""""""""""""""""
-if has('nvim')
-" enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
-
-" IMPORTANTE: :help Ncm2PopupOpen for more information
-set completeopt=noinsert,menuone,noselect
-endif
-
-" suppress the annoying 'match x of y', 'The only match' and 'Pattern not
-" found' messages
+" don't give |ins-completion-menu| messages.
 set shortmess+=c
 
-" Use <TAB> to select the popup menu:
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" always show signcolumns
+set signcolumn=yes
 
-"""""""""""""""""""""""""""""""""""
-" fzf
-"""""""""""""""""""""""""""""""""""
-" Disable mappings that override fzf mapping
-" let g:comfortable_motion_no_default_key_mappings = 1
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" Open fzf file search
-nnoremap <C-F> :Files<CR>
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap for do codeAction of current line
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Fix autofix problem of current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Create mappings for function text object, requires document symbols feature of
+" languageserver.
+
+xmap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap if <Plug>(coc-funcobj-i)
+omap af <Plug>(coc-funcobj-a)
+
+" Use <C-d> for select selections ranges, needs server support, like: coc-tsserver, coc-python
+" nmap <silent> <C-d> <Plug>(coc-range-select)
+" xmap <silent> <C-d> <Plug>(coc-range-select)
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" Add status line support, for integration with other plugin, checkout `:h coc-status`
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 """""""""""""""""""""""""""""""""""
 " Airline
@@ -424,11 +467,14 @@ au TabLeave * let g:lasttab = tabpagenr()
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+" Open fzf file search
+nnoremap <C-F> :Files<CR>
+
 """"""""""""""""""""""""""""""
 " => Status line
 """"""""""""""""""""""""""""""
 " Always show the status line
-set laststatus=2
+" set laststatus=2
 
 " Format the status line
 "set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
@@ -458,3 +504,9 @@ cnoremap <C-N> <Down>
 map § $
 cmap § $
 imap § $
+
+" " RSpec.vim mappings
+" map <Leader>t :call RunCurrentSpecFile()<CR>
+" map <Leader>s :call RunNearestSpec()<CR>
+" map <Leader>l :call RunLastSpec()<CR>
+" map <Leader>a :call RunAllSpecs()<CR>
