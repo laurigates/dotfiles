@@ -55,7 +55,7 @@
     ~/.xinitrc: X/xinitrc
     ~/.xsessionrc: X/xinitrc
     ~/.Xresources: X/Xresources
-    ~/.config/compton.conf: X/compton.conf
+    ~/.config/picom.conf: X/picom.conf
 
 - link:
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions

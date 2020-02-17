@@ -9,7 +9,7 @@ git
 
 i3 i3-wm
 i3status i3blocks i3blocks-contrib
-compton hsetroot
+picom hsetroot
 i3lock i3lock-fancy
 rofi
 dunst
@@ -87,3 +87,4 @@ phpactor
 
 Symlink /home/lgates/.local/share/nvim/plugged/phpactor under /usr/local/bin
 Phpactor dependencies not installed. Run `composer install` (https://getcomposer.org) in "/home/lgates/.local/share/nvim/plugged/phpactor"
+docker build -t laurigates/dotfiles .
