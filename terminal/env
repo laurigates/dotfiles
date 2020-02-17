@@ -13,16 +13,33 @@ fi
 # ruby environment
 eval "$(rbenv init -)"
 
-# nodejs environment
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-export PATH=$PATH:~/.yarn/bin
-
-# should not be used with rbenv as it already sets them and these will override the values
-# export GEM_HOME=$HOME/.gems
-# export GEM_PATH=$HOME/.gems
+# https://www.growingwiththeweb.com/2018/01/slow-nvm-init.html
+# 
+# Defer initialization of nvm until nvm, node or a node-dependent command is
+# run. Ensure this block is only run once if .bashrc gets sourced multiple times
+# by checking whether __init_nvm is a function.
+#
+# on bash
+# type -t __init_nvm
+# returns "function"
+#
+# on zsh
+# type __init_nvm
+# returns "__init_nvm is a shell function"
+#
+# typeset seems to work on bash and zsh
+if [ -s "$HOME/.nvm/nvm.sh" ] && ! typeset -f __init_nvm; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+  declare -a __node_commands=('nvm' 'node' 'npm' 'yarn' 'gulp' 'grunt' 'webpack')
+  function __init_nvm() {
+    for i in "${__node_commands[@]}"; do unalias $i; done
+    . "$NVM_DIR"/nvm.sh
+    unset __node_commands
+    unset -f __init_nvm
+  }
+  for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
+fi
 
 # Set default umask
 umask 022
