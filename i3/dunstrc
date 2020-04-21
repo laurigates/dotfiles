@@ -13,7 +13,6 @@
     shrink = yes
     transparency = 10
     idle_threshold = 120
-    monitor = 1
     follow = none
     sticky_history = yes
     line_height = 0
