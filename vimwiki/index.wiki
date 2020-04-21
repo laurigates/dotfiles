@@ -26,6 +26,10 @@
 * [[fzf]]
 * [[glances]]
 
+== X11 ==
+
+* [[xset]]
+
 == Editors ==
 
 * [[vim commands]]
@@ -45,6 +49,7 @@
 * [[dbus-broker]]
 * [[swaywm]]
 * [[ArandR]]
+* [[xdotool]]
 
 == Storage ==
 

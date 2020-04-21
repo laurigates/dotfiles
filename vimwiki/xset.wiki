@@ -1,0 +1,3 @@
+Query X11 parameters
+
+`xset -q`
