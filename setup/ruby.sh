@@ -8,7 +8,7 @@ if ! command -v rbenv > /dev/null; then
 fi
 
 if ! command -v bundle > /dev/null; then
-    cd ~/dotfiles && gem install bundler
+    cd ~/dotfiles && gem install --user-install bundler
 fi
 
 bundle install
