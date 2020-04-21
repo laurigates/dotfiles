@@ -9,7 +9,7 @@
     show_age_threshold = 60
     word_wrap = yes
     ignore_newline = no
-    geometry = "500x5-5-50"
+    geometry = "500x5-30-50"
     shrink = yes
     transparency = 10
     idle_threshold = 120
@@ -26,6 +26,7 @@
     #icon_folders = /usr/share/icons/elementary/actions/16/
     frame_width = 3
     frame_color = "#757575"
+    corner_radius = 5
 
 [shortcuts]
     close = ctrl+space
