@@ -154,6 +154,7 @@ nmap <leader>w :w!<cr>
 
 autocmd BufRead,BufNewFile *.eyaml set filetype=yaml
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd BufRead,BufNewFile *.md setlocal textwidth=80
 
 " a bit annoying since the focus stays on the toc after opening a file
 "autocmd FileType markdown Toc
