@@ -1,0 +1,10 @@
+# CA certs
+
+## Manjaro
+
+The way local CA certificates are handled has changed. If you have added any locally trusted certificates:
+
+Move /usr/local/share/ca-certificates/*.crt to /etc/ca-certificates/trust-source/anchors/
+Do the same with all manually-added /etc/ssl/certs/*.pem files and rename them to *.crt
+Instead of update-ca-certificates, run trust extract-compat
+Also see man 8 update-ca-trust and trust --help.

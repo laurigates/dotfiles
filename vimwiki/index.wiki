@@ -13,6 +13,7 @@
 * [[hardware]]
 * [[network]]
 * [[kernel]]
+* [[CA certs]]
 
 == Terminal ==
 
@@ -25,6 +26,9 @@
 * [[pet]]
 * [[fzf]]
 * [[glances]]
+* [[fc]]
+* [[fc-list]]
+* [[xrdb]]
 
 == X11 ==
 
@@ -54,6 +58,8 @@
 == Storage ==
 
 * [[lvm]]
+* [[findmnt]]
+* [[lsblk]]
 
 == File management ==
 

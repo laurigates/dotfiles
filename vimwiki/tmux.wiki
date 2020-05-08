@@ -20,6 +20,16 @@ tmux list-keys or <prefix>:list-keys
 
 `Ctrl+b '` switch to prompted tab number. Works for any tab.
 
+`Ctrl+b w` choose a window from a list.
+
 = move window =
 
 `Ctrl+b .` to move the current window to the prompted number.
+
+= Open right-click menu =
+
+`Ctrl+b <`
+
+= Help =
+
+`Ctrl+b ?`
