@@ -4,8 +4,8 @@ FROM debian:latest
 MAINTAINER Lauri Gates
 
 # OS updates and install
-RUN apt-get update -qq
-RUN apt-get install -qq -y git sudo zsh python
+RUN apt-get update > /dev/null
+RUN apt-get install -y git sudo zsh python gcc make curl libssl-dev libreadline-dev zlib1g-dev > /dev/null
 
 # Create test user and add to sudoers
 RUN useradd -m -s /bin/zsh tester

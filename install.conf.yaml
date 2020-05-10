@@ -68,27 +68,34 @@
     command: setup/i3.sh
     description: Checking i3
     stdout: true
+    stderr: true
   - 
     command: setup/nvim.sh
     description: Checking nvim
     stdout: true
+    stderr: true
   - 
     command: setup/fonts.sh
     description: Checking fonts
     stdout: true
+    stderr: true
   - 
     command: setup/rust.sh
     description: Checking rust environment
     stdout: true
+    stderr: true
   - 
     command: setup/python.sh
     description: Checking python environment
     stdout: true
+    stderr: true
   - 
     command: setup/ruby.sh
     description: Checking ruby environment
     stdout: true
+    stderr: true
   - 
     command: setup/nodejs.sh
     description: Checking nodejs environment
     stdout: true
+    stderr: true
