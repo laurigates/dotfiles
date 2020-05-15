@@ -56,6 +56,8 @@
     ~/.xsessionrc: X/xinitrc
     ~/.Xresources: X/Xresources
     ~/.config/picom.conf: X/picom.conf
+    ~/.config/pet: pet
+    ~/.config/coc/extensions/package.json: vim/coc-extensions.json
 
 - link:
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions

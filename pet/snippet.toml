@@ -1,0 +1,89 @@
+[[snippets]]
+  description = "Get hostname by IP address"
+  command = "nbtstat -a <IP address>"
+  output = ""
+
+[[snippets]]
+  description = "Show SMART status for all disks"
+  command = "lsblk -o name -d -n -p | sudo parallel --tag smartctl -H {} | awk '/result/ { print$1\" \"$7 }'"
+  output = ""
+
+[[snippets]]
+  description = "Find what package a file belongs to"
+  command = "dpkg -S <filename>"
+  output = ""
+
+[[snippets]]
+  description = "Indicate how a command would be interpreted. Like \"which\" but more detailed."
+  command = "type <command>"
+  output = ""
+
+[[snippets]]
+  description = "One-line summary of what a command does"
+  command = "whatis <command>"
+  output = ""
+
+[[snippets]]
+  description = "List files that belong to a package"
+  command = "dpkg -L <package>"
+  output = ""
+
+[[snippets]]
+  description = "List windows managed by the window manager and include WM_CLASS in the list."
+  command = "wmctrl -l -x"
+  output = ""
+
+[[snippets]]
+  description = "Extend logical volume and resize the filesystem to fit the new size."
+  command = "lvextend --size +<extend_amount> <device> && resize2fs <device>"
+  output = ""
+
+[[snippets]]
+  description = "Discover DHCP servers on the network."
+  command = "sudo nmap --script broadcast-dhcp-discover"
+  output = ""
+
+[[snippets]]
+  description = "List local ports that are listening and the related user and process."
+  command = "sudo netstat -lepunt"
+  output = ""
+
+[[snippets]]
+  description = "Mount using sshfs"
+  command = "sshfs <hostname>:<srcpath> <destpath>"
+  output = ""
+
+[[snippets]]
+  description = "Unmount sshfs mount"
+  command = "fusermount -u <mountpath>"
+  output = ""
+
+[[snippets]]
+  description = "List hosts scanned on the network that we were able to resolve the hostnames of. Format output in tabbed columns."
+  command = "nmap -sL -R 172.26.11-15.0-255 -oG - | awk '$3 != \"()\" { print $1, $2, $3 }' | column -t"
+  output = ""
+
+[[snippets]]
+  description = "Show list of files installed by a package"
+  command = "pacman -Ql <package_name>"
+  output = ""
+
+[[snippets]]
+  description = "Show Power_On_Hours for all disks."
+  command = "lsblk -o name -d -n -p | sudo parallel --tag smartctl -A {} | awk '/Power_On_Hours/ { print $1, $3\":\", $11 }'"
+  output = ""
+
+[[snippets]]
+  description = "List model of all hard drives."
+  command = "lsblk -o name -d -n -p | sudo parallel --tag hdparm -i {} | grep Model"
+  output = ""
+
+[[snippets]]
+  description = "Run short self-test on all disks"
+  command = "lsblk -o name -d -n -p | sudo parallel --tag smartctl -t short {}"
+  output = ""
+
+[[snippets]]
+  description = "Generate random string for use as a salt, password etc."
+  command = "openssl rand -base64 32"
+  output = ""
