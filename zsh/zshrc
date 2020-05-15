@@ -71,7 +71,7 @@ HISTFILE="$HOME/.zsh_history_dir/$(hostname -f)"
 plugins=(
   git
   colorize extract
-  zsh-autosuggestions zsh-syntax-highlighting
+  zsh-autosuggestions zsh-syntax-highlighting zsh-vim-mode
   common-aliases debian sudo z systemd
   colored-man-pages
   kitchen vagrant
