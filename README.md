@@ -12,6 +12,7 @@ i3status i3blocks i3blocks-contrib
 picom hsetroot
 i3lock i3lock-fancy
 rofi
+rofi-emoji
 dunst
 wmctrl x11-xserver-utils
 
@@ -31,6 +32,7 @@ lsd
 jq
 task tasksh
 pet
+ttf-twemoji
 
 ## zsh
 
@@ -87,4 +89,19 @@ phpactor
 
 Symlink /home/lgates/.local/share/nvim/plugged/phpactor under /usr/local/bin
 Phpactor dependencies not installed. Run `composer install` (https://getcomposer.org) in "/home/lgates/.local/share/nvim/plugged/phpactor"
+
+## Docker testing
+
+Build a docker image to test installation of the dotfiles
+
+```shell
 docker build -t laurigates/dotfiles .
+```
+
+Run the docker image
+
+```shell
+docker run --rm -it laurigates/dotfiles:latest
+```
+
+https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-of-a-failed-docker-build
