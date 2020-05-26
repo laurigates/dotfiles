@@ -11,11 +11,13 @@ conffiles=(
     "~/.xinitrc"
     "~/.Xresources"
     "~/.config/compton.conf"
+    "~/.config/pet"
+    "~/.config/coc/extensions/package.json"
 )
 
 for conffile in "${conffiles[@]}"
 do
-  if eval "test -f $conffile && test ! -L $conffile"; then
+  if eval "test -f $conffile || test -d $conffile && test ! -L $conffile"; then
     eval "mv -v $conffile $conffile.old"
   fi
 done
