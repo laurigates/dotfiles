@@ -4,8 +4,7 @@ FROM debian:latest
 MAINTAINER Lauri Gates
 
 # OS updates and install
-RUN apt-get update > /dev/null
-RUN apt-get install -y git sudo zsh python gcc make curl libssl-dev libreadline-dev zlib1g-dev > /dev/null
+RUN apt-get update -qq & apt-get install -y -qq git sudo zsh python gcc make curl libssl-dev libreadline-dev zlib1g-dev
 
 # Create test user and add to sudoers
 RUN useradd -m -s /bin/zsh tester
