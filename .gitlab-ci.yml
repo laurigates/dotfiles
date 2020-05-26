@@ -1,11 +1,6 @@
-image: debian:latest
-
-before_script:
-  - apt-get update -qq && apt-get install -y -qq git sudo zsh python gcc make curl libssl-dev libreadline-dev zlib1g-dev
-
-install:
+build_image:
   script:
-    - ./install
+    - docker build -t laurigates/dotfiles .
 
 include:
   - template: Dependency-Scanning.gitlab-ci.yml
