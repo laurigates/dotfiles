@@ -6,3 +6,6 @@ before_script:
 install:
   script:
     - ./install
+
+include:
+  - template: Dependency-Scanning.gitlab-ci.yml
