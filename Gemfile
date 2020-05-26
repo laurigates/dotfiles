@@ -6,9 +6,3 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
 gem 'neovim'
 gem 'tmuxinator'
-gem 'puppet'
-gem 'puppet-lint'
-gem 'solargraph'
-gem 'mdl'
-
-# gem "rails"
