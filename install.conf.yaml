@@ -11,7 +11,7 @@
   - [ mkdir -p ~/.zsh_history_dir, Creating zsh history directory ]
   - [ mkdir -p ~/.i3, Creating i3 configuration directory ]
   - [ mkdir -p ~/.ssh, Creating ~/.ssh directory ]
-  - [ mkdir -p ~/.config, Creating ~/.config directory ]
+  - [ mkdir -p ~/.config/coc/extensions, Creating ~/.config directory ]
   - [ git submodule update --init --remote, Installing submodules ]
 
 - link:
