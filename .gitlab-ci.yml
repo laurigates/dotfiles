@@ -1,3 +1,5 @@
+image: gitlab/dind
+
 build_image:
   script:
     - docker build -t laurigates/dotfiles .
