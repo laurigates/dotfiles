@@ -245,3 +245,14 @@ bindsym $mod+r mode "resize"
 exec_always --no-startup-id "killall -q picom; picom -b"
 
 for_window [class="Yad"] floating enable
+
+# Audio controls
+bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+1 i3blocks
+bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+1 i3blocks
+bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+1 i3blocks
+
+# Media player controls
+bindsym XF86AudioPlay exec "playerctl play"
+bindsym XF86AudioPause exec "playerctl pause"
+bindsym XF86AudioNext exec "playerctl next"
+bindsym XF86AudioPrev exec "playerctl previous"
