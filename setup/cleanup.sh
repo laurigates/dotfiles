@@ -13,6 +13,7 @@ conffiles=(
     "~/.config/compton.conf"
     "~/.config/pet"
     "~/.config/coc/extensions/package.json"
+    "~/.config/nvim/coc-settings.json"
 )
 
 for conffile in "${conffiles[@]}"

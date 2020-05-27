@@ -11,7 +11,9 @@
   - [ mkdir -p ~/.zsh_history_dir, Creating zsh history directory ]
   - [ mkdir -p ~/.i3, Creating i3 configuration directory ]
   - [ mkdir -p ~/.ssh, Creating ~/.ssh directory ]
-  - [ mkdir -p ~/.config/coc/extensions, Creating ~/.config directory ]
+  - [ mkdir -p ~/.config, Creating ~/.config directory ]
+  - [ mkdir -p ~/.config/coc/extensions, Creating ~/.config/coc/extensions directory ]
+  - [ mkdir -p ~/.config/nvim, Creating ~/.config/nvim directory ]
   - [ git submodule update --init --remote, Installing submodules ]
 
 - link:
@@ -58,6 +60,7 @@
     ~/.config/picom.conf: X/picom.conf
     ~/.config/pet: pet
     ~/.config/coc/extensions/package.json: vim/coc-extensions.json
+    ~/.config/nvim/coc-settings.json: vim/coc-settings.json
 
 - link:
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
