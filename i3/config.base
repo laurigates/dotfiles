@@ -86,12 +86,10 @@ bar {
 # set keyboard map
 exec setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
 
-# set terminal preference
-exec export TERMINAL=kitty
-
 # start a terminal
-# bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec kitty
+# i3-sensible-terminal uses the $TERMINAL environment variable to determine
+# the user preference for the terminal. I set $TERMINAL in ~/.env.
+bindsym $mod+Return exec i3-sensible-terminal
 
 # dolphin
 # bindsym $mod+e exec dolphin

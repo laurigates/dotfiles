@@ -1,5 +1,8 @@
 export PATH=/opt/puppetlabs/puppet/bin:$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
 
+# set terminal preference for i3
+exec export TERMINAL=kitty
+
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR='nvim'
     export VISUAL='nvim'
@@ -14,7 +17,7 @@ fi
 eval "$(rbenv init -)"
 
 # https://www.growingwiththeweb.com/2018/01/slow-nvm-init.html
-# 
+#
 # Defer initialization of nvm until nvm, node or a node-dependent command is
 # run. Ensure this block is only run once if .bashrc gets sourced multiple times
 # by checking whether __init_nvm is a function.
