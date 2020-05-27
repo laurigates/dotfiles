@@ -1,107 +1,24 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    ast (2.4.0)
-    backport (1.1.2)
-    benchmark (0.1.0)
-    concurrent-ruby (1.1.6)
-    deep_merge (1.2.1)
-    e2mmap (0.1.0)
     erubis (2.7.0)
-    facter (4.0.21)
-      hocon (~> 1.3)
-      thor (>= 1.0.1, < 2.0)
-    fast_gettext (1.8.0)
-    hiera (3.6.0)
-    hocon (1.3.0)
-    httpclient (2.8.3)
-    jaro_winkler (1.5.4)
-    kramdown (2.2.1)
-      rexml
-    kramdown-parser-gfm (1.1.0)
-      kramdown (~> 2.0)
-    locale (2.1.3)
-    maruku (0.7.3)
-    mdl (0.9.0)
-      kramdown (~> 2.0)
-      kramdown-parser-gfm (~> 1.0)
-      mixlib-cli (~> 2.1, >= 2.1.1)
-      mixlib-config (>= 2.2.1, < 4)
-    mini_portile2 (2.4.0)
-    mixlib-cli (2.1.6)
-    mixlib-config (3.0.6)
-      tomlrb
     msgpack (1.3.3)
     multi_json (1.14.1)
     neovim (0.8.1)
       msgpack (~> 1.1)
       multi_json (~> 1.0)
-    nokogiri (1.10.9)
-      mini_portile2 (~> 2.4.0)
-    parallel (1.19.1)
-    parser (2.7.1.2)
-      ast (~> 2.4.0)
-    puppet (6.15.0)
-      concurrent-ruby (~> 1.0)
-      deep_merge (~> 1.0)
-      facter (> 2.0.1, < 5)
-      fast_gettext (~> 1.1)
-      hiera (>= 3.2.1, < 4)
-      httpclient (~> 2.8)
-      locale (~> 2.1)
-      multi_json (~> 1.10)
-      puppet-resource_api (~> 1.5)
-      semantic_puppet (~> 1.0)
-    puppet-lint (2.4.2)
-    puppet-resource_api (1.8.13)
-      hocon (>= 1.0)
-    rainbow (3.0.0)
-    reverse_markdown (1.4.0)
-      nokogiri
-    rexml (3.2.4)
-    rubocop (0.83.0)
-      parallel (~> 1.10)
-      parser (>= 2.7.0.1)
-      rainbow (>= 2.2.2, < 4.0)
-      rexml
-      ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 2.0)
-    ruby-progressbar (1.10.1)
-    semantic_puppet (1.0.2)
-    solargraph (0.39.7)
-      backport (~> 1.1)
-      benchmark
-      bundler (>= 1.17.2)
-      e2mmap
-      jaro_winkler (~> 1.5)
-      maruku (~> 0.7, >= 0.7.3)
-      nokogiri (~> 1.9, >= 1.9.1)
-      parser (~> 2.3)
-      reverse_markdown (~> 1.0, >= 1.0.5)
-      rubocop (~> 0.52)
-      thor (~> 1.0)
-      tilt (~> 2.0)
-      yard (~> 0.9, >= 0.9.24)
     thor (1.0.1)
-    tilt (2.0.10)
     tmuxinator (2.0.1)
       erubis (~> 2.6)
       thor (~> 1.0)
       xdg (~> 2.2, >= 2.2.5)
-    tomlrb (1.3.0)
-    unicode-display_width (1.7.0)
     xdg (2.2.5)
-    yard (0.9.25)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  mdl
   neovim
-  puppet
-  puppet-lint
-  solargraph
   tmuxinator
 
 BUNDLED WITH
