@@ -3,7 +3,8 @@ call plug#begin('~/.local/share/nvim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Yank stack
-Plug 'maxbrunsfeld/vim-yankstack'
+" Don't really need this with coc-yank
+" Plug 'maxbrunsfeld/vim-yankstack'
 
 Plug 'michaeljsmith/vim-indent-object'
 
