@@ -87,3 +87,8 @@
   description = "Generate random string for use as a salt, password etc."
   command = "openssl rand -base64 32"
   output = ""
+
+[[snippets]]
+  description = "List reverse dependencies; packages that depend or recommend the specified package."
+  command = "apt-cache rdepends --installed <package_name>"
+  output = ""
