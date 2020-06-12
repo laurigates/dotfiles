@@ -92,3 +92,13 @@
   description = "List reverse dependencies; packages that depend or recommend the specified package."
   command = "apt-cache rdepends --installed <package_name>"
   output = ""
+
+[[snippets]]
+  description = "Fuzzy-search through all available packages, with package info shown in a preview window, and then install selected packages."
+  command = "pacman -Slq | fzf --multi --preview 'pacman -Si {1}' | xargs -ro sudo pacman -S"
+  output = ""
+
+[[snippets]]
+  description = "Fuzzy-search through all available packages, with package info and file list shown in a preview window, and then install selected packages (make sure you run pacman -Fy at least once before invocation to sync the pacman file database)."
+  command = "pacman -Slq | fzf --multi --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \\$2}\")' | xargs -ro sudo pacman -S"
+  output = ""
