@@ -1,0 +1,26 @@
+- create:
+    - ~/.local/share/nvim/plugged
+
+- link:
+    ~/.vimrc: vim/init.vim
+    ~/.config/nvim/init.vim:
+      create: true
+      path: vim/init.vim
+    ~/.local/share/nvim/site/autoload/plug.vim:
+      create: true
+      path: vim/vim-plug/plug.vim
+    ~/.vim/autoload/plug.vim:
+      create: true
+      path: vim/vim-plug/plug.vim
+    ~/vimwiki: vimwiki
+    ~/.config/coc/extensions/package.json:
+      create: true
+      path: vim/coc-extensions.json
+    ~/.config/nvim/coc-settings.json: vim/coc-settings.json
+
+- shell:
+    -
+      command: setup/nvim.sh
+      description: Checking nvim
+      stdout: true
+      stderr: true

@@ -1,0 +1,21 @@
+- defaults:
+    link:
+      relink: true
+
+- clean: ['~']
+
+- create:
+    - ~/.ssh
+
+- shell:
+    - [ setup/cleanup.sh, Cleaning up existing configuration ]
+    - [ git submodule update --init --remote, Installing submodules ]
+
+- link:
+    ~/.dotfiles: ''
+    ~/.ctags.d: general/ctags.d
+    ~/.env: terminal/env
+    ~/.ssh/config: ssh/config
+    ~/.config/pet:
+      create: true
+      path: pet

@@ -1,5 +1,5 @@
 [submodule "dotbot"]
-	path = dotbot
+	path = meta/dotbot
 	url = https://github.com/anishathalye/dotbot
 [submodule "oh-my-zsh"]
 	path = zsh/oh-my-zsh

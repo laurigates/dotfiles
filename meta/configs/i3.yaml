@@ -1,0 +1,31 @@
+- create:
+    - ~/.i3
+
+- link:
+    ~/.xinitrc: X/xinitrc
+    ~/.xsessionrc: X/xinitrc
+    ~/.Xresources: X/Xresources
+    ~/i3blocks-contrib: i3/i3blocks-contrib
+    ~/.i3blocks.conf: i3/i3blocks.conf
+    ~/.config/dunst/dunstrc:
+      create: true
+      path: i3/dunstrc
+    ~/.config/picom.conf: X/picom.conf
+    ~/.local/share/fonts/hack:
+      create: true
+      path: fonts/hack
+    ~/.config/kitty/kitty.conf:
+      create: true
+      path: terminal/kitty.conf
+
+- shell:
+    -
+      command: setup/i3.sh
+      description: Checking i3
+      stdout: true
+      stderr: true
+    -
+      command: setup/fonts.sh
+      description: Checking fonts
+      stdout: true
+      stderr: true

@@ -23,6 +23,6 @@ ENV HOME /home/tester
 WORKDIR /home/tester/dotfiles
 
 # Run setup
-RUN ./install
+RUN ./install-profile workstation
 
-CMD ["/bin/bash"]
+CMD ["/bin/zsh"]

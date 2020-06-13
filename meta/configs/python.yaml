@@ -1,0 +1,6 @@
+- shell:
+  -
+    command: setup/python.sh
+    description: Checking python environment
+    stdout: true
+    stderr: true

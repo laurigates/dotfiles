@@ -1,0 +1,12 @@
+- link:
+    ~/.rbenv: ruby/rbenv
+    ~/.rbenv/plugins/ruby-build:
+      create: true
+      path: ruby/ruby-build
+
+- shell:
+  -
+    command: setup/ruby.sh
+    description: Checking ruby environment
+    stdout: true
+    stderr: true

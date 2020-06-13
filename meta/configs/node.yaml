@@ -1,0 +1,6 @@
+- shell:
+  -
+    command: setup/nodejs.sh
+    description: Checking nodejs environment
+    stdout: true
+    stderr: true

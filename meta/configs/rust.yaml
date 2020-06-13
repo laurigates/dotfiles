@@ -1,0 +1,6 @@
+- shell:
+  -
+    command: setup/rust.sh
+    description: Checking rust environment
+    stdout: true
+    stderr: true
