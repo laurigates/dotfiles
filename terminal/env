@@ -55,6 +55,8 @@ export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(vim {})+abort'"
 # to open up CakePHP source files for example for reference
 export FZF_DEFAULT_COMMAND="rg --files --hidden"
 # export FZF_DEFAULT_COMMAND="rg --files --hidden --no-ignore-vcs"
+export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
+export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
 
 # Preview directory tree when using Alt+C
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
