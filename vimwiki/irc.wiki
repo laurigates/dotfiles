@@ -1,6 +1,0 @@
-= weechat =
-
-== filters ==
-
-Hide all join, part and quit messages. Including own.
-`/filter add hidejoinpart irc.frozenbyte.#announcements,irc.frozenbyte.#frozenbyte irc_join,irc_part,irc_quit,irc_329,irc_332,irc_333,irc_366 *`

@@ -1,0 +1,19 @@
+= Reminders =
+
+Use `host` instead of `nslookup`. `nslookup` is deprecated.
+
+- apropos
+- whatis
+- strings
+- binwalk
+- file
+
+== Vim ==
+
+- vim-unimpaired
+- vim-targets
+- `:help CTRL-R_CTRL-W`
+
+== Tasks ==
+
+- bugwarrior

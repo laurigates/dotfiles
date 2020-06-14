@@ -2,18 +2,16 @@
 
 == General ==
 
-* [[Annoyances]]
+* [[Reminders]]: Stuff that I'm trying to learn
+* [[Interesting stuff]]
 * [[Useful commands]]
-* [[Debian]]
 * [[Taskwarrior]]
-* [[rocket.chat]]
-* [[irc]]
-* [[TODO]]
 * [[DNS]]
-* [[hardware]]
-* [[network]]
-* [[kernel]]
-* [[CA certs]]
+* [[hardware]]: Commands to get information about hardware
+* [[Scratchpad]]
+* [[vim commands]]
+* [[Windows]]
+* [[weechat]]
 
 == Terminal ==
 
@@ -30,20 +28,9 @@
 * [[fc-list]]
 * [[xrdb]]
 
-== X11 ==
-
-* [[xset]]
-
-== Editors ==
-
-* [[vim commands]]
-
-== Package management ==
-
-* [[apt]]
-
 == Window management ==
 
+* [[xset]]
 * [[i3]]
 * [[compton]]
 * [[rofi]]

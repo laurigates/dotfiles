@@ -1,13 +1,19 @@
 = General purpose =
+
 == convert ==
+
 The convert command allows a wide variety of conversions and is simple to use.
 
 example command:
-convert input.jpg output.pdf
+
+`convert input.jpg output.pdf`
 
 = Image to text (OCR) =
+
 == Tesseract ==
+
 package name: tesseract-ocr
 
 example command:
-tesseract input.jpg out.txt
+
+`tesseract input.jpg out.txt`

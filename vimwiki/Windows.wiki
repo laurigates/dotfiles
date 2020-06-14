@@ -1,0 +1,12 @@
+= Windows =
+
+== Commands ==
+
+=== get hostname by ip-address ===
+
+nbtstat -a ip-address
+
+=== change display mode ===
+
+displayswitch /internal
+displayswitch /extend

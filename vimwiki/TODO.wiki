@@ -1,8 +1,0 @@
-= vim =
-
-*Test & configure vim-targets & vim-indent-object
-*Configure fzf keybinds
-*Configure ncm2-look
-*Configure yankstack
-*Configure vim-unimpaired
-*Configure javascript-typescript-langserver

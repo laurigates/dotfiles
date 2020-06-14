@@ -41,10 +41,6 @@
 
 `:Rg`
 
-== Ack ==
-
-`:Ack`
-
 == go to definition ==
 
 `gd` will take you to the local declaration.

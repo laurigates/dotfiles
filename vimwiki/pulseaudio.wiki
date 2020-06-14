@@ -1,29 +1,29 @@
-# pulseaudio
+= pulseaudio =
 
-## useful commands
+== Useful commands ==
 
-```
+{{{
 pactl list modules short
 pactl list sinks short
 pactl set-default-sink 1
 pactl set-sink-volume 1 -- 30%
-```
+}}}
 
-## Load Steelseries Arctis 7 device from alsa to pulseaudio
+== Load Steelseries Arctis 7 device from alsa to pulseaudio ==
 
 https://baldpenguin.blogspot.com/2017/08/steeleries-arctis-7-headset-in-linux.html
 
 Get a list of alsa devices
 Make note of the card number
 
-```
+{{{
 aplay -l
-```
+}}}
 
 Load the alsa device to pulseaudio
 Use the card number found in the previous command for the device
 address. Here it was 2.
 
-```
+{{{
 pacmd load-module module-alsa-sink device=hw:2,1
-```
+}}}
