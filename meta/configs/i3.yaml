@@ -1,6 +1,9 @@
 - create:
     - ~/.i3
 
+- shell:
+    - setup/cleanup.sh ~/.config/dunst/dunstrc ~/.xinitrc ~/.Xresources ~/.config/picom.conf
+
 - link:
     ~/.xinitrc: X/xinitrc
     ~/.xsessionrc: X/xinitrc

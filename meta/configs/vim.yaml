@@ -1,6 +1,9 @@
 - create:
     - ~/.local/share/nvim/plugged
 
+- shell:
+    - setup/cleanup.sh ~/.config/coc/extensions/package.json ~/.config/nvim/coc-settings.json
+
 - link:
     ~/.vimrc: vim/init.vim
     ~/.config/nvim/init.vim:

@@ -1,7 +1,15 @@
 - create:
     - ~/.zsh_history_dir
 
+- shell:
+    - setup/cleanup.sh ~/.config/pet
+
 - link:
+    ~/.env: terminal/env
+    ~/.ctags.d: general/ctags.d
+    ~/.config/pet:
+      create: true
+      path: pet
     ~/.zshrc: zsh/zshrc
     ~/.oh-my-zsh: zsh/oh-my-zsh
 

@@ -1,0 +1,4 @@
+- link:
+    ~/.ssh/config:
+      create: true
+      path: ssh/config
