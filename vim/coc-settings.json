@@ -3,5 +3,24 @@
     "git.changedSign.hlGroup": "GitGutterChange",
     "git.removedSign.hlGroup": "GitGutterDelete",
     "git.topRemovedSign.hlGroup": "GitGutterDelete",
-    "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete"
+    "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
+    "languageserver": {
+        "puppet": {
+            "command": "/home/lgates/.local/share/nvim/plugged/puppet-editor-services/puppet-languageserver",
+            "args": ["--stdio", "--puppet-settings=--moduledir,/home/lgates/repos/puppet/modules"],
+            "cwd": "/home/lgates/.local/share/nvim/plugged/puppet-editor-services",
+            "filetypes": ["puppet"],
+            "rootPatterns": [".git/", "metadata.json"]
+        },
+        "phpactor": {
+            "trace.server": "verbose",
+            "command": "phpactor",
+            "args": ["language-server"],
+            "filetypes": ["php", "cucumber"],
+            "initializationOptions": {
+            },
+            "settings": {
+            }
+        }
+    }
 }
