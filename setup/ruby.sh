@@ -10,5 +10,5 @@ else
     rbenv global 2.6.5
 fi
 
-gem install --user-install bundler
+gem install bundler
 bundle install
