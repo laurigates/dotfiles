@@ -64,6 +64,14 @@ HISTFILE="$HOME/.zsh_history_dir/$(hostname -f)"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+# vim mode cursor styling
+MODE_CURSOR_VIINS="#7e7 blinking bar"
+MODE_CURSOR_REPLACE="$MODE_CURSOR_VIINS #f55"
+MODE_CURSOR_VICMD="#3a3 block"
+MODE_CURSOR_SEARCH="#d4d steady underline"
+MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
+MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
+
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
