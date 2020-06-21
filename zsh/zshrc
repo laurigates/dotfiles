@@ -78,9 +78,9 @@ MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
-  colorize extract
+  extract
   zsh-autosuggestions zsh-syntax-highlighting zsh-vim-mode
-  common-aliases debian sudo z systemd
+  common-aliases debian z systemd
   colored-man-pages
   kitchen vagrant
   pip python virtualenv
