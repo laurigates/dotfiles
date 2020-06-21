@@ -1,3 +1,4 @@
 = Interesting stuff =
 
 https://github.com/tbabej/taskwiki
+https://notmuchmail.org/

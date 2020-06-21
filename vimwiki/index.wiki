@@ -1,7 +1,6 @@
 = My knowledge base =
 
 == General ==
-
 * [[Reminders]]: Stuff that I'm trying to learn
 * [[Interesting stuff]]
 * [[Useful commands]]
@@ -12,6 +11,7 @@
 * [[vim commands]]
 * [[Windows]]
 * [[weechat]]
+* [[Dwarf Fortress]]
 
 == Terminal ==
 

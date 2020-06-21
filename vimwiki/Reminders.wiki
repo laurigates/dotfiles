@@ -7,11 +7,22 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - strings
 - binwalk
 - file
+- readelf
+- glances
+- xmlstarlet
+- ccat
+
+== Kitty ==
+
+Scrollback in less
+
+`Ctrl+shift+h`
 
 == Vim ==
 
 - vim-unimpaired
 - vim-targets
+- emmet
 - `:help CTRL-R_CTRL-W`
 
 == Tasks ==
