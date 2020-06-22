@@ -1,4 +1,5 @@
 = Interesting stuff =
 
-https://github.com/tbabej/taskwiki
-https://notmuchmail.org/
+- https://notmuchmail.org/
+- https://github.com/tbabej/taskwiki
+- EurKEY

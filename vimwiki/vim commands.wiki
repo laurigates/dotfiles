@@ -1,5 +1,13 @@
 = Vim commands =
 
+== Use the word under the cursor ==
+
+To insert the word under the cursor in a command, you can use `<C-R><C-A>`.
+Useful for search and replace especially.
+
+`:%s/<C-R><C-A>/replacement/g`
+`:Rg <C-R><C-A>`
+
 == Terminal ==
 
 == Yank ==
@@ -10,6 +18,8 @@
 == FZF ==
 
 `:W` open window selector
+
+[More FZF commands](https://github.com/junegunn/fzf.vim)
 
 === Find ===
 
@@ -80,6 +90,7 @@ Display the jump list for the current window with:
 == find under cursor ==
 
 Press `*` to find the word under the cursor
+
 
 == surround ==
 

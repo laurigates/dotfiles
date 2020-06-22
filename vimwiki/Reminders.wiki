@@ -10,7 +10,7 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - readelf
 - glances
 - xmlstarlet
-- ccat
+- ranger
 
 == Kitty ==
 
@@ -18,12 +18,20 @@ Scrollback in less
 
 `Ctrl+shift+h`
 
+== Git ==
+
+- https://thoughtbot.com/blog/autosquashing-git-commits
+- `git stash -u` to stash untracked files as well
+
 == Vim ==
 
 - vim-unimpaired
 - vim-targets
 - emmet
 - `:help CTRL-R_CTRL-W`
+- vim-fugitive
+    - ri, O, Glog, czz, ca, cf, rf
+- vim-sneak
 
 == Tasks ==
 
