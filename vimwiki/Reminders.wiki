@@ -12,6 +12,14 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - xmlstarlet
 - ranger
 
+== MySQL ==
+
+`SHOW CREATE TABLE <table>`
+
+== ZSH ==
+
+- `Ctrl-x a` to expand aliases etc.
+
 == Kitty ==
 
 Scrollback in less
@@ -21,7 +29,11 @@ Scrollback in less
 == Git ==
 
 - https://thoughtbot.com/blog/autosquashing-git-commits
+- https://embeddedartistry.com/blog/2018/02/19/code-cleanup-splitting-up-git-commits-in-the-middle-of-a-branch/
 - `git stash -u` to stash untracked files as well
+- `git diff --word-diff`
+- `git diff -w` ignore all spaces in diff
+- `git push -u origin HEAD`
 
 == Vim ==
 
@@ -32,6 +44,8 @@ Scrollback in less
 - vim-fugitive
     - ri, O, Glog, czz, ca, cf, rf
 - vim-sneak
+- vim-surround
+    - To surround a visual selection, press `S(` for example
 
 == Tasks ==
 
