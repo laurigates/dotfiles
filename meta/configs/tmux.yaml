@@ -1,6 +1,3 @@
 - link:
     ~/.tmux.conf: tmux/tmux.conf
     ~/.tmux-themepack: tmux/tmux-themepack
-    ~/.tmux/plugins:
-      create: true
-      path: tmux/tmux-plugins
