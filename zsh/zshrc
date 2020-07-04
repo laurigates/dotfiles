@@ -90,6 +90,7 @@ plugins=(
   ruby gem bundler rbenv
   fd ripgrep
   docker docker-compose
+  rust rustup cargo
 )
 
 # Prevent autosuggestions for large buffers (when pasting to command line for example)
