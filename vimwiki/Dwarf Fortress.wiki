@@ -6,6 +6,12 @@
 
 === manipulator ===
 
+=== blueprint ===
+
+=== digfort ===
+
+=== fortplan ===
+
 == soundsense ==
 
 === soundsense-rs ===

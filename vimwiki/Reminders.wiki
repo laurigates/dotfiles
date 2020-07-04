@@ -11,6 +11,13 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - glances
 - xmlstarlet
 - ranger
+- https://sunaku.github.io/tmux-yank-osc52.html
+
+== tmux ==
+
+- 3.2
+  - `C-b C` option browser
+- https://github.com/Morantron/tmux-fingers
 
 == MySQL ==
 
@@ -46,6 +53,13 @@ Scrollback in less
 - vim-sneak
 - vim-surround
     - To surround a visual selection, press `S(` for example
+- netrw
+    - scp to edit remote files
+    - bookmarks
+- FZF
+    - fzf-tmux
+    - popup
+        - let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
 
 == Tasks ==
 
