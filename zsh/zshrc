@@ -108,13 +108,14 @@ export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 # export LC_ALL="en_US.UTF-8"
 
-# allow the use of the Home/End keys
-# bindkey "\e[1~" beginning-of-line
-# bindkey "\e[4~" end-of-line
+##### Fix tmux key mappings
+# Fix Home/End keys
+bindkey "\e[1~" beginning-of-line
+bindkey "\e[4~" end-of-line
 
-# allow the use of the Delete/Insert keys
-# bindkey "\e[3~" delete-char
-# bindkey "\e[2~" quoted-insert
+# Delete/Insert keys
+bindkey "\e[3~" delete-char
+bindkey "\e[2~" quoted-insert
 
 # mappings for "page up" and "page down" to step to the beginning/end
 # of the history
