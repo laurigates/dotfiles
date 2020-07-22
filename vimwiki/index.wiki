@@ -3,14 +3,12 @@
 == General ==
 * [[Reminders]]: Stuff that I'm trying to learn
 * [[Interesting stuff]]
-* [[Useful commands]]
 * [[Taskwarrior]]
 * [[DNS]]
 * [[hardware]]: Commands to get information about hardware
 * [[Scratchpad]]
 * [[vim commands]]
 * [[Windows]]
-* [[weechat]]
 * [[Dwarf Fortress]]
 
 == Terminal ==
