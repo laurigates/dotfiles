@@ -1,0 +1,3 @@
+# i3
+
+- set primary display with `xrandr --output DVI-D-0 --primary` for i3blocks tray to work
