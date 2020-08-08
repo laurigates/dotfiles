@@ -2,7 +2,7 @@
     - ~/.i3
 
 - shell:
-    - setup/cleanup.sh ~/.config/dunst/dunstrc ~/.xinitrc ~/.Xresources ~/.config/picom.conf
+    - setup/cleanup.sh ~/.config/dunst/dunstrc ~/.xinitrc ~/.Xresources
 
 - link:
     ~/.xinitrc: X/xinitrc
@@ -13,7 +13,6 @@
     ~/.config/dunst/dunstrc:
       create: true
       path: i3/dunstrc
-    ~/.config/picom.conf: X/picom.conf
     ~/.local/share/fonts/hack:
       create: true
       path: fonts/hack

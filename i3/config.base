@@ -243,9 +243,6 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Autostart
-# exec_always --no-startup-id "killall -q picom; picom -b"
-
 for_window [class="Yad"] floating enable
 
 # Audio controls

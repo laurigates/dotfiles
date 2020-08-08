@@ -30,7 +30,7 @@ git
 
 i3 i3-wm
 i3status i3blocks i3blocks-contrib
-picom hsetroot
+hsetroot
 i3lock i3lock-fancy
 rofi
 rofi-emoji
