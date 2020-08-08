@@ -44,3 +44,4 @@ case $session in
     i3   ) exec i3;;
     *    ) exec $1;;
 esac
+xset r rate 500 33
