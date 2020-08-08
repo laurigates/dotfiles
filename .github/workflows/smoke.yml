@@ -1,0 +1,13 @@
+name: Smoke Test CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: sudo apt-get install zsh neovim
+    - uses: actions/checkout@v1
+    - name: Run dotbot profile installation
+      run: ./install-profile workstation
