@@ -1,7 +1,9 @@
 #!/bin/bash
 
 if command -v cargo > /dev/null; then
-    mkdir -p ~/.cargo/bin
+    wget -O rustup-init.sh https://sh.rustup.rs
+    ./rustup-init.sh --no-modify-path -y && rm rustup-init.sh
+
     # only run strip if binaries exist
     if [ $(find ~/.cargo/bin -type f | wc -l) -gt 0 ]; then
         strip ~/.cargo/bin/*
