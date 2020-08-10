@@ -80,7 +80,7 @@ plugins=(
   git
   extract
   zsh-autosuggestions zsh-syntax-highlighting zsh-vim-mode
-  common-aliases debian z systemd
+  z systemd
   colored-man-pages
   kitchen vagrant
   pip python virtualenv
@@ -160,8 +160,6 @@ if [[ ! -z $DISPLAY ]]; then
     setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
 fi
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # kitty
 autoload -Uz compinit
 compinit
@@ -174,14 +172,21 @@ fi
 # rbenv completions
 [ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
 
+# Should check if fzf is installed?
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/dotfiles/zsh/fzf-tab-completion/zsh/fzf-zsh-completion.sh ] && source ~/dotfiles/zsh/fzf-tab-completion/zsh/fzf-zsh-completion.sh
+
 # https://grml.org/zsh/zsh-lovers.html
 
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _complete _match _approximate
 zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
+# Allow searching by the display string during completion (the description of the parameter etc.)
+zstyle ':completion:*' fzf-search-display true
 
 # cd will never select the parent directory (e.g.: cd ../<TAB>):
 zstyle ':completion:*:cd:*' ignore-parents parent pwd
+
 
 #zprof
