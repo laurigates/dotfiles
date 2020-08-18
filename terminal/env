@@ -48,9 +48,6 @@ fi
 # Set default umask
 umask 022
 
-# Configure ctrl+o to open selected file in vim
-export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(vim {})+abort'"
-
 # Use ripgrep for faster performance
 # Do not respect vcs ignore files such as .gitignore, since it's nice to be able
 # to open up CakePHP source files for example for reference
