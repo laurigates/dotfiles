@@ -11,16 +11,6 @@
             "cwd": "/home/lgates/.local/share/nvim/plugged/puppet-editor-services",
             "filetypes": ["puppet"],
             "rootPatterns": [".git/", "metadata.json"]
-        },
-        "phpactor": {
-            "trace.server": "verbose",
-            "command": "phpactor",
-            "args": ["language-server"],
-            "filetypes": ["php", "cucumber"],
-            "initializationOptions": {
-            },
-            "settings": {
-            }
         }
     }
 }

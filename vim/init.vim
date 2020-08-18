@@ -36,13 +36,18 @@ Plug 'marcweber/vim-addon-mw-utils'
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 
-if has('nvim')
-Plug 'jsfaint/gen_tags.vim'
-
-" Include Phpactor
-Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
-
+if has('nvim') && executable('global') && executable('ctags')
+    Plug 'jsfaint/gen_tags.vim'
 endif
+
+" Ruby support (plays nicely with tpope/rbenv-ctags)
+Plug 'vim-ruby/vim-ruby'
+
+" Browse tags of current file
+Plug 'majutsushi/tagbar'
+
+" phpstan integration
+Plug 'phpstan/vim-phpstan'
 
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -56,9 +61,6 @@ Plug 'tpope/vim-commentary'
 
 " Unit testing
 Plug 'janko/vim-test'
-
-" Ruby support (plays nicely with tpope/rbenv-ctags)
-Plug 'vim-ruby/vim-ruby'
 
 " Rspec tests
 Plug 'thoughtbot/vim-rspec'
@@ -81,9 +83,6 @@ Plug 'tpope/vim-fugitive'
 
 " vim-unimpaired
 Plug 'tpope/vim-unimpaired'
-
-" Browse tags of current file
-Plug 'majutsushi/tagbar'
 
 " Surround (cs"')
 Plug 'tpope/vim-surround'
