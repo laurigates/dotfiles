@@ -390,6 +390,28 @@ imap § $
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Coc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:coc_global_extensions = [
+            \'coc-css',
+            \'coc-emmet',
+            \'coc-eslint',
+            \'coc-git',
+            \'coc-highlight',
+            \'coc-html',
+            \'coc-json',
+            \'coc-markdownlint',
+            \'coc-omni',
+            \'coc-pairs',
+            \'coc-phpls',
+            \'coc-python',
+            \'coc-rls',
+            \'coc-solargraph',
+            \'coc-tag',
+            \'coc-tsserver',
+            \'coc-yaml',
+            \'coc-yank'
+            \]
+
 " if hidden is not set, TextEdit might fail.
 set hidden
 " transparency for coc menu
