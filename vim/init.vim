@@ -1,8 +1,5 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
-" Yank stack
-" Don't really need this with coc-yank
-" Plug 'maxbrunsfeld/vim-yankstack'
 if has('nvim') && executable('node')
     " Completions
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
