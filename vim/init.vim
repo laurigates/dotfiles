@@ -118,6 +118,7 @@ let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 " show tab numbers
 let g:airline#extensions#tabline#tab_nr_type = 1
 " let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#coc#enabled = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -502,9 +503,6 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 
 " use `:OR` for organize import of current buffer
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add status line support, for integration with other plugin, checkout `:h coc-status`
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Using CocList
 " Show all diagnostics
