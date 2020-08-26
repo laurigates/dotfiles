@@ -6,11 +6,22 @@
     "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
     "languageserver": {
         "puppet": {
-            "command": "/home/lgates/.local/share/nvim/plugged/puppet-editor-services/puppet-languageserver",
-            "args": ["--stdio", "--puppet-settings=--moduledir,/home/lgates/repos/puppet/modules"],
+            "command": "ruby",
+            "args": ["/home/lgates/.local/share/nvim/plugged/puppet-editor-services/puppet-languageserver", "--stdio", "--puppet-settings=--moduledir,/home/lgates/repos/puppet/modules"],
             "cwd": "/home/lgates/.local/share/nvim/plugged/puppet-editor-services",
             "filetypes": ["puppet"],
             "rootPatterns": [".git/", "metadata.json"]
+        },
+        "dockerfile": {
+            "command": "docker-langserver",
+            "filetypes": ["dockerfile"],
+            "args": ["--stdio"]
+        },
+        "bash": {
+            "command": "bash-language-server",
+            "args": ["start"],
+            "filetypes": ["sh"],
+            "ignoredRootPaths": ["~"]
         }
     }
 }
