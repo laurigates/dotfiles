@@ -21,3 +21,6 @@ Xft.hintstyle:  hintfull
 Xft.hinting: true
 Xft.antialias: true
 Xft.rgba: rgb
+
+## For OSC 52 clipboard reading
+XTerm*allowWindowOps: true
