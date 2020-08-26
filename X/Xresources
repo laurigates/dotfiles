@@ -7,7 +7,6 @@ rofi.color-urgent: #273238, #ff1844, #273238, #394249, #ff1844
 
 rofi.combi-modi:    window,drun,run,ssh
 rofi.theme:         solarized
-rofi.font:          hack 10
 rofi.modi:          combi,window,drun,run,ssh
 
 ## Cursor
