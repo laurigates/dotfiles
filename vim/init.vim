@@ -20,8 +20,10 @@ Plug 'wellle/targets.vim'
 " Plug 'jiangmiao/auto-pairs'
 
 Plug 'godlygeek/tabular'
+
 " markdown plugin is currently broken, folds open and close randomly on other actions
 " Plug 'plasticboy/vim-markdown'
+
 Plug 'mrk21/yaml-vim'
 
 " vim-easymotion
@@ -103,13 +105,10 @@ call plug#end()
 set nocompatible
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Plugins
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Sneak
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:sneak#label = 1
+
 """""""""""""""""""""""""""""""""""
 " Airline
 """""""""""""""""""""""""""""""""""
@@ -238,15 +237,8 @@ set tm=500
 
 set noshowmode
 
-" Add a bit extra margin to the left
-" set foldcolumn=1
-
 " Vertical diff in Gdiff
 set diffopt+=vertical
-
-" Markdown display options
-" let g:vim_markdown_folding_level = 2
-" let g:vim_markdown_toc_autofit = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -299,8 +291,6 @@ set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
 
-" set iskeyword-=_
-
 " Make extra whitespaces clearly visible
 highlight ExtraWhitespace ctermbg=darkred guibg=darkred
 match ExtraWhitespace /\s\+$/
@@ -343,15 +333,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 
 " Open fzf file search
 nnoremap <C-F> :Files<CR>
-
-""""""""""""""""""""""""""""""
-" => Status line
-""""""""""""""""""""""""""""""
-" Always show the status line
-" set laststatus=2
-
-" Format the status line
-"set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Turn persistent undo on
