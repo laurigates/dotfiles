@@ -73,7 +73,7 @@ Plug 'elzr/vim-json'
 
 " Puppet syntax
 Plug 'rodjek/vim-puppet'
-Plug 'lingua-pupuli/puppet-editor-services'
+Plug 'puppetlabs/puppet-editor-services'
 
 " Git changes shown on line numbers
 Plug 'airblade/vim-gitgutter'
