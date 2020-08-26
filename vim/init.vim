@@ -1,10 +1,12 @@
 call plug#begin('~/.local/share/nvim/plugged')
-" Completions
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Yank stack
 " Don't really need this with coc-yank
 " Plug 'maxbrunsfeld/vim-yankstack'
+if has('nvim') && executable('node')
+    " Completions
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
 
 Plug 'michaeljsmith/vim-indent-object'
 
