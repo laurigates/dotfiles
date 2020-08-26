@@ -4,6 +4,7 @@
 
 * [[Reminders]]: Stuff that I'm trying to learn
 * [[Interesting stuff]]
+* [[Packages]]
 * [[Taskwarrior]]
 * [[DNS]]
 * [[hardware]]: Commands to get information about hardware
@@ -15,7 +16,6 @@
 == Linux optimizations ==
 
 - [[Swap]]
-
 
 == Terminal ==
 

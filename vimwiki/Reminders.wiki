@@ -12,6 +12,7 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - xmlstarlet
 - ranger
 - https://sunaku.github.io/tmux-yank-osc52.html
+- fatrace
 
 == tmux ==
 

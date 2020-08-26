@@ -19,56 +19,6 @@ To install a specific configuration
 ./install-standalone rust
 ```
 
-## Packages
-
-### General
-
-xsel
-git
-
-### i3
-
-i3 i3-wm
-i3status i3blocks i3blocks-contrib
-hsetroot
-i3lock i3lock-fancy
-rofi
-rofi-emoji
-dunst
-wmctrl x11-xserver-utils
-
-### i3blocks calendar
-
-yad xdotool
-
-### terminal
-
-kitty
-tmux
-tmuxinator
-ripgrep
-fd-find
-bat
-lsd
-jq
-task tasksh
-pet
-ttf-twemoji
-
-### zsh
-
-zsh
-powerline (vim, tmux theme)
-
-### neovim
-
-nvim
-universal-ctags global
-
-### music
-
-playerctl google-play-music-desktop-player
-
 ## Docker testing
 
 Build a docker image to test installation of the dotfiles
@@ -82,5 +32,3 @@ Run the docker image
 ```shell
 docker run --rm -it laurigates/dotfiles:latest
 ```
-
-https://stackoverflow.com/questions/26220957/how-can-i-inspect-the-file-system-of-a-failed-docker-build
