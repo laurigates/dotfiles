@@ -269,7 +269,7 @@ endif
 
 set background=dark
 let g:onedark_terminal_italics=1
-colorscheme onedark
+silent! colorscheme onedark
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
