@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if command -v cargo > /dev/null; then
+if ! command -v cargo > /dev/null; then
     wget -O rustup-init.sh https://sh.rustup.rs
     ./rustup-init.sh --no-modify-path -y && rm rustup-init.sh
 
