@@ -3,6 +3,9 @@ export PATH=/opt/puppetlabs/puppet/bin:$HOME/.rbenv/bin:$HOME/bin:$HOME/.cargo/b
 # set terminal preference for i3
 export TERMINAL=kitty
 
+# set browser preference
+export BROWSER=google-chrome-stable
+
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR='nvim'
     export VISUAL='nvim'
