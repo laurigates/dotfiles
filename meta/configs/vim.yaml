@@ -1,3 +1,5 @@
+- clean: ['~/.config/nvim', '~/.config/coc']
+
 - create:
     - ~/.local/share/nvim/plugged
 
