@@ -1,6 +1,6 @@
-= My knowledge base =
+# My knowledge base
 
-== General ==
+## General
 
 * [[Reminders]]: Stuff that I'm trying to learn
 * [[Interesting stuff]]
@@ -13,11 +13,17 @@
 * [[Windows]]
 * [[Dwarf Fortress]]
 
-== Linux optimizations ==
+## Remote access
+
+- [[ssh]]
+- [[virtualgl]]
+- xpra
+
+## Linux optimizations
 
 - [[Swap]]
 
-== Terminal ==
+## Terminal
 
 * [[bash]]
 * [[zsh]]
@@ -32,7 +38,7 @@
 * [[fc-list]]
 * [[xrdb]]
 
-== Window management ==
+## Window management
 
 * [[xset]]
 * [[i3]]
@@ -47,13 +53,13 @@
 * [[ArandR]]
 * [[xrandr]]
 
-== Storage ==
+## Storage
 
 * [[lvm]]
 * [[findmnt]]
 * [[lsblk]]
 
-== File management ==
+## File management
 
 * [[find]]
 * [[rg]]
@@ -61,7 +67,7 @@
 * [[ranger]]
 * [[File conversion]]
 
-== Audio ==
+## Audio
 
 * [[pulseaudio]]
 * [[alsa]]

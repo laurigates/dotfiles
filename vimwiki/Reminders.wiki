@@ -13,6 +13,28 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - ranger
 - https://sunaku.github.io/tmux-yank-osc52.html
 - fatrace
+- ssh-keyscan
+- printenv, env, export
+- pactree
+
+## Ruby
+
+`gem dependency`
+`bundle viz` generate a dependency graph
+`gem list <gem> --remote --all` show all remote versions of a gem
+
+== vim ==
+
+https://vim.fandom.com/wiki/Using_vim_as_calculator
+
+`:CocSearch`
+
+bash & docker language servers
+https://gist.github.com/dhollinger/a22f60617f02c6d6c4968ca0c3fe88e6
+
+== weechat ==
+
+`Alt+a` jump to buffer with activity
 
 == tmux ==
 
@@ -61,6 +83,10 @@ Scrollback in less
     - fzf-tmux
     - popup
         - let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+- Ctrl+F in insert mode fixes indentation of line
+- CTRL-O		execute one command, return to Insert mode   *i_CTRL-O*
+- `&` to repeat last substitution
+- `:&&` to repeat last substitution on selection
 
 == Tasks ==
 

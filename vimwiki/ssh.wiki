@@ -1,0 +1,19 @@
+# ssh
+
+Use levels of verbosity to diagnose X11 forwarding issues among other ssh issues:
+
+```shell
+ssh -vvv -X hostname
+```
+
+Removing the ~/.Xauthority file and relogging may help:
+
+```shell
+rm ~/.Xauthority
+```
+
+List xauth entries:
+
+```shell
+xauth list
+```
