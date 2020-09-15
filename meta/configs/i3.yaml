@@ -13,9 +13,6 @@
     ~/.config/dunst/dunstrc:
       create: true
       path: i3/dunstrc
-    ~/.local/share/fonts/hack:
-      create: true
-      path: fonts/hack
     ~/.config/kitty/kitty.conf:
       create: true
       path: terminal/kitty.conf
@@ -24,10 +21,5 @@
     -
       command: setup/i3.sh
       description: Checking i3
-      stdout: true
-      stderr: true
-    -
-      command: setup/fonts.sh
-      description: Checking fonts
       stdout: true
       stderr: true
