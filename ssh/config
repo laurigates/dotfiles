@@ -1,6 +1,7 @@
-Host *
-  ControlMaster auto
-  ControlPath ~/.ssh/socket-%r@%h:%p
-  ControlPersist 10s
+# This configuration caused issues with X11 forwarding and changing user groups taking effect.
+# Host *
+#   ControlMaster auto
+#   ControlPath ~/.ssh/socket-%r@%h:%p
+#   ControlPersist 10s
 
 HashKnownHosts no
