@@ -1,0 +1,113 @@
+PATH=""
+
+# Append our default paths
+appendpath () {
+    case ":$PATH:" in
+        *:"$1":*)
+            ;;
+        *)
+            PATH="${PATH:+$PATH:}$1"
+    esac
+}
+
+appendpath "$HOME/.cargo/bin"
+appendpath "$HOME/.local/bin"
+appendpath '/usr/local/sbin'
+appendpath '/usr/local/bin'
+appendpath '/usr/bin'
+appendpath '/bin'
+unset -f appendpath
+
+export PATH
+
+PATH="/home/lgates/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/lgates/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/lgates/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/lgates/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/lgates/perl5"; export PERL_MM_OPT;
+
+# Disable python keyring, so pip install won't pop open annoying dialogs
+PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
+
+# Load profiles from /etc/profile.d
+if test -d /etc/profile.d/; then
+        for profile in /etc/profile.d/*.sh; do
+                test -r "$profile" && . "$profile"
+        done
+        unset profile
+fi
+
+# set terminal preference for i3
+export TERMINAL=kitty
+
+# set browser preference
+export BROWSER=google-chrome-stable
+
+if command -v nvim >/dev/null 2>&1; then
+    export EDITOR='nvim'
+    export VISUAL='nvim'
+    export SUDO_EDITOR='nvim'
+else
+    export EDITOR='vim'
+    export VISUAL='vim'
+    export SUDO_EDITOR='vim'
+fi
+
+# Set default umask
+umask 022
+
+# https://www.growingwiththeweb.com/2018/01/slow-nvm-init.html
+#
+# Defer initialization of nvm until nvm, node or a node-dependent command is
+# run. Ensure this block is only run once if .bashrc gets sourced multiple times
+# by checking whether __init_nvm is a function.
+#
+# on bash
+# type -t __init_nvm
+# returns "function"
+#
+# on zsh
+# type __init_nvm
+# returns "__init_nvm is a shell function"
+#
+# typeset seems to work on bash and zsh
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# Commented this out to test if loading nvm is still slow
+# The issue with not loading these is that vim does not see them, which breaks some plugins
+
+# if [ -s "$NVM_DIR/nvm.sh" ] && ! typeset -f __init_nvm; then
+#   [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+#   declare -a __node_commands=('nvm' 'node' 'npm' 'yarn' 'gulp' 'grunt' 'webpack')
+#   function __init_nvm() {
+#     for i in "${__node_commands[@]}"; do unalias $i; done
+#     . "$NVM_DIR"/nvm.sh
+#     unset __node_commands
+#     unset -f __init_nvm
+#   }
+#   for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
+# fi
+
+# Use ripgrep for faster performance
+# Do not respect vcs ignore files such as .gitignore, since it's nice to be able
+# to open up CakePHP source files for example for reference
+export FZF_DEFAULT_COMMAND="rg --files --hidden"
+# export FZF_DEFAULT_COMMAND="rg --files --hidden --no-ignore-vcs"
+export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
+export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
+
+# Preview directory tree when using Alt+C
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+
+# for existing man pages
+function fzf_apropos() {
+  apropos '' | fzf --preview-window=up:50% --preview 'echo {} | cut -f 1 -d " " | xargs man' | cut -f 1 -d " "
+}
+
+# Fix SDL full screen output to correct monitor
+export SDL_VIDEO_FULLSCREEN_HEAD=0
+
+# vim:ft=sh

@@ -5,7 +5,7 @@
     - setup/cleanup.sh ~/.config/pet
 
 - link:
-    ~/.env: terminal/env
+    ~/.zshenv: zsh/zshenv
     ~/.ctags.d: general/ctags.d
     ~/.config/pet:
       create: true

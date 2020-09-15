@@ -1,6 +1,4 @@
-#!/bin/bash
-
-source terminal/env
+#!/bin/zsh
 
 if ! command -v rbenv > /dev/null; then
     cd ~/.rbenv && src/configure && make -C src
