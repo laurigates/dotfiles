@@ -12,6 +12,8 @@ appendpath () {
 
 appendpath "$HOME/.cargo/bin"
 appendpath "$HOME/.local/bin"
+appendpath "$HOME/go/bin"
+appendpath '/usr/local/go/bin'
 appendpath '/usr/local/sbin'
 appendpath '/usr/local/bin'
 appendpath '/usr/bin'
