@@ -395,8 +395,11 @@ let g:coc_global_extensions = [
 
 " if hidden is not set, TextEdit might fail.
 set hidden
+
 " transparency for coc menu
-set pumblend=10
+if exists('pumblend')
+    set pumblend=10
+endif
 
 " Some servers have issues with backup files, see #649
 set nobackup
