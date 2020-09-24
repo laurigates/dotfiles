@@ -1,9 +1,9 @@
-ssh
 zsh
-tmux
-vim
-i3
-rust
-python
+ssh
 node
 ruby
+rust
+python
+vim
+tmux
+i3

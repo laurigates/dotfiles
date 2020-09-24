@@ -10,6 +10,7 @@ appendpath () {
     esac
 }
 
+appendpath "$HOME/.rbenv/bin"
 appendpath "$HOME/.cargo/bin"
 appendpath "$HOME/.local/bin"
 appendpath "$HOME/go/bin"
@@ -92,6 +93,8 @@ export NVM_DIR="$HOME/.nvm"
 #   }
 #   for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
 # fi
+
+eval "$(~/.rbenv/bin/rbenv init -)"
 
 # Use ripgrep for faster performance
 # Do not respect vcs ignore files such as .gitignore, since it's nice to be able
