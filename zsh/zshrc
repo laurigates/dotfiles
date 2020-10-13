@@ -30,7 +30,7 @@ MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
 plugins=(
   git
   extract
-  zsh-autosuggestions zsh-syntax-highlighting zsh-vim-mode
+  zsh-autosuggestions zsh-syntax-highlighting
   z systemd
   colored-man-pages
   pip python virtualenv
