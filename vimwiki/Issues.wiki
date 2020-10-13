@@ -1,0 +1,9 @@
+# Issues
+
+## Summary
+
+This is a dumping ground for issues with my environment I have yet to resolve.
+
+## X11
+
+- xdg-open tries to open smb:// links in chrome instead of a file manager

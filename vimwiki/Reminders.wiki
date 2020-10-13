@@ -17,6 +17,11 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - printenv, env, export
 - pactree
 
+## OSC 52
+
+For clipboard sharing to work over ssh using OSC 52, the connection needs
+to be initiated with `ssh -Y <host>`.
+
 ## Ruby
 
 `gem dependency`

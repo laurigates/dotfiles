@@ -1,0 +1,10 @@
+# Package Management
+
+## pacman
+
+```shell
+pacinfo -Qi <package_name>
+pactree -c <package_name>
+pactree -c -r <package_name>
+pactree -g i3-gaps | dot -Tsvg -o i3-gaps-deps.svg
+```

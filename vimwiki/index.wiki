@@ -3,6 +3,7 @@
 ## General
 
 * [[Reminders]]: Stuff that I'm trying to learn
+* [[Issues]]
 * [[Interesting stuff]]
 * [[Packages]]
 * [[Taskwarrior]]
@@ -12,6 +13,12 @@
 * [[vim commands]]
 * [[Windows]]
 * [[Dwarf Fortress]]
+* [[systemd]]
+* [[Package Management]]
+
+## Network
+
+- [[iptables]]
 
 ## Remote access
 
