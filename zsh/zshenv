@@ -1,7 +1,8 @@
 PATH=""
 
-# Append our default paths
-appendpath () {
+# Append "$1" to $PATH when not already in.
+# This function API is accessible to scripts in /etc/profile.d
+append_path () {
     case ":$PATH:" in
         *:"$1":*)
             ;;
@@ -10,27 +11,19 @@ appendpath () {
     esac
 }
 
-appendpath "$HOME/.rbenv/bin"
-appendpath "$HOME/.cargo/bin"
-appendpath "$HOME/.local/bin"
-appendpath "$HOME/go/bin"
-appendpath '/usr/local/go/bin'
-appendpath '/usr/local/sbin'
-appendpath '/usr/local/bin'
-appendpath '/usr/bin'
-appendpath '/bin'
-unset -f appendpath
+# Append our default paths
+append_path "$HOME/perl5/bin"
+append_path "$HOME/.rbenv/bin"
+append_path "$HOME/.cargo/bin"
+append_path "$HOME/.local/bin"
+append_path "$HOME/go/bin"
+append_path '/usr/local/go/bin'
+append_path '/usr/local/sbin'
+append_path '/usr/local/bin'
+append_path '/usr/bin'
+append_path '/bin'
 
 export PATH
-
-PATH="/home/lgates/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/lgates/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/lgates/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/lgates/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/lgates/perl5"; export PERL_MM_OPT;
-
-# Disable python keyring, so pip install won't pop open annoying dialogs
-PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
 
 # Load profiles from /etc/profile.d
 if test -d /etc/profile.d/; then
@@ -39,6 +32,19 @@ if test -d /etc/profile.d/; then
         done
         unset profile
 fi
+
+unset -f append_path
+
+# Define these to install perl modules without root
+# For neovim perl module
+# https://metacpan.org/pod/local::lib
+PERL5LIB="/home/lgates/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/lgates/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/lgates/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/lgates/perl5"; export PERL_MM_OPT;
+
+# Disable python keyring, so pip install won't pop open annoying dialogs
+PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
 
 # set terminal preference for i3
 export TERMINAL=kitty
