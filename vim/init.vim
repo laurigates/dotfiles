@@ -16,25 +16,13 @@ Plug 'wincent/terminus'
 " Plug 'wellle/tmux-complete.vim'
 Plug 'wellle/targets.vim'
 
-" Insert or delete brackets, parens, quotes in pair.
-" Plug 'jiangmiao/auto-pairs'
-
 Plug 'godlygeek/tabular'
-
-" markdown plugin is currently broken, folds open and close randomly on other actions
-" Plug 'plasticboy/vim-markdown'
 
 Plug 'mrk21/yaml-vim'
 
-" vim-easymotion
-" Plug 'easymotion/vim-easymotion'
-
 Plug 'justinmk/vim-sneak'
 
-" snipmate dependencies
-Plug 'tomtom/tlib_vim'
-Plug 'marcweber/vim-addon-mw-utils'
-Plug 'garbas/vim-snipmate'
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 if has('nvim') && executable('global') && executable('ctags')
