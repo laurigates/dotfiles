@@ -146,6 +146,12 @@ autocmd BufRead,BufNewFile *.md setlocal textwidth=80
 " a bit annoying since the focus stays on the toc after opening a file
 "autocmd FileType markdown Toc
 
+" Disable temporary wiki's so that the vimwiki filetype won't apply to all wiki and md files
+let g:vimwiki_global_ext = 0
+
+" Mediawiki filetype
+autocmd BufRead,BufNewFile *.mw set filetype=vimwiki
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
