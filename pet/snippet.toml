@@ -102,3 +102,23 @@
   description = "Fuzzy-search through all available packages, with package info and file list shown in a preview window, and then install selected packages (make sure you run pacman -Fy at least once before invocation to sync the pacman file database)."
   command = "pacman -Slq | fzf --multi --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \\$2}\")' | xargs -ro sudo pacman -S"
   output = ""
+
+[[snippets]]
+  description = "Show swap usage of all processes sorted by usage in a pager"
+  command = "for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 \" \" $3}END{ print \"\"}' $file; done | sort -k 2 -n -r | less"
+  output = ""
+
+[[snippets]]
+  description = "Show package dependencies and which packages it is required by."
+  command = "pacman -Qi <package_name>"
+  output = ""
+
+[[snippets]]
+  description = "List orphan packages."
+  command = "pacman -Qtd"
+  output = ""
+
+[[snippets]]
+  description = "Create a dependency graph of a package."
+  command = "pactree -g <package_name> | dot -Tsvg -o <package_name>-deps.svg"
+  output = ""
