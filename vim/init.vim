@@ -160,6 +160,8 @@ set so=12
 set splitbelow
 set splitright
 
+set inccommand=nosplit
+
 " Turn on the Wild menu
 set wildmenu
 
