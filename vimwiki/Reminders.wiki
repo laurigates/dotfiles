@@ -1,26 +1,33 @@
-= Reminders =
+ ## Reminders
 
 Use `host` instead of `nslookup`. `nslookup` is deprecated.
 
 - apropos
 - whatis
-- strings
-- binwalk
-- file
-- readelf
 - glances
 - xmlstarlet
 - ranger
-- https://sunaku.github.io/tmux-yank-osc52.html
 - fatrace
 - ssh-keyscan
 - printenv, env, export
 - pactree
+- https://notmuchmail.org/
+- https://github.com/tbabej/taskwiki
+- EurKEY
+
+## Binary file analysis
+
+- strings
+- binwalk
+- file
+- readelf
 
 ## OSC 52
 
 For clipboard sharing to work over ssh using OSC 52, the connection needs
 to be initiated with `ssh -Y <host>`.
+
+- https://sunaku.github.io/tmux-yank-osc52.html
 
 ## Ruby
 
@@ -28,7 +35,7 @@ to be initiated with `ssh -Y <host>`.
 `bundle viz` generate a dependency graph
 `gem list <gem> --remote --all` show all remote versions of a gem
 
-== vim ==
+## vim
 
 https://vim.fandom.com/wiki/Using_vim_as_calculator
 
@@ -37,31 +44,31 @@ https://vim.fandom.com/wiki/Using_vim_as_calculator
 bash & docker language servers
 https://gist.github.com/dhollinger/a22f60617f02c6d6c4968ca0c3fe88e6
 
-== weechat ==
+## weechat
 
 `Alt+a` jump to buffer with activity
 
-== tmux ==
+## tmux
 
 - 3.2
   - `C-b C` option browser
 - https://github.com/Morantron/tmux-fingers
 
-== MySQL ==
+## MySQL
 
 `SHOW CREATE TABLE <table>`
 
-== ZSH ==
+## ZSH
 
 - `Ctrl-x a` to expand aliases etc.
 
-== Kitty ==
+## Kitty
 
 Scrollback in less
 
 `Ctrl+shift+h`
 
-== Git ==
+## Git
 
 - https://thoughtbot.com/blog/autosquashing-git-commits
 - https://embeddedartistry.com/blog/2018/02/19/code-cleanup-splitting-up-git-commits-in-the-middle-of-a-branch/
@@ -70,7 +77,7 @@ Scrollback in less
 - `git diff -w` ignore all spaces in diff
 - `git push -u origin HEAD`
 
-== Vim ==
+## Vim
 
 - vim-unimpaired
 - vim-targets
@@ -93,6 +100,6 @@ Scrollback in less
 - `&` to repeat last substitution
 - `:&&` to repeat last substitution on selection
 
-== Tasks ==
+## Tasks
 
 - bugwarrior

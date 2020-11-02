@@ -1,20 +1,23 @@
 # My knowledge base
 
+## Live material
+
+- [[Reminders]]: Stuff that I'm trying to learn
+- [[Scratchpad]]: Stuff that hasn't yet found the right place
+- [[Issues]]: Persistent issues and workarounds for them
+
 ## General
 
-* [[Reminders]]: Stuff that I'm trying to learn
-* [[Issues]]
-* [[Interesting stuff]]
-* [[Packages]]
-* [[Taskwarrior]]
-* [[DNS]]
-* [[hardware]]: Commands to get information about hardware
-* [[Scratchpad]]
-* [[vim commands]]
-* [[Windows]]
-* [[Dwarf Fortress]]
-* [[systemd]]
-* [[Package Management]]
+- [[Packages]]
+- [[Taskwarrior]]
+- [[DNS]]
+- [[hardware]]: Commands to get information about hardware
+- [[vim commands]]
+- [[Windows]]
+- [[Dwarf Fortress]]
+- [[systemd]]
+- [[Package Management]]
+- [[Linux optimizations]]
 
 ## Network
 
@@ -26,55 +29,51 @@
 - [[virtualgl]]
 - xpra
 
-## Linux optimizations
-
-- [[Swap]]
-
 ## Terminal
 
-* [[bash]]
-* [[zsh]]
-* [[tmux]]
-* [[git]]
-* [[yank]]
-* [[xsel]]
-* [[pet]]
-* [[fzf]]
-* [[glances]]
-* [[fc]]
-* [[fc-list]]
-* [[xrdb]]
+- [[bash]]
+- [[zsh]]
+- [[tmux]]
+- [[git]]
+- [[yank]]
+- [[xsel]]
+- [[pet]]
+- [[fzf]]
+- [[glances]]
+- [[fc]]
+- [[fc-list]]
+- [[xrdb]]
 
 ## Window management
 
-* [[xset]]
-* [[i3]]
-* [[compton]]
-* [[rofi]]
-* [[dunst]]
-* [[xprop]]
-* [[wmctrl]]
-* [[dbus-broker]]
-* [[swaywm]]
-* [[xdotool]]
-* [[ArandR]]
-* [[xrandr]]
+- [[xset]]
+- [[i3]]
+- [[compton]]
+- [[rofi]]
+- [[dunst]]
+- [[xprop]]
+- [[wmctrl]]
+- [[dbus-broker]]
+- [[swaywm]]
+- [[xdotool]]
+- [[ArandR]]
+- [[xrandr]]
 
 ## Storage
 
-* [[lvm]]
-* [[findmnt]]
-* [[lsblk]]
+- [[lvm]]
+- [[findmnt]]
+- [[lsblk]]
 
 ## File management
 
-* [[find]]
-* [[rg]]
-* [[fd-find]]
-* [[ranger]]
-* [[File conversion]]
+- [[find]]
+- [[rg]]
+- [[fd-find]]
+- [[ranger]]
+- [[File conversion]]
 
 ## Audio
 
-* [[pulseaudio]]
-* [[alsa]]
+- [[pulseaudio]]
+- [[alsa]]
