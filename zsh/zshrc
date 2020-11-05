@@ -6,6 +6,12 @@
 #  ZSH_TMUX_AUTOSTART="true"
 #fi
 
+# https://www.reddit.com/r/zsh/comments/jncp79/paste_bracketing_causes_slow_pastes/
+DISABLE_MAGIC_FUNCTIONS=1
+
+# https://www.johnhawthorn.com/2012/09/vi-escape-delays/
+KEYTIMEOUT=1
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 

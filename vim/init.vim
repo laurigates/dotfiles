@@ -135,6 +135,11 @@ nmap <leader>w :w!<cr>
 " Integrate vim clipboard with system clipboard
 " set clipboard+=unnamedplus
 
+" https://www.johnhawthorn.com/2012/09/vi-escape-delays/
+set timeout ttimeout         " separate mapping and keycode timeouts
+set timeoutlen=500           " mapping timeout 500ms  (adjust for preference)
+set ttimeoutlen=20           " keycode timeout 20ms
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Terminal mode
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
