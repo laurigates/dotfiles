@@ -65,42 +65,7 @@ fi
 # Set default umask
 umask 022
 
-# https://www.growingwiththeweb.com/2018/01/slow-nvm-init.html
-#
-# Defer initialization of nvm until nvm, node or a node-dependent command is
-# run. Ensure this block is only run once if .bashrc gets sourced multiple times
-# by checking whether __init_nvm is a function.
-#
-# on bash
-# type -t __init_nvm
-# returns "function"
-#
-# on zsh
-# type __init_nvm
-# returns "__init_nvm is a shell function"
-#
-# typeset seems to work on bash and zsh
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
-
-# Commented this out to test if loading nvm is still slow
-# The issue with not loading these is that vim does not see them, which breaks some plugins
-
-# if [ -s "$NVM_DIR/nvm.sh" ] && ! typeset -f __init_nvm; then
-#   [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-#   declare -a __node_commands=('nvm' 'node' 'npm' 'yarn' 'gulp' 'grunt' 'webpack')
-#   function __init_nvm() {
-#     for i in "${__node_commands[@]}"; do unalias $i; done
-#     . "$NVM_DIR"/nvm.sh
-#     unset __node_commands
-#     unset -f __init_nvm
-#   }
-#   for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
-# fi
-
-eval "$(~/.rbenv/bin/rbenv init -)"
+# No need to source ruby or nvm here, because the zsh plugins already do that!
 
 # Use ripgrep for faster performance
 # Do not respect vcs ignore files such as .gitignore, since it's nice to be able
