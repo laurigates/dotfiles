@@ -6,7 +6,6 @@
 
 - link:
     ~/.xinitrc: X/xinitrc
-    ~/.xsessionrc: X/xinitrc
     ~/.Xresources: X/Xresources
     ~/i3blocks-contrib: i3/i3blocks-contrib
     ~/.i3blocks.conf: i3/i3blocks.conf
