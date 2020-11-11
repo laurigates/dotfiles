@@ -5,5 +5,4 @@ if ! nvm --version; then
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 fi
 
-nvm install 12
-npm install -g neovim
+nvm install 15
