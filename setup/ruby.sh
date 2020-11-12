@@ -7,5 +7,4 @@ if ! command -v rbenv > /dev/null; then
     gem install bundler
 fi
 
-eval "$(rbenv init -)"
 bundle install

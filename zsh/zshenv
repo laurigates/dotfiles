@@ -14,6 +14,7 @@ append_path () {
 # Append our default paths
 append_path "$HOME/perl5/bin"
 append_path "$HOME/.rbenv/bin"
+append_path "$HOME/.rbenv/shims"
 append_path "$HOME/.cargo/bin"
 append_path "$HOME/.local/bin"
 append_path "$HOME/go/bin"
