@@ -1,10 +1,7 @@
 #!/bin/bash
 
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
-if command -v nvim > /dev/null; then
-    if command -v npm > /dev/null; then
+if ! nvim --version > /dev/null 2>&1; then
+    if ! npm --version > /dev/null 2>&1; then
         npm install -g neovim
     fi
     nvim --headless --noplugin +PlugClean! +PlugInstall +PlugUpdate +qa

@@ -1,10 +1,12 @@
 #!/bin/zsh
 
-if ! command -v rbenv > /dev/null; then
+export PATH=$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH
+
+if ! rbenv --version > /dev/null 2>&1; then
     cd ~/.rbenv && src/configure && make -C src
-    rbenv install 2.6.5
-    rbenv global 2.6.5
-    gem install bundler
 fi
 
+rbenv install 2.6.5
+rbenv global 2.6.5
+gem install bundler
 bundle install

@@ -6,6 +6,8 @@
 #  ZSH_TMUX_AUTOSTART="true"
 #fi
 
+emulate sh -c '. /etc/profile'
+
 # https://www.reddit.com/r/zsh/comments/jncp79/paste_bracketing_causes_slow_pastes/
 DISABLE_MAGIC_FUNCTIONS=1
 

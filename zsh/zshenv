@@ -1,40 +1,11 @@
-PATH=""
-
-# Append "$1" to $PATH when not already in.
-# This function API is accessible to scripts in /etc/profile.d
-append_path () {
-    case ":$PATH:" in
-        *:"$1":*)
-            ;;
-        *)
-            PATH="${PATH:+$PATH:}$1"
-    esac
-}
-
-# Append our default paths
-append_path "$HOME/perl5/bin"
-append_path "$HOME/.rbenv/bin"
-append_path "$HOME/.rbenv/shims"
-append_path "$HOME/.cargo/bin"
-append_path "$HOME/.local/bin"
-append_path "$HOME/go/bin"
-append_path '/usr/local/go/bin'
-append_path '/usr/local/sbin'
-append_path '/usr/local/bin'
-append_path '/usr/bin'
-append_path '/bin'
-
-export PATH
-
-# Load profiles from /etc/profile.d
-if test -d /etc/profile.d/; then
-        for profile in /etc/profile.d/*.sh; do
-                test -r "$profile" && . "$profile"
-        done
-        unset profile
-fi
-
-unset -f append_path
+export PATH=\
+$HOME/.cargo/bin:\
+$HOME/go/bin:\
+/usr/local/go/bin:\
+/usr/local/sbin:\
+/usr/local/bin:\
+/usr/bin:\
+/bin
 
 # Define these to install perl modules without root
 # For neovim perl module
@@ -62,10 +33,6 @@ else
     export VISUAL='vim'
     export SUDO_EDITOR='vim'
 fi
-
-# Set default umask
-umask 022
-
 # No need to source ruby or nvm here, because the zsh plugins already do that!
 
 # Use ripgrep for faster performance

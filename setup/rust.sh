@@ -1,7 +1,8 @@
 #!/bin/bash
 
-if ! command -v cargo > /dev/null; then
-    wget -O rustup-init.sh https://sh.rustup.rs
+if ! cargo --version > /dev/null 2>&1; then
+    wget --quiet -O rustup-init.sh https://sh.rustup.rs
+    chmod +x rustup-init.sh
     ./rustup-init.sh --no-modify-path -y && rm rustup-init.sh
 
     # only run strip if binaries exist
