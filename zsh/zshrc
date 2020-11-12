@@ -56,6 +56,9 @@ plugins=(
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 
+# https://github.com/ohmyzsh/ohmyzsh/pull/9090
+ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
