@@ -1,3 +1,5 @@
+" Plugins {{{
+
 call plug#begin('~/.local/share/nvim/plugged')
 
 if has('nvim') && executable('node')
@@ -92,25 +94,10 @@ call plug#end()
 
 set nocompatible
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Sneak
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:sneak#label = 1
+" }}}
 
-"""""""""""""""""""""""""""""""""""
-" Airline
-"""""""""""""""""""""""""""""""""""
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-" show tab numbers
-let g:airline#extensions#tabline#tab_nr_type = 1
-" let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#coc#enabled = 1
+" General {{{
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => General
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
 set history=500
 
@@ -140,16 +127,9 @@ set timeout ttimeout         " separate mapping and keycode timeouts
 set timeoutlen=500           " mapping timeout 500ms  (adjust for preference)
 set ttimeoutlen=20           " keycode timeout 20ms
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Terminal mode
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }}}
 
-" Escape terminal mode using Esc
-tnoremap <Esc> <C-\><C-n>
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FileType autocmds
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" File types {{{
 
 autocmd BufRead,BufNewFile *.eyaml set filetype=yaml
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
@@ -164,9 +144,83 @@ let g:vimwiki_global_ext = 0
 " Mediawiki filetype
 autocmd BufRead,BufNewFile *.mw set filetype=vimwiki
 
+" }}}
+
+" Files, backups and undo {{{
+" Turn backup off, since most stuff is in SVN, git et.c anyway...
+set nobackup
+set nowb
+set noswapfile
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
+" => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Prevent moving the cursor when changing focus to vim
+" augroup NO_CURSOR_MOVE_ON_FOCUS
+"   au!
+"   au FocusLost * let g:oldmouse=&mouse | set mouse=
+"   au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
+" augroup END
+
+" Smart way to move between windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+" Let 'tl' toggle between this and the last accessed tab
+let g:lasttab = 1
+nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
+
+" Return to last edit position when opening files (You want this!)
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" Open fzf file search
+nnoremap <C-F> :Files<CR>
+
+" Turn persistent undo on
+" means that you can undo even when you close a buffer/VIM
+try
+    set undodir=~/.vim/temp_dirs/undodir
+    set undofile
+catch
+endtry
+
+" }}}
+
+" Text, tab and indent related {{{
+
+" Use spaces instead of tabs
+set expandtab
+
+" Be smart when using tabs ;)
+set smarttab
+
+" 1 tab == 4 spaces
+set shiftwidth=4
+set tabstop=4
+
+" Linebreak on 500 characters
+set lbr
+set tw=500
+
+set ai "Auto indent
+set si "Smart indent
+set wrap "Wrap lines
+
+" Make extra whitespaces clearly visible
+highlight ExtraWhitespace ctermbg=darkred guibg=darkred
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
+" }}}
+
+" Appearance {{{
+
 " Set 12 lines to the cursor - when moving vertically using j/k
 set so=12
 
@@ -178,7 +232,10 @@ set so=12
 set splitbelow
 set splitright
 
-set inccommand=nosplit
+if (has('nvim'))
+    " Live preview of substitution results
+    set inccommand=nosplit
+endif
 
 " Turn on the Wild menu
 set wildmenu
@@ -215,17 +272,10 @@ set hid
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-" Ignore case when searching
-set ignorecase
-
-" When searching try to be smart about cases
-set smartcase
-
-" Highlight search results
-set hlsearch
-
-" Makes search act like search in modern browsers
-set incsearch
+set ignorecase " Ignore case when searching
+set smartcase " When searching try to be smart about cases
+set hlsearch " Highlight search results
+set incsearch " Makes search act like search in modern browsers
 
 " Don't redraw while executing macros (good performance config)
 set lazyredraw
@@ -248,10 +298,10 @@ set noshowmode
 
 " Vertical diff in Gdiff
 set diffopt+=vertical
+" }}}
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Colors and Fonts
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Colors and Fonts {{{
+
 " Enable syntax highlighting
 syntax enable
 
@@ -279,83 +329,18 @@ set encoding=utf8
 set ffs=unix,dos,mac
 
 set listchars=eol:↲,tab:»\ ,extends:›,precedes:‹,nbsp:‡,trail:·
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Text, tab and indent related
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Use spaces instead of tabs
-set expandtab
 
-" Be smart when using tabs ;)
-set smarttab
+" }}}
 
-" 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
+" Terminal mode {{{
 
-" Linebreak on 500 characters
-set lbr
-set tw=500
+" Escape terminal mode using Esc
+tnoremap <Esc> <C-\><C-n>
 
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
+" }}}
 
-" Make extra whitespaces clearly visible
-highlight ExtraWhitespace ctermbg=darkred guibg=darkred
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
+" Command mode related {{{
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files, backups and undo
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Turn backup off, since most stuff is in SVN, git et.c anyway...
-set nobackup
-set nowb
-set noswapfile
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Prevent moving the cursor when changing focus to vim
-" augroup NO_CURSOR_MOVE_ON_FOCUS
-"   au!
-"   au FocusLost * let g:oldmouse=&mouse | set mouse=
-"   au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
-" augroup END
-
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Let 'tl' toggle between this and the last accessed tab
-let g:lasttab = 1
-nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
-au TabLeave * let g:lasttab = tabpagenr()
-
-" Return to last edit position when opening files (You want this!)
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" Open fzf file search
-nnoremap <C-F> :Files<CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Turn persistent undo on
-"    means that you can undo even when you close a buffer/VIM
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-try
-    set undodir=~/.vim/temp_dirs/undodir
-    set undofile
-catch
-endtry
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Command mode related
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Bash like keys for the command line
 cnoremap <C-A> <Home>
 cnoremap <C-E> <End>
@@ -375,9 +360,9 @@ imap § $
 " map <Leader>l :call RunLastSpec()<CR>
 " map <Leader>a :call RunAllSpecs()<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Coc
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }}}
+
+" Coc {{{
 
 let g:coc_global_extensions = [
             \'coc-css',
@@ -535,3 +520,23 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 " Yank
 nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+
+" }}}
+
+" Sneak {{{
+let g:sneak#label = 1
+" }}}
+
+" Airline {{{
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+" show tab numbers
+let g:airline#extensions#tabline#tab_nr_type = 1
+" let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#coc#enabled = 1
+
+" }}}
+
+" vim: fdm=marker foldlevel=0
