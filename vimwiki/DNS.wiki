@@ -17,6 +17,8 @@ sudo systemctl restart systemd-resolved
 
 == systemd-resolved ==
 
+https://wiki.archlinux.org/index.php/Systemd-resolved
+
 Configuration required to work with dnsmasq:
 /etc/systemd/resolved.conf:
  DNSStubListener=no

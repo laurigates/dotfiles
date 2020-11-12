@@ -1,12 +1,10 @@
  ## Reminders
 
-Use `host` instead of `nslookup`. `nslookup` is deprecated.
-
 - apropos
 - whatis
 - glances
 - xmlstarlet
-- ranger
+- ranger/rifle
 - fatrace
 - ssh-keyscan
 - printenv, env, export
@@ -14,6 +12,7 @@ Use `host` instead of `nslookup`. `nslookup` is deprecated.
 - https://notmuchmail.org/
 - https://github.com/tbabej/taskwiki
 - EurKEY
+- ncdu
 
 ## Binary file analysis
 
@@ -67,6 +66,16 @@ https://gist.github.com/dhollinger/a22f60617f02c6d6c4968ca0c3fe88e6
 Scrollback in less
 
 `Ctrl+shift+h`
+
+https://sw.kovidgoyal.net/kitty/kittens/hints.html
+
+Show hints to open URLs
+
+`Ctrl+shift+e`
+
+Insert unicode character
+
+`Ctrl+shift+u`
 
 ## Git
 

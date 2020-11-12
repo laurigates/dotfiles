@@ -1,5 +1,11 @@
 = Vim commands =
 
+== Format ==
+
+Format lines
+
+`gq<motion>`
+
 == Use the word under the cursor ==
 
 To insert the word under the cursor in a command, you can use `<C-R><C-A>`.
