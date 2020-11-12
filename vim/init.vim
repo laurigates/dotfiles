@@ -127,22 +127,45 @@ set timeout ttimeout         " separate mapping and keycode timeouts
 set timeoutlen=500           " mapping timeout 500ms  (adjust for preference)
 set ttimeoutlen=20           " keycode timeout 20ms
 
+" No annoying sound on errors
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+
+set wildmenu " Enhanced command line completion
+" https://www.reddit.com/r/vim/comments/8mi8cm/is_using_in_path_a_good_idea/
+" set path+=** " enable recursive find
+
+" Configure backspace so it acts as it should act
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+
+set ignorecase " Ignore case when searching
+set smartcase " When searching try to be smart about cases
+set hlsearch " Highlight search results
+set incsearch " Makes search act like search in modern browsers
+
+" Don't redraw while executing macros (good performance config)
+set lazyredraw
+
+" For regular expressions turn magic on
+set magic
+
 " }}}
 
 " File types {{{
 
-autocmd BufRead,BufNewFile *.eyaml set filetype=yaml
-autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+" autocmd BufRead,BufNewFile *.eyaml set filetype=yaml
+" autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd BufRead,BufNewFile *.md setlocal textwidth=80
-
+" Mediawiki filetype
+autocmd BufRead,BufNewFile *.mw set filetype=vimwiki
 " a bit annoying since the focus stays on the toc after opening a file
 "autocmd FileType markdown Toc
 
 " Disable temporary wiki's so that the vimwiki filetype won't apply to all wiki and md files
 let g:vimwiki_global_ext = 0
-
-" Mediawiki filetype
-autocmd BufRead,BufNewFile *.mw set filetype=vimwiki
 
 " }}}
 
@@ -191,13 +214,8 @@ endtry
 
 " Text, tab and indent related {{{
 
-" Use spaces instead of tabs
-set expandtab
-
-" Be smart when using tabs ;)
-set smarttab
-
-" 1 tab == 4 spaces
+set expandtab " Use spaces instead of tabs
+set smarttab " Be smart when using tabs
 set shiftwidth=4
 set tabstop=4
 
@@ -208,6 +226,9 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
+
+" highlight Whitespace ctermbg=darkred guibg=darkred
+" highlight NonText ctermfg=153 guifg=lightskyblue
 
 " Make extra whitespaces clearly visible
 highlight ExtraWhitespace ctermbg=darkred guibg=darkred
@@ -224,24 +245,13 @@ autocmd BufWinLeave * call clearmatches()
 " Set 12 lines to the cursor - when moving vertically using j/k
 set so=12
 
-" let $LANG='en_US.utf8'
-
-" set langmenu=en
-
 " more natural split opening
 set splitbelow
 set splitright
 
 if (has('nvim'))
-    " Live preview of substitution results
-    set inccommand=nosplit
+    set inccommand=nosplit " Live preview of substitution results
 endif
-
-" Turn on the Wild menu
-set wildmenu
-
-" enable recursive find
-set path+=**
 
 " automatic relative/absolute line numbering
 set number relativenumber
@@ -259,51 +269,16 @@ else
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
 
-"Always show current position
-set ruler
+set ruler "Always show current position
+set showmatch " Show matching brackets when text indicator is over them
+set mat=2 " How many tenths of a second to blink when matching brackets
+set diffopt+=vertical,iwhite,algorithm:patience,hiddenoff
 
-" Height of the command bar
-set cmdheight=2
-
-" A buffer becomes hidden when it is abandoned
-set hid
-
-" Configure backspace so it acts as it should act
-set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
-
-set ignorecase " Ignore case when searching
-set smartcase " When searching try to be smart about cases
-set hlsearch " Highlight search results
-set incsearch " Makes search act like search in modern browsers
-
-" Don't redraw while executing macros (good performance config)
-set lazyredraw
-
-" For regular expressions turn magic on
-set magic
-
-" Show matching brackets when text indicator is over them
-set showmatch
-" How many tenths of a second to blink when matching brackets
-set mat=2
-
-" No annoying sound on errors
-set noerrorbells
-set novisualbell
-set t_vb=
-set tm=500
-
-set noshowmode
-
-" Vertical diff in Gdiff
-set diffopt+=vertical
 " }}}
 
 " Colors and Fonts {{{
 
-" Enable syntax highlighting
-syntax enable
+syntax enable " Enable syntax highlighting
 
 " Color scheme
 " set Vim-specific sequences for RGB colors
@@ -322,12 +297,8 @@ set background=dark
 let g:onedark_terminal_italics=1
 silent! colorscheme onedark
 
-" Set utf8 as standard encoding and en_US as the standard language
-set encoding=utf8
-
-" Use Unix as the standard file type
-set ffs=unix,dos,mac
-
+set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language
+set ffs=unix,dos,mac " Use Unix as the standard file type
 set listchars=eol:↲,tab:»\ ,extends:›,precedes:‹,nbsp:‡,trail:·
 
 " }}}
@@ -335,6 +306,7 @@ set listchars=eol:↲,tab:»\ ,extends:›,precedes:‹,nbsp:‡,trail:·
 " Terminal mode {{{
 
 " Escape terminal mode using Esc
+" This could be improved. It currently breaks exiting the fzf-tmux window
 tnoremap <Esc> <C-\><C-n>
 
 " }}}
@@ -386,8 +358,7 @@ let g:coc_global_extensions = [
             \'coc-snippets'
             \]
 
-" if hidden is not set, TextEdit might fail.
-set hidden
+set hidden " if hidden is not set, TextEdit might fail.
 
 " transparency for coc menu
 if exists('pumblend')
@@ -398,17 +369,10 @@ endif
 set nobackup
 set nowritebackup
 
-" Better display for messages
-set cmdheight=2
-
-" You will have bad experience for diagnostic messages when it's default 4000.
-set updatetime=300
-
-" don't give |ins-completion-menu| messages.
-set shortmess+=c
-
-" always show signcolumns
-set signcolumn=yes
+set cmdheight=2 " Better display for messages
+set updatetime=300 " You will have bad experience for diagnostic messages when it's default 4000.
+set shortmess+=c " don't give |ins-completion-menu| messages.
+set signcolumn=yes " always show signcolumns
 
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -524,10 +488,14 @@ nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
 " }}}
 
 " Sneak {{{
+
 let g:sneak#label = 1
+
 " }}}
 
 " Airline {{{
+
+set noshowmode " The mode is already shown by Airline
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
