@@ -1,14 +1,9 @@
-# Set the desktop background color
-exec --no-startup-id xsetroot -solid "#000000"
-# Compton is incompatible with the way xsetroot sets the color
-# https://github.com/chjj/compton/issues/162
-exec --no-startup-id hsetroot -solid "#000000"
-exec ~/.screenlayout/normal.sh
 exec_always --no-startup-id "feh -r --randomize --bg-fill ~/Pictures/Wallpapers/"
 exec_always --no-startup-id "killall -q dunst; dunst --config ~/.config/dunst/dunstrc"
 
 set $mod Mod4
 set $alt Mod1
+
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 font pango:Noto Sans 10
