@@ -6,7 +6,7 @@ if ! rbenv --version > /dev/null 2>&1; then
     cd ~/.rbenv && src/configure && make -C src
 fi
 
-rbenv install 2.6.5
+rbenv install -s 2.6.5
 rbenv global 2.6.5
-gem install bundler
-bundle install
+gem install --quiet bundler
+bundle install --quiet
