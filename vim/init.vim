@@ -2,9 +2,18 @@
 
 call plug#begin('~/.local/share/nvim/plugged')
 
-if has('nvim') && executable('node')
-    " Completions
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+if has('nvim')
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'nvim-treesitter/nvim-treesitter'
+
+    if executable('node')
+        " Completions
+        Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    endif
+
+    if executable('global') && executable('ctags')
+        Plug 'jsfaint/gen_tags.vim'
+    endif
 endif
 
 Plug 'michaeljsmith/vim-indent-object'
@@ -26,10 +35,6 @@ Plug 'justinmk/vim-sneak'
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-
-if has('nvim') && executable('global') && executable('ctags')
-    Plug 'jsfaint/gen_tags.vim'
-endif
 
 " Ruby support (plays nicely with tpope/rbenv-ctags)
 Plug 'vim-ruby/vim-ruby'
@@ -66,8 +71,8 @@ Plug 'elzr/vim-json'
 Plug 'rodjek/vim-puppet'
 Plug 'puppetlabs/puppet-editor-services'
 
-" Git changes shown on line numbers
-Plug 'airblade/vim-gitgutter'
+" Show changed lines in the sign column
+Plug 'mhinz/vim-signify'
 
 " vim-fugitive
 Plug 'tpope/vim-fugitive'
@@ -119,27 +124,18 @@ nmap <leader>w :w!<cr>
 " (useful for handling the permission-denied error)
 " command W w !sudo tee % > /dev/null
 
-" Integrate vim clipboard with system clipboard
-" set clipboard+=unnamedplus
-
 " https://www.johnhawthorn.com/2012/09/vi-escape-delays/
 set timeout ttimeout         " separate mapping and keycode timeouts
 set timeoutlen=500           " mapping timeout 500ms  (adjust for preference)
 set ttimeoutlen=20           " keycode timeout 20ms
 
 " No annoying sound on errors
-set noerrorbells
-set novisualbell
-set t_vb=
-set tm=500
+" set noerrorbells
+" set novisualbell
 
 set wildmenu " Enhanced command line completion
 " https://www.reddit.com/r/vim/comments/8mi8cm/is_using_in_path_a_good_idea/
 " set path+=** " enable recursive find
-
-" Configure backspace so it acts as it should act
-set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
 
 set ignorecase " Ignore case when searching
 set smartcase " When searching try to be smart about cases
@@ -170,7 +166,8 @@ let g:vimwiki_global_ext = 0
 " }}}
 
 " Files, backups and undo {{{
-" Turn backup off, since most stuff is in SVN, git et.c anyway...
+
+" Turn off backup
 set nobackup
 set nowb
 set noswapfile
@@ -190,11 +187,6 @@ map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
-
-" Let 'tl' toggle between this and the last accessed tab
-let g:lasttab = 1
-nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
-au TabLeave * let g:lasttab = tabpagenr()
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -321,10 +313,12 @@ cnoremap <C-K> <C-U>
 cnoremap <C-P> <Up>
 cnoremap <C-N> <Down>
 
-" Map ½ to something useful
-map § $
-cmap § $
-imap § $
+map § ^
+cmap § ^
+imap § ^
+map ½ $
+cmap ½ $
+imap ½ $
 
 " " RSpec.vim mappings
 " map <Leader>t :call RunCurrentSpecFile()<CR>
@@ -337,25 +331,13 @@ imap § $
 " Coc {{{
 
 let g:coc_global_extensions = [
-            \'coc-css',
             \'coc-emmet',
             \'coc-eslint',
             \'coc-git',
             \'coc-highlight',
-            \'coc-html',
-            \'coc-json',
-            \'coc-markdownlint',
-            \'coc-omni',
             \'coc-pairs',
-            \'coc-phpls',
-            \'coc-python',
-            \'coc-rls',
-            \'coc-solargraph',
             \'coc-tag',
-            \'coc-tsserver',
-            \'coc-yaml',
             \'coc-yank',
-            \'coc-snippets'
             \]
 
 set hidden " if hidden is not set, TextEdit might fail.
@@ -444,18 +426,6 @@ nmap <leader>ac <Plug>(coc-codeaction)
 " Fix autofix problem of current line
 nmap <leader>qf <Plug>(coc-fix-current)
 
-" Create mappings for function text object, requires document symbols feature of
-" languageserver.
-
-xmap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap if <Plug>(coc-funcobj-i)
-omap af <Plug>(coc-funcobj-a)
-
-" Use <C-d> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-" nmap <silent> <C-d> <Plug>(coc-range-select)
-" xmap <silent> <C-d> <Plug>(coc-range-select)
-
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
 
@@ -504,6 +474,35 @@ let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline#extensions#tabline#tab_nr_type = 1
 " let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#coc#enabled = 1
+
+" }}}
+
+" {{{ Language Server
+
+nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+
+lua <<EOF
+require'lspconfig'.bashls.setup{}
+require'lspconfig'.cssls.setup{}
+require'lspconfig'.diagnosticls.setup{}
+require'lspconfig'.dockerls.setup{}
+require'lspconfig'.html.setup{}
+require'lspconfig'.intelephense.setup{}
+require'lspconfig'.jsonls.setup{}
+require'lspconfig'.pyls.setup{}
+require'lspconfig'.solargraph.setup{}
+require'lspconfig'.tsserver.setup{}
+require'lspconfig'.vimls.setup{}
+require'lspconfig'.yamlls.setup{}
+EOF
 
 " }}}
 
