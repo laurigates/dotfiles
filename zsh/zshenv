@@ -1,6 +1,7 @@
 export PATH=\
 $HOME/.cargo/bin:\
 $HOME/go/bin:\
+$HOME/.local/bin:\
 /usr/local/go/bin:\
 /usr/local/sbin:\
 /usr/local/bin:\
