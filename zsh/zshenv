@@ -25,10 +25,17 @@ export TERMINAL=kitty
 # set browser preference
 export BROWSER=google-chrome-stable
 
+# Nvim exists in my home folder in some environments.
+# This will find it in my path and get the absolute path.
+# The absolute path is required so that sudoedit will be able to
+# find the executable, because my personal bin folder does not exist
+# in the path of the root user.
+NVIM=$(whence -p nvim)
+
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR='nvim'
     export VISUAL='nvim'
-    export SUDO_EDITOR='nvim'
+    export SUDO_EDITOR=$NVIM
 else
     export EDITOR='vim'
     export VISUAL='vim'
