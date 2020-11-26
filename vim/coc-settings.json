@@ -1,9 +1,4 @@
 {
-    "git.addedSign.hlGroup": "GitGutterAdd",
-    "git.changedSign.hlGroup": "GitGutterChange",
-    "git.removedSign.hlGroup": "GitGutterDelete",
-    "git.topRemovedSign.hlGroup": "GitGutterDelete",
-    "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
     "languageserver": {
         "puppet": {
             "command": "ruby",
@@ -11,17 +6,6 @@
             "cwd": "/home/lgates/.local/share/nvim/plugged/puppet-editor-services",
             "filetypes": ["puppet"],
             "rootPatterns": [".git/", "metadata.json"]
-        },
-        "dockerfile": {
-            "command": "docker-langserver",
-            "filetypes": ["dockerfile"],
-            "args": ["--stdio"]
-        },
-        "bash": {
-            "command": "bash-language-server",
-            "args": ["start"],
-            "filetypes": ["sh"],
-            "ignoredRootPaths": ["~"]
         }
     }
 }

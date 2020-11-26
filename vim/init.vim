@@ -20,6 +20,8 @@ Plug 'michaeljsmith/vim-indent-object'
 
 Plug 'tpope/vim-repeat'
 
+Plug 'tpope/vim-dispatch'
+
 " Enhanced terminal integration
 Plug 'wincent/terminus'
 
@@ -56,7 +58,7 @@ Plug 'vimwiki/vimwiki'
 Plug 'tpope/vim-commentary'
 
 " Unit testing
-Plug 'janko/vim-test'
+Plug 'vim-test/vim-test'
 
 " Rspec tests
 Plug 'thoughtbot/vim-rspec'
@@ -478,6 +480,10 @@ let g:airline#extensions#coc#enabled = 1
 " }}}
 
 " {{{ Language Server
+"  vim-test
+
+" make test commands execute using dispatch.vim
+let test#strategy = "dispatch"
 
 nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
@@ -490,18 +496,30 @@ nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
 
 lua <<EOF
-require'lspconfig'.bashls.setup{}
-require'lspconfig'.cssls.setup{}
-require'lspconfig'.diagnosticls.setup{}
-require'lspconfig'.dockerls.setup{}
-require'lspconfig'.html.setup{}
-require'lspconfig'.intelephense.setup{}
-require'lspconfig'.jsonls.setup{}
-require'lspconfig'.pyls.setup{}
-require'lspconfig'.solargraph.setup{}
-require'lspconfig'.tsserver.setup{}
-require'lspconfig'.vimls.setup{}
-require'lspconfig'.yamlls.setup{}
+local lspconfig = require'lspconfig'
+local configs = require'lspconfig/configs'
+
+lspconfig.bashls.setup{}
+lspconfig.cssls.setup{}
+lspconfig.diagnosticls.setup{}
+lspconfig.dockerls.setup{}
+lspconfig.html.setup{}
+lspconfig.intelephense.setup{}
+lspconfig.jsonls.setup{}
+lspconfig.pyls.setup{}
+lspconfig.solargraph.setup{}
+lspconfig.tsserver.setup{}
+lspconfig.vimls.setup{}
+lspconfig.yamlls.setup{}
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained",
+  highlight = {
+    enable = true
+  },
+  indent = {
+    enable = true
+  }
+}
 EOF
 
 " }}}
