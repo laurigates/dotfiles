@@ -1,4 +1,0 @@
-= FZF =
-
-`Ctrl+T` search for files and insert selection into terminal.
-For example `gco -- <Ctrl+T><Enter>`. `Ctrl+T` will open an interactive search and pressing enter will result in `gco -- /path/to/file`.

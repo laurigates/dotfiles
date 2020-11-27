@@ -1,3 +1,0 @@
-= yank =
-
-https://salsa.debian.org/debian/yank

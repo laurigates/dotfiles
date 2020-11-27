@@ -1,3 +1,0 @@
-pvmove
-lvs
-pvscan

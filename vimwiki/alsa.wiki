@@ -1,4 +1,0 @@
-```
-aplay -L
-amixer -c1
-```

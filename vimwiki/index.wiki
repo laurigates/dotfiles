@@ -18,6 +18,7 @@
 - [[systemd]]
 - [[Package Management]]
 - [[Linux optimizations]]
+- [[Audio]]
 
 ## Network
 
@@ -35,20 +36,23 @@
 - [[zsh]]
 - [[tmux]]
 - [[git]]
-- [[yank]]
 - [[xsel]]
 - [[pet]]
 - [[fzf]]
 - [[glances]]
 - [[fc]]
 - [[fc-list]]
-- [[xrdb]]
+- [[find]]
+- [[rg]]
+- [[fd-find]]
+- [[ranger]]
+- [[File conversion]]
 
 ## Window management
 
 - [[xset]]
 - [[i3]]
-- [[compton]]
+- [[xrdb]]
 - [[rofi]]
 - [[dunst]]
 - [[xprop]]
@@ -64,16 +68,3 @@
 - [[lvm]]
 - [[findmnt]]
 - [[lsblk]]
-
-## File management
-
-- [[find]]
-- [[rg]]
-- [[fd-find]]
-- [[ranger]]
-- [[File conversion]]
-
-## Audio
-
-- [[pulseaudio]]
-- [[alsa]]
