@@ -100,6 +100,8 @@ Plug 'joshdick/onedark.vim'
 " Markdown Preview
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 
+Plug 'mbbill/undotree'
+
 call plug#end()
 
 set nocompatible
@@ -461,6 +463,12 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
 
 " }}}
+
+"{{{ Undotree
+
+let g:undotree_WindowLayout = 2
+
+"}}}
 
 " Sneak {{{
 
