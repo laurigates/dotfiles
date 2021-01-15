@@ -88,6 +88,9 @@ Plug 'tpope/vim-surround'
 " Airline
 Plug 'vim-airline/vim-airline'
 
+" Devicons for Airline
+Plug 'ryanoasis/vim-devicons'
+
 " Gotham theme
 Plug 'whatyouhide/vim-gotham'
 
