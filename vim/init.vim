@@ -4,7 +4,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 if has('nvim')
     Plug 'neovim/nvim-lspconfig'
-    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
     if executable('node')
         " Completions
