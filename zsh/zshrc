@@ -45,7 +45,7 @@ plugins=(
   cake composer
   nmap taskwarrior
   npm yarn
-  ruby gem bundler rbenv
+  ruby gem bundler
   fd ripgrep
   docker docker-compose
   rust rustup cargo

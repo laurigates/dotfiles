@@ -1,6 +1,8 @@
 export PATH=\
 $HOME/.nodenv/shims:\
 $HOME/.nodenv/bin:\
+$HOME/.rbenv/shims:\
+$HOME/.rbenv/bin:\
 $HOME/.cargo/bin:\
 $HOME/go/bin:\
 $HOME/.local/bin:\
