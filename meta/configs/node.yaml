@@ -1,3 +1,9 @@
+- link:
+    ~/.nodenv: node/nodenv
+    ~/.nodenv/plugins/node-build:
+      create: true
+      path: node/node-build
+
 - shell:
   -
     command: setup/nodejs.sh

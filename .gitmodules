@@ -34,3 +34,9 @@
 [submodule "zsh/fzf-tab-completion"]
 	path = zsh/fzf-tab-completion
 	url = https://github.com/lincheney/fzf-tab-completion.git
+[submodule "node/nodenv"]
+	path = node/nodenv
+	url = https://github.com/nodenv/nodenv.git
+[submodule "node/node-build"]
+	path = node/node-build
+	url = https://github.com/nodenv/node-build.git

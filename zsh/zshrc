@@ -31,9 +31,6 @@ MODE_CURSOR_SEARCH="#d4d steady underline"
 MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
 MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
 
-# make zsh start faster
-NVM_LAZY=1
-
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
@@ -47,7 +44,7 @@ plugins=(
   pip python virtualenv
   cake composer
   nmap taskwarrior
-  nvm npm yarn
+  npm yarn
   ruby gem bundler rbenv
   fd ripgrep
   docker docker-compose
@@ -124,6 +121,9 @@ compinit
 if type kitty > /dev/null; then
     kitty + complete setup zsh | source /dev/stdin
 fi
+
+# nodenv completions
+[ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
 
 # rbenv completions
 [ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
