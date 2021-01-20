@@ -7,7 +7,6 @@
     - setup/cleanup.sh ~/.config/nvim/coc-settings.json
 
 - link:
-    ~/.vimrc: vim/init.vim
     ~/.config/nvim/init.vim:
       create: true
       path: vim/init.vim

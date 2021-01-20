@@ -110,50 +110,20 @@ set nocompatible
 
 " General {{{
 
-" Sets how many lines of history VIM has to remember
-set history=500
-
-" Enable filetype plugins
-filetype plugin on
-filetype indent on
-
-" Set to auto read when a file is changed from the outside
-set autoread
-
-" With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
-let mapleader = ","
-
-" Fast saving
-nmap <leader>w :w!<cr>
+let mapleader = "\<Space>"
 
 " :W sudo saves the file
 " (useful for handling the permission-denied error)
 " command W w !sudo tee % > /dev/null
 
-" https://www.johnhawthorn.com/2012/09/vi-escape-delays/
-set timeout ttimeout         " separate mapping and keycode timeouts
-set timeoutlen=500           " mapping timeout 500ms  (adjust for preference)
-set ttimeoutlen=20           " keycode timeout 20ms
-
-" No annoying sound on errors
-" set noerrorbells
-" set novisualbell
-
-set wildmenu " Enhanced command line completion
-" https://www.reddit.com/r/vim/comments/8mi8cm/is_using_in_path_a_good_idea/
-" set path+=** " enable recursive find
+set timeoutlen=500 " mapping timeout 500ms  (adjust for preference)
+set ttimeoutlen=20 " keycode timeout 20ms
 
 set ignorecase " Ignore case when searching
 set smartcase " When searching try to be smart about cases
-set hlsearch " Highlight search results
-set incsearch " Makes search act like search in modern browsers
 
 " Don't redraw while executing macros (good performance config)
 set lazyredraw
-
-" For regular expressions turn magic on
-set magic
 
 " }}}
 
@@ -188,12 +158,6 @@ set hidden
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Prevent moving the cursor when changing focus to vim
-" augroup NO_CURSOR_MOVE_ON_FOCUS
-"   au!
-"   au FocusLost * let g:oldmouse=&mouse | set mouse=
-"   au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
-" augroup END
 
 " Smart way to move between windows
 map <C-j> <C-W>j
@@ -202,7 +166,7 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Return to last edit position when opening files (You want this!)
+" Return to last edit position when opening files
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 " Open fzf file search
@@ -221,7 +185,6 @@ endtry
 " Text, tab and indent related {{{
 
 set expandtab " Use spaces instead of tabs
-set smarttab " Be smart when using tabs
 set shiftwidth=4
 set tabstop=4
 
@@ -229,9 +192,6 @@ set tabstop=4
 set lbr
 set tw=500
 
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
 
 " highlight Whitespace ctermbg=darkred guibg=darkred
 " highlight NonText ctermfg=153 guifg=lightskyblue
@@ -249,15 +209,13 @@ autocmd BufWinLeave * call clearmatches()
 " Appearance {{{
 
 " Set 12 lines to the cursor - when moving vertically using j/k
-set so=12
+set scrolloff=12
 
 " more natural split opening
 set splitbelow
 set splitright
 
-if (has('nvim'))
-    set inccommand=nosplit " Live preview of substitution results
-endif
+set inccommand=nosplit " Live preview of substitution results
 
 " automatic relative/absolute line numbering
 set number relativenumber
@@ -267,15 +225,6 @@ augroup numbertoggle
   autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 augroup END
 
-" Ignore compiled files
-set wildignore=*.o,*~,*.pyc
-if has("win16") || has("win32")
-    set wildignore+=.git\*,.hg\*,.svn\*
-else
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
-endif
-
-set ruler "Always show current position
 set showmatch " Show matching brackets when text indicator is over them
 set mat=2 " How many tenths of a second to blink when matching brackets
 set diffopt+=vertical,iwhite,algorithm:patience,hiddenoff
@@ -294,20 +243,7 @@ set signcolumn=yes " always show signcolumns
 
 " Colors and Fonts {{{
 
-syntax enable " Enable syntax highlighting
-
-" Color scheme
-" set Vim-specific sequences for RGB colors
-set t_Co=256
-
-if exists('&t_8f') && exists('&t_8b')
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
-
-if exists('&termguicolors')
-    set termguicolors
-endif
+set termguicolors
 
 set background=dark
 let g:onedark_terminal_italics=1
