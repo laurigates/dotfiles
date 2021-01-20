@@ -5,10 +5,7 @@ type nvim >/dev/null 2>&1 && alias vim="nvim"
 alias deploy='sudo r10k deploy environment -v info'
 
 # easy vimrc editing
-alias vimrc='vim ~/.vimrc'
-
-# workaround for problems that are caused by tmux passing tmux-256color as TERM over SSH
-alias ssh='TERM=xterm-256color ssh'
+alias vimrc='vim ~/dotfiles/vim/init.vim'
 
 # use bat if it exists
 #type bat >/dev/null 2>&1 && alias cat="bat"
