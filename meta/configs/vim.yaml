@@ -3,9 +3,6 @@
 - create:
     - ~/.local/share/nvim/plugged
 
-- shell:
-    - setup/cleanup.sh ~/.config/nvim/coc-settings.json
-
 - link:
     ~/.config/nvim/init.vim:
       create: true
@@ -17,7 +14,6 @@
       create: true
       path: vim/vim-plug/plug.vim
     ~/vimwiki: vimwiki
-    ~/.config/nvim/coc-settings.json: vim/coc-settings.json
 
 - shell:
     -
