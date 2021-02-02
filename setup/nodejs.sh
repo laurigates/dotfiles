@@ -9,3 +9,4 @@ fi
 nodenv install 15.6.0
 nodenv global 15.6.0
 npm i -g neovim
+nodenv rehash
