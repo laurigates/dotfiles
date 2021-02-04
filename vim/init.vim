@@ -180,14 +180,13 @@ endtry
 
 " Text, tab and indent related {{{
 
-set expandtab " Use spaces instead of tabs
+" set expandtab " Use spaces instead of tabs
 set shiftwidth=4
 set tabstop=4
 
 " Linebreak on 500 characters
-set lbr
-set tw=500
-
+" set lbr
+" set tw=500
 
 " highlight Whitespace ctermbg=darkred guibg=darkred
 " highlight NonText ctermfg=153 guifg=lightskyblue
@@ -247,7 +246,7 @@ silent! colorscheme onedark
 
 set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language
 set ffs=unix,dos,mac " Use Unix as the standard file type
-set listchars=eol:↲,tab:»\ ,extends:›,precedes:‹,nbsp:‡,trail:·
+set listchars=eol:↲,tab:»\ ,extends:›,precedes:‹,nbsp:☠,trail:·
 
 " }}}
 
