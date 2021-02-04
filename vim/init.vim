@@ -2,18 +2,16 @@
 
 call plug#begin('~/.local/share/nvim/plugged')
 
-if has('nvim')
-    Plug 'neovim/nvim-lspconfig'
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
-    if executable('node')
-        " Completions
-        Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    endif
+if executable('node')
+	" Completions
+	Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
 
-    if executable('global') && executable('ctags')
-        Plug 'jsfaint/gen_tags.vim'
-    endif
+if executable('global') && executable('ctags')
+	Plug 'jsfaint/gen_tags.vim'
 endif
 
 Plug 'michaeljsmith/vim-indent-object'
@@ -111,10 +109,6 @@ set nocompatible
 " General {{{
 
 let mapleader = "\<Space>"
-
-" :W sudo saves the file
-" (useful for handling the permission-denied error)
-" command W w !sudo tee % > /dev/null
 
 set timeoutlen=500 " mapping timeout 500ms  (adjust for preference)
 set ttimeoutlen=20 " keycode timeout 20ms
