@@ -1,13 +1,15 @@
+# Ignore all submodules so my local files don't interfere with docker tests and vice-versa
 /dotbot
+/i3/i3blocks-contrib
+/node/node-build
+/node/nodenv
+/ruby/rbenv
+/ruby/ruby-build
+/tmux/tmux-themepack
+/vim/vim-plug
+/vim/vimwiki
+/zsh/fzf-tab-completion
 /zsh/oh-my-zsh
 /zsh/zsh-autosuggestions
 /zsh/zsh-syntax-highlighting
-/tmux/tmux-themepack
-/tmux/tmux-plugins/tpm
-/tmux/tmux-plugins/tmux-sensible
-/bash/bash-git-prompt
-/vim/vimwiki
-/vim/vim-plug
-/ruby/rbenv
-/ruby/ruby-build
-/i3/i3blocks-contrib
+/zsh/zsh-vim-mode
