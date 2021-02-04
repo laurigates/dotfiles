@@ -20,6 +20,8 @@ Plug 'tpope/vim-repeat'
 
 Plug 'tpope/vim-dispatch'
 
+Plug 'tpope/vim-eunuch'
+
 " Enhanced terminal integration
 Plug 'wincent/terminus'
 
