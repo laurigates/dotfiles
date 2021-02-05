@@ -79,7 +79,7 @@ bar {
 floating_modifier $mod
 
 # set keyboard map
-exec setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
+exec --no-startup-id setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
 
 # start a terminal
 # i3-sensible-terminal uses the $TERMINAL environment variable to determine
