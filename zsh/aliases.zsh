@@ -7,6 +7,9 @@ alias deploy='sudo r10k deploy environment -v info'
 # easy vimrc editing
 alias vimrc='vim ~/dotfiles/vim/init.vim'
 
+# easy zshrc editing
+alias zshrc='vim ~/dotfiles/zsh/zshrc'
+
 # use bat if it exists
 #type bat >/dev/null 2>&1 && alias cat="bat"
 
