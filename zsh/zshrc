@@ -31,11 +31,50 @@ MODE_CURSOR_SEARCH="#d4d steady underline"
 MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
 MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
 
+# https://grml.org/zsh/zsh-lovers.html
+# Fuzzy matching of completions for when you mistype them:
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+# cd will never select the parent directory (e.g.: cd ../<TAB>):
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+
+# fzf-tab related styles
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# preview directory's content with exa when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# switch group using `,` and `.`
+zstyle ':fzf-tab:*' switch-group ',' '.'
+
+# kitty
+autoload -Uz compinit
+compinit
+
+# Completion for kitty
+if type kitty > /dev/null; then
+    kitty + complete setup zsh | source /dev/stdin
+fi
+
+# nodenv completions
+[ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
+
+# rbenv completions
+[ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
+
+# Should check if fzf is installed?
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+  fzf-tab
   git
   extract
   zsh-autosuggestions zsh-syntax-highlighting
@@ -112,36 +151,5 @@ prompt_context() {
 # if [[ ! -z $DISPLAY ]]; then
 #     setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
 # fi
-
-# kitty
-autoload -Uz compinit
-compinit
-
-# Completion for kitty
-if type kitty > /dev/null; then
-    kitty + complete setup zsh | source /dev/stdin
-fi
-
-# nodenv completions
-[ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
-
-# rbenv completions
-[ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
-
-# Should check if fzf is installed?
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f ~/dotfiles/zsh/fzf-tab-completion/zsh/fzf-zsh-completion.sh ] && source ~/dotfiles/zsh/fzf-tab-completion/zsh/fzf-zsh-completion.sh
-
-# https://grml.org/zsh/zsh-lovers.html
-
-# Fuzzy matching of completions for when you mistype them:
-zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:match:*' original only
-zstyle ':completion:*:approximate:*' max-errors 1 numeric
-# Allow searching by the display string during completion (the description of the parameter etc.)
-zstyle ':completion:*' fzf-search-display true
-
-# cd will never select the parent directory (e.g.: cd ../<TAB>):
-zstyle ':completion:*:cd:*' ignore-parents parent pwd
 
 #zprof

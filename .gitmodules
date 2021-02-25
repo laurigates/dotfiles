@@ -31,12 +31,12 @@
 [submodule "zsh/zsh-vim-mode"]
 	path = zsh/zsh-vim-mode
 	url = https://github.com/softmoth/zsh-vim-mode.git
-[submodule "zsh/fzf-tab-completion"]
-	path = zsh/fzf-tab-completion
-	url = https://github.com/lincheney/fzf-tab-completion.git
 [submodule "node/nodenv"]
 	path = node/nodenv
 	url = https://github.com/nodenv/nodenv.git
 [submodule "node/node-build"]
 	path = node/node-build
 	url = https://github.com/nodenv/node-build.git
+[submodule "zsh/fzf-tab"]
+	path = zsh/fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab.git
