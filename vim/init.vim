@@ -334,12 +334,14 @@ let g:airline#extensions#coc#enabled = 1
 
 " }}}
 
-" {{{ Language Server
-"  vim-test
+" vim-test {{{
 
 " make test commands execute using dispatch.vim
 let test#strategy = "dispatch"
 
+" }}}
+
+" {{{ Language Server
 nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
