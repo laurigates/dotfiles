@@ -31,6 +31,33 @@ MODE_CURSOR_SEARCH="#d4d steady underline"
 MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
 MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
 
+# Prevent autosuggestions for large buffers (when pasting to command line for example)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+
+# https://github.com/ohmyzsh/ohmyzsh/pull/9090
+ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+export DEFAULT_USER="$USER"
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+export LANG="en_US.UTF-8"
+export LANGUAGE="en_US.UTF-8"
+# export LC_ALL="en_US.UTF-8"
+
+# kitty
+autoload -Uz compinit
+compinit
+
+# Completion for kitty
+if type kitty > /dev/null; then
+    kitty + complete setup zsh | source /dev/stdin
+fi
+
 # https://grml.org/zsh/zsh-lovers.html
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _complete _match _approximate
@@ -50,15 +77,6 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
-
-# kitty
-autoload -Uz compinit
-compinit
-
-# Completion for kitty
-if type kitty > /dev/null; then
-    kitty + complete setup zsh | source /dev/stdin
-fi
 
 # nodenv completions
 [ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
@@ -89,24 +107,6 @@ plugins=(
   docker docker-compose
   rust rustup cargo
 )
-
-# Prevent autosuggestions for large buffers (when pasting to command line for example)
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-
-# https://github.com/ohmyzsh/ohmyzsh/pull/9090
-ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
-
-source $ZSH/oh-my-zsh.sh
-
-# User configuration
-export DEFAULT_USER="$USER"
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-export LANG="en_US.UTF-8"
-export LANGUAGE="en_US.UTF-8"
-# export LC_ALL="en_US.UTF-8"
 
 ##### Fix tmux key mappings
 # Fix Home/End keys
