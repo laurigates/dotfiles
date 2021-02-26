@@ -411,4 +411,27 @@ EOF
 
 " }}}
 
+"{{{ Scripts
+" https://benjamincongdon.me/blog/2020/06/27/Vim-Tip-Paste-Markdown-Link-with-Automatic-Title-Fetching/
+" https://vim.fandom.com/wiki/Make_an_HTML_anchor_and_href_tag
+" https://stackoverflow.com/questions/1115447/how-can-i-get-the-word-under-the-cursor-and-the-text-of-the-current-line-in-vim
+function! GetURLTitle(url)
+    let html = system('wget -q -O - ' . shellescape(a:url))
+    let regex = '\c.*head.*<title[^>]*>\_s*\zs.\{-}\ze\_s*<\/title>'
+    let title = substitute(matchstr(html, regex), "\n", ' ', 'g')
+    return title
+endfunction
+
+function! PasteMDLink()
+    let url = getreg("+")
+    " let url = expand("<cWORD>")
+    let title = GetURLTitle(url)
+    put = printf('[%s](%s)', title, url)
+    " exe '%s/\<' . url . '\>/' . printf('[%s](%s)', title, url)
+endfunction
+
+" Make a keybinding (mnemonic: "mark down paste")
+nmap <Leader>mdp :call PasteMDLink()<cr>
+
+"}}}
 " vim: fdm=marker foldlevel=0
