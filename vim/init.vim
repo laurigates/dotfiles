@@ -4,6 +4,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-lua/completion-nvim'
 
 if executable('node')
 	" Completions
@@ -233,6 +234,7 @@ set cmdheight=2 " Better display for messages
 set updatetime=300 " You will have bad experience for diagnostic messages when it's default 4000.
 set shortmess+=c " don't give |ins-completion-menu| messages.
 set signcolumn=yes " always show signcolumns
+set completeopt=menuone,noinsert,noselect
 
 " }}}
 
@@ -395,7 +397,8 @@ end
 -- and map buffer local keybindings when the language server attaches
 local servers = { "bashls", "cssls", "diagnosticls", "dockerls", "html", "intelephense", "jsonls", "pyls", "solargraph", "tsserver", "vimls", "yamlls" }
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { on_attach = on_attach }
+  nvim_lsp[lsp].setup { on_attach = require'completion'.on_attach }
+  --nvim_lsp[lsp].setup { on_attach = on_attach }
 end
 
 require'nvim-treesitter.configs'.setup {
