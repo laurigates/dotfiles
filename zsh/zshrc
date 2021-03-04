@@ -92,7 +92,6 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  fzf-tab
   git
   extract
   zsh-autosuggestions zsh-syntax-highlighting
@@ -106,7 +105,12 @@ plugins=(
   fd ripgrep
   docker docker-compose
   rust rustup cargo
+  # oh-my-zsh does not load fzf-tab like this presumably because
+  # fzf-tab.plugin.zsh is a symlink
+  # fzf-tab
 )
+
+source ~/.oh-my-zsh/custom/plugins/fzf-tab/fzf-tab.plugin.zsh
 
 ##### Fix tmux key mappings
 # Fix Home/End keys
