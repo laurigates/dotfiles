@@ -13,6 +13,17 @@
 - https://github.com/tbabej/taskwiki
 - EurKEY
 - ncdu
+- getent group
+
+## node
+
+Reinstall global packages from previous version
+
+`nvm reinstall-packages 15.3`
+
+Set default node version to latest
+
+`nvm alias default node`
 
 ## Binary file analysis
 
@@ -35,6 +46,11 @@ to be initiated with `ssh -Y <host>`.
 `gem list <gem> --remote --all` show all remote versions of a gem
 
 ## vim
+
+Use `:e` to reload nvim-lsp.
+
+When editing vimrc, running `:so %` will source the current file (the vimrc).
+Useful when making changes to plugins for example so that `:PlugInstall` can be run without having to restart vim.
 
 https://vim.fandom.com/wiki/Using_vim_as_calculator
 
