@@ -49,7 +49,7 @@ export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 # export LC_ALL="en_US.UTF-8"
 
-# kitty
+# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
 autoload -Uz compinit
 compinit
 
@@ -78,6 +78,10 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
 
+# NOTE: fzf-tab needs to be loaded after compinit, but before plugins which
+# will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting!!
+source ~/.oh-my-zsh/custom/plugins/fzf-tab/fzf-tab.plugin.zsh
+
 # nodenv completions
 [ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
 
@@ -86,6 +90,9 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 
 # Should check if fzf is installed?
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# for some reason plugins such as z are not loaded currently unless zshrc is
+# sourced manually after starting it
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
@@ -109,8 +116,6 @@ plugins=(
   # fzf-tab.plugin.zsh is a symlink
   # fzf-tab
 )
-
-source ~/.oh-my-zsh/custom/plugins/fzf-tab/fzf-tab.plugin.zsh
 
 ##### Fix tmux key mappings
 # Fix Home/End keys
