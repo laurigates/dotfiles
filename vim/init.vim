@@ -112,6 +112,7 @@ set nocompatible
 " General {{{
 
 let mapleader = "\<Space>"
+imap jj <Esc>
 
 set timeoutlen=500 " mapping timeout 500ms  (adjust for preference)
 set ttimeoutlen=20 " keycode timeout 20ms
@@ -181,9 +182,7 @@ endtry
 
 " Text, tab and indent related {{{
 
-" set expandtab " Use spaces instead of tabs
-set shiftwidth=4
-set tabstop=4
+set expandtab " Use spaces instead of tabs
 
 " Linebreak on 500 characters
 " set lbr
@@ -313,6 +312,7 @@ let g:coc_global_extensions = [
 "{{{ Undotree
 
 let g:undotree_WindowLayout = 2
+nnoremap <F5> :UndotreeToggle<CR>
 
 "}}}
 
@@ -333,6 +333,11 @@ let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline#extensions#tabline#tab_nr_type = 1
 " let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#coc#enabled = 1
+let g:airline#extensions#gen_tags#enabled = 1
+let g:airline#extensions#fzf#enabled = 1
+let g:airline#extensions#fugitiveline#enabled = 1
+let g:airline#extensions#hunks#enabled = 1
+let g:airline#extensions#nvimlsp#enabled = 1
 
 " }}}
 
