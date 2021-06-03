@@ -17,6 +17,5 @@
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
     ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting: zsh/zsh-syntax-highlighting
     ~/.oh-my-zsh/custom/plugins/fzf-tab: zsh/fzf-tab
-    ~/.oh-my-zsh/custom/plugins/zsh-vim-mode: zsh/zsh-vim-mode
     ~/.oh-my-zsh/custom/aliases.zsh: zsh/aliases.zsh
     ~/.oh-my-zsh/custom/tmuxinator.zsh: zsh/tmuxinator.zsh
