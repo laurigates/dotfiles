@@ -38,8 +38,6 @@ ZSH_AUTOSUGGEST_USE_ASYNC=true
 # https://github.com/ohmyzsh/ohmyzsh/pull/9090
 ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
 
-source $ZSH/oh-my-zsh.sh
-
 # User configuration
 export DEFAULT_USER="$USER"
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -49,14 +47,9 @@ export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 # export LC_ALL="en_US.UTF-8"
 
-# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
-autoload -Uz compinit
-compinit
-
-# Completion for kitty
-if type kitty > /dev/null; then
-    kitty + complete setup zsh | source /dev/stdin
-fi
+# kitty
+# autoload -Uz compinit
+# compinit
 
 # https://grml.org/zsh/zsh-lovers.html
 # Fuzzy matching of completions for when you mistype them:
@@ -112,8 +105,6 @@ plugins=(
   fd ripgrep
   docker docker-compose
   rust rustup cargo
-  # oh-my-zsh does not load fzf-tab like this presumably because
-  # fzf-tab.plugin.zsh is a symlink
   # fzf-tab
 )
 
@@ -160,5 +151,17 @@ prompt_context() {
 # if [[ ! -z $DISPLAY ]]; then
 #     setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
 # fi
+
+# Oh-my-zsh needs to be loaded after plugins and such have been defined.
+# Otherwise plugins and completions will not be loaded.
+source $ZSH/oh-my-zsh.sh
+
+# Completion for kitty
+# The kitty docs specify that this has to be called after compinit
+# compinit is called by oh-my-zsh, so this has to be after sourcing oh-my-zsh
+# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
+if type kitty > /dev/null; then
+    kitty + complete setup zsh | source /dev/stdin
+fi
 
 #zprof
