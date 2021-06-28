@@ -19,6 +19,11 @@ To install a specific configuration
 ./install-standalone rust
 ```
 
+## Node & Ruby executables
+
+Remember to run `rbenv rehash` and `nodenv rehash` after installing packages in
+either environment. Otherwise the shell and vim won't find the new binaries.
+
 ## Docker testing
 
 Build a docker image to test installation of the dotfiles

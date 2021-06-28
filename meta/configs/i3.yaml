@@ -12,9 +12,6 @@
     ~/.config/dunst/dunstrc:
       create: true
       path: i3/dunstrc
-    ~/.config/kitty/kitty.conf:
-      create: true
-      path: terminal/kitty.conf
 
 - shell:
     -
