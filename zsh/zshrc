@@ -117,6 +117,10 @@ bindkey "\e[4~" end-of-line
 bindkey "\e[3~" delete-char
 bindkey "\e[2~" quoted-insert
 
+# Mac binds
+bindkey "^[[1;9C" forward-word
+bindkey "^[[1;9D" backward-word
+
 # mappings for "page up" and "page down" to step to the beginning/end
 # of the history
 # bindkey "\e[5~" beginning-of-history

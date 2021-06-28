@@ -12,6 +12,10 @@ $HOME/.local/bin:\
 /usr/bin:\
 /bin
 
+if [ -x /usr/libexec/path_helper ]; then
+	eval `/usr/libexec/path_helper -s`
+fi
+
 # Define these to install perl modules without root
 # For neovim perl module
 # https://metacpan.org/pod/local::lib
