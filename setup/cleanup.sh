@@ -4,7 +4,7 @@
 # are the default files and not symlinked to the
 # dotfiles repo files
 
-for arg
+for conffile
 do
   if eval "test -f $conffile || test -d $conffile && test ! -L $conffile"; then
     eval "mv -v $conffile $conffile.old"

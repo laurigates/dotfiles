@@ -2,7 +2,7 @@
     - ~/.zsh_history_dir
 
 - shell:
-    - setup/cleanup.sh ~/.config/pet
+    - setup/cleanup.sh ~/.zshrc ~/.config/pet
 
 - link:
     ~/.zshenv: zsh/zshenv
