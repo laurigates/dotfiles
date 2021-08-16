@@ -11,7 +11,7 @@ else
 
     if read -q "choice?Press Y/y to install neovim binaries to your home directory: "; then
         wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-        sudo tar xaf nvim-linux64.tar.gz --strip-components=1 -C ~/.local
+        tar xaf nvim-linux64.tar.gz --strip-components=1 -C ~/.local
     else
        echo "Skipping neovim installation."
     fi
