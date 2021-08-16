@@ -83,7 +83,7 @@ exec --no-startup-id setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:
 
 # start a terminal
 # i3-sensible-terminal uses the $TERMINAL environment variable to determine
-# the user preference for the terminal. I set $TERMINAL in ~/.env.
+# the user preference for the terminal. I set $TERMINAL in ~/.zshenv.
 bindsym $mod+Return exec i3-sensible-terminal
 
 # dolphin
