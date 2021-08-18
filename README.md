@@ -19,6 +19,36 @@ To install a specific configuration
 ./install-standalone rust
 ```
 
+## macOS quirks
+
+### Ctrl+T does not work
+
+### Jumping between words
+
+You have to disable system level shortcuts for ctrl+left arrow and ctrl+right
+arrow to be able to use those shortcuts in zsh.
+
+![MacOS ctrl+arrow shortcuts that have to be disabled](images/macos_ctrlarrow.png)
+
+### fzf on macOS
+
+Use Homebrew to install fzf:
+
+```
+brew install fzf
+```
+
+If you want to use shell extensions (better shell integration):
+
+```
+/usr/local/opt/fzf/install
+```
+
+which gives you:
+
+Key bindings (CTRL-T, CTRL-R, and ALT-C) (available for bash, zsh and fish)
+Fuzzy auto-completion (available for bash and zsh)
+
 ## Node & Ruby executables
 
 Remember to run `rbenv rehash` and `nodenv rehash` after installing packages in
