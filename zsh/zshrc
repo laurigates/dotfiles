@@ -118,8 +118,12 @@ bindkey "\e[3~" delete-char
 bindkey "\e[2~" quoted-insert
 
 # Mac binds
-bindkey "^[[1;9C" forward-word
-bindkey "^[[1;9D" backward-word
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
+
+# Add a PC-like bind for pipe on macos
+# command + < is similar to Alt Gr + <
+bindkey -s "^[[60;9u" "|"
 
 # mappings for "page up" and "page down" to step to the beginning/end
 # of the history
