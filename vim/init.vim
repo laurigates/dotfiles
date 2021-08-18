@@ -111,7 +111,8 @@ set nocompatible
 
 " General {{{
 
-let mapleader = "\<Space>"
+" Space is a convenient leader map
+let mapleader = " "
 imap jj <Esc>
 
 set timeoutlen=500 " mapping timeout 500ms  (adjust for preference)
