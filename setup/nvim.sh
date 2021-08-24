@@ -10,8 +10,20 @@ else
     echo "Neovim is not installed!"
 
     if read -q "choice?Press Y/y to install neovim binaries to your home directory: "; then
-        wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-        tar xaf nvim-linux64.tar.gz --strip-components=1 -C ~/.local
+        case "$(uname)" in
+          'Darwin') OS=macos ;;
+          'Linux') OS=linux64 ;;
+        esac
+
+        # Should add the option to choose whether to install globally
+        INSTALL_DIR=/usr/local
+        INSTALL_DIR=~/.local
+
+        if [[ -v OS ]]; then
+          wget https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz
+          # If installing globally, sudo is needed
+          tar xaf nvim-linux64.tar.gz --strip-components=1 -C $INSTALL_DIR
+        fi
     else
        echo "Skipping neovim installation."
     fi
