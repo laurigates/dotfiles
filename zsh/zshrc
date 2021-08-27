@@ -71,10 +71,6 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
 
-# NOTE: fzf-tab needs to be loaded after compinit, but before plugins which
-# will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting!!
-source ~/.oh-my-zsh/custom/plugins/fzf-tab/fzf-tab.plugin.zsh
-
 # nodenv completions
 [ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
 
@@ -84,14 +80,17 @@ source ~/.oh-my-zsh/custom/plugins/fzf-tab/fzf-tab.plugin.zsh
 # Should check if fzf is installed?
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# for some reason plugins such as z are not loaded currently unless zshrc is
-# sourced manually after starting it
-
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+#
+# NOTE: fzf-tab needs to be loaded after compinit, but before plugins which
+# will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting!!
+# Since oh-my-zsh runs compinit, the relevant thing here is that the plugins
+# are in the correct order.
 plugins=(
+  fzf-tab
   git
   extract
   zsh-autosuggestions zsh-syntax-highlighting
@@ -105,7 +104,6 @@ plugins=(
   fd ripgrep
   docker docker-compose
   rust rustup cargo
-  # fzf-tab
 )
 
 ##### Fix tmux key mappings
