@@ -4,12 +4,16 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'nvim-lua/completion-nvim'
 
-if executable('node')
-	" Completions
-	Plug 'neoclide/coc.nvim', {'branch': 'release'}
-endif
+" Completion
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-nvim-lua'
+Plug 'saadparwaiz1/cmp_luasnip'
+
+Plug 'L3MON4D3/LuaSnip'
 
 if executable('global') && executable('ctags')
 	Plug 'jsfaint/gen_tags.vim'
@@ -35,9 +39,6 @@ Plug 'godlygeek/tabular'
 Plug 'mrk21/yaml-vim'
 
 Plug 'justinmk/vim-sneak'
-
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
 
 " Ruby support (plays nicely with tpope/rbenv-ctags)
 Plug 'vim-ruby/vim-ruby'
@@ -285,31 +286,6 @@ imap ½ $
 
 " }}}
 
-"{{{ Completions menu
-
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-
-" Use enter to select highlighted item
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-"}}}
-
-" Coc {{{
-
-let g:coc_global_extensions = [
-            \'coc-emmet',
-            \'coc-eslint',
-            \'coc-git',
-            \'coc-highlight',
-            \'coc-pairs',
-            \'coc-tag',
-            \'coc-yank',
-            \]
-
-" }}}
-
 "{{{ Undotree
 
 let g:undotree_WindowLayout = 2
@@ -333,7 +309,6 @@ let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 " show tab numbers
 let g:airline#extensions#tabline#tab_nr_type = 1
 " let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#coc#enabled = 1
 let g:airline#extensions#gen_tags#enabled = 1
 let g:airline#extensions#fzf#enabled = 1
 let g:airline#extensions#fugitiveline#enabled = 1
@@ -399,12 +374,47 @@ local on_attach = function(client, bufnr)
   end
 end
 
--- Use a loop to conveniently both setup defined servers 
--- and map buffer local keybindings when the language server attaches
-local servers = { "bashls", "cssls", "diagnosticls", "dockerls", "html", "intelephense", "jsonls", "pyls", "solargraph", "tsserver", "vimls", "yamlls" }
+-- https://github.com/hrsh7th/nvim-cmp
+-- https://github.com/neovim/nvim-lspconfig/wiki/Autocompletion
+-- Setup nvim-cmp.
+local cmp = require'cmp'
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      require('luasnip').lsp_expand(args.body)
+    end,
+  },
+  mapping = {
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  },
+  sources = {
+    { name = 'nvim_lua' },
+    { name = 'nvim_lsp' },
+    { name = 'path' },
+    { name = 'luasnip' },
+    { name = 'buffer', keyword_length = 5 },
+  }
+})
+
+-- Add additional capabilities supported by nvim-cmp
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+-- Enable some language servers with the additional completion capabilities offered by nvim-cmp
+local servers = { "bashls", "dockerls", "yamlls", "vimls", "jsonls", "tsserver", "terraformls" }
+-- A list of all the language servers I've used, for reference
+--local servers = { "bashls", "cssls", "diagnosticls", "dockerls", "html", "intelephense", "jsonls", "pyls", "solargraph", "tsserver", "vimls", "yamlls", "tsserver", "terraformls" }
+
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { on_attach = require'completion'.on_attach }
-  --nvim_lsp[lsp].setup { on_attach = on_attach }
+  nvim_lsp[lsp].setup {
+    -- on_attach = my_custom_on_attach,
+    capabilities = capabilities,
+  }
 end
 
 require'nvim-treesitter.configs'.setup {
