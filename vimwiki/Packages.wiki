@@ -4,6 +4,7 @@
 
 xsel
 git
+perl5
 
 ## i3
 
@@ -31,7 +32,7 @@ bat
 lsd
 jq
 task tasksh
-pet
+pet (pet-bin)
 ttf-twemoji
 
 ## zsh

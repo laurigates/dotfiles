@@ -13,6 +13,10 @@ https://unix.stackexchange.com/questions/243317/bash-how-can-i-replace-a-string-
 `!!:gs/one/two` recall the previous command, but replace 'one' with 'two' globally
 `^one^two` recall the previous command, but replace 'one' with 'two'
 `^one^two^:G` recall the previous command, but replace 'one' with 'two' globally
+`!systemctl` recall the most recent command that starts with 'systemctl'
+`!?restart` recall the most recent command that contains 'restart'
+`!?restart?:s/restart/status` recall the most recent command that contains 'restart' and replace it with 'status'
+`!?restart?:3` recall the third argument of the most recent command that contains 'restart'
 
 ## Globbing
 

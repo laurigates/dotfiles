@@ -1,0 +1,17 @@
+# WiFi
+
+[Network configuration/Wireless - ArchWiki](https://wiki.archlinux.org/title/Network_configuration/Wireless)
+
+Network Manager terminal user interface:
+
+```
+nmtui
+```
+
+Connecting to a wireless network using nmcli:
+
+```
+nmcli dev wifi list
+sudo nmcli dev wifi connect network-ssid
+sudo nmcli --ask dev wifi connect network-ssid
+```

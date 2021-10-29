@@ -13,3 +13,4 @@ This is a dumping ground for issues with my environment I have yet to resolve.
 - Should add some kind of automatic cleanup of `~/.vim/temp_dirs` based of file age.
 - Completions have to be selected using Ctrl+Y instead of enter now for some reason
 - Cycling through completions can only be done with arrow keys?
+- i3blocks spotify status not working
