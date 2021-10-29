@@ -101,6 +101,7 @@ plugins=(
   fd ripgrep
   docker docker-compose
   rust rustup cargo
+  kubectl
 )
 
 ##### Fix tmux key mappings
