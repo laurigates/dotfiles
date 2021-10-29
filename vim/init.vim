@@ -23,7 +23,7 @@ Plug 'michaeljsmith/vim-indent-object'
 
 Plug 'tpope/vim-repeat'
 
-Plug 'tpope/vim-dispatch'
+" Plug 'tpope/vim-dispatch'
 
 Plug 'tpope/vim-eunuch'
 
@@ -36,18 +36,18 @@ Plug 'wellle/targets.vim'
 
 Plug 'godlygeek/tabular'
 
-Plug 'mrk21/yaml-vim'
+" Plug 'mrk21/yaml-vim'
 
 Plug 'justinmk/vim-sneak'
 
 " Ruby support (plays nicely with tpope/rbenv-ctags)
-Plug 'vim-ruby/vim-ruby'
+" Plug 'vim-ruby/vim-ruby'
 
 " Browse tags of current file
-Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar'
 
 " phpstan integration
-Plug 'phpstan/vim-phpstan'
+" Plug 'phpstan/vim-phpstan'
 
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -60,20 +60,20 @@ Plug 'vimwiki/vimwiki'
 Plug 'tpope/vim-commentary'
 
 " Unit testing
-Plug 'vim-test/vim-test'
+" Plug 'vim-test/vim-test'
 
 " Rspec tests
-Plug 'thoughtbot/vim-rspec'
+" Plug 'thoughtbot/vim-rspec'
 
 " Javascript support
-Plug 'pangloss/vim-javascript'
+" Plug 'pangloss/vim-javascript'
 
 " JSON Syntax file
-Plug 'elzr/vim-json'
+" Plug 'elzr/vim-json'
 
 " Puppet syntax
-Plug 'rodjek/vim-puppet'
-Plug 'puppetlabs/puppet-editor-services'
+" Plug 'rodjek/vim-puppet'
+" Plug 'puppetlabs/puppet-editor-services'
 
 " Show changed lines in the sign column
 Plug 'mhinz/vim-signify'
@@ -94,7 +94,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'ryanoasis/vim-devicons'
 
 " Gotham theme
-Plug 'whatyouhide/vim-gotham'
+" Plug 'whatyouhide/vim-gotham'
 
 " One
 Plug 'joshdick/onedark.vim'
