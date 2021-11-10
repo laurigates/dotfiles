@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 if command -v pip > /dev/null; then
     pip install --user --upgrade pip
