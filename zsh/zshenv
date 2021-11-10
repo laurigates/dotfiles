@@ -66,11 +66,11 @@ else
 fi
 # No need to source ruby or nvm here, because the zsh plugins already do that!
 
-# Use ripgrep for faster performance
-# Do not respect vcs ignore files such as .gitignore, since it's nice to be able
-# to open up CakePHP source files for example for reference
-export FZF_DEFAULT_COMMAND="rg --files --hidden"
-# export FZF_DEFAULT_COMMAND="rg --files --hidden --no-ignore-vcs"
+# Use fd by default, fallback to find
+export FZF_DEFAULT_COMMAND="fd --type f --hidden || find . -type f"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Preview files with bat and directories with tree
 export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
 export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
 
