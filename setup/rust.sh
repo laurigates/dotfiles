@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 export PATH="$HOME/.cargo/bin:$PATH"
 

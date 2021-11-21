@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 if nvim --version > /dev/null 2>&1; then
     if npm --version > /dev/null 2>&1; then

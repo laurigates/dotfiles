@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 if ! nodenv --version > /dev/null 2>&1; then
     cd ~/.nodenv && src/configure && make -C src

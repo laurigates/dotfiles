@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 if ! rbenv --version > /dev/null 2>&1; then
     cd ~/.rbenv && src/configure && make -C src

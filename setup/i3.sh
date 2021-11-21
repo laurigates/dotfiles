@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 if command -v i3 > /dev/null; then
     i3/build-config.sh
