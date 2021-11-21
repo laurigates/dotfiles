@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 # check if files are not symbolic, meaning they
 # are the default files and not symlinked to the
