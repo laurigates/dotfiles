@@ -1,22 +1,8 @@
-## Rofi Theming
-# Deprecated options
-rofi.color-enabled: true
-rofi.color-window: #273238, #273238, #1e2529
-rofi.color-normal: #273238, #c1c1c1, #273238, #394249, #ffffff
-rofi.color-active: #273238, #80cbc4, #273238, #394249, #80cbc4
-rofi.color-urgent: #273238, #ff1844, #273238, #394249, #ff1844
-
 ## Cursor
-Xcursor.size: 16
+/* Xcursor.size: 32 */
 
-##
-Xft.dpi: 96
-Xft.autohint: false
-Xft.lcdfilter:  lcddefault
-Xft.hintstyle:  hintfull
-Xft.hinting: true
-Xft.antialias: true
-Xft.rgba: rgb
+## Note that Xft.dpi is different than xrandr --dpi
+/* Xft.dpi: 180 */
 
 ## For OSC 52 clipboard reading
 XTerm*allowWindowOps: true
