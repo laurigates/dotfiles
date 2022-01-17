@@ -82,6 +82,25 @@ function fzf_apropos() {
   apropos '' | fzf --preview-window=up:50% --preview 'echo {} | cut -f 1 -d " " | xargs man' | cut -f 1 -d " "
 }
 
+# Install or upgrade nvim
+function install_nvim () {
+    if read -q "choice?Press Y/y to install neovim binaries to your home directory: "; then
+        case "$(uname)" in
+          'Darwin') OS=macos ;;
+          'Linux') OS=linux64 ;;
+        esac
+
+        # Should add the option to choose whether to install globally
+        INSTALL_DIR="$HOME/.local"
+        if [[ -v OS ]]; then
+          wget -qO- https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz \
+          | tar xzf - --strip-components=1 -C $INSTALL_DIR
+        fi
+    else
+       echo "Skipping neovim installation."
+    fi
+}
+
 # Fix SDL full screen output to correct monitor
 export SDL_VIDEO_FULLSCREEN_HEAD=0
 
