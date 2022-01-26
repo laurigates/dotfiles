@@ -9,7 +9,7 @@
 #emulate sh -c '. /etc/profile'
 
 # https://www.reddit.com/r/zsh/comments/jncp79/paste_bracketing_causes_slow_pastes/
-DISABLE_MAGIC_FUNCTIONS=1
+DISABLE_MAGIC_FUNCTIONS=true
 
 # https://www.johnhawthorn.com/2012/09/vi-escape-delays/
 KEYTIMEOUT=1
