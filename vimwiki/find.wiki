@@ -1,6 +1,0 @@
-Find files under _copytest_ whose path matches _test_ and that do not have the _tmpl_ extension.
-Copy those files to _copydest_ while preserving the directory structure.
-
-```
-find copytest/ -type f -path "*test*" ! -name "*.tmpl" -exec cp --parents {} copydest \;
-```

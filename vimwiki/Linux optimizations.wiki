@@ -1,9 +1,0 @@
-# Linux optimizations
-
-## Swap allocation
-
-These can be set in /etc/sysctl.conf
-vm.swappiness = 1
-vm.vfs_cache_pressure = 60
-vm.dirty_ratio = 20
-vm.dirty_background_ratio = 10

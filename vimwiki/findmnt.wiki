@@ -1,9 +1,0 @@
-# findmnt
-
-List all mounts in a nice tree view
-
-`findmnt`
-
-Verify fstab syntax, order etc.
-
-`findmnt --verify`

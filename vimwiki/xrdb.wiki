@@ -1,5 +1,0 @@
-# xrdb
-
-Reload .Xresources
-
-`xrdb ~/.Xresources`

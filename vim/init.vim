@@ -53,9 +53,6 @@ Plug 'justinmk/vim-sneak'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-" Vimwiki
-Plug 'vimwiki/vimwiki'
-
 " Commenting support (gc)
 Plug 'tpope/vim-commentary'
 
@@ -132,13 +129,8 @@ set lazyredraw
 " autocmd BufRead,BufNewFile *.eyaml set filetype=yaml
 " autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd BufRead,BufNewFile *.md setlocal textwidth=80
-" Mediawiki filetype
-autocmd BufRead,BufNewFile *.mw set filetype=vimwiki
 " a bit annoying since the focus stays on the toc after opening a file
 "autocmd FileType markdown Toc
-
-" Disable temporary wiki's so that the vimwiki filetype won't apply to all wiki and md files
-let g:vimwiki_global_ext = 0
 
 " }}}
 

@@ -1,5 +1,0 @@
-# lsblk
-
-List block devices including their fstype and uuid
-
-`lsblk -f`

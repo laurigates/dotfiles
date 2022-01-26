@@ -1,5 +1,0 @@
-# dbus-packages
-
-https://github.com/bus1/dbus-broker/wiki
-dbus-broker
-dbus-x11
