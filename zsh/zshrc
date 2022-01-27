@@ -31,10 +31,6 @@ MODE_CURSOR_SEARCH="#d4d steady underline"
 MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
 MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
 
-# Prevent autosuggestions for large buffers (when pasting to command line for example)
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-
 # https://github.com/ohmyzsh/ohmyzsh/pull/9090
 ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
 
