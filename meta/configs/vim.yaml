@@ -13,7 +13,6 @@
     ~/.vim/autoload/plug.vim:
       create: true
       path: vim/vim-plug/plug.vim
-    ~/vimwiki: vimwiki
 
 - shell:
     -
