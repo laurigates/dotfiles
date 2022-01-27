@@ -100,7 +100,7 @@ plugins=(
   ruby gem bundler
   fd ripgrep
   docker docker-compose
-  rust rustup cargo
+  rust
   kubectl
 )
 
