@@ -1,3 +1,6 @@
+- link:
+    ~/.pyenv: python/pyenv
+
 - shell:
   -
     command: setup/python.sh
