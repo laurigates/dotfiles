@@ -1,6 +1,6 @@
 #!/bin/zsh -e
 
-VERSION=15.6.0
+VERSION=17.4.0
 
 nodenv install -s $VERSION
 nodenv global $VERSION
