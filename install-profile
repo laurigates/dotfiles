@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-set -e
 
 BASE_CONFIG="base"
 CONFIG_SUFFIX=".yaml"
@@ -17,9 +16,7 @@ BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${BASE_DIR}"
 git submodule update --init --recursive --remote --jobs 8 --quiet
 
-while IFS= read -r config; do
-	CONFIGS+=" ${config}"
-done < "${META_DIR}/${PROFILES_DIR}/$1"
+typeset -a CONFIGS=("${(@f)"$(<${META_DIR}/${PROFILES_DIR}/$1)"}")
 
 shift
 
@@ -31,4 +28,4 @@ for config in ${CONFIGS} ${@}; do
 	"${BASE_DIR}/${META_DIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASE_DIR}" -c "$configFile" ; rm -f "$configFile"
 done
 
-# vim: ft=bash
+# vim: ft=zsh

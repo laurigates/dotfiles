@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-set -e
 
 BASE_CONFIG="base"
 CONFIG_SUFFIX=".yaml"
@@ -22,4 +21,4 @@ for config in ${@}; do
 	"${BASE_DIR}/${META_DIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASE_DIR}" -c "$configFile" ; rm -f "$configFile"
 done
 
-# vim: ft=sh
+# vim: ft=zsh
