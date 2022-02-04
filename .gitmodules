@@ -40,3 +40,6 @@
 [submodule "python/pyenv"]
 	path = python/pyenv
 	url = https://github.com/pyenv/pyenv.git
+[submodule "node/nodenv-default-packages"]
+	path = node/nodenv-default-packages
+	url = https://github.com/nodenv/nodenv-default-packages.git

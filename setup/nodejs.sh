@@ -4,5 +4,5 @@ VERSION=17.4.0
 
 nodenv install -s $VERSION
 nodenv global $VERSION
-npm i -g neovim
 nodenv rehash
+nodenv default-packages install

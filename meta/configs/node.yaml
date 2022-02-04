@@ -3,6 +3,12 @@
     ~/.nodenv/plugins/node-build:
       create: true
       path: node/node-build
+    ~/.nodenv/plugins/nodenv-default-packages:
+      create: true
+      path: node/nodenv-default-packages
+    ~/.nodenv/default-packages:
+      create: true
+      path: node/default-packages
 
 - shell:
   -
