@@ -97,7 +97,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'joshdick/onedark.vim'
 
 " Markdown Preview
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 
 Plug 'mbbill/undotree'
 
