@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-
 BASE_CONFIG="base"
 CONFIG_SUFFIX=".yaml"
 
