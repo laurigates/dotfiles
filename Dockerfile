@@ -4,10 +4,13 @@ FROM ubuntu:latest
 
 # OS updates and install
 RUN apt-get update -qq && apt-get install -y -qq \
+sudo \
+language-pack-en \
 zsh wget git \
 python3 python3-pip \
 # ruby build dependencies
-libssl-dev libreadline-dev
+libssl-dev libreadline-dev \
+&& update-locale
 
 # Could possibly pipe wget to tar instead of saving it to a file
 RUN wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz && \
