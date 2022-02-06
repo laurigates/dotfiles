@@ -17,16 +17,16 @@ jobs:
       run: ./install-profile workstation
     - name: Test pyenv path, version and packages
       run: |
-        whence python | grep shims
+        which python | grep shims
         python --version
         pip list
     - name: Test rbenv path, version and packages
       run: |
-        whence ruby | grep shims
+        which ruby | grep shims
         ruby --version
         gem list
     - name: Test nodenv path, version and packages
       run: |
-        whence node | grep shims
+        which node | grep shims
         node --version
         npm list -g
