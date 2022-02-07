@@ -1,3 +1,8 @@
+- clean: ['~/.pyenv']
+
+- shell:
+    - setup/cleanup.sh ~/.pyenv
+
 - link:
     ~/.pyenv: python/pyenv
 
@@ -5,5 +10,20 @@
   -
     command: setup/python.sh
     description: Checking python environment
+    stdout: true
+    stderr: true
+  -
+    command: which python | grep shims
+    description: Checking python path
+    stdout: true
+    stderr: true
+  -
+    command: python --version
+    description: Checking python version
+    stdout: true
+    stderr: true
+  -
+    command: pip list | grep pynvim
+    description: Checking python packages
     stdout: true
     stderr: true
