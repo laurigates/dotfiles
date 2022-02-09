@@ -71,7 +71,7 @@ fi
 # No need to source ruby or nvm here, because the zsh plugins already do that!
 
 # Use fd by default, fallback to find
-export FZF_DEFAULT_COMMAND="fd --type f --hidden || find . -type f"
+export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude '.git' || find . -type f"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # Preview files with bat and directories with tree
@@ -80,6 +80,20 @@ export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-wind
 
 # Preview directory tree when using Alt+C
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | xsel -ib)+abort' --header 'Press CTRL-Y to copy command into clipboard'"
+
+# Use fd (https://github.com/sharkdp/fd) instead of the default find
+# command for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}
 
 # for existing man pages
 function fzf_apropos() {
