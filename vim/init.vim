@@ -84,14 +84,9 @@ Plug 'tpope/vim-unimpaired'
 " Surround (cs"')
 Plug 'tpope/vim-surround'
 
-" Airline
-Plug 'vim-airline/vim-airline'
-
-" Devicons for Airline
-Plug 'ryanoasis/vim-devicons'
-
-" Gotham theme
-" Plug 'whatyouhide/vim-gotham'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'SmiteshP/nvim-gps'
 
 " One
 Plug 'joshdick/onedark.vim'
@@ -291,24 +286,6 @@ let g:sneak#label = 1
 
 " }}}
 
-" Airline {{{
-
-set noshowmode " The mode is already shown by Airline
-
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-" show tab numbers
-let g:airline#extensions#tabline#tab_nr_type = 1
-" let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#gen_tags#enabled = 1
-let g:airline#extensions#fzf#enabled = 1
-let g:airline#extensions#fugitiveline#enabled = 1
-let g:airline#extensions#hunks#enabled = 1
-let g:airline#extensions#nvimlsp#enabled = 1
-
-" }}}
-
 " vim-test {{{
 
 " make test commands execute using dispatch.vim
@@ -319,6 +296,16 @@ let test#strategy = "dispatch"
 " {{{ Language Server
 
 lua << EOF
+require("nvim-gps").setup()
+local gps = require("nvim-gps")
+
+require("lualine").setup({
+sections = {
+        lualine_c = {
+                { gps.get_location, cond = gps.is_available },
+                }
+        }
+})
 local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
