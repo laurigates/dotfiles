@@ -48,10 +48,9 @@ Plug 'justinmk/vim-sneak'
 
 " phpstan integration
 " Plug 'phpstan/vim-phpstan'
-
-" Plugin outside ~/.vim/plugged with post-update hook
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 " Commenting support (gc)
 Plug 'tpope/vim-commentary'
@@ -156,9 +155,6 @@ map <C-l> <C-W>l
 
 " Return to last edit position when opening files
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" Open fzf file search
-nnoremap <C-F> :Files<CR>
 
 " Turn persistent undo on
 " means that you can undo even when you close a buffer/VIM
@@ -294,9 +290,33 @@ let test#strategy = "dispatch"
 
 " }}}
 
+" Telescope {{{
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+" }}}
+
 " {{{ Language Server
 
 lua << EOF
+-- Telescope
+require('telescope').setup {
+  extensions = {
+    fzf = {
+      fuzzy = true,                    -- false will only do exact matching
+      override_generic_sorter = true,  -- override the generic sorter
+      override_file_sorter = true,     -- override the file sorter
+      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+                                       -- the default case_mode is "smart_case"
+    }
+  }
+}
+-- To get fzf loaded and working with telescope, you need to call
+-- load_extension, somewhere after setup function:
+require('telescope').load_extension('fzf')
+
+-- nvim-gps
 require("nvim-gps").setup()
 local gps = require("nvim-gps")
 
