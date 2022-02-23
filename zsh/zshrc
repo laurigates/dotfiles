@@ -66,6 +66,14 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
+# enable IP addresses in completions
+zstyle ':completion:*' use-ip true
+
+###
+# NOTE: Completions need to be loaded before compinit is run.
+# Since oh-my-zsh runs compinit, they need to be before oh-my-zsh is loaded.
+# That way it doesn't need to be run multiple times.
+###
 
 # nodenv completions
 [ -f ~/.nodenv/completions/nodenv.zsh ] && source ~/.nodenv/completions/nodenv.zsh
