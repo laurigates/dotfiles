@@ -84,12 +84,12 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 # are in the correct order.
 plugins=(
   fzf-tab
-  git
+  git gh
   extract
   zsh-autosuggestions zsh-syntax-highlighting
   z systemd
   colored-man-pages
-  pip python virtualenv
+  pip python virtualenv pyenv
   cake composer
   nmap taskwarrior
   npm yarn
@@ -98,6 +98,7 @@ plugins=(
   docker docker-compose
   rust
   kubectl
+  terraform
 )
 
 ##### Fix tmux key mappings
