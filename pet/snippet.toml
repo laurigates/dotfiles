@@ -127,3 +127,8 @@
   description = "List packages installed from AUR."
   command = "pacman -Qm"
   output = ""
+
+[[snippets]]
+  description = "Scan the ed25519 fingerprint of a remote server and append it to the known_hosts file of the local machine."
+  command = "ssh-keyscan -H -t ed25519 <ip_address> >> ~/.ssh/known_hosts"
+  output = ""
