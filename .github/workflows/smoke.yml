@@ -3,7 +3,7 @@ name: Smoke Test CI
 on: [push]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
     - name: Install dependencies
@@ -15,3 +15,13 @@ jobs:
     - uses: actions/checkout@v1
     - name: Run dotbot profile installation
       run: ./install-profile workstation
+  build-macos:
+    runs-on: macos-11
+    steps:
+    - name: Install dependencies
+      run: |
+        brew install --HEAD neovim
+        nvim --version
+    - uses: actions/checkout@v1
+    - name: Run dotbot profile installation
+      run: ./install-profile workstation-mac
