@@ -80,7 +80,11 @@ export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-wind
 
 # Preview directory tree when using Alt+C
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | xsel -ib)+abort' --header 'Press CTRL-Y to copy command into clipboard'"
+
+# Add the ability to copy reverse history search selection to the
+# clipboard.
+# Use xsel on Linux and pbcopy on macos.
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | (xsel -ib || pbcopy))+abort' --header 'Press CTRL-Y to copy command into clipboard'"
 
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
 # command for listing path candidates.
