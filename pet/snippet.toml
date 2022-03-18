@@ -132,3 +132,8 @@
   description = "Scan the ed25519 fingerprint of a remote server and append it to the known_hosts file of the local machine."
   command = "ssh-keyscan -H -t ed25519 <ip_address> >> ~/.ssh/known_hosts"
   output = ""
+
+[[snippets]]
+  description = "Flush DNS cache on macos"
+  command = "sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
+  output = ""
