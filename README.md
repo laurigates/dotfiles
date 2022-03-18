@@ -49,10 +49,11 @@ which gives you:
 Key bindings (CTRL-T, CTRL-R, and ALT-C) (available for bash, zsh and fish)
 Fuzzy auto-completion (available for bash and zsh)
 
-## Node & Ruby executables
+## Python, Node & Ruby executables
 
-Remember to run `rbenv rehash` and `nodenv rehash` after installing packages in
-either environment. Otherwise the shell and vim won't find the new binaries.
+Remember to run `pyenv rehash`, `rbenv rehash` or `nodenv rehash` after
+installing packages in these environments. Otherwise the shell and vim won't
+find the new binaries.
 
 ## Docker testing
 
