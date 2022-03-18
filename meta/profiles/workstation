@@ -4,7 +4,7 @@ ssh
 node
 ruby
 rust
-vim
+neovim
 tmux
 i3
 kitty
