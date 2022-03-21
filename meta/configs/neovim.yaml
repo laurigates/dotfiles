@@ -1,3 +1,6 @@
+- shell:
+   - setup/cleanup.sh ~/.config/nvim
+
 - clean: ['~/.config/nvim']
 
 - create:

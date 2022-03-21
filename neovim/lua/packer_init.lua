@@ -96,7 +96,7 @@ return packer.startup(function()
   use {
     "SmiteshP/nvim-gps",
     requires = "nvim-treesitter/nvim-treesitter"
-  } use 'SmiteshP/nvim-gps'
+  }
 
   -- Telescope
   use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
