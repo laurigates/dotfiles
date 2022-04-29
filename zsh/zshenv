@@ -106,18 +106,22 @@ function fzf_apropos() {
 
 # Install or upgrade nvim
 function install_nvim () {
-    if read -q "choice?Press Y/y to install neovim binaries to your home directory: "; then
+    if read -q "choice?Press Y/y to install neovim:"; then
         case "$(uname)" in
-          'Darwin') OS=macos ;;
-          'Linux') OS=linux64 ;;
+          'Darwin') OS=macos
+          # Install using brew because github doesn't yet offer arm64 builds for macos.
+          brew install --HEAD neovim
+          brew upgrade --fetch-HEAD neovim
+          ;;
+          'Linux') OS=linux64
+          # Should add the option to choose whether to install globally
+          INSTALL_DIR="$HOME/.local"
+          if [[ -v OS ]]; then
+            curl -sL https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz \
+            | tar xzf - --strip-components=1 -C $INSTALL_DIR
+          fi
+          ;;
         esac
-
-        # Should add the option to choose whether to install globally
-        INSTALL_DIR="$HOME/.local"
-        if [[ -v OS ]]; then
-          wget -qO- https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz \
-          | tar xzf - --strip-components=1 -C $INSTALL_DIR
-        fi
     else
        echo "Skipping neovim installation."
     fi
