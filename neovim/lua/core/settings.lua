@@ -22,8 +22,8 @@ opt.mouse = 'a'                       -- Enable mouse support
 -- opt.clipboard = 'unnamedplus'         -- Copy/paste to system clipboard
 opt.swapfile = false                  -- Don't use swapfile
 opt.completeopt = 'menuone,noselect,noinsert'  -- Autocomplete options
-opt.timeoutlen = 500 -- mapping timeout 500ms  (adjust for preference)
-opt.ttimeoutlen = 20 -- keycode timeout 20ms
+-- opt.timeoutlen = 500 -- mapping timeout 500ms  (adjust for preference)
+-- opt.ttimeoutlen = 20 -- keycode timeout 20ms
 opt.undofile = true -- Enable persistent undo
 
 -----------------------------------------------------------
@@ -33,7 +33,7 @@ opt.number = true                     -- Show line number
 opt.showmatch = true                  -- Highlight matching parenthesis
 opt.matchtime = 2                     -- How many tenths of a second to blink when matching brackets
 opt.foldmethod = 'marker'             -- Enable folding (default 'foldmarker')
-opt.colorcolumn = '80'                -- Line lenght marker at 80 columns
+-- opt.colorcolumn = '80'                -- Line lenght marker at 80 columns
 opt.splitright = true                 -- Vertical split to the right
 opt.splitbelow = true                 -- Orizontal split to the bottom
 opt.ignorecase = true                 -- Ignore case letters when search
@@ -83,11 +83,16 @@ exec([[
 cmd [[au BufEnter * set fo-=c fo-=r fo-=o]]
 
 -- Remove line lenght marker for selected filetypes
-cmd [[autocmd FileType text,markdown,html,xhtml,javascript setlocal cc=0]]
+-- cmd [[autocmd FileType text,markdown,html,xhtml,javascript setlocal cc=0]]
 
 -- 2 spaces for selected filetypes
 cmd [[
   autocmd FileType xml,html,xhtml,css,scss,javascript,lua,yaml,terraform,sh setlocal shiftwidth=2 tabstop=2
+]]
+
+-- Return to last edit position when opening files
+cmd [[
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 ]]
 
 -----------------------------------------------------------
@@ -97,14 +102,18 @@ cmd [[
 -- Open a terminal pane on the right using :Term
 cmd [[command Term :botright vsplit term://$SHELL]]
 
+-- NOTE: This causes weird issues when selecting files using Telescope. Briefly
+-- goes into insert mode in the selected file and the first key presses are
+-- inserted as characters, written into the file and undo doesn't work.
+
 -- Terminal visual tweaks:
 --- enter insert mode when switching to terminal
 --- close terminal buffer on process exit
-cmd [[
-    autocmd TermOpen * setlocal listchars= nonumber norelativenumber nocursorline
-    autocmd TermOpen * startinsert
-    autocmd BufLeave term://* stopinsert
-]]
+-- cmd [[
+--     autocmd TermOpen * setlocal listchars= nonumber norelativenumber nocursorline
+--     autocmd TermOpen * startinsert
+--     autocmd BufLeave term://* stopinsert
+-- ]]
 
 -----------------------------------------------------------
 -- Startup

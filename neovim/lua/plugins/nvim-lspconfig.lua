@@ -85,13 +85,17 @@ https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.m
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches.
 -- Add your language server below:
-local servers = { 'bashls', 'pyright', 'tsserver', 'clangd', 'html', 'diagnosticls', 'dockerls', 'yamlls', 'jsonls', 'terraformls' }
+local servers = { 'sumneko_lua', 'bashls', 'pyright', 'tsserver', 'clangd', 'html', 'diagnosticls', 'dockerls', 'yamlls', 'jsonls', 'terraformls' }
 
 -- tsserver settings
 local ts_settings = function(client)
   client.resolved_capabilities.document_formatting = false
   ts_settings(client)
 end
+
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, "lua/?.lua")
+table.insert(runtime_path, "lua/?/init.lua")
 
 -- Call setup
 for _, lsp in ipairs(servers) do
@@ -104,3 +108,28 @@ for _, lsp in ipairs(servers) do
     }
   }
 end
+
+require'lspconfig'.sumneko_lua.setup {
+    settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+        -- Setup your lua path
+        path = runtime_path,
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim', 'use'},
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}

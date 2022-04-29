@@ -92,6 +92,8 @@ return packer.startup(function()
   use 'tpope/vim-commentary'
   use 'tpope/vim-fugitive'
   use 'tpope/vim-surround'
+  use 'wellle/targets.vim'
+  use 'justinmk/vim-sneak'
 
   use {
     "SmiteshP/nvim-gps",
