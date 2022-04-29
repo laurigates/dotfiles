@@ -10,7 +10,7 @@ local function map(mode, lhs, rhs, opts)
   vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
--- Change leader to a comma
+-- Change leader to space
 vim.g.mapleader = ' '
 
 -----------------------------------------------------------
