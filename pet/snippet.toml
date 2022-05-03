@@ -137,3 +137,8 @@
   description = "Flush DNS cache on macos"
   command = "sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
   output = ""
+
+[[snippets]]
+  description = "Show log messages from a process of a certain type and time period on macos."
+  command = "log show --predicate 'process == \"<process_name>\" && messageType == \"<message_type>\"' --last <time_period>"
+  output = ""
