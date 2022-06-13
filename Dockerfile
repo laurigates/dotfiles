@@ -22,8 +22,7 @@ usermod -aG sudo tester && \
 echo "tester   ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers
 
 # Add dotfiles and chown
-COPY . /home/tester/dotfiles
-RUN chown -R tester:tester /home/tester
+COPY --chown=tester:tester . /home/tester/dotfiles
 
 # Switch testuser
 USER tester
