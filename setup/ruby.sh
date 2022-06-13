@@ -1,6 +1,6 @@
 #!/bin/zsh -e
 
-VERSION=2.6.5
+VERSION=3.1.2
 
 rbenv install -s $VERSION
 rbenv global $VERSION
