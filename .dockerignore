@@ -1,15 +1,20 @@
 # Ignore all submodules so my local files don't interfere with docker tests and vice-versa
-/dotbot
+#
+# The following commands can be used to sync the list of submodules to
+# dockerignore and deduplicate them
+# git submodule | awk '{ print "/"$2 }' >> .dockerignore
+# awk '!seen[$0]++' .dockerignore > temp && mv temp .dockerignore
 /i3/i3blocks-contrib
+/meta/dotbot
 /node/node-build
 /node/nodenv
+/node/nodenv-default-packages
+/python/pyenv
 /ruby/rbenv
 /ruby/ruby-build
 /tmux/tmux-themepack
 /vim/vim-plug
-/vim/vimwiki
-/zsh/fzf-tab-completion
+/zsh/fzf-tab
 /zsh/oh-my-zsh
 /zsh/zsh-autosuggestions
 /zsh/zsh-syntax-highlighting
-/zsh/zsh-vim-mode
