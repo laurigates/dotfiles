@@ -93,18 +93,12 @@ zstyle ':completion:*' use-ip true
 plugins=(
   fzf-tab
   git gh
-  extract
   zsh-autosuggestions zsh-syntax-highlighting
   z systemd
   colored-man-pages
-  pip python virtualenv pyenv
-  cake composer
   nmap taskwarrior
-  npm yarn
-  ruby gem bundler
   fd ripgrep
   docker docker-compose
-  rust
   kubectl
   terraform
 )
