@@ -1,39 +1,50 @@
-export PYENV_ROOT="$HOME/.pyenv"
+export PATH=\
+$HOME/.local/bin:\
+/usr/local/go/bin:\
+/usr/local/bin:\
+/usr/bin:\
+/bin:\
+/usr/local/sbin:\
+/usr/sbin:\
+/sbin
 
+# pyenv path
+export PYENV_ROOT="$HOME/.pyenv"
 export PATH=\
 $PYENV_ROOT/shims:\
 $PYENV_ROOT/bin:\
+$PATH
+
+# nodenv path
+export PATH=\
 $HOME/.nodenv/shims:\
 $HOME/.nodenv/bin:\
+$PATH
+
+# rbenv path
+export PATH=\
 $HOME/.rbenv/shims:\
 $HOME/.rbenv/bin:\
+$PATH
+
+# rust path
+export PATH=\
 $HOME/.cargo/bin:\
+$PATH
+
+# go path
+export PATH=\
 $HOME/go/bin:\
-$HOME/.local/bin:\
-/usr/local/go/bin:\
-/usr/local/sbin:\
-/usr/local/bin:\
-/usr/bin:\
-/bin
+$PATH
 
-if [ -x /usr/libexec/path_helper ]; then
-	eval `/usr/libexec/path_helper -s`
-fi
+# Setup homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Fix ruby installation on macos
-# https://github.com/rbenv/ruby-build/issues/1409
-if [[ $(uname) == 'Darwin' ]]; then
-  # Setup Compiler paths for readline and openssl
-  local READLINE_PATH=$(brew --prefix readline)
-  local OPENSSL_PATH=$(brew --prefix openssl)
-  export LDFLAGS="-L$READLINE_PATH/lib -L$OPENSSL_PATH/lib"
-  export CPPFLAGS="-I$READLINE_PATH/include -I$OPENSSL_PATH/include"
-  export PKG_CONFIG_PATH="$READLINE_PATH/lib/pkgconfig:$OPENSSL_PATH/lib/pkgconfig"
-  
-  # Use the OpenSSL from Homebrew instead of ruby-build
-  # Note: the Homebrew version gets updated, the ruby-build version doesn't
-  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$OPENSSL_PATH"
-fi
+# https://www.softec.lu/site/DevelopersCorner/MasteringThePathHelper
+# Appends paths found in files under /etc/paths.d to PATH on macos
+# if [ -x /usr/libexec/path_helper ]; then
+# 	eval `/usr/libexec/path_helper -s`
+# fi
 
 # Define these to install perl modules without root
 # For neovim perl module
