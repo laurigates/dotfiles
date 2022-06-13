@@ -1,7 +1,5 @@
 #!/bin/zsh -e
 
-export PATH="$HOME/.cargo/bin:$PATH"
-
 if ! rustup --version > /dev/null 2>&1; then
     wget --quiet -O rustup-init.sh https://sh.rustup.rs
     chmod +x rustup-init.sh
