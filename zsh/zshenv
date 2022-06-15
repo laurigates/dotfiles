@@ -63,6 +63,9 @@ export TERMINAL=kitty
 # set browser preference
 export BROWSER=google-chrome-stable
 
+# use most as pager for colored man pages
+export PAGER=most
+
 # Nvim exists in my home folder in some environments.
 # This will find it in my path and get the absolute path.
 # The absolute path is required so that sudoedit will be able to

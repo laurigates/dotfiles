@@ -6,16 +6,7 @@
 
 - link:
     ~/.zshenv: zsh/zshenv
-    ~/.ctags.d: general/ctags.d
+    ~/.zshrc: zsh/zshrc
     ~/.config/pet:
       create: true
       path: pet
-    ~/.zshrc: zsh/zshrc
-    ~/.oh-my-zsh: zsh/oh-my-zsh
-
-- link:
-    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions: zsh/zsh-autosuggestions
-    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting: zsh/zsh-syntax-highlighting
-    ~/.oh-my-zsh/custom/plugins/fzf-tab: zsh/fzf-tab
-    ~/.oh-my-zsh/custom/aliases.zsh: zsh/aliases.zsh
-    ~/.oh-my-zsh/custom/tmuxinator.zsh: zsh/tmuxinator.zsh

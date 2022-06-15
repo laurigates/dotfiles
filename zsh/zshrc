@@ -2,50 +2,31 @@
 # uncomment this and zprof at the end of this file to profile zsh startup
 #zmodload zsh/zprof
 
-#if [ "$XDG_CURRENT_DESKTOP" = "KDE" ] || [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
-#  ZSH_TMUX_AUTOSTART="true"
-#fi
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 #emulate sh -c '. /etc/profile'
 
-# https://www.reddit.com/r/zsh/comments/jncp79/paste_bracketing_causes_slow_pastes/
-DISABLE_MAGIC_FUNCTIONS=true
-
-# https://www.johnhawthorn.com/2012/09/vi-escape-delays/
-KEYTIMEOUT=1
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
-
-ZSH_THEME="agnoster"
-DISABLE_AUTO_UPDATE="true"
-COMPLETION_WAITING_DOTS="true"
-HIST_STAMPS="dd.mm.yyyy"
 HISTFILE="$HOME/.zsh_history_dir/$(hostname -f)"
-
-# vim mode cursor styling
-MODE_CURSOR_VIINS="#7e7 blinking bar"
-MODE_CURSOR_REPLACE="$MODE_CURSOR_VIINS #f55"
-MODE_CURSOR_VICMD="#3a3 block"
-MODE_CURSOR_SEARCH="#d4d steady underline"
-MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
-MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #3ee"
-
-# https://github.com/ohmyzsh/ohmyzsh/pull/9090
-ZSH_COMPDUMP="${ZSH_CACHE_DIR}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
-
-# User configuration
-export DEFAULT_USER="$USER"
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-export LANG="en_US.UTF-8"
-export LANGUAGE="en_US.UTF-8"
-# export LC_ALL="en_US.UTF-8"
-
-# kitty
-# autoload -Uz compinit
-# compinit
+## History command configuration
+setopt extended_history       # record timestamp of command in HISTFILE
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+setopt hist_verify            # show command with history expansion to user before running it
+setopt share_history          # share command history data
+setopt auto_cd                # change directories without cd
+setopt complete_in_word
+setopt always_to_end
+setopt interactivecomments
+setopt multios
+setopt prompt_subst
+setopt auto_menu
+# setopt extendedglob
 
 # https://grml.org/zsh/zsh-lovers.html
 # Fuzzy matching of completions for when you mistype them:
@@ -68,11 +49,21 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 zstyle ':fzf-tab:*' switch-group ',' '.'
 # enable IP addresses in completions
 zstyle ':completion:*' use-ip true
+# Another method for quick change directories. Add this to your ~/.zshrc, then just enter “cd …./dir”
+rationalise-dot() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/..
+  else
+    LBUFFER+=.
+  fi
+}
+zle -N rationalise-dot
+bindkey . rationalise-dot
+
+source ~/dotfiles/zsh/aliases.zsh
 
 ###
 # NOTE: Completions need to be loaded before compinit is run.
-# Since oh-my-zsh runs compinit, they need to be before oh-my-zsh is loaded.
-# That way it doesn't need to be run multiple times.
 ###
 
 # nodenv completions
@@ -81,42 +72,41 @@ zstyle ':completion:*' use-ip true
 # rbenv completions
 [ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
 
-# brew completions
+# Should check if fzf is installed?
+# Has to be loaded after oh-my-zsh or Ctrl+T & Alt+C keybinds don't work among other things
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# completions for brew and applications installed by it
 # https://docs.brew.sh/Shell-Completion
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
-fpath+=(~/.config/hcloud/completion/zsh)
+autoload -Uz compinit
+compinit
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-#
+## Plugins to load after compinit
+source ~/dotfiles/zsh/fzf-tab/fzf-tab.plugin.zsh
+source ~/dotfiles/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+source ~/dotfiles/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
+source ~/dotfiles/zsh/zsh-z/zsh-z.plugin.zsh
 # NOTE: fzf-tab needs to be loaded after compinit, but before plugins which
 # will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting!!
 # Since oh-my-zsh runs compinit, the relevant thing here is that the plugins
 # are in the correct order.
-plugins=(
-  fzf-tab
-  git gh
-  zsh-autosuggestions zsh-syntax-highlighting
-  z systemd
-  colored-man-pages
-  nmap taskwarrior
-  fd ripgrep
-  docker docker-compose
-  kubectl
-  terraform
-)
+# plugins=(
+#   git
+#   systemd
+#   nmap
+#   terraform
+# )
 
 ##### Fix tmux key mappings
 # Fix Home/End keys
-bindkey "\e[1~" beginning-of-line
-bindkey "\e[4~" end-of-line
+# bindkey "\e[1~" beginning-of-line
+# bindkey "\e[4~" end-of-line
 
 # Delete/Insert keys
-bindkey "\e[3~" delete-char
-bindkey "\e[2~" quoted-insert
+# bindkey "\e[3~" delete-char
+# bindkey "\e[2~" quoted-insert
 
 # Mac binds
 bindkey "^[[1;5C" forward-word
@@ -143,32 +133,6 @@ bindkey -s "^[[60;9u" "|"
 # bindkey "\e\e[C" forward-word
 # bindkey "\e\e[D" backward-word
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-prompt_context() {
-  if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-      prompt_segment black default "%(!.%{%F{yellow}%}.)$USER@$(hostname -f)"
-  fi
-}
-
-# Disable non-breaking space
-# This doesn't seem to work when set via xprofile
-# if [[ ! -z $DISPLAY ]]; then
-#     setxkbmap -layout "fi" -variant "nodeadkeys" -option "nbsp:none"
-# fi
-
-# Oh-my-zsh needs to be loaded after plugins and such have been defined.
-# Otherwise plugins and completions will not be loaded.
-source $ZSH/oh-my-zsh.sh
-
-# Should check if fzf is installed?
-# Has to be loaded after oh-my-zsh or Ctrl+T & Alt+C keybinds don't work among other things
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # Completion for kitty
 # The kitty docs specify that this has to be called after compinit
 # compinit is called by oh-my-zsh, so this has to be after sourcing oh-my-zsh
@@ -176,5 +140,9 @@ source $ZSH/oh-my-zsh.sh
 if type kitty > /dev/null; then
     kitty + complete setup zsh | source /dev/stdin
 fi
+
+source ~/dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 #zprof
