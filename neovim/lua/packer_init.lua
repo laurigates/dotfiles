@@ -70,7 +70,7 @@ return packer.startup(function()
 
   -- Statusline
   use {
-    'famiu/feline.nvim',
+    'feline-nvim/feline.nvim',
     requires = { 'kyazdani42/nvim-web-devicons' },
   }
 
