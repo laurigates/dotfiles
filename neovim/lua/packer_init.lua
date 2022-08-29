@@ -50,7 +50,10 @@ return packer.startup(function()
   use { 'rose-pine/neovim', as = 'rose-pine' }
 
   -- LSP
-  use 'neovim/nvim-lspconfig'
+  use {
+      "williamboman/nvim-lsp-installer",
+      "neovim/nvim-lspconfig",
+  }
 
   -- Autocomplete
   use {

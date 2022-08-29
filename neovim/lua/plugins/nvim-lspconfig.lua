@@ -5,6 +5,7 @@
 -- Plugin: nvim-lspconfig
 -- url: https://github.com/neovim/nvim-lspconfig
 
+require("nvim-lsp-installer").setup {}
 local nvim_lsp = require 'lspconfig'
 
 -- Add additional capabilities supported by nvim-cmp
