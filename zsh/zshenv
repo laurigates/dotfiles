@@ -37,31 +37,55 @@ export PATH=\
 $HOME/go/bin:\
 $PATH
 
-# Setup homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# https://www.softec.lu/site/DevelopersCorner/MasteringThePathHelper
-# Appends paths found in files under /etc/paths.d to PATH on macos
-# if [ -x /usr/libexec/path_helper ]; then
-# 	eval `/usr/libexec/path_helper -s`
-# fi
-
-# Define these to install perl modules without root
-# For neovim perl module
-# https://metacpan.org/pod/local::lib
-PERL5LIB="/home/lgates/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/lgates/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/lgates/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/lgates/perl5"; export PERL_MM_OPT;
-
 # Disable python keyring, so pip install won't pop open annoying dialogs
 PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
 
 # set terminal preference for i3
 export TERMINAL=kitty
 
-# set browser preference
-export BROWSER=google-chrome-stable
+# OS specific settings
+case "$(uname)" in
+  'Darwin') OS=macos
+    # Setup homebrew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    # https://www.softec.lu/site/DevelopersCorner/MasteringThePathHelper
+    # Appends paths found in files under /etc/paths.d to PATH on macos
+    # if [ -x /usr/libexec/path_helper ]; then
+    # 	eval `/usr/libexec/path_helper -s`
+    # fi
+
+    # set browser preference
+    export BROWSER="open -a Google\ Chrome"
+
+    function nvim_install_cmd() {
+      # Install using brew because github doesn't yet offer arm64 builds for macos.
+      brew install --HEAD neovim
+      brew upgrade --fetch-HEAD neovim
+    }
+  ;;
+  'Linux') OS=linux64
+    # Define these to install perl modules without root
+    # For neovim perl module
+    # https://metacpan.org/pod/local::lib
+    PERL5LIB="/home/lgates/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+    PERL_LOCAL_LIB_ROOT="/home/lgates/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+    PERL_MB_OPT="--install_base \"/home/lgates/perl5\""; export PERL_MB_OPT;
+    PERL_MM_OPT="INSTALL_BASE=/home/lgates/perl5"; export PERL_MM_OPT;
+
+    # set browser preference
+    export BROWSER=google-chrome-stable
+
+    function nvim_install_cmd() {
+      # Should add the option to choose whether to install globally
+      INSTALL_DIR="$HOME/.local"
+      if [[ -v OS ]]; then
+        curl -sL https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz \
+        | tar xzf - --strip-components=1 -C $INSTALL_DIR
+      fi
+    }
+  ;;
+esac
 
 # use most as pager for colored man pages
 export PAGER=most
@@ -121,23 +145,9 @@ function fzf_apropos() {
 # Install or upgrade nvim
 function install_nvim () {
     if read -q "choice?Press Y/y to install neovim:"; then
-        case "$(uname)" in
-          'Darwin') OS=macos
-          # Install using brew because github doesn't yet offer arm64 builds for macos.
-          brew install --HEAD neovim
-          brew upgrade --fetch-HEAD neovim
-          ;;
-          'Linux') OS=linux64
-          # Should add the option to choose whether to install globally
-          INSTALL_DIR="$HOME/.local"
-          if [[ -v OS ]]; then
-            curl -sL https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz \
-            | tar xzf - --strip-components=1 -C $INSTALL_DIR
-          fi
-          ;;
-        esac
+      nvim_install_cmd
     else
-       echo "Skipping neovim installation."
+      echo "Skipping neovim installation."
     fi
 }
 
