@@ -2,11 +2,12 @@
     - ~/.zsh_history_dir
 
 - shell:
-    - setup/cleanup.sh ~/.zshrc ~/.config/pet
+    - setup/cleanup.sh ~/.zshenv ~/.zshrc ~/.p10k.zsh ~/.config/pet
 
 - link:
     ~/.zshenv: zsh/zshenv
     ~/.zshrc: zsh/zshrc
+    ~/.p10k.zsh: zsh/p10k.zsh
     ~/.config/pet:
       create: true
       path: pet
