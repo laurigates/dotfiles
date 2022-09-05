@@ -110,9 +110,13 @@ source ~/dotfiles/zsh/aliases.zsh
 # Has to be loaded after oh-my-zsh or Ctrl+T & Alt+C keybinds don't work among other things
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# completions for brew and applications installed by it
-# https://docs.brew.sh/Shell-Completion
-FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+# Load brew completions if it is installed
+if type brew > /dev/null; then
+    # Setup homebrew
+    # completions for brew and applications installed by it
+    # https://docs.brew.sh/Shell-Completion
+    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+fi
 
 autoload -Uz compinit
 compinit
