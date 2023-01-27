@@ -49,3 +49,6 @@
 [submodule "zsh/zsh-z"]
 	path = zsh/zsh-z
 	url = https://github.com/agkozak/zsh-z.git
+[submodule "zsh/zsh-vi-mode"]
+	path = zsh/zsh-vi-mode
+	url = https://github.com/jeffreytse/zsh-vi-mode.git
