@@ -51,8 +51,10 @@ return packer.startup(function()
 
   -- LSP
   use {
-      "williamboman/nvim-lsp-installer",
-      "neovim/nvim-lspconfig",
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
+    "neovim/nvim-lspconfig",
+  }
   }
 
   -- Autocomplete
