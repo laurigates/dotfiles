@@ -55,7 +55,6 @@ return packer.startup(function()
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
   }
-  }
 
   -- Autocomplete
   use {
