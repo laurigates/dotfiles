@@ -12,5 +12,6 @@ fi
 # Create a snapshot of the current plugins, then clean and update them.
 # The autocommand is used to quit neovim after PackerSync has finished.
 # The commands use the synchronous versions so that they work in headless mode.
+nvim --headless -c "PackerSnapshot $(date +%Y-%m-%d_%H-%M-%S)" -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 nvim --headless -c "LspInstall --sync tsserver terraformls yamlls ansiblels bashls dockerls sumneko_lua" -c q
-nvim --headless -c 'TSInstallSync all' -c 'TSUpdateSync' -c "PackerSnapshot $(date -I)" -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+nvim --headless -c 'TSInstallSync all' -c 'TSUpdateSync' -c q
