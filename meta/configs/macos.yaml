@@ -1,0 +1,32 @@
+- shell:
+  -
+    command: brew install hcloud
+    description: Hetzner Cloud CLI
+  -
+    command: brew install hashicorp/tap/terraform hashicorp/tap/terraform-ls
+    description: Terraform
+  -
+    command: brew install --cask docker
+    description: Docker
+  -
+    command: brew install kubectl int128/kubelogin/kubelogin helm lens
+    description: Kubernetes
+  -
+    command: brew install mas keycastr
+    description: Macos tools
+  -
+    command:
+    - brew install fzf lsd ripgrep fd jq jd gh bat most
+    - /usr/local/opt/fzf/install
+    description: Basic utilities
+  -
+    command: brew install --fetch-HEAD neovim
+    description: Install neovim
+  -
+    command:
+    - brew tap homebrew/cask-fonts
+    - brew install --cask font-hack-nerd-font
+    description: Fonts
+  -
+    command: brew install so tldr task knqyf263/pet/pet
+    description: Information related
