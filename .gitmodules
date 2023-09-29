@@ -28,3 +28,7 @@
 [submodule "zsh/zsh-vi-mode"]
 	path = zsh/zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode.git
+[submodule "asdf"]
+	path = asdf
+	url = https://github.com/asdf-vm/asdf.git
+    branch = v0.13.1
