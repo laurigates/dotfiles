@@ -13,36 +13,12 @@
 [submodule "tmux/tmux-themepack"]
 	path = tmux/tmux-themepack
 	url = https://github.com/jimeh/tmux-themepack.git
-[submodule "vim/vimwiki"]
-	path = vim/vimwiki
-	url = https://github.com/vimwiki/vimwiki.git
-[submodule "vim/vim-plug"]
-	path = vim/vim-plug
-	url = https://github.com/junegunn/vim-plug.git
-[submodule "ruby/rbenv"]
-	path = ruby/rbenv
-	url = https://github.com/rbenv/rbenv.git
-[submodule "ruby/ruby-build"]
-	path = ruby/ruby-build
-	url = https://github.com/rbenv/ruby-build.git
 [submodule "i3/i3blocks-contrib"]
 	path = i3/i3blocks-contrib
 	url = https://github.com/vivien/i3blocks-contrib.git
-[submodule "node/nodenv"]
-	path = node/nodenv
-	url = https://github.com/nodenv/nodenv.git
-[submodule "node/node-build"]
-	path = node/node-build
-	url = https://github.com/nodenv/node-build.git
 [submodule "zsh/fzf-tab"]
 	path = zsh/fzf-tab
 	url = https://github.com/Aloxaf/fzf-tab.git
-[submodule "python/pyenv"]
-	path = python/pyenv
-	url = https://github.com/pyenv/pyenv.git
-[submodule "node/nodenv-default-packages"]
-	path = node/nodenv-default-packages
-	url = https://github.com/nodenv/nodenv-default-packages.git
 [submodule "zsh/powerlevel10k"]
 	path = zsh/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git
