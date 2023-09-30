@@ -95,6 +95,7 @@ zle -N rationalise-dot
 bindkey . rationalise-dot
 
 source ~/dotfiles/zsh/aliases.zsh
+source ~/dotfiles/asdf/asdf.sh
 
 ###
 # NOTE: Completions need to be loaded before compinit is run.
@@ -105,6 +106,9 @@ source ~/dotfiles/zsh/aliases.zsh
 
 # rbenv completions
 [ -f ~/.rbenv/completions/rbenv.zsh ] && source ~/.rbenv/completions/rbenv.zsh
+
+# asdf
+fpath=(${ASDF_DIR}/completions $fpath)
 
 # zsh-vi-mode
 source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
