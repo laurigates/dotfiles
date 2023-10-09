@@ -142,3 +142,13 @@
   description = "Show log messages from a process of a certain type and time period on macos."
   command = "log show --predicate 'process == \"<process_name>\" && messageType == \"<message_type>\"' --last <time_period>"
   output = ""
+
+[[snippets]]
+  description = "Add monitoring enabled label to all servers in active Hetzner project."
+  command = "hcloud server list -o columns=name -o noheader | parallel hcloud server add-label {} monitoring=enabled"
+  output = ""
+
+[[snippets]]
+  description = "Use hcloud to list server names and labels"
+  command = "hcloud server list --output columns=name,labels"
+  output = ""
