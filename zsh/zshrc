@@ -112,9 +112,22 @@ fpath=(${ASDF_DIR}/completions $fpath)
 # zsh-vi-mode
 source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
-# Should check if fzf is installed?
-# Has to be loaded after oh-my-zsh or Ctrl+T & Alt+C keybinds don't work among other things
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Since the default initialization mode, this plugin will overwrite the
+# previous key bindings, this causes the key bindings of other plugins (i.e.
+# fzf, zsh-autocomplete, etc.) to fail.
+#
+# The function below solves the compatibility issue.
+#
+# The plugin will auto execute this zvm_after_init function
+function zvm_after_init() {
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  ## Plugins to load after compinit
+  source ~/dotfiles/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
+  source ~/dotfiles/zsh/zsh-z/zsh-z.plugin.zsh
+  # fzf-tab doesn't seem to work for brew completions e.g. kubectl
+  source ~/dotfiles/zsh/fzf-tab/fzf-tab.plugin.zsh
+  source ~/dotfiles/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+}
 
 # Load brew completions if it is installed
 if type brew > /dev/null; then
@@ -125,26 +138,19 @@ if type brew > /dev/null; then
 fi
 
 autoload -Uz compinit
-# compinit
-
 # negation, so that at least one exits on 0
 [ ! "$(find ~/.zcompdump -mtime 1)" ] || compinit; compinit -C
 
-## Plugins to load after compinit
-source ~/dotfiles/zsh/fzf-tab/fzf-tab.plugin.zsh
-source ~/dotfiles/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
-source ~/dotfiles/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-source ~/dotfiles/zsh/zsh-z/zsh-z.plugin.zsh
-# NOTE: fzf-tab needs to be loaded after compinit, but before plugins which
-# will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting!!
-# Since oh-my-zsh runs compinit, the relevant thing here is that the plugins
-# are in the correct order.
-# plugins=(
-#   git
-#   systemd
-#   nmap
-#   terraform
-# )
+# Additional completion definitions can be placed in this directory
+fpath+=~/.zfunc
+
+# Terraform autocomplete requires these
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
+
+##### Unbind problematic bindings
+# Unbind Alt+tab from zvm_readkeys_handler
+bindkey -r "^["
 
 ##### Fix tmux key mappings
 # Fix Home/End keys
