@@ -1,0 +1,12 @@
+- link:
+    ~/.default-python-packages: default-python-packages
+    ~/.default-npm-packages: default-npm-packages
+
+- shell:
+    -
+      command: |
+        # Cache asdf plugin short names
+        asdf plugin-list-all
+      description: asdf setup
+      stdout: true
+      stderr: true

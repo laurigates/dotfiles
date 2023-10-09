@@ -1,0 +1,11 @@
+hcloud
+pynvim
+ansible
+glances
+aiven-client
+pytest
+pip-tools
+ansible-lint
+ruff
+tiktoken
+direnv

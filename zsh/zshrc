@@ -95,7 +95,6 @@ zle -N rationalise-dot
 bindkey . rationalise-dot
 
 source ~/dotfiles/zsh/aliases.zsh
-source ~/dotfiles/asdf/asdf.sh
 
 ###
 # NOTE: Completions need to be loaded before compinit is run.
