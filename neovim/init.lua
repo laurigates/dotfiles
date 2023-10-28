@@ -15,84 +15,155 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 
 require("lazy").setup(
-{
-  "folke/which-key.nvim",
-  { "folke/neoconf.nvim", cmd = "Neoconf", opts = {} },
-  "folke/neodev.nvim",
-  { "navarasu/onedark.nvim",
-      lazy = false, -- make sure we load this during startup if it is your main colorscheme
+  {
+    "folke/which-key.nvim",
+    { "folke/neoconf.nvim",                cmd = "Neoconf",    opts = {} },
+    "folke/neodev.nvim",
+    {
+      "navarasu/onedark.nvim",
+      lazy = false,    -- make sure we load this during startup if it is your main colorscheme
       priority = 1000, -- make sure to load this before all the other start plugins
       init = function()
         -- Load colorscheme at startup
-	require('onedark').load()
+        require('onedark').load()
       end,
-  },
-  {"williamboman/mason.nvim", opts = {}},
-  {"williamboman/mason-lspconfig.nvim", opts = {}},
-  "neovim/nvim-lspconfig",
-  {"nvim-treesitter/nvim-treesitter", build = ":TSUpdate"},
-  "tpope/vim-commentary",
-  "tpope/vim-surround", -- mappings to delete, change and add surroundings
-  "tpope/vim-unimpaired",
-  "tpope/vim-repeat",
-  "tpope/vim-speeddating",
-  "tpope/vim-eunuch",
-  "tpope/vim-sleuth",
-  "tpope/vim-fugitive",
-  "wellle/targets.vim", --adds various text objects
-  "justinmk/vim-sneak",
-  {
-    'nvim-telescope/telescope.nvim', tag = '0.1.4',
-    -- or                              , branch = '0.1.x',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    keys = {
-      { "<leader>ff", "<cmd>lua require('telescope.builtin').find_files()<cr>", desc = "Telescope find_files"},
-      { "<leader>fg", "<cmd>lua require('telescope.builtin').live_grep()<cr>", desc = "Telescope live_grep"},
-      { "<leader>fb", "<cmd>lua require('telescope.builtin').buffers()<cr>", desc = "Telescope buffers"},
-      { "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>", desc = "Telescope help_tags"},
-    }
-  },
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-  {'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' }, opts = {
-    sections = {
-      lualine_x = {
-        {
-          require("lazy.status").updates,
-          cond = require("lazy.status").has_updates,
-          color = { fg = "#ff9e64" },
+    },
+    { "williamboman/mason.nvim",           opts = {} },
+    { "williamboman/mason-lspconfig.nvim", opts = {} },
+    { "nvim-treesitter/nvim-treesitter",   build = ":TSUpdate" },
+    "tpope/vim-commentary",
+    "tpope/vim-surround", -- mappings to delete, change and add surroundings
+    "tpope/vim-unimpaired",
+    "tpope/vim-repeat",
+    "tpope/vim-speeddating",
+    "tpope/vim-eunuch",
+    "tpope/vim-sleuth",
+    "tpope/vim-fugitive",
+    "tpope/vim-rhubarb",
+    "wellle/targets.vim", --adds various text objects
+    "justinmk/vim-sneak",
+    { "petertriho/cmp-git",                       dependencies = { 'nvim-lua/plenary.nvim' } },
+    {"aaronhallaert/advanced-git-search.nvim", dependencies = {"nvim-telescope/telescope.nvim"}},
+    {
+      'nvim-telescope/telescope.nvim',
+      tag = '0.1.4',
+      -- or                              , branch = '0.1.x',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      -- keys = {
+      --   { "<leader>ff", "<cmd>lua require('telescope.builtin').find_files()<cr>", desc = "Telescope find_files"},
+      --   { "<leader>fg", "<cmd>lua require('telescope.builtin').live_grep()<cr>", desc = "Telescope live_grep"},
+      --   { "<leader>fb", "<cmd>lua require('telescope.builtin').buffers()<cr>", desc = "Telescope buffers"},
+      --   { "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>", desc = "Telescope help_tags"},
+      -- },
+      opts = {
+        fzf = {
+          fuzzy = true,               -- false will only do exact matching
+          override_generic_sorter = true, -- override the generic sorter
+          override_file_sorter = true, -- override the file sorter
+          case_mode = "smart_case",   -- or "ignore_case" or "respect_case"
+          -- the default case_mode is "smart_case"
+        }
+      }
+    },
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+    {
+      'nvim-lualine/lualine.nvim',
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
+      opts = {
+        sections = {
+          lualine_x = {
+            {
+              require("lazy.status").updates,
+              cond = require("lazy.status").has_updates,
+              color = { fg = "#ff9e64" },
+            },
+          },
         },
+      }
+    },
+    { "lewis6991/gitsigns.nvim",             opts = {} },
+    {
+      'goolord/alpha-nvim',
+      config = function()
+        require 'alpha'.setup(require 'alpha.themes.dashboard'.config)
+      end
+    },
+    {
+      "neovim/nvim-lspconfig",
+      dependencies = {
+        {
+          "SmiteshP/nvim-navbuddy",
+          dependencies = {
+            "SmiteshP/nvim-navic",
+            "MunifTanjim/nui.nvim"
+          },
+          opts = { lsp = { auto_attach = true } }
+        }
+      },
+      -- your lsp config or other stuff
+    },
+    {
+      "SmiteshP/nvim-gps",
+      dependencies = { "nvim-treesitter/nvim-treesitter" }
+    },
+    {
+      'windwp/nvim-autopairs',
+      event = "InsertEnter",
+      opts = {} -- this is equalent to setup({}) function
+    },
+    -- Autocomplete
+    {
+      'hrsh7th/nvim-cmp',
+      dependencies = {
+        'L3MON4D3/LuaSnip',
+        'hrsh7th/cmp-nvim-lsp',
+        'hrsh7th/cmp-nvim-lua',
+        'hrsh7th/cmp-path',
+        'hrsh7th/cmp-buffer',
+        'saadparwaiz1/cmp_luasnip',
       },
     },
-  }},
-  {"lewis6991/gitsigns.nvim", opts = {}},
-  {
-    'goolord/alpha-nvim',
-    config = function ()
-      require'alpha'.setup(require'alpha.themes.dashboard'.config)
-    end
-  },
-  {
-    "SmiteshP/nvim-gps",
-    dependencies = { "nvim-treesitter/nvim-treesitter" }
-  },
-  {
-    'windwp/nvim-autopairs',
-    event = "InsertEnter",
-    opts = {} -- this is equalent to setup({}) function
-},
-  -- Autocomplete
-  {
-    'hrsh7th/nvim-cmp',
-    dependencies = {
-      'L3MON4D3/LuaSnip',
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-nvim-lua',
-      'hrsh7th/cmp-path',
-      'hrsh7th/cmp-buffer',
-      'saadparwaiz1/cmp_luasnip',
+    { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+    {
+      'romgrk/barbar.nvim',
+      dependencies = {
+        'lewis6991/gitsigns.nvim',   -- OPTIONAL: for git status
+        'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+      },
+      init = function() vim.g.barbar_auto_setup = false end,
+      opts = {
+        -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+        -- animation = true,
+        -- insert_at_start = true,
+        -- …etc.
+      },
+      version = '^1.0.0', -- optional: only update when a new 1.x version is released
     },
-  },
-  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+    {
+      "folke/trouble.nvim",
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+      opts = {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      },
+    },
+  })
+
+-- Set up neoconf before lspconfig
+require("neoconf").setup({
+  -- override any of the default settings here
 })
 
-require("lspconfig").lua_ls.setup {}
+-- require("lspconfig").lua_ls.setup {}
+
+require("core/settings")
+require("core/keymaps")
+require("core/lsp")
+-- require("core/functions")
+require("plugins/nvim-barbar")
+require("plugins/nvim-cmp")
+require("plugins/nvim-telescope")
+require("plugins/nvim-treesitter")
+-- require("plugins/indent-blankline")
+-- require("plugins/codegpt")
