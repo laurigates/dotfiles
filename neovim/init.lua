@@ -17,8 +17,15 @@ vim.g.mapleader = " "
 require("lazy").setup(
   {
     "folke/which-key.nvim",
-    { "folke/neoconf.nvim",                cmd = "Neoconf",    opts = {} },
-    "folke/neodev.nvim",
+    {
+      "folke/neoconf.nvim",
+      cmd = "Neoconf",
+      opts = {}
+    },
+    {
+      "folke/neodev.nvim",
+      opts = {}
+    },
     {
       "navarasu/onedark.nvim",
       lazy = false,    -- make sure we load this during startup if it is your main colorscheme
@@ -28,9 +35,18 @@ require("lazy").setup(
         require('onedark').load()
       end,
     },
-    { "williamboman/mason.nvim",           opts = {} },
-    { "williamboman/mason-lspconfig.nvim", opts = {} },
-    { "nvim-treesitter/nvim-treesitter",   build = ":TSUpdate" },
+    {
+      "williamboman/mason.nvim",
+      opts = {}
+    },
+    {
+      "williamboman/mason-lspconfig.nvim",
+      opts = {}
+    },
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate"
+    },
     "tpope/vim-commentary",
     "tpope/vim-surround", -- mappings to delete, change and add surroundings
     "tpope/vim-unimpaired",
@@ -42,8 +58,20 @@ require("lazy").setup(
     "tpope/vim-rhubarb",
     "wellle/targets.vim", --adds various text objects
     "justinmk/vim-sneak",
-    { "petertriho/cmp-git",                       dependencies = { 'nvim-lua/plenary.nvim' } },
-    {"aaronhallaert/advanced-git-search.nvim", dependencies = {"nvim-telescope/telescope.nvim"}},
+    {
+      "aaronhallaert/advanced-git-search.nvim",
+      dependencies = { "nvim-telescope/telescope.nvim" }
+    },
+    {
+      'pwntester/octo.nvim',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        'nvim-telescope/telescope.nvim',
+        'nvim-tree/nvim-web-devicons',
+      },
+      opts = {},
+    },
+    { "akinsho/git-conflict.nvim", opts = {} },
     {
       'nvim-telescope/telescope.nvim',
       tag = '0.1.4',
@@ -57,15 +85,18 @@ require("lazy").setup(
       -- },
       opts = {
         fzf = {
-          fuzzy = true,               -- false will only do exact matching
+          fuzzy = true,                   -- false will only do exact matching
           override_generic_sorter = true, -- override the generic sorter
-          override_file_sorter = true, -- override the file sorter
-          case_mode = "smart_case",   -- or "ignore_case" or "respect_case"
+          override_file_sorter = true,    -- override the file sorter
+          case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
           -- the default case_mode is "smart_case"
         }
       }
     },
-    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+    {
+      'nvim-telescope/telescope-fzf-native.nvim',
+      build = 'make'
+    },
     {
       'nvim-lualine/lualine.nvim',
       dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -81,7 +112,10 @@ require("lazy").setup(
         },
       }
     },
-    { "lewis6991/gitsigns.nvim",             opts = {} },
+    {
+      "lewis6991/gitsigns.nvim",
+      opts = {}
+    },
     {
       'goolord/alpha-nvim',
       config = function()
@@ -103,10 +137,6 @@ require("lazy").setup(
       -- your lsp config or other stuff
     },
     {
-      "SmiteshP/nvim-gps",
-      dependencies = { "nvim-treesitter/nvim-treesitter" }
-    },
-    {
       'windwp/nvim-autopairs',
       event = "InsertEnter",
       opts = {} -- this is equalent to setup({}) function
@@ -120,14 +150,19 @@ require("lazy").setup(
         'hrsh7th/cmp-nvim-lua',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-buffer',
+        { "petertriho/cmp-git", dependencies = "nvim-lua/plenary.nvim" },
         'saadparwaiz1/cmp_luasnip',
       },
     },
-    { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+    {
+      "lukas-reineke/indent-blankline.nvim",
+      main = "ibl",
+      opts = {}
+    },
     {
       'romgrk/barbar.nvim',
       dependencies = {
-        'lewis6991/gitsigns.nvim',   -- OPTIONAL: for git status
+        'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
         'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
       },
       init = function() vim.g.barbar_auto_setup = false end,
@@ -165,5 +200,6 @@ require("plugins/nvim-barbar")
 require("plugins/nvim-cmp")
 require("plugins/nvim-telescope")
 require("plugins/nvim-treesitter")
+require("plugins/nvim-autopairs")
 -- require("plugins/indent-blankline")
 -- require("plugins/codegpt")
