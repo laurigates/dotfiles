@@ -47,7 +47,13 @@ require("lazy").setup(
       "nvim-treesitter/nvim-treesitter",
       build = ":TSUpdate"
     },
-    "tpope/vim-commentary",
+    {
+    'numToStr/Comment.nvim',
+    opts = {
+        -- add any options here
+    },
+    lazy = false,
+    },
     "tpope/vim-surround", -- mappings to delete, change and add surroundings
     "tpope/vim-unimpaired",
     "tpope/vim-repeat",
