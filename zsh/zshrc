@@ -126,7 +126,10 @@ if type brew > /dev/null; then
 fi
 
 autoload -Uz compinit
-compinit
+# compinit
+
+# negation, so that at least one exits on 0
+[ ! "$(find ~/.zcompdump -mtime 1)" ] || compinit; compinit -C
 
 ## Plugins to load after compinit
 source ~/dotfiles/zsh/fzf-tab/fzf-tab.plugin.zsh

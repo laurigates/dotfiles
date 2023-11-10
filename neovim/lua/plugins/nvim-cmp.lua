@@ -17,14 +17,15 @@ cmp.setup {
     end,
   },
 
--- Completion settings
-  completion = {
-    --completeopt = 'menu,menuone,noselect'
-    keyword_length = 2
+  -- Completion settings
+  window = {
+    completion = {
+      --completeopt = 'menu,menuone,noselect'
+      keyword_length = 2
+    },
   },
-
   -- Key mapping
-  mapping = {
+  mapping = cmp.mapping.preset.insert({
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
@@ -35,7 +36,6 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-
     -- Tab mapping
     ['<Tab>'] = function(fallback)
       if cmp.visible() then
@@ -55,15 +55,49 @@ cmp.setup {
         fallback()
       end
     end
-  },
+  }),
 
   -- Load sources, see: https://github.com/topics/nvim-cmp
-  sources = {
+  sources = cmp.config.sources({
     { name = 'nvim_lua' },
     { name = 'nvim_lsp' },
+    { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
     { name = 'luasnip' },
     { name = 'path' },
     { name = 'buffer' },
-  },
+  })
 }
+-- Set configuration for specific filetype.
+-- cmp.setup.filetype('gitcommit', {
+--   sources = cmp.config.sources({
+--     { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+--   }, {
+--     { name = 'buffer' },
+--   })
+-- })
 
+-- -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+-- cmp.setup.cmdline('/', {
+--   mapping = cmp.mapping.preset.cmdline(),
+--   sources = {
+--     { name = 'buffer' }
+--   }
+-- })
+
+-- -- `:` cmdline setup.
+-- cmp.setup.cmdline(':', {
+--   mapping = cmp.mapping.preset.cmdline(),
+--   sources = cmp.config.sources({
+--     { name = 'path' }
+--   }, {
+--     {
+--       name = 'cmdline',
+--       option = {
+--         ignore_cmds = { 'Man', '!' }
+--       }
+--     }
+--   })
+-- })
+
+
+require("cmp_git").setup()

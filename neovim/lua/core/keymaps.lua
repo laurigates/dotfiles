@@ -16,6 +16,8 @@ vim.g.mapleader = ' '
 -----------------------------------------------------------
 -- Neovim shortcuts
 -----------------------------------------------------------
+-- Visual select most recently changed or pasted content
+map('n', 'gp', '`[v`]')
 
 -- Clear search highlighting with <leader> and c
 map('n', '<leader>c', ':nohl<CR>')
@@ -39,6 +41,10 @@ map('n', '<C-j>', '<C-w>j')
 map('n', '<C-k>', '<C-w>k')
 map('n', '<C-l>', '<C-w>l')
 
+-- Switch between buffers using H and L
+map('n', 'L', ':bp<CR>')
+map('n', 'H', ':bn<CR>')
+
 -- Close all windows and exit from Neovim with <leader> and q
 -- map('n', '<leader>q', ':qa!<CR>')
 
@@ -50,17 +56,17 @@ map('n', '<C-l>', '<C-w>l')
 map('n', '<C-t>', ':Term<CR>', { noremap = true })  -- open
 map('t', '<Esc>', '<C-\\><C-n>')                    -- exit
 
--- NvimTree
-map('n', '<C-n>', ':NvimTreeToggle<CR>')            -- open/close
-map('n', '<leader>r', ':NvimTreeRefresh<CR>')       -- refresh
-map('n', '<leader>n', ':NvimTreeFindFile<CR>')      -- search file
-
 -- Vista tag-viewer
-map('n', '<C-m>', ':Vista!!<CR>') -- open/close
+-- map('n', '<C-m>', ':Vista!!<CR>') -- open/close
 
 -- Telescope
 map('n', '<leader>ff', '<cmd>lua require("telescope.builtin").find_files()<cr>')
+map('n', '<leader>fr', '<cmd>lua require("telescope.builtin").git_files()<cr>')
 map('n', '<leader>fg', '<cmd>lua require("telescope.builtin").live_grep()<cr>')
 map('n', '<leader>fb', '<cmd>lua require("telescope.builtin").buffers()<cr>')
 map('n', '<leader>fh', '<cmd>lua require("telescope.builtin").help_tags()<cr>')
 map('n', '<leader>fm', '<cmd>lua require("telescope.builtin").keymaps()<cr>')
+
+-- vim-easy-align
+-- map('n', 'ga', '<Plug>(EasyAlign)')
+-- map('x', 'ga', '<Plug>(EasyAlign)')

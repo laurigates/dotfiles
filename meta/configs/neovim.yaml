@@ -3,9 +3,6 @@
 
 - clean: ['~/.config/nvim']
 
-- create:
-    - ~/.local/share/nvim/site/pack/packer/start
-
 - link:
     ~/.config/nvim:
       create: true
@@ -13,7 +10,12 @@
 
 - shell:
     -
-      command: setup/neovim.sh
+      command: install_nvim
       description: Checking nvim
+      stdout: true
+      stderr: true
+    -
+      command: nvim --headless "+Lazy! sync" +qa
+      description: Install, cleanup and update neovim plugins
       stdout: true
       stderr: true

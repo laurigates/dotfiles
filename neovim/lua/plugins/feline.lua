@@ -2,15 +2,22 @@
 -- Statusline configuration file
 -----------------------------------------------------------
 
--- Plugin: feline.nvim
--- url: https://github.com/famiu/feline.nvim
+-- Plugin: feline.nvim (freddiehaddad fork)
+-- URL: https://github.com/freddiehaddad/feline.nvim
 
---- For the configuration see the Usage section:
---- https://github.com/famiu/feline.nvim/blob/master/USAGE.md
+-- For the configuration see the Usage section:
+-- https://github.com/freddiehaddad/feline.nvim/blob/master/USAGE.md
 
---- Thanks to ibhagwan for the example to follow:
---- https://github.com/ibhagwan/nvim-lua
+-- Thanks to ibhagwan for the example to follow:
+-- https://github.com/ibhagwan/nvim-lua
 
+local status_ok, feline = pcall(require, 'feline')
+
+if not status_ok then
+  return
+end
+
+require('feline').winbar.setup()
 
 -- Set colorscheme (from core/colors.lua/colorscheme_name)
 local colors = require('core/colors').onedark
@@ -29,19 +36,20 @@ local vi_mode_colors = {
   COMMAND = colors.pink,
   SHELL = colors.pink,
   TERM = colors.pink,
-  NONE = colors.purple
+  NONE = colors.yellow,
 }
 
 -- Providers (LSP, vi_mode)
 local lsp = require 'feline.providers.lsp'
 local vi_mode_utils = require 'feline.providers.vi_mode'
-local gps = require 'nvim-gps'
 
 -- LSP diagnostic
 local lsp_get_diag = function(str)
-  local count = vim.lsp,diagnostic.get_count(0, str)
+  local count = vim.lsp.diagnostic.get_count(0, str)
   return (count > 0) and ' '..count..' ' or ''
 end
+
+local separator = '|'
 
 -- My components
 local comps = {
@@ -86,15 +94,18 @@ local comps = {
         local extension = vim.fn.expand '%:e'
         local icon = require('nvim-web-devicons').get_icon(extension)
         if icon == nil then
-          icon = ' '
+          icon = ' '
         end
         return ' ' .. icon .. ' ' .. type
       end,
       hl = { fg = colors.fg },
-      left_sep = ' ',
+      left_sep = {
+        str = ' ' .. separator,
+        hl = { fg = colors.fg },
+      },
       righ_sep = ' ',
     },
-    -- Operating system
+    -- Operating System
     os = {
       provider = function()
         local os = vim.bo.fileformat:lower()
@@ -106,11 +117,23 @@ local comps = {
         else
           icon = '  '
         end
-        return icon .. os
+        --return icon .. os
+        return icon
       end,
       hl = { fg = colors.fg },
-      --left_sep = ' ',
-      right_sep = ' ',
+      left_sep = {
+        str = ' ' .. separator,
+        hl = { fg = colors.fg },
+      },
+    },
+    -- File encoding
+    encoding = {
+      provider = { name = 'file_encoding' },
+      hl = { fg = colors.fg },
+      right_sep = {
+        str = ' ' .. separator,
+        hl = { fg = colors.fg },
+      },
     },
     -- Line-column
     position = {
@@ -139,28 +162,18 @@ local comps = {
       left_sep = ' ',
       right_sep = ' ',
     },
-    gps = {
-      provider = function()
-        return gps.get_location()
-      end,
-      enabled = function()
-        return gps.is_available()
-      end,
-      left_sep = ' ',
-      right_sep = ' ',
-    },
   },
   -- LSP info
   diagnos = {
     err = {
       provider = 'diagnostic_errors',
-      icon = '⚠ ',
+      icon = ' ',
       hl = { fg = colors.red },
       left_sep = '  ',
     },
     warn = {
       provider = 'diagnostic_warnings',
-      icon = ' ',
+      icon = ' ' ,
       hl = { fg = colors.yellow },
       left_sep = ' ',
     },
@@ -172,7 +185,7 @@ local comps = {
     },
     hint = {
       provider = 'diagnostic_hints',
-      icon = ' ',
+      icon = ' ',
       hl = { fg = colors.cyan },
       left_sep = ' ',
     },
@@ -212,11 +225,11 @@ local comps = {
       hl = { fg = colors.red },
       left_sep = ' ',
     }
-  },
+  }
 }
 
 -- Get active/inactive components
---- see: https://github.com/famiu/feline.nvim/blob/master/USAGE.md#components
+-- See: https://github.com/feline-nvim/feline.nvim/blob/master/USAGE.md#components
 local components = {
   active = {},
   inactive = {},
@@ -234,7 +247,6 @@ table.insert(components.active[1], comps.git.branch)
 table.insert(components.active[1], comps.git.add)
 table.insert(components.active[1], comps.git.change)
 table.insert(components.active[1], comps.git.remove)
-table.insert(components.active[1], comps.file.gps)
 table.insert(components.inactive[1], comps.file.info)
 
 -- Left Section
@@ -245,11 +257,12 @@ table.insert(components.active[2], comps.diagnos.info)
 table.insert(components.active[2], comps.lsp.name)
 table.insert(components.active[2], comps.file.type)
 table.insert(components.active[2], comps.file.os)
+table.insert(components.active[2], comps.file.encoding)
 table.insert(components.active[2], comps.file.position)
 table.insert(components.active[2], comps.file.line_percentage)
 
 -- Call feline
-require('feline').setup {
+feline.setup {
   theme = {
     bg = colors.bg,
     fg = colors.fg,
