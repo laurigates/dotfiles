@@ -26,14 +26,20 @@ require("lazy").setup(
       "folke/neodev.nvim",
       opts = {}
     },
+    -- {
+    --   "navarasu/onedark.nvim",
+    --   lazy = false,    -- make sure we load this during startup if it is your main colorscheme
+    --   priority = 1000, -- make sure to load this before all the other start plugins
+    --   init = function()
+    --     -- Load colorscheme at startup
+    --     require('onedark').load()
+    --   end,
+    -- },
     {
-      "navarasu/onedark.nvim",
-      lazy = false,    -- make sure we load this during startup if it is your main colorscheme
-      priority = 1000, -- make sure to load this before all the other start plugins
-      init = function()
-        -- Load colorscheme at startup
-        require('onedark').load()
-      end,
+      "folke/tokyonight.nvim",
+      lazy = false,
+      priority = 1000,
+      opts = {},
     },
     {
       "williamboman/mason.nvim",
@@ -48,21 +54,24 @@ require("lazy").setup(
       build = ":TSUpdate"
     },
     {
-    'numToStr/Comment.nvim',
-    opts = {
+      'numToStr/Comment.nvim',
+      opts = {
         -- add any options here
-    },
-    lazy = false,
+      },
+      lazy = false,
     },
     "tpope/vim-surround", -- mappings to delete, change and add surroundings
-    "tpope/vim-unimpaired",
-    "tpope/vim-repeat",
+    -- "tpope/vim-unimpaired",
+    -- "tpope/vim-repeat",
     "tpope/vim-speeddating",
     "tpope/vim-eunuch",
-    "tpope/vim-sleuth",
+    -- vim-sleuth automatically adjusts 'shiftwidth' and 'expandtab' heuristically based on the current file, or, in the case the current file is new, blank, or otherwise insufficient, by looking at other files of the same type in the current and parent directories.
+    -- "tpope/vim-sleuth",
     "tpope/vim-fugitive",
     "tpope/vim-rhubarb",
-    "wellle/targets.vim", --adds various text objects
+    -- targets.vim adds various text objects
+    -- Commented out for now because it's quite outdated
+    -- "wellle/targets.vim",
     "justinmk/vim-sneak",
     {
       "aaronhallaert/advanced-git-search.nvim",
@@ -107,6 +116,7 @@ require("lazy").setup(
       'nvim-lualine/lualine.nvim',
       dependencies = { 'nvim-tree/nvim-web-devicons' },
       opts = {
+        theme = 'tokyonight',
         sections = {
           lualine_x = {
             {
@@ -161,6 +171,7 @@ require("lazy").setup(
       },
     },
     {
+      -- This plugin adds indentation guides to Neovim.
       "lukas-reineke/indent-blankline.nvim",
       main = "ibl",
       opts = {}
@@ -191,6 +202,8 @@ require("lazy").setup(
     },
   })
 
+vim.cmd [[colorscheme tokyonight]]
+
 -- Set up neoconf before lspconfig
 require("neoconf").setup({
   -- override any of the default settings here
@@ -207,5 +220,4 @@ require("plugins/nvim-cmp")
 require("plugins/nvim-telescope")
 require("plugins/nvim-treesitter")
 require("plugins/nvim-autopairs")
--- require("plugins/indent-blankline")
 -- require("plugins/codegpt")
