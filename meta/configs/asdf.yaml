@@ -1,12 +1,28 @@
 - link:
     ~/.default-python-packages: default-python-packages
     ~/.default-npm-packages: default-npm-packages
+    ~/.default-cargo-crates: default-cargo-crates
+    ~/.default-golang-pkgs: default-golang-pkgs
+    ~/.tool-versions: tool-versions
 
 - shell:
     -
       command: |
         # Cache asdf plugin short names
         asdf plugin-list-all
+        # python
+        asdf plugin-add python
+        asdf install python 3.11.6
+        asdf install python latest
+        # nodejs
+        asdf plugin-add nodejs
+        asdf install nodejs latest
+        # rust
+        asdf plugin-add cargo
+        asdf install cargo latest
+        # golang
+        asdf plugin-add golang
+        asdf install golang latest
       description: asdf setup
       stdout: true
       stderr: true
