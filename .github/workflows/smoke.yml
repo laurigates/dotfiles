@@ -14,6 +14,7 @@ jobs:
         nvim --version
     - uses: actions/checkout@v1
     - name: Run dotbot profile installation
+      shell: zsh {0}
       run: ./install-profile workstation
   build-macos:
     runs-on: macos-11
@@ -24,4 +25,5 @@ jobs:
         nvim --version
     - uses: actions/checkout@v1
     - name: Run dotbot profile installation
+      shell: zsh {0}
       run: ./install-profile workstation-mac
