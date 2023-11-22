@@ -139,7 +139,7 @@ fi
 
 autoload -Uz compinit
 # negation, so that at least one exits on 0
-[ ! "$(find ~/.zcompdump -mtime 1)" ] || compinit; compinit -C
+[ ! "$(find ~/.zcompdump -mtime +1)" ] || compinit; compinit -C
 
 # Additional completion definitions can be placed in this directory
 fpath+=~/.zfunc
