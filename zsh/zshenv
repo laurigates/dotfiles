@@ -110,6 +110,8 @@ function fzf_apropos() {
 
 # Install or upgrade nvim
 function install_nvim () {
+    # Use zsh builtin read function. When the -q option is used it returns
+    # success when y/Y is pressed.
     if read -q "choice?Press Y/y to install neovim:"; then
       nvim_install_cmd
     else
