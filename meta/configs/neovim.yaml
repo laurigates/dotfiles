@@ -10,7 +10,7 @@
 
 - shell:
     -
-      command: install_nvim
+      command: zsh -c "install_nvim"
       description: Checking nvim
       stdout: true
       stderr: true
