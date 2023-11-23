@@ -3,6 +3,7 @@
 
 - shell:
     - setup/cleanup.sh ~/.zshenv ~/.zshrc ~/.p10k.zsh ~/.config/pet
+    - chsh -s $(which zsh)
 
 - link:
     ~/.zshenv: zsh/zshenv
