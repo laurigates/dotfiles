@@ -200,6 +200,13 @@ require("lazy").setup(
         -- refer to the configuration section below
       },
     },
+    {
+      'stevearc/oil.nvim',
+      opts = {},
+      -- Optional dependencies
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+    },
+    'gabrielpoca/replacer.nvim',
   })
 
 vim.cmd [[colorscheme tokyonight]]

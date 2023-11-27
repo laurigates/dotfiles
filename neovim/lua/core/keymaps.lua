@@ -70,3 +70,4 @@ map('n', '<leader>fm', '<cmd>lua require("telescope.builtin").keymaps()<cr>')
 -- vim-easy-align
 -- map('n', 'ga', '<Plug>(EasyAlign)')
 -- map('x', 'ga', '<Plug>(EasyAlign)')
+map('n', '<leader>h', '<cmd>lua require("replacer").run()<cr>')
