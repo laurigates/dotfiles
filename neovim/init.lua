@@ -219,6 +219,96 @@ require("lazy").setup(
       },
     },
     {
+      'gsuuon/llm.nvim',
+      opts = {
+        default_prompt = {
+          provider = llamacpp,
+          -- options = {
+          --   server_start = {
+          --     command = '/path/to/server',
+          --     args = {
+          --       '-m', '/path/to/model',
+          --       '-c', 4096,
+          --       '-ngl', 22
+          --     }
+          --   }
+          -- },
+          builder = function(input, context)
+            return {
+              prompt = llamacpp.llama_2_user_prompt({
+                user = context.args or '',
+                message = input
+              })
+            }
+          end
+        },
+        ['commit message'] = {
+          provider = llamacpp,
+          builder = function()
+            local git_diff = vim.fn.system { 'git', 'diff', '--staged' }
+            return {
+              messages = {
+                {
+                  role = 'system',
+                  content =
+                      'Write a short commit message according to the Conventional Commits specification for the following git diff: ```\n' ..
+                      git_diff .. '\n```'
+                }
+              }
+            }
+          end,
+        },
+        ['ask code'] = {
+          provider = llamacpp,
+          params = {
+            temperature = 0.2,
+            max_tokens = 1000,
+            -- model = 'gpt-3.5-turbo-0301'
+          },
+          builder = function(input, context)
+            local surrounding_text = prompts.limit_before_after(context, 30)
+
+            local messages = {
+              {
+                role = 'user',
+                content = vim.inspect({
+                  text_after = surrounding_text.after,
+                  text_before = surrounding_text.before,
+                  text_selected = context.selection ~= nil and input or nil
+                })
+              }
+            }
+
+            if #context.args > 0 then
+              table.insert(messages, {
+                role = 'user',
+                content = context.args
+              })
+            end
+
+            return { messages = messages }
+          end
+        },
+        ['ask commit review'] = {
+          provider = llamacpp,
+          builder = function()
+            local git_diff = vim.fn.system { 'git', 'diff', '--staged' }
+            -- TODO extract relevant code from store
+
+            return {
+              messages = {
+                {
+                  role = 'user',
+                  content = 'Review this code change: ```\n' .. git_diff .. '\n```'
+                }
+              }
+            }
+          end,
+        },
+
+      }
+    },
+    {
       'stevearc/oil.nvim',
       opts = {},
       -- Optional dependencies
