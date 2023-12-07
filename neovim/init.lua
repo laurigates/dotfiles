@@ -73,10 +73,12 @@ require("lazy").setup(
     -- Commented out for now because it's quite outdated
     -- "wellle/targets.vim",
     "justinmk/vim-sneak",
-    {
-      "aaronhallaert/advanced-git-search.nvim",
-      dependencies = { "nvim-telescope/telescope.nvim" }
-    },
+    -- {
+    --   "aaronhallaert/advanced-git-search.nvim",
+    --   dependencies = {
+    --     "nvim-telescope/telescope.nvim",
+    --   },
+    -- },
     {
       'pwntester/octo.nvim',
       dependencies = {
@@ -89,8 +91,8 @@ require("lazy").setup(
     { "akinsho/git-conflict.nvim", opts = {} },
     {
       'nvim-telescope/telescope.nvim',
-      tag = '0.1.4',
-      -- or                              , branch = '0.1.x',
+      -- tag = '0.1.4',
+      branch = '0.1.x',
       dependencies = { 'nvim-lua/plenary.nvim' },
       -- keys = {
       --   { "<leader>ff", "<cmd>lua require('telescope.builtin').find_files()<cr>", desc = "Telescope find_files"},
@@ -99,18 +101,34 @@ require("lazy").setup(
       --   { "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>", desc = "Telescope help_tags"},
       -- },
       opts = {
-        fzf = {
-          fuzzy = true,                   -- false will only do exact matching
-          override_generic_sorter = true, -- override the generic sorter
-          override_file_sorter = true,    -- override the file sorter
-          case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
-          -- the default case_mode is "smart_case"
+        extensions = {
+          -- advanced_git_search = {},
+          fzf = {
+            fuzzy = true,                   -- false will only do exact matching
+            override_generic_sorter = true, -- override the generic sorter
+            override_file_sorter = true,    -- override the file sorter
+            case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
+            -- the default case_mode is "smart_case"
+          }
         }
       }
     },
     {
       'nvim-telescope/telescope-fzf-native.nvim',
       build = 'make'
+    },
+    {
+      -- It sets vim.ui.select to telescope. That means for example that neovim core stuff can fill the telescope picker. Example would be lua vim.lsp.buf.code_action().
+      'nvim-telescope/telescope-ui-select.nvim',
+      dependencies = { "nvim-telescope/telescope.nvim" }
+    },
+    {
+      'stevearc/dressing.nvim',
+      opts = {},
+    },
+    {
+      "aznhe21/actions-preview.nvim",
+      opts = {},
     },
     {
       'nvim-lualine/lualine.nvim',
@@ -217,6 +235,9 @@ require("neoconf").setup({
 })
 
 -- require("lspconfig").lua_ls.setup {}
+
+-- require("telescope").load_extension("advanced_git_search")
+require("telescope").load_extension("fzf")
 
 require("core/settings")
 require("core/keymaps")
