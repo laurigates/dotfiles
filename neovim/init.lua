@@ -60,13 +60,23 @@ require("lazy").setup(
       },
       lazy = false,
     },
-    "tpope/vim-surround", -- mappings to delete, change and add surroundings
+    {
+      "kylechui/nvim-surround",
+      version = "*", -- Use for stability; omit to use `main` branch for the latest features
+      event = "VeryLazy",
+      config = function()
+        require("nvim-surround").setup({
+          -- Configuration here, or leave empty to use defaults
+        })
+      end
+    },
+    -- "tpope/vim-surround", -- mappings to delete, change and add surroundings
     -- "tpope/vim-unimpaired",
     -- "tpope/vim-repeat",
-    "tpope/vim-speeddating",
-    "tpope/vim-eunuch",
     -- vim-sleuth automatically adjusts 'shiftwidth' and 'expandtab' heuristically based on the current file, or, in the case the current file is new, blank, or otherwise insufficient, by looking at other files of the same type in the current and parent directories.
     -- "tpope/vim-sleuth",
+    "tpope/vim-speeddating",
+    "tpope/vim-eunuch",
     "tpope/vim-fugitive",
     "tpope/vim-rhubarb",
     -- targets.vim adds various text objects
@@ -212,101 +222,93 @@ require("lazy").setup(
     {
       "folke/trouble.nvim",
       dependencies = { "nvim-tree/nvim-web-devicons" },
-      opts = {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      },
+      opts = {},
     },
     {
-      'gsuuon/llm.nvim',
-      opts = {
-        default_prompt = {
-          provider = llamacpp,
-          -- options = {
-          --   server_start = {
-          --     command = '/path/to/server',
-          --     args = {
-          --       '-m', '/path/to/model',
-          --       '-c', 4096,
-          --       '-ngl', 22
-          --     }
-          --   }
-          -- },
-          builder = function(input, context)
-            return {
-              prompt = llamacpp.llama_2_user_prompt({
-                user = context.args or '',
-                message = input
-              })
-            }
-          end
-        },
-        ['commit message'] = {
-          provider = llamacpp,
-          builder = function()
-            local git_diff = vim.fn.system { 'git', 'diff', '--staged' }
-            return {
-              messages = {
-                {
-                  role = 'system',
-                  content =
-                      'Write a short commit message according to the Conventional Commits specification for the following git diff: ```\n' ..
-                      git_diff .. '\n```'
-                }
-              }
-            }
-          end,
-        },
-        ['ask code'] = {
-          provider = llamacpp,
-          params = {
-            temperature = 0.2,
-            max_tokens = 1000,
-            -- model = 'gpt-3.5-turbo-0301'
-          },
-          builder = function(input, context)
-            local surrounding_text = prompts.limit_before_after(context, 30)
+      'gsuuon/model.nvim',
+      -- Don't need these if lazy = false
+      cmd = { 'M', 'Model', 'Mchat' },
+      init = function()
+        vim.filetype.add({
+          extension = {
+            mchat = 'mchat',
+          }
+        })
+      end,
+      ft = 'mchat',
+      keys = {
+        { '<C-m>d',       ':Mdelete<cr>', mode = 'n' },
+        { '<C-m>s',       ':Mselect<cr>', mode = 'n' },
+        { '<C-m><space>', ':Mchat<cr>',   mode = 'n' }
+      },
+      config = function()
+        require('model.providers.llamacpp').setup({
+          binary = '~/repos/llama.cpp/server',
+          models = '~/llm-models'
+        })
 
-            local messages = {
-              {
-                role = 'user',
-                content = vim.inspect({
-                  text_after = surrounding_text.after,
-                  text_before = surrounding_text.before,
-                  text_selected = context.selection ~= nil and input or nil
-                })
-              }
-            }
+        local llamacpp = require('model.providers.llamacpp')
+        local llama2 = require('model.format.llama2')
 
-            if #context.args > 0 then
-              table.insert(messages, {
-                role = 'user',
-                content = context.args
-              })
+        require('model').setup({
+          default_prompt = {
+            provider = llamacpp,
+            options = {
+              -- https://github.com/gsuuon/model.nvim
+              -- https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md
+              -- https://huggingface.co/TheBloke/CodeLlama-13B-oasst-sft-v10-GGUF
+              model = 'codellama-13b-oasst-sft-v10.Q5_K_M.gguf',
+              args = {
+                '-c', 8192,
+                '-ngl', 32
+              }
+            },
+            builder = function(input)
+              return function(build)
+                vim.ui.input(
+                  { prompt = 'Instruction: ' },
+                  function(user_input)
+                    build({
+                      prompt =
+                          '<|im_start|>system\n'
+                          .. (user_input or 'You are a helpful assistant')
+                          .. '<|im_end|>\n'
+                          .. '<|im_start|>user\n'
+                          .. input .. '<|im_end|>\n'
+                          .. '<|im_start|>assistant'
+                    })
+                  end)
+              end
             end
-
-            return { messages = messages }
-          end
-        },
-        ['ask commit review'] = {
-          provider = llamacpp,
-          builder = function()
-            local git_diff = vim.fn.system { 'git', 'diff', '--staged' }
-            -- TODO extract relevant code from store
-
-            return {
-              messages = {
-                {
-                  role = 'user',
-                  content = 'Review this code change: ```\n' .. git_diff .. '\n```'
+          },
+          prompts = {
+            ['llamacpp:codellama'] = {
+              provider = llamacpp,
+              options = {
+                -- https://github.com/gsuuon/model.nvim
+                -- https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md
+                -- https://huggingface.co/TheBloke/CodeLlama-13B-oasst-sft-v10-GGUF
+                model = 'codellama-13b-oasst-sft-v10.Q5_K_M.gguf',
+                args = {
+                  '-c', 8192,
+                  '-ngl', 32
                 }
-              }
+              },
+              builder = function(input, context)
+                return {
+                  prompt =
+                      '<|im_start|>system\n'
+                      .. (context.args or 'You are a helpful assistant')
+                      .. '<|im_end|>\n'
+                      .. '<|im_start|>user\n'
+                      .. input .. '<|im_end|>\n'
+                      .. '<|im_start|>assistant'
+                }
+              end
             }
-          end,
-        },
-
-      }
+          }
+        })
+      end,
     },
     {
       'stevearc/oil.nvim',
@@ -315,6 +317,15 @@ require("lazy").setup(
       dependencies = { "nvim-tree/nvim-web-devicons" },
     },
     'gabrielpoca/replacer.nvim',
+    {
+      'mfussenegger/nvim-dap',
+    },
+    {
+      'mfussenegger/nvim-dap-python',
+      config = function()
+        require("dap-python").setup()
+      end
+    }
   })
 
 vim.cmd [[colorscheme tokyonight]]
@@ -330,7 +341,6 @@ require("neoconf").setup({
 require("telescope").load_extension("fzf")
 
 require("core/settings")
-require("core/keymaps")
 require("core/lsp")
 -- require("core/functions")
 require("plugins/nvim-barbar")
@@ -339,3 +349,4 @@ require("plugins/nvim-telescope")
 require("plugins/nvim-treesitter")
 require("plugins/nvim-autopairs")
 -- require("plugins/codegpt")
+require("core/keymaps")
