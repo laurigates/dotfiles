@@ -5,7 +5,7 @@ type nvim >/dev/null 2>&1 && alias vim="nvim"
 alias vimrc='vim ~/dotfiles/neovim/init.lua'
 
 # easy zshrc editing
-alias zshrc='vim ~/.zshrc && source ~/.zshrc'
+alias zshrc='vim ~/.zshrc'
 alias zshenv='vim ~/dotfiles/zsh/zshenv'
 
 # use bat if it exists
@@ -15,6 +15,8 @@ alias zshenv='vim ~/dotfiles/zsh/zshenv'
 alias preview="fzf --preview 'bat --color \"always\" {}'"
 
 alias icat="kitty +kitten icat"
+
+alias s="kitty +kitten ssh"
 
 # alias ls='ls --color=auto'
 
@@ -28,15 +30,19 @@ alias tree='lsd --tree'
 alias ga='git add'
 alias gc='git commit -v'
 alias gl='git pull'
+alias gla='git pull --autostash'
 alias gp='git push'
 
 alias gb='git branch'
 alias gba='git branch -a'
 alias gbd='git branch -d'
+alias gbD='git branch -D'
 
 alias gd='git diff'
 alias gdca='git diff --cached'
 alias gdcw='git diff --cached --word-diff'
+
+alias gfap='git fetch --all --prune'
 
 alias glg='git log --stat'
 alias glgp='git log --stat -p'
@@ -57,8 +63,6 @@ alias gm='git merge'
 alias gst='git status'
 
 alias gsw='git switch'
-
-alias gupa='git pull --rebase --autostash'
 
 ### kubectl aliases
 # Mostly cherry-picked from the oh-my-zsh kubectl plugin:
@@ -230,3 +234,15 @@ alias kgj='kubectl get job'
 alias kej='kubectl edit job'
 alias kdj='kubectl describe job'
 alias kdelj='kubectl delete job'
+
+### hcloud aliases
+
+alias h='hcloud'
+alias hcu='hcloud context use'
+alias hsl='hcloud server list'
+alias hsd='hcloud server describe'
+alias hsll='hcloud server list --output columns=name,labels'
+
+### Terraform aliases
+
+alias tf='terraform'
