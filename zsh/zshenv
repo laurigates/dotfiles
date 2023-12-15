@@ -1,60 +1,71 @@
+export PATH=$HOME/.local/bin:/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
 
 # Disable python keyring, so pip install won't pop open annoying dialogs
-PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
-export PATH=$HOME/.local/bin:/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+# PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
 
 # set terminal preference for i3
 export TERMINAL=kitty
 
 # Load asdf to manage python, nodejs, rust, go etc.
 source ~/dotfiles/asdf/asdf.sh
+source ~/.asdf/plugins/golang/set-env.zsh
+
+# Configure perl to install modules in the user directory so that root privileges are not required.
+# The neovim perl module for example.
+# https://metacpan.org/pod/local::lib
+# https://neovim.io/doc/user/provider.html#provider-perl
+#
+# These commands to install neovim extension:
+# cpan App::cpanminus
+# cpan -m -n Neovim::Ext
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 
 # OS specific settings
 case "$(uname)" in
-  'Darwin') OS=macos
-    # Setup homebrew
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+'Darwin')
+	OS=macos
+	# Setup homebrew
+	eval "$(/opt/homebrew/bin/brew shellenv)"
 
-    # https://www.softec.lu/site/DevelopersCorner/MasteringThePathHelper
-    # Appends paths found in files under /etc/paths.d to PATH on macos
-    # if [ -x /usr/libexec/path_helper ]; then
-    # 	eval `/usr/libexec/path_helper -s`
-    # fi
+  # tensorflow won't build if DYLD_LIBRARY_PA is set here
+  # but I don't remember why I set it originally :)
+	# export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 
-    # set browser preference
-    export BROWSER="open -a Google\ Chrome"
+	# https://www.softec.lu/site/DevelopersCorner/MasteringThePathHelper
+	# Appends paths found in files under /etc/paths.d to PATH on macos
+	if [ -x /usr/libexec/path_helper ]; then
+		eval `/usr/libexec/path_helper -s`
+	fi
 
-    function nvim_install_cmd() {
-      # Install using brew because github doesn't yet offer arm64 builds for macos.
-      brew install --HEAD neovim
-      brew upgrade --fetch-HEAD neovim
-    }
-  ;;
-  'Linux') OS=linux64
-    # Define these to install perl modules without root
-    # For neovim perl module
-    # https://metacpan.org/pod/local::lib
-    PERL5LIB="/home/lgates/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-    PERL_LOCAL_LIB_ROOT="/home/lgates/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-    PERL_MB_OPT="--install_base \"/home/lgates/perl5\""; export PERL_MB_OPT;
-    PERL_MM_OPT="INSTALL_BASE=/home/lgates/perl5"; export PERL_MM_OPT;
+	# set browser preference
+	export BROWSER="open -a Google\ Chrome"
 
-    # set browser preference
-    export BROWSER=google-chrome-stable
+	function nvim_install_cmd() {
+		# Install using brew because github doesn't yet offer arm64 builds for macos.
+    brew unlink neovim
+		brew install --HEAD neovim
+		# brew upgrade --fetch-HEAD neovim
+    # This needs something changed, because it doesn't update neovim unless it is unlinked first
+	}
+	;;
+'Linux')
+	OS=linux64
+	# set browser preference
+	export BROWSER=google-chrome-stable
 
-    function nvim_install_cmd() {
-      # Should add the option to choose whether to install globally
-      INSTALL_DIR="$HOME/.local"
-      if [[ -v OS ]]; then
-        curl -sL https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz \
-        | tar xzf - --strip-components=1 -C $INSTALL_DIR
-      fi
-    }
-  ;;
+	function nvim_install_cmd() {
+		# Should add the option to choose whether to install globally
+		INSTALL_DIR="$HOME/.local"
+		if [[ -v OS ]]; then
+			curl -sL https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz |
+				tar xzf - --strip-components=1 -C $INSTALL_DIR
+		fi
+	}
+	;;
 esac
 
 # use most as pager for colored man pages
-export PAGER=most
+# export PAGER=most
 
 # Nvim exists in my home folder in some environments.
 # This will find it in my path and get the absolute path.
@@ -64,13 +75,13 @@ export PAGER=most
 NVIM=$(whence -p nvim)
 
 if command -v nvim >/dev/null 2>&1; then
-    export EDITOR='nvim'
-    export VISUAL='nvim'
-    export SUDO_EDITOR=$NVIM
+	export EDITOR='nvim'
+	export VISUAL='nvim'
+	export SUDO_EDITOR=$NVIM
 else
-    export EDITOR='vim'
-    export VISUAL='vim'
-    export SUDO_EDITOR='vim'
+	export EDITOR='vim'
+	export VISUAL='vim'
+	export SUDO_EDITOR='vim'
 fi
 # No need to source ruby or nvm here, because the zsh plugins already do that!
 
@@ -95,12 +106,12 @@ export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap 
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
 _fzf_compgen_path() {
-  fd --hidden --follow --exclude ".git" . "$1"
+	fd --hidden --follow --exclude ".git" . "$1"
 }
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
-  fd --type d --hidden --follow --exclude ".git" . "$1"
+	fd --type d --hidden --follow --exclude ".git" . "$1"
 }
 
 # for existing man pages
