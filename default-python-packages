@@ -9,3 +9,4 @@ ansible-lint
 ruff
 tiktoken
 direnv
+pyyaml

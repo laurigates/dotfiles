@@ -3,7 +3,7 @@
     ~/.default-npm-packages: default-npm-packages
     ~/.default-cargo-crates: default-cargo-crates
     ~/.default-golang-pkgs: default-golang-pkgs
-    ~/.tool-versions: tool-versions
+    ~/.tool-versions: .tool-versions
 
 - shell:
     -
@@ -12,17 +12,14 @@
         asdf plugin-list-all
         # python
         asdf plugin-add python
-        asdf install python 3.11.6
-        asdf install python latest
         # nodejs
         asdf plugin-add nodejs
-        asdf install nodejs latest
         # rust
-        asdf plugin-add cargo
-        asdf install cargo latest
+        asdf plugin-add rust
         # golang
         asdf plugin-add golang
-        asdf install golang latest
+        # install configured tool versions
+        asdf install
       description: asdf setup
       stdout: true
       stderr: true
