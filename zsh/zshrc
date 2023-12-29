@@ -101,8 +101,8 @@ bindkey . rationalise-dot
 
 source ~/dotfiles/zsh/aliases.zsh
 # source ~/dotfiles/asdf/asdf.sh
-eval "$(direnv hook zsh)"
-source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
 
 # {{{ zsh-vi-mode
 source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
@@ -131,7 +131,10 @@ if type brew > /dev/null; then
     # Setup homebrew
     # completions for brew and applications installed by it
     # https://docs.brew.sh/Shell-Completion
-    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+    fpath+="$(brew --prefix)/share/zsh/site-functions"
+
+    # Azure CLI
+    source $(brew --prefix)/etc/bash_completion.d/az
 
     # google-cloud-sdk path and completions
     source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
@@ -145,9 +148,9 @@ fi
 #
 
 # Evaluate completion scripts
-eval "$(pip completion --zsh)"
-eval "$(oc completion zsh)"
-eval "$(docker completion zsh)"
+command -v pip &> /dev/null && eval "$(pip completion --zsh)"
+command -v oc &> /dev/null && eval "$(oc completion zsh)"
+command -v docker &> /dev/null && eval "$(docker completion zsh)"
 
 # Additional completion definitions can be placed in this directory
 # rustup completions zsh cargo > ~/.zfunc/_cargo
@@ -155,14 +158,13 @@ eval "$(docker completion zsh)"
 fpath+=~/.zfunc
 
 # asdf completions
-fpath=(${ASDF_DIR}/completions $fpath)
+fpath+=${ASDF_DIR}/completions
 
 autoload -Uz compinit && compinit
 
 # Terraform autocomplete requires these
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
-source $(brew --prefix)/etc/bash_completion.d/az
 
 # Completion for kitty
 # The kitty docs specify that this has to be called after compinit
