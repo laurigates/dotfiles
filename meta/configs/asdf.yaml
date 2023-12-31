@@ -10,18 +10,14 @@
       command: |
         # Cache asdf plugin short names
         asdf plugin-list-all
-        # python
+        # Install plugins
         asdf plugin-add python
-        # nodejs
         asdf plugin-add nodejs
-        # rust
         asdf plugin-add rust
-        # golang
         asdf plugin-add golang
-        # fzf
         asdf plugin-add fzf
-        # neovim
         asdf plugin-add neovim
+        asdf plugin-add direnv
         # install configured tool versions
         asdf install
       description: asdf setup
