@@ -7,6 +7,10 @@ I have configured the more advanced setup described on the
 [Tips and Tricks](https://github.com/anishathalye/dotbot/wiki/Tips-and-Tricks#more-advanced-setup)
 page in the dotbot wiki.
 
+```
+git clone --recurse-submodules git@github.com:laurigates/dotfiles
+```
+
 For a basic workstation installation
 
 ```
@@ -21,39 +25,12 @@ To install a specific configuration
 
 ## macOS quirks
 
-### Ctrl+T does not work
-
 ### Jumping between words
 
 You have to disable system level shortcuts for ctrl+left arrow and ctrl+right
 arrow to be able to use those shortcuts in zsh.
 
 ![MacOS ctrl+arrow shortcuts that have to be disabled](images/macos_ctrlarrow.png)
-
-### fzf on macOS
-
-Use Homebrew to install fzf:
-
-```
-brew install fzf
-```
-
-If you want to use shell extensions (better shell integration):
-
-```
-/usr/local/opt/fzf/install
-```
-
-which gives you:
-
-Key bindings (CTRL-T, CTRL-R, and ALT-C) (available for bash, zsh and fish)
-Fuzzy auto-completion (available for bash and zsh)
-
-## Python, Node & Ruby executables
-
-Remember to run `pyenv rehash`, `rbenv rehash` or `nodenv rehash` after
-installing packages in these environments. Otherwise the shell and vim won't
-find the new binaries.
 
 ## Docker testing
 
@@ -67,4 +44,12 @@ Run the docker image
 
 ```shell
 docker run --rm -it laurigates/dotfiles:latest
+```
+
+## Debugging PATH
+
+Display everything that happens when starting the shell, run a simple command and filter the output.
+
+```shell
+zsh -x -c 'printenv PATH' 2>&1 | rg PATH
 ```
