@@ -10,11 +10,6 @@
 
 - shell:
     -
-      command: zsh -c "install_nvim"
-      description: Checking nvim
-      stdout: true
-      stderr: true
-    -
       command: nvim --headless "+Lazy! sync" +qa
       description: Install, cleanup and update neovim plugins
       stdout: true
