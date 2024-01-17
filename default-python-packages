@@ -10,3 +10,4 @@ ruff
 tiktoken
 direnv
 pyyaml
+jinjanator
