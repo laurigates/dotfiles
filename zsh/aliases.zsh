@@ -1,15 +1,15 @@
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
-# easy vimrc editing
-alias vimrc='vim ~/dotfiles/neovim/init.lua'
-
-# easy zshrc editing
-alias zshrc='vim ~/.zshrc'
-alias zshenv='vim ~/dotfiles/zsh/zshenv'
+# Easy vimrc, zshrc and zshenv editing
+# Switch to dotfiles directory so that other configs can be edited easily if
+# needed and committed to git
+alias vimrc='nvim --cmd "cd ~/dotfiles" ~/dotfiles/neovim/init.lua'
+alias zshrc='nvim --cmd "cd ~/dotfiles" ~/dotfiles/zsh/zshrc'
+alias zshenv='nvim --cmd "cd ~/dotfiles" ~/dotfiles/zsh/zshenv'
 
 # use bat if it exists
-#type bat >/dev/null 2>&1 && alias cat="bat"
+type bat >/dev/null 2>&1 && alias cat="bat"
 
 # fzf preview
 alias preview="fzf --preview 'bat --color \"always\" {}'"
@@ -18,10 +18,9 @@ alias icat="kitty +kitten icat"
 
 alias s="kitty +kitten ssh"
 
-# alias ls='ls --color=auto'
-
-alias ls='lsd'
-alias tree='lsd --tree'
+# Use lsd if it is available
+alias ls='ls --color=auto'
+type lsd >/dev/null 2>&1 && alias ls="lsd" && alias tree='lsd --tree'
 
 ### Git aliases
 # Mostly cherry-picked from the oh-my-zsh git plugin:
