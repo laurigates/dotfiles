@@ -3,5 +3,5 @@ python 3.12.1
 nodejs 21.5.0
 neovim nightly
 golang 1.21.5
-direnv 2.32.3
+direnv 2.33.0
 fzf latest
