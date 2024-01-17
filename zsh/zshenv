@@ -1,3 +1,9 @@
+export PATH="$HOME/.local/bin:$PATH"
+
+# Load asdf to manage python, nodejs, rust, go etc.
+source "$HOME/dotfiles/asdf/asdf.sh"
+source "$HOME/.asdf/plugins/golang/set-env.zsh"
+
 # Disable python keyring, so pip install won't pop open annoying dialogs
 # PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
 path+="$HOME/.local/bin"
@@ -23,44 +29,12 @@ export TERMINAL=kitty
 # OS specific settings
 case "$(uname)" in
 'Darwin')
-	OS=macos
-	# Setup homebrew
-	eval "$(/opt/homebrew/bin/brew shellenv)"
-
-  # tensorflow won't build if DYLD_LIBRARY_PA is set here
-  # but I don't remember why I set it originally :)
-	# export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-
-	# https://www.softec.lu/site/DevelopersCorner/MasteringThePathHelper
-	# Appends paths found in files under /etc/paths.d to PATH on macos
-	if [ -x /usr/libexec/path_helper ]; then
-		eval `/usr/libexec/path_helper -s`
-	fi
-
 	# set browser preference
 	export BROWSER="open -a Google\ Chrome"
-
-	function nvim_install_cmd() {
-		# Install using brew because github doesn't yet offer arm64 builds for macos.
-    brew unlink neovim
-		brew install --HEAD neovim
-		# brew upgrade --fetch-HEAD neovim
-    # This needs something changed, because it doesn't update neovim unless it is unlinked first
-	}
 	;;
 'Linux')
-	OS=linux64
 	# set browser preference
 	export BROWSER=google-chrome-stable
-
-	function nvim_install_cmd() {
-		# Should add the option to choose whether to install globally
-		INSTALL_DIR="$HOME/.local"
-		if [[ -v OS ]]; then
-			curl -sL https://github.com/neovim/neovim/releases/download/nightly/nvim-$OS.tar.gz |
-				tar xzf - --strip-components=1 -C $INSTALL_DIR
-		fi
-	}
 	;;
 esac
 

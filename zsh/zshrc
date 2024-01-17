@@ -100,11 +100,18 @@ zle -N rationalise-dot
 bindkey . rationalise-dot
 
 source ~/dotfiles/zsh/aliases.zsh
+
+# {{{ Plugins
+
 # source ~/dotfiles/asdf/asdf.sh
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
 
-# {{{ zsh-vi-mode
+
+# Setup homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# zsh-vi-mode
 source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # Since the default initialization mode, this plugin will overwrite the
@@ -125,65 +132,57 @@ function zvm_after_init() {
 }
 # }}}
 
-# {{{ macos
-# Load brew completions if it is installed
-if type brew > /dev/null; then
-    # Setup homebrew
-    # completions for brew and applications installed by it
-    # https://docs.brew.sh/Shell-Completion
-    fpath+="$(brew --prefix)/share/zsh/site-functions"
-
-    # Azure CLI
-    source $(brew --prefix)/etc/bash_completion.d/az
-
-    # google-cloud-sdk path and completions
-    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
-fi
-# }}}
-
 # {{{ Completions
 #
 # NOTE: Completions need to be loaded before compinit is run.
 #
 
-# Evaluate completion scripts
-command -v pip &> /dev/null && eval "$(pip completion --zsh)"
-command -v oc &> /dev/null && eval "$(oc completion zsh)"
-command -v docker &> /dev/null && eval "$(docker completion zsh)"
-
 # Additional completion definitions can be placed in this directory
 # rustup completions zsh cargo > ~/.zfunc/_cargo
 # rustup completions zsh > ~/.zfunc/_rustup
+# pip completion --zsh > ~/.zfunc/_pip
+# oc completion zsh > ~/.zfunc/_oc
+# docker completion zsh > ~/.zfunc/_docker
 fpath+=~/.zfunc
+
+# Load brew completions if it is installed
+if type brew &> /dev/null; then
+    # Setup homebrew
+    # completions for brew and applications installed by it
+    # https://docs.brew.sh/Shell-Completion
+    fpath+="$(brew --prefix)/share/zsh/site-functions"
+
+    # google-cloud-sdk path and completions
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
 
 # asdf completions
 fpath+=${ASDF_DIR}/completions
 
 autoload -Uz compinit && compinit
 
-# Terraform autocomplete requires these
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
-
 # Completion for kitty
 # The kitty docs specify that this has to be called after compinit
 # https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
-if type kitty > /dev/null; then
+if type kitty &> /dev/null; then
     kitty +complete setup zsh | source /dev/stdin
 fi
 
-autoload -Uz compinit
 # negation, so that at least one exits on 0
-[ ! "$(find ~/.zcompdump -mtime +1)" ] || compinit; compinit -C
+# [ ! "$(find ~/.zcompdump -mtime +1)" ] || compinit; compinit -C
 
-# Additional completion definitions can be placed in this directory
-fpath+=~/.zfunc
+# Load brew completions if it is installed
+if type brew &> /dev/null; then
+    # Enable loading bash completions
+    autoload -U +X bashcompinit && bashcompinit
 
-# Terraform autocomplete requires these
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
+    # Terraform completions
+    complete -o nospace -C /opt/homebrew/bin/terraform terraform
 
+    # Azure CLI completions
+    source $(brew --prefix)/etc/bash_completion.d/az
+fi
 # }}}
 
 # {{{ Keybinds
@@ -225,13 +224,6 @@ bindkey "\e[5D" backward-word
 bindkey "\e\e[C" forward-word
 bindkey "\e\e[D" backward-word
 
-# Completion for kitty
-# The kitty docs specify that this has to be called after compinit
-# compinit is called by oh-my-zsh, so this has to be after sourcing oh-my-zsh
-# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
-if type kitty > /dev/null; then
-    kitty + complete setup zsh | source /dev/stdin
-fi
 # }}}
 
 source ~/dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
