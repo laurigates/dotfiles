@@ -18,6 +18,10 @@
         asdf plugin-add rust
         # golang
         asdf plugin-add golang
+        # fzf
+        asdf plugin-add fzf
+        # neovim
+        asdf plugin-add neovim
         # install configured tool versions
         asdf install
       description: asdf setup
