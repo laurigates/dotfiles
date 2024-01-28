@@ -245,3 +245,7 @@ alias hsll='hcloud server list --output columns=name,labels'
 ### Terraform aliases
 
 alias tf='terraform'
+
+### Docker aliases
+alias dcls='docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'
+alias dls='docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"'
