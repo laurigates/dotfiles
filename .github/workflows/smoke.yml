@@ -7,23 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install dependencies
-      run: |
-        sudo apt-get install zsh
-        wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-        sudo tar xaf nvim-linux64.tar.gz --strip-components=1 -C /usr/local
-        nvim --version
-    - uses: actions/checkout@v1
+      run: sudo apt-get install zsh
+    - uses: actions/checkout@v4
     - name: Run dotbot profile installation
       shell: zsh {0}
       run: zsh -c "./install-profile workstation"
   build-macos:
-    runs-on: macos-11
+    runs-on: macos-latest
     steps:
-    - name: Install dependencies
-      run: |
-        brew install --HEAD neovim
-        nvim --version
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Run dotbot profile installation
       shell: zsh {0}
       run: zsh -c "./install-profile workstation-mac"
