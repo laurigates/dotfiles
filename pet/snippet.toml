@@ -167,3 +167,8 @@
   description = "Update and stage git submodules"
   command = "git submodule update --remote && git submodule foreach 'git --git-dir $toplevel/.git add $sm_path'"
   output = ""
+
+[[snippets]]
+  description = "rsync with sudo privileges on the remote host"
+  command = "rsync --rsync-path=\"sudo rsync\" -av <src> <dst>"
+  output = ""
