@@ -60,14 +60,22 @@ map('t', '<Esc>', '<C-\\><C-n>')                    -- exit
 -- map('n', '<C-m>', ':Vista!!<CR>') -- open/close
 
 -- Telescope
-map('n', '<leader>ff', '<cmd>lua require("telescope.builtin").find_files()<cr>')
+map('n', '<leader>ff', '<cmd>lua require("telescope.builtin").find_files({ hidden = true })<cr>')
 map('n', '<leader>fr', '<cmd>lua require("telescope.builtin").git_files()<cr>')
 map('n', '<leader>fg', '<cmd>lua require("telescope.builtin").live_grep()<cr>')
 map('n', '<leader>fb', '<cmd>lua require("telescope.builtin").buffers()<cr>')
 map('n', '<leader>fh', '<cmd>lua require("telescope.builtin").help_tags()<cr>')
 map('n', '<leader>fm', '<cmd>lua require("telescope.builtin").keymaps()<cr>')
+map('n', '<leader>ft', '<cmd>lua require("search").open()<cr>')
 
 -- vim-easy-align
 -- map('n', 'ga', '<Plug>(EasyAlign)')
 -- map('x', 'ga', '<Plug>(EasyAlign)')
 map('n', '<leader>h', '<cmd>lua require("replacer").run()<cr>')
+
+map('n', '<F8>', '<cmd>DapContinue<cr>')
+map('n', '<F9>', '<cmd>DapStepInto<cr>')
+map('n', '<F10>', '<cmd>DapToggleBreakpoint<cr>')
+-- Surround like delete/change surrounding function calls
+-- map('n', 'dsf', 'ds)db', { noremap = false })
+-- map('n', 'csf', '[(cb')

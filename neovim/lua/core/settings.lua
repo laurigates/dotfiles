@@ -10,10 +10,7 @@
 -- Neovim API aliases
 -----------------------------------------------------------
 local cmd = vim.cmd            -- Execute Vim commands
-local exec = vim.api.nvim_exec -- Execute Vimscript
-local g = vim.g                -- Global variables
 local opt = vim.opt            -- Set options (global/buffer/windows-scoped)
--- local fn = vim.fn           -- Call Vim functions
 
 -----------------------------------------------------------
 -- General
@@ -35,7 +32,7 @@ opt.matchtime = 2          -- How many tenths of a second to blink when matching
 opt.foldmethod = 'marker'  -- Enable folding (default 'foldmarker')
 -- opt.colorcolumn = '80'  -- Line lenght marker at 80 columns
 opt.splitright = true      -- Vertical split to the right
-opt.splitbelow = true      -- Orizontal split to the bottom
+opt.splitbelow = true      -- Horizontal split to the bottom
 opt.ignorecase = true      -- Ignore case letters when search
 opt.smartcase = true       -- Ignore lowercase for the whole pattern
 opt.linebreak = true       -- Wrap on word boundary
@@ -65,46 +62,6 @@ opt.lazyredraw = true -- Faster scrolling
 opt.synmaxcol = 240   -- Max column for syntax highlight
 
 -----------------------------------------------------------
--- Autocommands
------------------------------------------------------------
-
--- Remove whitespace on save
-cmd [[au BufWritePre * :%s/\s\+$//e]]
-
--- Highlight on yank
-exec([[
-  augroup YankHighlight
-    autocmd!
-    autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=800}
-  augroup end
-]], false)
-
--- Don't auto commenting new lines
-cmd [[au BufEnter * set fo-=c fo-=r fo-=o]]
-
--- Remove line lenght marker for selected filetypes
--- cmd [[autocmd FileType text,markdown,html,xhtml,javascript setlocal cc=0]]
-
--- Return to last edit position when opening files
-cmd [[
-  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-]]
-
--- Configure file to load automatically if changed outside vim
-cmd [[
-  autocmd FocusGained * checktime
-]]
-
-cmd [[
-  au BufRead,BufNewFile */playbooks/*.yml setlocal ft=yaml.ansible
-  au BufRead,BufNewFile */playbooks/*.yaml setlocal ft=yaml.ansible
-  au BufRead,BufNewFile */roles/*/tasks/*.yml setlocal ft=yaml.ansible
-  au BufRead,BufNewFile */roles/*/tasks/*.yaml setlocal ft=yaml.ansible
-  au BufRead,BufNewFile */roles/*/handlers/*.yml setlocal ft=yaml.ansible
-  au BufRead,BufNewFile */roles/*/handlers/*.yaml setlocal ft=yaml.ansible
-]]
-
------------------------------------------------------------
 -- Terminal
 -----------------------------------------------------------
 
@@ -114,11 +71,11 @@ cmd [[command Term :botright vsplit term://$SHELL]]
 -- Terminal visual tweaks:
 -- - enter insert mode when switching to terminal
 -- - close terminal buffer on process exit
-cmd [[
-    autocmd TermOpen * setlocal listchars= nonumber norelativenumber nocursorline
-    autocmd TermOpen * startinsert
-    autocmd BufLeave term://* stopinsert
-]]
+-- cmd [[
+--     autocmd TermOpen * setlocal listchars= nonumber norelativenumber nocursorline
+--     autocmd TermOpen * startinsert
+--     autocmd BufLeave term://* stopinsert
+-- ]]
 
 -----------------------------------------------------------
 -- Startup
