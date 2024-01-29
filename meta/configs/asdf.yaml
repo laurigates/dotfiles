@@ -9,7 +9,7 @@
     -
       command: |
         # Cache asdf plugin short names
-        asdf plugin-list-all
+        # asdf plugin-list-all
         # Install plugins
         asdf plugin-add python
         asdf plugin-add nodejs
@@ -23,3 +23,9 @@
       description: asdf setup
       stdout: true
       stderr: true
+    -
+      command: "$(asdf where fzf)/install --completion --key-bindings --no-update-rc --no-bash --no-fish"
+      description: Generate fzf configuration
+    -
+      command: build-fzf-tab-module
+      description: Build fzf-tab binary for colorization
