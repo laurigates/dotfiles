@@ -1,0 +1,21 @@
+- shell:
+    -
+      command: git config --global diff.algorithm histogram
+      description: Set git diff algorithm to histogram
+      stdout: true
+      stderr: true
+    -
+      command: git config --global init.defaultBranch main
+      description: Set git default branch to main
+      stdout: true
+      stderr: true
+    -
+      command: git config --global pull.rebase true
+      description: Set git pull to rebase
+      stdout: true
+      stderr: true
+    -
+      command: git config --global rebase.autoStash true
+      description: Set git rebase to autostash by default
+      stdout: true
+      stderr: true
