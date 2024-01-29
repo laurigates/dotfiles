@@ -79,6 +79,7 @@ zstyle ':completion:*:git-checkout:*' sort false
 # set descriptions format to enable group support
 zstyle ':completion:*:descriptions' format '[%d]'
 # set list-colors to enable filename colorizing
+# NOTE: I'm not sure this is working. Filenames aren't colorful.
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 # preview directory's content with lsd when completing cd
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --depth 1 --color always --tree $realpath'
@@ -86,6 +87,26 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --depth 1 --color always --tree
 zstyle ':fzf-tab:*' switch-group ',' '.'
 # enable IP addresses in completions
 zstyle ':completion:*' use-ip true
+# systemd unit status preview
+zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
+# Git previews
+zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
+	'git diff $word | delta'
+zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
+	'git log --color=always $word'
+zstyle ':fzf-tab:complete:git-help:*' fzf-preview \
+	'git help $word | bat -plman --color=always'
+zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
+	'case "$group" in
+	"commit tag") git show --color=always $word ;;
+	*) git show --color=always $word | delta ;;
+	esac'
+zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
+	'case "$group" in
+	"modified file") git diff $word | delta ;;
+	"recent commit object name") git show --color=always $word | delta ;;
+	*) git log --color=always $word ;;
+	esac'
 # }}}
 
 # Another method for quick change directories. Add this to your ~/.zshrc, then just enter “cd …./dir”
@@ -99,16 +120,14 @@ rationalise-dot() {
 zle -N rationalise-dot
 bindkey . rationalise-dot
 
-source ~/dotfiles/zsh/aliases.zsh
-
 # {{{ Plugins
 
-# source ~/dotfiles/asdf/asdf.sh
+# Load asdf to manage python, nodejs, rust, go etc.
+source "$HOME/dotfiles/asdf/asdf.sh"
+source "$HOME/.asdf/plugins/golang/set-env.zsh"
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
 
-# Setup homebrew
-[ -f ~/opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # zsh-vi-mode
 source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
@@ -121,13 +140,18 @@ source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 #
 # The plugin will auto execute this zvm_after_init function
 function zvm_after_init() {
-  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
   ## Plugins to load after compinit
   source ~/dotfiles/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
   source ~/dotfiles/zsh/zsh-z/zsh-z.plugin.zsh
   # fzf-tab doesn't seem to work for brew completions e.g. kubectl
   source ~/dotfiles/zsh/fzf-tab/fzf-tab.plugin.zsh
   source ~/dotfiles/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+
+  # Load aliases after asdf so that conditional aliases for executables managed
+  # by asdf can be found and aliased correctly.
+  source ~/dotfiles/zsh/aliases.zsh
+
 }
 # }}}
 
@@ -144,8 +168,10 @@ function zvm_after_init() {
 # docker completion zsh > ~/.zfunc/_docker
 fpath+=~/.zfunc
 
-# Load brew completions if it is installed
-if type brew &> /dev/null; then
+# Load brew and related completions if it is installed
+if type /opt/homebrew/bin/brew &> /dev/null; then
+    # Setup homebrew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
     # Setup homebrew
     # completions for brew and applications installed by it
     # https://docs.brew.sh/Shell-Completion
@@ -188,7 +214,11 @@ fi
 
 ##### Unbind problematic bindings
 # Unbind Alt+tab from zvm_readkeys_handler
-bindkey -r "^["
+# This doesn't take effect for some reason.
+# It works when run manually.
+# I think the main problem with this bind is that Alt+Tab causes this keycode as well.
+# This causes ZSH to go into vim-mode when I accidentally press Alt+Tab instead of Command+Tab on macos.
+# bindkey -r "^["
 
 ##### Fix tmux key mappings
 # Fix Home/End keys

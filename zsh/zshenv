@@ -1,20 +1,8 @@
-export PATH="$HOME/.local/bin:$PATH"
-
-# Load asdf to manage python, nodejs, rust, go etc.
-source "$HOME/dotfiles/asdf/asdf.sh"
-source "$HOME/.asdf/plugins/golang/set-env.zsh"
-
-# Disable python keyring, so pip install won't pop open annoying dialogs
-# PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"; export PYTHON_KEYRING_BACKEND;
 path+="$HOME/.local/bin"
 export PATH
 
 # set terminal preference for i3
 export TERMINAL=kitty
-
-# Load asdf to manage python, nodejs, rust, go etc.
-[ -f ~/dotfiles/asdf/asdf.sh ] && source ~/dotfiles/asdf/asdf.sh
-[ -f ~/.asdf/plugins/golang/set-env.zsh ] && source ~/.asdf/plugins/golang/set-env.zsh
 
 # Configure perl to install modules in the user directory so that root privileges are not required.
 # The neovim perl module for example.
