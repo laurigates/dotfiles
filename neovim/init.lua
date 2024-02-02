@@ -153,6 +153,22 @@ require("lazy").setup({
 	--   dependencies = {
 	--     "nvim-telescope/telescope.nvim",
 	--   },
+	-- opts = {
+	-- 	-- don't use `defaults = { }` here, do this in the main telescope spec
+	-- 	extensions = {
+	-- 		advanced_git_search = {
+	-- 			-- advanced_git_search config, see below
+	-- 		},
+	-- 		-- no other extensions here, they can have their own spec too
+	-- 	},
+	-- },
+	-- config = function(_, opts)
+	-- 	-- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
+	-- 	-- configs for us. We won't use data, as everything is in it's own namespace (telescope
+	-- 	-- defaults, as well as each extension).
+	-- 	require("telescope").setup(opts)
+	-- 	require("telescope").load_extension("advanced_git_search")
+	-- end,
 	-- },
 	{ -- GitHub interface
 		"pwntester/octo.nvim",
@@ -198,6 +214,22 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope-fzf-native.nvim",
 		build = "make",
+		opts = {
+			-- don't use `defaults = { }` here, do this in the main telescope spec
+			extensions = {
+				fzf = {
+					-- fzf config, see below
+				},
+				-- no other extensions here, they can have their own spec too
+			},
+		},
+		config = function(_, opts)
+			-- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
+			-- configs for us. We won't use data, as everything is in it's own namespace (telescope
+			-- defaults, as well as each extension).
+			require("telescope").setup(opts)
+			require("telescope").load_extension("fzf")
+		end,
 	},
 	{
 		-- It sets vim.ui.select to telescope. That means for example that neovim core stuff can fill the telescope picker. Example would be lua vim.lsp.buf.code_action().
@@ -433,8 +465,6 @@ require("lazy").setup({
 			-- defaults, as well as each extension).
 			require("telescope").setup(opts)
 			require("telescope").load_extension("undo")
-			require("telescope").load_extension("fzf")
-			-- require("telescope").load_extension("advanced_git_search")
 		end,
 	},
 	-- "wellle/targets.vim",
