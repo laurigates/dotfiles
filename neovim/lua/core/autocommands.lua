@@ -4,7 +4,7 @@
 local cmd = vim.cmd -- Execute Vim commands
 
 -- Open files above the fugitive buffer
-cmd([[au BufEnter FugitiveIndex setlocal splitbelow=false]])
+-- cmd([[au BufEnter FugitiveIndex setlocal splitbelow=false]])
 
 -- Remove whitespace on save
 -- cmd [[au BufWritePre * :%s/\s\+$//e]]
@@ -18,7 +18,7 @@ augroup end
 ]])
 
 -- Don't auto commenting new lines
-cmd([[au BufEnter * set fo-=c fo-=r fo-=o]])
+-- cmd([[au BufEnter * set fo-=c fo-=r fo-=o]])
 
 -- Remove line lenght marker for selected filetypes
 -- cmd [[autocmd FileType text,markdown,html,xhtml,javascript setlocal cc=0]]
@@ -55,3 +55,21 @@ cmd([[
 --     end,
 --     group = autocmd_group,
 -- })
+
+-- Open a terminal pane on the right using :Term
+cmd([[command Term :botright vsplit term://$SHELL]])
+
+-- Terminal visual tweaks:
+-- - enter insert mode when switching to terminal
+-- - close terminal buffer on process exit
+-- cmd [[
+--     autocmd TermOpen * setlocal listchars= nonumber norelativenumber nocursorline
+--     autocmd TermOpen * startinsert
+--     autocmd BufLeave term://* stopinsert
+-- ]]
+
+cmd([[
+  au BufRead *zshrc setlocal foldmethod=marker
+]])
+
+-- opt.foldmethod = "marker" -- Enable folding (default 'foldmarker')
