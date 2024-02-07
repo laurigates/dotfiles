@@ -1,3 +1,4 @@
+-- A plugin for adding/deleting/changing delimiter pairs.
 return {
 	{
 		"kylechui/nvim-surround",

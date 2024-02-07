@@ -1,3 +1,4 @@
+-- Neovim plugin for interacting with LLM's and building editor integrated prompts.
 return {
 	{
 		"gsuuon/model.nvim",

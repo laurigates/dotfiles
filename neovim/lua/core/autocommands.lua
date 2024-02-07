@@ -6,9 +6,6 @@ local cmd = vim.cmd -- Execute Vim commands
 -- Open files above the fugitive buffer
 -- cmd([[au BufEnter FugitiveIndex setlocal splitbelow=false]])
 
--- Remove whitespace on save
--- cmd [[au BufWritePre * :%s/\s\+$//e]]
-
 -- Highlight on yank
 cmd([[
 augroup YankHighlight
