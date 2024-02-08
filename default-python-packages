@@ -4,11 +4,15 @@ ansible-lint
 direnv
 glances
 hcloud
+jinja2
 jinjanator
 pip-tools
+pipx
+podman-compose
 pre-commit
 pynvim
 pytest
+python-dotenv
 pyyaml
 ruff
-tiktoken
+yamllint
