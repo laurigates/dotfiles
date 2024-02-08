@@ -95,4 +95,5 @@ function install_nvim () {
 # Fix SDL full screen output to correct monitor
 export SDL_VIDEO_FULLSCREEN_HEAD=0
 
+export BAT_THEME=TwoDark
 # vim:ft=sh
