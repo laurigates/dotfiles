@@ -161,11 +161,6 @@ function zvm_after_init() {
 #
 
 # Additional completion definitions can be placed in this directory
-# rustup completions zsh cargo > ~/.zfunc/_cargo
-# rustup completions zsh > ~/.zfunc/_rustup
-# pip completion --zsh > ~/.zfunc/_pip
-# oc completion zsh > ~/.zfunc/_oc
-# docker completion zsh > ~/.zfunc/_docker
 fpath+=~/.zfunc
 
 # Load brew and related completions if it is installed
