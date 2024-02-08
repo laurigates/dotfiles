@@ -3,6 +3,12 @@
 
 - shell:
     - setup/cleanup.sh ~/.zshenv ~/.zshrc ~/.p10k.zsh ~/.config/pet
+    - register-python-argcomplete pipx > ~/.zfunc/_pipx
+    - rustup completions zsh cargo > ~/.zfunc/_cargo
+    - rustup completions zsh > ~/.zfunc/_rustup
+    - pip completion --zsh > ~/.zfunc/_pip
+    - oc completion zsh > ~/.zfunc/_oc
+    - docker completion zsh > ~/.zfunc/_docker
 
 - link:
     ~/.zshenv: zsh/zshenv
