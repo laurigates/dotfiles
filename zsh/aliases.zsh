@@ -1,6 +1,10 @@
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
+alias edit_aliases='nvim ~/dotfiles/zsh/aliases.zsh && source ~/dotfiles/zsh/aliases.zsh'
+
+alias cb='kitty +kitten clipboard /dev/stdin'
+
 # Easy vimrc, zshrc and zshenv editing
 # Switch to dotfiles directory so that other configs can be edited easily if
 # needed and committed to git
@@ -241,6 +245,7 @@ alias hcu='hcloud context use'
 alias hsl='hcloud server list'
 alias hsd='hcloud server describe'
 alias hsll='hcloud server list --output columns=name,labels'
+alias hssh='hcloud server ssh -u lgates'
 
 ### Terraform aliases
 
