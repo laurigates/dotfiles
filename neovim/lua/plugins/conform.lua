@@ -8,6 +8,7 @@ return {
         python = { "isort", "ruff", "autopep8" },
         dockerfile = { "hadolint" },
         gitconfig = { "taplo" },
+        ["*"] = { "codespell" },
         ["_"] = { "trim_whitespace" },
         -- Use a sub-list to run only the first available formatter
         -- javascript = { { "prettierd", "prettier" } },
