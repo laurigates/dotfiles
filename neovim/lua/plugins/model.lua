@@ -24,8 +24,28 @@ return {
       })
       local openai = require("model.providers.openai")
       local llamacpp = require("model.providers.llamacpp")
-      local llama2 = require("model.format.llama2")
       local mode = require('model').mode
+      local function input_if_selection(input, context)
+        return context.selection and input or ''
+      end
+      local openai_chat = {
+        provider = openai,
+        system = 'You are a helpful assistant',
+        params = {
+          model = 'gpt-3.5-turbo-1106',
+        },
+        create = input_if_selection,
+        run = function(messages, config)
+          if config.system then
+            table.insert(messages, 1, {
+              role = 'system',
+              content = config.system,
+            })
+          end
+
+          return { messages = messages }
+        end,
+      }
 
       require("model").setup({
         default_prompt = {
@@ -69,19 +89,20 @@ return {
                 messages = {
                   {
                     role = "system",
-                    content = "You are helpful assistant.",
+                    content = "You are a senior programmer in a pair programming setting.",
                   },
                   { role = "user", content = input },
                 },
               }
             end
           },
-          ["llamacpp:codellama"] = {
+          ["code:13b.Q5_K_M"] = {
             provider = llamacpp,
             options = {
               -- https://github.com/gsuuon/model.nvim
               -- https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md
               -- https://huggingface.co/TheBloke/CodeLlama-13B-oasst-sft-v10-GGUF
+              -- Should test a lighter model to speed things up
               model = "codellama-13b-oasst-sft-v10.Q5_K_M.gguf",
               args = {
                 "-c",
@@ -102,9 +123,43 @@ return {
               }
             end,
           },
+          ["code:13b-instruct-balanced"] = {
+            provider = llamacpp,
+            options = {
+              -- https://github.com/gsuuon/model.nvim
+              -- https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md
+              model = "codellama-13b-instruct.Q4_K_M.gguf",
+              args = {
+                "-c",
+                8192,
+                "-ngl",
+                32,
+              },
+            },
+            builder = function(input)
+              return function(build)
+                vim.ui.input({ prompt = "Instruction: " }, function(user_input)
+                  build({
+                    prompt = "<|im_start|>system\n"
+                        .. (user_input or "You are a senior programmer in a pair programming setting.")
+                        .. "<|im_end|>\n"
+                        .. "<|im_start|>user\n"
+                        .. input
+                        .. "<|im_end|>\n"
+                        .. "<|im_start|>assistant",
+                  })
+                end)
+              end
+            end,
+          },
           commit = {
             provider = openai,
+            system =
+            "You are an expert programmer and git user.",
             mode = mode.INSERT,
+            params = {
+              model = 'gpt-4-0125-preview',
+            },
             builder = function()
               local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
 
@@ -126,6 +181,47 @@ return {
             end,
           },
         },
+        chats = {
+          ['gpt4:daily tips'] = {
+            provider = openai,
+            system =
+            "You are an expert cloud engineer and teacher. You are the best at giving concise tips and suggestions about terminal tools, configuration management, automation, CI/CD pipelines and Linux.",
+            params = {
+              model = 'gpt-4-0125-preview',
+            },
+            create = function()
+              -- local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
+              -- ---@cast git_diff string
+              --
+              -- if not git_diff:match('^diff') then
+              --   error('Git error:\n' .. git_diff)
+              -- end
+              --
+              -- return git_diff
+              return "Give me a tip-of-the day."
+            end,
+            run = openai_chat.run,
+          },
+          ['gpt4:commit review'] = {
+            provider = openai,
+            system =
+            "You are an expert programmer that gives constructive feedback. Review the changes in the user's git diff.",
+            params = {
+              model = 'gpt-4-0125-preview',
+            },
+            create = function()
+              local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
+              ---@cast git_diff string
+
+              if not git_diff:match('^diff') then
+                error('Git error:\n' .. git_diff)
+              end
+
+              return git_diff
+            end,
+            run = openai_chat.run,
+          },
+        }
       })
     end,
   },
