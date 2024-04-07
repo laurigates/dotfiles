@@ -54,7 +54,7 @@ cmd([[
 -- })
 
 -- Open a terminal pane on the right using :Term
-cmd([[command Term :botright vsplit term://$SHELL]])
+-- cmd([[command Term :botright vsplit term://$SHELL]])
 
 -- Terminal visual tweaks:
 -- - enter insert mode when switching to terminal
@@ -68,5 +68,8 @@ cmd([[command Term :botright vsplit term://$SHELL]])
 cmd([[
   au BufRead *zshrc setlocal foldmethod=marker
 ]])
+
+-- AI commit message suggestion
+cmd([[autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG execute 'M commit']])
 
 -- opt.foldmethod = "marker" -- Enable folding (default 'foldmarker')
