@@ -1,8 +1,0 @@
-image: gitlab/dind
-
-build_image:
-  script:
-    - docker build -t laurigates/dotfiles .
-
-include:
-  - template: Dependency-Scanning.gitlab-ci.yml
