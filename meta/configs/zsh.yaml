@@ -9,6 +9,7 @@
     - pip completion --zsh > ~/.zfunc/_pip
     - oc completion zsh > ~/.zfunc/_oc
     - docker completion zsh > ~/.zfunc/_docker
+    - podman completion -f ~/.zfunc/_podman zsh
 
 - link:
     ~/.zshenv: zsh/zshenv
