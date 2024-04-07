@@ -2,7 +2,7 @@
 # https://github.com/jamesridgway/dotfiles
 FROM alpine:3
 
-RUN apk add zsh git python3
+RUN apk add bash zsh git python3 shadow
 
 # Create test user and add to sudoers
 RUN adduser -D -s /bin/zsh tester

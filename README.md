@@ -32,18 +32,20 @@ arrow to be able to use those shortcuts in zsh.
 
 ![MacOS ctrl+arrow shortcuts that have to be disabled](images/macos_ctrlarrow.png)
 
-## Docker testing
+## Container testing
 
-Build a docker image to test installation of the dotfiles
+Build the container image using docker or podman:
 
 ```shell
-docker build -t laurigates/dotfiles .
+docker build . -t laurigates/dotfiles
+podman build . -t laurigates/dotfiles --format docker
 ```
 
-Run the docker image
+Run the image:
 
 ```shell
 docker run --rm -it laurigates/dotfiles:latest
+podman run --rm -it laurigates/dotfiles:latest
 ```
 
 ## Debugging PATH
