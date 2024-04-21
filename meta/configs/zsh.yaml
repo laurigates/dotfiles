@@ -10,6 +10,7 @@
     - oc completion zsh > ~/.zfunc/_oc
     - docker completion zsh > ~/.zfunc/_docker
     - podman completion -f ~/.zfunc/_podman zsh
+    - pdm completion zsh > ~/.zfunc/_pdm
 
 - link:
     ~/.zshenv: zsh/zshenv

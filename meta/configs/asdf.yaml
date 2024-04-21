@@ -18,6 +18,7 @@
         asdf plugin-add fzf
         asdf plugin-add neovim
         asdf plugin-add direnv
+        asdf plugin-add pdm
         asdf plugin-update --all
         # install configured tool versions
         asdf install
