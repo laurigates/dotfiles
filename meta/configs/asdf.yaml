@@ -29,5 +29,7 @@
       command: "$(asdf where fzf)/install --completion --key-bindings --no-update-rc --no-bash --no-fish"
       description: Generate fzf configuration
     -
-      command: build-fzf-tab-module
+      command: |
+        source ./zsh/fzf-tab/fzf-tab.zsh
+        build-fzf-tab-module
       description: Build fzf-tab binary for colorization
