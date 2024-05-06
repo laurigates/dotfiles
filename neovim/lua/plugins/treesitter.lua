@@ -37,7 +37,13 @@ return {
           "gitignore",
         },
         sync_install = false,
-        highlight = { enable = true },
+        highlight = {
+          enable = true,
+          disable = function(lang, bufnr)
+            -- Disable for large SQL files
+            return lang == "sql" and vim.api.nvim_buf_line_count(bufnr) > 50000
+          end,
+        },
         indent = { enable = true },
         incremental_selection = { enable = true },
         textobjects = {
@@ -67,7 +73,7 @@ return {
             -- mapping query_strings to modes.
             selection_modes = {
               ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V", -- linewise
+              ["@function.outer"] = "V",  -- linewise
               ["@class.outer"] = "<c-v>", -- blockwise
             },
             -- If you set this to `true` (default is `false`) then any textobject is
