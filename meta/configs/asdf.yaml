@@ -8,8 +8,8 @@
 - shell:
     -
       command: |
-        # Cache asdf plugin short names
-        # asdf plugin-list-all
+        # Cache asdf plugin short names in the background
+        asdf plugin-list-all > /dev/null &
         # Install plugins
         asdf plugin-add python
         asdf plugin-add nodejs
@@ -21,6 +21,7 @@
         asdf plugin-add pdm
         asdf plugin-update --all
         # install configured tool versions
+        asdf uninstall neovim
         asdf install
       description: asdf setup
       stdout: true
@@ -28,8 +29,12 @@
     -
       command: "$(asdf where fzf)/install --completion --key-bindings --no-update-rc --no-bash --no-fish"
       description: Generate fzf configuration
+      stdout: true
+      stderr: true
     -
       command: |
         source ./zsh/fzf-tab/fzf-tab.zsh
         build-fzf-tab-module
       description: Build fzf-tab binary for colorization
+      stdout: true
+      stderr: true
