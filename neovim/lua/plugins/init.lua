@@ -33,10 +33,6 @@ return {
 		priority = 1000,
 		opts = {},
 	},
-	-- targets.vim adds various text objects
-	-- Commented out for now because it's quite outdated
-	-- "wellle/targets.vim",
-	-- "justinmk/vim-sneak",
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
