@@ -42,12 +42,6 @@ return {
 		event = "InsertEnter",
 		opts = {}, -- this is equalent to setup({}) function
 	},
-	{
-		-- This plugin adds indentation guides to Neovim.
-		"lukas-reineke/indent-blankline.nvim",
-		main = "ibl",
-		opts = {},
-	},
   {
     'echasnovski/mini.nvim',
     version = false,
