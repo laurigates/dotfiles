@@ -13,6 +13,8 @@
     - if command -v rpk; then rpk generate shell-completion zsh > ~/.zfunc/_rpk; fi
     - if command -v kubectl; then kubectl completion zsh > ~/.zfunc/_kubectl; fi
     - if command -v pdm; then pdm completion zsh > ~/.zfunc/_pdm; fi
+    - if command -v npm; then npm completion zsh > ~/.zfunc/_npm; fi
+    - if command -v atuin; then atuin gen-completions --shell zsh --out-dir ~/.zfunc; fi
 
 - link:
     ~/.zshenv: zsh/zshenv
