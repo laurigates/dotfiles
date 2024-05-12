@@ -48,4 +48,7 @@ return {
       require('mini.indentscope').setup()
     end
   },
+  "tpope/vim-speeddating",
+  "tpope/vim-eunuch",
+  "tpope/vim-rhubarb",
 }
