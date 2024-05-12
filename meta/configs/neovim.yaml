@@ -10,7 +10,13 @@
 
 - shell:
     -
-      command: nvim --headless "+Lazy! sync" +qa
+      command: nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
       description: Install, cleanup and update neovim plugins
       stdout: true
       stderr: true
+    # The checkhealth just runs forever
+    # -
+    #   command: nvim --headless "+checkhealth" +qa
+    #   description: Check neovim health
+    #   stdout: true
+    #   stderr: true
