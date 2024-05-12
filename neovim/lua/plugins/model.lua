@@ -24,6 +24,7 @@ return {
       })
       local openai = require("model.providers.openai")
       local llamacpp = require("model.providers.llamacpp")
+      local ollama = require('model.providers.ollama')
       local mode = require('model').mode
       local function input_if_selection(input, context)
         return context.selection and input or ''
@@ -79,6 +80,23 @@ return {
           end,
         },
         prompts = {
+          ['ollama:dolphin-mixtral'] = {
+            provider = ollama,
+            params = {
+              model = 'dolphin-mixtral:8x7b'
+            },
+            builder = function(input, context)
+              return {
+                prompt = "<|im_start|>system\n"
+                    .. (context.args or "You are a helpful assistant")
+                    .. "<|im_end|>\n"
+                    .. "<|im_start|>user\n"
+                    .. input
+                    .. "<|im_end|>\n"
+                    .. "<|im_start|>assistant",
+              }
+            end,
+          },
           ["openai"] = {
             provider = openai,
             builder = function(input)
@@ -152,6 +170,30 @@ return {
               end
             end,
           },
+          mixcommit = {
+            provider = ollama,
+            mode = mode.INSERT,
+            builder = function()
+              local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
+
+              if not git_diff:match('^diff') then
+                error('Git error:\n' .. git_diff)
+              end
+
+              return {
+                prompt = "<|im_start|>system\n"
+                    .. "You are an expert programmer and git user.\n"
+                    .. "<|im_end|>\n"
+                    .. "<|im_start|>user\n"
+                    ..
+                    'Write a terse commit message according to the Conventional Commits specification. Try to stay below 80 characters total. Staged git diff: ```\n'
+                    .. git_diff
+                    .. '\n```'
+                    .. "<|im_end|>\n"
+                    .. "<|im_start|>assistant",
+              }
+            end,
+          },
           commit = {
             provider = openai,
             system =
@@ -172,7 +214,7 @@ return {
                   {
                     role = 'user',
                     content =
-                        'Write a terse commit message according to the Conventional Commits specification. Try to stay below 80 characters total. Staged git diff: ```\n'
+                        'Write a terse commit message according to the Conventional Commits specification. Try to stay below 80 characters total. Dont surround the commit message with backticks. Staged git diff: ```\n'
                         .. git_diff
                         .. '\n```',
                   },
