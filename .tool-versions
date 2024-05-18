@@ -1,7 +1,7 @@
 rust 1.78.0
 python 3.12.3
 nodejs 21.5.0
-neovim nightly
+neovim 0.10.0
 golang 1.21.5
 direnv 2.34.0
 fzf 0.46.0
