@@ -10,17 +10,19 @@ DOTBOT_BIN="bin/dotbot"
 
 # Get the directory of the script
 BASE_DIR="$(cd "$(dirname "${(%):-%N}")" && pwd)"
-cd "${BASE_DIR}"
 
-# Sync submodule URLs
-git submodule sync --quiet --recursive
+# Function to list available profiles and configs
+list_profiles_configs() {
+    echo "Available profiles:"
+    for profile in "${BASE_DIR}/${META_DIR}/${PROFILES_DIR}"/*; do
+        [[ -f "$profile" ]] && echo "  - $(basename "$profile")"
+    done
 
-# Initialize and update submodules
-git submodule update --init --recursive
-
-# Fetch and pull the latest changes for submodules
-git submodule foreach --recursive git fetch --quiet
-git submodule foreach --recursive git pull --quiet origin main
+    echo -e "\nAvailable configs:"
+    for config in "${BASE_DIR}/${META_DIR}/${CONFIG_DIR}"/*.yaml; do
+        echo "  - $(basename "$config" .yaml)"
+    done
+}
 
 # Function to combine base and specific config files and run Dotbot
 run_dotbot() {
@@ -37,6 +39,23 @@ run_dotbot() {
 }
 
 # Main logic
+if [[ "$1" == "--list" ]]; then
+    list_profiles_configs
+    exit 0
+fi
+
+cd "${BASE_DIR}"
+
+# Sync submodule URLs
+git submodule sync --quiet --recursive
+
+# Initialize and update submodules
+git submodule update --init --recursive
+
+# Fetch and pull the latest changes for submodules
+git submodule foreach --recursive git fetch --quiet
+git submodule foreach --recursive git pull --quiet origin main
+
 if [[ -f "${META_DIR}/${PROFILES_DIR}/$1" ]]; then
     # Profile mode
     PROFILE_FILE="${META_DIR}/${PROFILES_DIR}/$1"
