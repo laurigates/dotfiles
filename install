@@ -19,7 +19,7 @@ list_profiles_configs() {
 
     echo -e "\nAvailable configs:"
     for config in "${BASE_DIR}/${CONFIG_DIR}"/*.yaml; do
-        [[ $(basename "$config") != "${PROFILE_PREFIX}"* ]] && echo "  - $(basename "$config" .yaml)"
+        [[ $(basename "$config") != "${PROFILE_PREFIX}"* ]] && [[ $(basename "$config") != "$BASE_CONFIG" ]] && echo "  - $(basename "$config" .yaml)"
     done
 }
 
@@ -27,7 +27,7 @@ list_profiles_configs() {
 run_dotbot() {
     local config="$1"
     echo -e "\nConfigure $config"
-    local base_config="${BASE_DIR}/${BASE_CONFIG}"
+    local base_config="${BASE_DIR}/${CONFIG_DIR}/${BASE_CONFIG}"
     local config_file="${BASE_DIR}/${CONFIG_DIR}/${config}.yaml"
     local combined_config
 
@@ -48,12 +48,12 @@ cd "${BASE_DIR}"
 # Sync submodule URLs
 git submodule sync --quiet --recursive
 
-# Initialize and update submodules
-git submodule update --init --recursive
+# Initialize and update submodules in parallel
+git submodule update --init --recursive --remote --jobs 8
 
-# Fetch and pull the latest changes for submodules
-git submodule foreach --recursive git fetch --quiet
-git submodule foreach --recursive git pull --quiet origin main
+# Fetch and pull the latest changes for submodules in parallel
+# git submodule foreach --recursive 'git pull --quiet &'
+# wait
 
 if [[ -f "${BASE_DIR}/${CONFIG_DIR}/${PROFILE_PREFIX}$1" ]]; then
     # Profile mode
