@@ -9,7 +9,7 @@
 - shell:
     -
       command: |
-        asdf update
+        # asdf update
         asdf plugin-update --all
         # Cache asdf plugin short names in the background
         asdf plugin-list-all > /dev/null &
