@@ -1,5 +1,5 @@
 [submodule "dotbot"]
-	path = meta/dotbot
+	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 [submodule "zsh-autosuggestions"]
 	path = zsh/zsh-autosuggestions
@@ -7,22 +7,22 @@
 [submodule "zsh-syntax-highlighting"]
 	path = zsh/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
-[submodule "tmux/tmux-themepack"]
+[submodule "tmux-themepack"]
 	path = tmux/tmux-themepack
 	url = https://github.com/jimeh/tmux-themepack.git
-[submodule "i3/i3blocks-contrib"]
+[submodule "i3blocks-contrib"]
 	path = i3/i3blocks-contrib
 	url = https://github.com/vivien/i3blocks-contrib.git
-[submodule "zsh/fzf-tab"]
+[submodule "fzf-tab"]
 	path = zsh/fzf-tab
 	url = https://github.com/Aloxaf/fzf-tab.git
-[submodule "zsh/powerlevel10k"]
+[submodule "powerlevel10k"]
 	path = zsh/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git
-[submodule "zsh/zsh-z"]
+[submodule "zsh-z"]
 	path = zsh/zsh-z
 	url = https://github.com/agkozak/zsh-z.git
-[submodule "zsh/zsh-vi-mode"]
+[submodule "zsh-vi-mode"]
 	path = zsh/zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode.git
 [submodule "asdf"]
