@@ -4,10 +4,13 @@
     ~/.default-cargo-crates: default-cargo-crates
     ~/.default-golang-pkgs: default-golang-pkgs
     ~/.tool-versions: .tool-versions
+    ~/.asdfrc: .asdfrc
 
 - shell:
     -
       command: |
+        asdf update
+        asdf plugin-update --all
         # Cache asdf plugin short names in the background
         asdf plugin-list-all > /dev/null &
         # Install plugins
