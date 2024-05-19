@@ -1,0 +1,55 @@
+#!/usr/bin/env zsh
+
+# Constants
+BASE_CONFIG="base.yaml"
+META_DIR="meta"
+CONFIG_DIR="configs"
+PROFILES_DIR="profiles"
+DOTBOT_DIR="dotbot"
+DOTBOT_BIN="bin/dotbot"
+
+# Get the directory of the script
+BASE_DIR="$(cd "$(dirname "${(%):-%N}")" && pwd)"
+cd "${BASE_DIR}"
+
+# Sync submodule URLs
+git submodule sync --quiet --recursive
+
+# Initialize and update submodules
+git submodule update --init --recursive
+
+# Fetch and pull the latest changes for submodules
+git submodule foreach --recursive git fetch --quiet
+git submodule foreach --recursive git pull --quiet origin main
+
+# Function to combine base and specific config files and run Dotbot
+run_dotbot() {
+    local config="$1"
+    echo -e "\nConfigure $config"
+    local base_config="${BASE_DIR}/${META_DIR}/${BASE_CONFIG}"
+    local config_file="${BASE_DIR}/${META_DIR}/${CONFIG_DIR}/${config}.yaml"
+    local combined_config
+
+    combined_config=$(mktemp)
+    cat "$base_config" "$config_file" > "$combined_config"
+    "${BASE_DIR}/${META_DIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASE_DIR}" -c "$combined_config"
+    rm -f "$combined_config"
+}
+
+# Main logic
+if [[ -f "${META_DIR}/${PROFILES_DIR}/$1" ]]; then
+    # Profile mode
+    PROFILE_FILE="${META_DIR}/${PROFILES_DIR}/$1"
+    shift
+    CONFIGS=("${(@f)$(<"$PROFILE_FILE")}")
+    for config in "${CONFIGS[@]}" "$@"; do
+        run_dotbot "$config"
+    done
+else
+    # Standalone mode
+    for config in "$@"; do
+        run_dotbot "$config"
+    done
+fi
+
+# vim: ft=zsh
