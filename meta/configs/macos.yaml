@@ -19,7 +19,7 @@
     description: Macos tools
   -
     command:
-    - brew install jq gh most parallel git-filter-repo pandoc netcat nmap
+    - brew install jq gh most parallel git-filter-repo pandoc netcat nmap fswatch
     description: Basic utilities
   -
     command:
