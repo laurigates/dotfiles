@@ -46,14 +46,8 @@ fi
 cd "${BASE_DIR}"
 
 # Sync submodule URLs
-git submodule sync --quiet --recursive
-
-# Initialize and update submodules in parallel
-git submodule update --init --recursive --remote --jobs 8
-
-# Fetch and pull the latest changes for submodules in parallel
-# git submodule foreach --recursive 'git pull --quiet &'
-# wait
+git submodule sync --recursive
+git pull --recurse-submodules --jobs=8
 
 if [[ -f "${BASE_DIR}/${CONFIG_DIR}/${PROFILE_PREFIX}$1" ]]; then
     # Profile mode
