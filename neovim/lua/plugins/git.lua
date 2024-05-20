@@ -43,26 +43,26 @@ return {
             gitsigns.nav_hunk('prev')
           end
         end)
-
-        -- Actions
-        map('n', '<leader>hs', gitsigns.stage_hunk)
-        map('n', '<leader>hr', gitsigns.reset_hunk)
-        map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
-        map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
-        map('n', '<leader>hS', gitsigns.stage_buffer)
-        map('n', '<leader>hu', gitsigns.undo_stage_hunk)
-        map('n', '<leader>hR', gitsigns.reset_buffer)
-        map('n', '<leader>hp', gitsigns.preview_hunk)
-        map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end)
-        map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
-        map('n', '<leader>hd', gitsigns.diffthis)
-        map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
-        map('n', '<leader>td', gitsigns.toggle_deleted)
-
-        -- Text object
-        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
       end
-  },
+    },
+    keys = {
+      -- Actions
+      {"<leader>hs", require("gitsigns").stage_hunk, mode = "n", desc = "Stage hunk"},
+      {"<leader>hr", require("gitsigns").reset_hunk, mode = "n", desc = "Reset hunk"},
+      {"<leader>hs", function() require("gitsigns").stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end, mode = 'v', desc = "Stage hunk"},
+      {"<leader>hr", function() require("gitsigns").reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end, mode = 'v', desc = "Reset hunk"},
+      {"<leader>hS", require("gitsigns").stage_buffer, mode = 'n', desc = "Stage buffer"},
+      {"<leader>hu", require("gitsigns").undo_stage_hunk, mode = 'n', desc = "Undo stage hunk"},
+      {"<leader>hR", require("gitsigns").reset_buffer, mode = 'n', desc = "Reset buffer"},
+      {"<leader>hp", require("gitsigns").preview_hunk, mode = 'n', desc = "Preview hunk"},
+      {"<leader>hb", function() require("gitsigns").blame_line { full = true } end, mode = 'n', desc = "Blame line"},
+      {"<leader>tb", require("gitsigns").toggle_current_line_blame, mode = 'n', desc = "Toggle current line blame"},
+      {"<leader>hd", require("gitsigns").diffthis, mode = 'n', desc = "Diff this"},
+      {"<leader>hD", function() require("gitsigns").diffthis('~') end, mode = 'n', desc = "Diff this"},
+      {"<leader>td", require("gitsigns").toggle_deleted, mode = 'n', desc = "Toggle deleted"},
+      -- Text object
+      {'ih', ':<C-U>Gitsigns select_hunk<CR>', mode = { 'o', 'x' }, desc = "Select hunk"},
+    },
   },
   {
     "sindrets/diffview.nvim",
