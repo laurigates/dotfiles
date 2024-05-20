@@ -2,25 +2,27 @@
 
 ## Installation
 
-I use [dotbot](https://github.com/anishathalye/dotbot) to handle installation of my dotfiles.
-I have configured the more advanced setup described on the
-[Tips and Tricks](https://github.com/anishathalye/dotbot/wiki/Tips-and-Tricks#more-advanced-setup)
-page in the dotbot wiki.
+[dotbot](https://github.com/anishathalye/dotbot) is used to handle installation of my dotfiles.
 
 ```
 git clone --recurse-submodules git@github.com:laurigates/dotfiles
 ```
 
-For a basic workstation installation
+Basic workstation installation:
 
 ```
-./install-profile workstation
+./install workstation
 ```
 
-To install a specific configuration
+Install a specific configuration:
 
 ```
-./install-standalone rust
+./install rust
+```
+
+List available configs:
+```
+./install --list
 ```
 
 ## macOS quirks
