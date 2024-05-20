@@ -11,11 +11,11 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run dotbot profile installation
       shell: zsh {0}
-      run: zsh -c "./install-profile workstation"
+      run: zsh -c "./install workstation"
   build-macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
     - name: Run dotbot profile installation
       shell: zsh {0}
-      run: zsh -c "./install-profile workstation-mac"
+      run: zsh -c "./install workstation-mac"
