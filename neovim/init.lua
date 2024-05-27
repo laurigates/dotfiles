@@ -19,6 +19,7 @@ require("lazy").setup("plugins")
 vim.cmd([[colorscheme tokyonight]])
 
 require("core/settings")
+require("core/functions")
 require("core/autocommands")
 require("core/lsp")
 require("core/keymaps")
