@@ -1,7 +1,5 @@
--- http://lua-users.org/wiki/GettingTheTitleFromHtmlFiles
--- https://benjamincongdon.me/blog/2020/06/27/Vim-Tip-Paste-Markdown-Link-with-Automatic-Title-Fetching/
--- https://vim.fandom.com/wiki/Make_an_HTML_anchor_and_href_tag
--- https://stackoverflow.com/questions/1115447/how-can-i-get-the-word-under-the-cursor-and-the-text-of-the-current-line-in-vim
+-- Ensure you have lua-curl installed: luarocks install lua-curl
+local curl = require("cURL")
 
 local function is_url(text)
   local url_pattern = "^https?://[%w-_%.%?%.:/%+=&]+$"
@@ -9,25 +7,28 @@ local function is_url(text)
 end
 
 local function get_url_title(url)
-  local handle = io.popen("curl -s " .. url)
-  if not handle then
-    return "Error fetching URL"
-  end
+  local easy = curl.easy {
+    url = url,
+    followlocation = true, -- Follow redirects if needed
+    timeout = 5,           -- Set a timeout to avoid hanging
+  }
 
-  local html = handle:read("*a")
-  handle:close()
+  local title = ""
+  easy:setopt_writefunction(function(data)
+    -- Look for the title tag within chunks of data
+    local match = data:match("<title>([^<]+)</title>")
+    if match then title = match end
+    return #data -- Return the number of bytes processed
+  end)
 
-  if not html then
-    return "Error reading HTML"
-  end
+  easy:perform()
+  easy:close()
 
-  local title = html:match("<title>(.-)</title>")
-  if title then
-    title = title:gsub("\n", " "):gsub("%s+", " ")
+  if title == "" then
+    return "No Title Found"
   else
-    title = "No Title Found"
+    return title:gsub("\n", " "):gsub("%s+", " ") -- Clean up whitespace
   end
-  return title
 end
 
 local function paste_md_link()
