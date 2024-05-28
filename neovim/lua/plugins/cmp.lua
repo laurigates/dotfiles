@@ -153,8 +153,8 @@ return {
       require("cmp_git").setup()
 
       -- If you want insert `(` after select function or method item
-      local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+      -- local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+      -- cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
       -- Load friendly-snippets, a set of preconfigured snippets for different languages.
       require("luasnip.loaders.from_vscode").lazy_load()

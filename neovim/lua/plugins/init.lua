@@ -34,18 +34,17 @@ return {
     opts = {},
   },
   {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
-    opts = {}, -- this is equalent to setup({}) function
-  },
-  {
     'echasnovski/mini.nvim',
     version = false,
     config = function()
       require('mini.surround').setup()
-      -- require('mini.completion').setup()
+      require('mini.pick').setup()
       require('mini.ai').setup()
       require('mini.indentscope').setup()
+      require('mini.pairs').setup()
+      require('mini.splitjoin').setup()
+      require('mini.jump').setup()
+      require('mini.jump2d').setup()
     end
   },
   "tpope/vim-speeddating",
