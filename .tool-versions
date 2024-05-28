@@ -4,7 +4,7 @@ nodejs 21.5.0
 neovim 0.10.0
 golang 1.21.5
 direnv 2.34.0
-fzf 0.46.0
+fzf 0.52.1
 git 2.43.0
 act 0.2.59
 pdm 2.15.0
