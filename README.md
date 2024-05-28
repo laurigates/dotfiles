@@ -25,6 +25,10 @@ List available configs:
 ./install --list
 ```
 
+## zkbd
+
+Run `zkbd` to configure keyboard
+
 ## macOS quirks
 
 ### Jumping between words
@@ -56,4 +60,10 @@ Display everything that happens when starting the shell, run a simple command an
 
 ```shell
 zsh -x -c 'printenv PATH' 2>&1 | rg PATH
+```
+
+## Debug neovim config
+
+```
+nvim --clean -u init.lua
 ```
