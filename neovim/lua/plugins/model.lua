@@ -80,6 +80,17 @@ return {
           end,
         },
         prompts = {
+          ['ollama:starling'] = {
+            provider = ollama,
+            params = {
+              model = 'starling-lm'
+            },
+            builder = function(input)
+              return {
+                prompt = 'GPT4 Correct User: ' .. input .. '<|end_of_turn|>GPT4 Correct Assistant: '
+              }
+            end
+          },
           ['ollama:dolphin-mixtral'] = {
             provider = ollama,
             params = {
