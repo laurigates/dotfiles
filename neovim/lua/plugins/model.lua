@@ -96,12 +96,9 @@ return {
             params = {
               model = 'dolphin-mixtral:8x7b'
             },
-            builder = function(input, context)
+            builder = function(input)
               return {
-                prompt = "<|im_start|>system\n"
-                    .. (context.args or "You are a helpful assistant")
-                    .. "<|im_end|>\n"
-                    .. "<|im_start|>user\n"
+                prompt = "<|im_start|>user\n"
                     .. input
                     .. "<|im_end|>\n"
                     .. "<|im_start|>assistant",
@@ -181,8 +178,35 @@ return {
               end
             end,
           },
-          mixcommit = {
+          ["commit:tinyllama"] = {
             provider = ollama,
+            params = {
+              model = "tinyllama",
+            },
+            mode = mode.INSERT,
+            builder = function()
+              local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
+
+              if not git_diff:match('^diff') then
+                error('Git error:\n' .. git_diff)
+              end
+
+              -- TODO: Add a couple of previous git log messages for context
+              return {
+                prompt = "<|user|>\n"
+                    .. "Write a terse commit message according to the Conventional Commits specification. Try to stay below 80 characters total. Staged git diff:\n"
+                    .. "```\n"
+                    .. git_diff
+                    .. '\n```</s>'
+                    .. "<|assistant|>",
+              }
+            end,
+          },
+          ["commit:dolphin-mixtral"] = {
+            provider = ollama,
+            params = {
+              model = "dolphin-mixtral:8x7b",
+            },
             mode = mode.INSERT,
             builder = function()
               local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
@@ -193,19 +217,17 @@ return {
 
               return {
                 prompt = "<|im_start|>system\n"
-                    .. "You are an expert programmer and git user.\n"
-                    .. "<|im_end|>\n"
+                    .. "You are an expert programmer and git user.<|im_end|>\n"
                     .. "<|im_start|>user\n"
                     ..
-                    'Write a terse commit message according to the Conventional Commits specification. Try to stay below 80 characters total. Staged git diff: ```\n'
+                    "Write a terse commit message according to the Conventional Commits specification. Try to stay below 80 characters total. Staged git diff: ```"
                     .. git_diff
-                    .. '\n```'
-                    .. "<|im_end|>\n"
+                    .. "```<|im_end|>\n"
                     .. "<|im_start|>assistant",
               }
             end,
           },
-          commit = {
+          ["commit:openai"] = {
             provider = openai,
             system =
             "You are an expert programmer and git user.",
