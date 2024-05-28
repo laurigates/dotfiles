@@ -10,7 +10,9 @@ return {
     -- An addition that would be nice: Support goto-definition (gd/gD) on plugin names. This could jump to the plugin code.
     -- If K is pressed, display popup with info about plugin e.g. description
     "folke/neodev.nvim",
-    opts = {},
+    opts = {
+      library = { plugins = { "nvim-dap-ui" }, types = true },
+    },
   },
   {
     "folke/noice.nvim",
