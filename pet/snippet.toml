@@ -172,3 +172,13 @@
   description = "rsync with sudo privileges on the remote host"
   command = "rsync --rsync-path=\"sudo rsync\" -av <src> <dst>"
   output = ""
+
+[[snippets]]
+  description = "Show TLS certificate information"
+  command = "openssl x509 -in <certificate_file> -text -noout"
+  output = ""
+
+[[snippets]]
+  description = "Kubernetes: Release CRD deadlock"
+  command = "kubectl patch crd/<crd_name> -p '{\"metadata\":{\"finalizers\":[]}}' --type=merge"
+  output = ""
