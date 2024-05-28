@@ -31,8 +31,10 @@ return {
 
       cmp.setup({
         formatting = {
+          expandable_indicator = true,
+          fields = {'abbr', 'kind', 'menu'},
           format = lspkind.cmp_format({
-            mode = "symbol_text", -- show only symbol annotations
+            mode = "symbol_text",
             menu = {
               buffer = "[Buffer]",
               nvim_lsp = "[LSP]",
