@@ -3,32 +3,8 @@
     command: touch ~/.hushlogin
     description: Disable "last login" prompt when opening a shell
   -
-    command: brew install hcloud
-    description: Hetzner Cloud CLI
-  -
-    command: brew install hashicorp/tap/terraform hashicorp/tap/terraform-ls
-    description: Terraform
-  -
-    command: brew install --cask docker
-    description: Docker
-  -
-    command: brew install kubectl int128/kubelogin/kubelogin helm openlens k9s
-    description: Kubernetes
-  -
-    command: brew install mas keycastr shortcat skhd yabai
-    description: Macos tools
-  -
-    command:
-    - brew install jq gh most parallel git-filter-repo pandoc netcat nmap fswatch
-    description: Basic utilities
-  -
-    command:
-    - brew tap homebrew/cask-fonts
-    - brew install --cask font-hack-nerd-font
-    description: Fonts
-  -
-    command: brew install so tldr task knqyf263/pet/pet
-    description: Information related
+    command: brew bundle
+    description: Install and update packages defined in the Brewfile
   -
     command:
     # Disable Keyboard -> Shortcuts -> Mission Control -> Move left/right a space.

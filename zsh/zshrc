@@ -65,7 +65,7 @@ setopt prompt_subst
 setopt auto_menu
 # Extended glob can be problematic with git commands
 # Because of HEAD^ etc in commands
-#setopt extendedglob
+setopt extendedglob
 
 # https://grml.org/zsh/zsh-lovers.html
 # Fuzzy matching of completions for when you mistype them:
@@ -89,6 +89,8 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --depth 1 --color always --tree
 zstyle ':fzf-tab:*' switch-group ',' '.'
 # enable IP addresses in completions
 zstyle ':completion:*' use-ip true
+# tldr preview
+# zstyle ':fzf-tab:complete:tldr:argument-1' fzf-preview 'tldr --color always $word'
 # systemd unit status preview
 zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
 # Git previews
@@ -129,6 +131,7 @@ source "$HOME/dotfiles/asdf/asdf.sh"
 source "$HOME/.asdf/plugins/golang/set-env.zsh"
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
+autoload -Uz zkbd
 
 
 # zsh-vi-mode
@@ -233,22 +236,29 @@ bindkey "ç" fzf-cd-widget
 # command + < is similar to Alt Gr + <
 bindkey -s "^[[60;9u" "|"
 
+# bindkey -s "\e]" "~"
+# bindkey -s "\e4" "$"
+
 # mappings for "page up" and "page down" to step to the beginning/end
 # of the history
 # bindkey "\e[5~" beginning-of-history
 # bindkey "\e[6~" end-of-history
 
 # alternate mappings for "page up" and "page down" to search the history
-bindkey "\e[5~" history-search-backward
-bindkey "\e[6~" history-search-forward
+# bindkey "\e[5~" history-search-backward
+# bindkey "\e[6~" history-search-forward
 
 # mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
-bindkey "\e[1;5C" forward-word
-bindkey "\e[1;5D" backward-word
-bindkey "\e[5C" forward-word
-bindkey "\e[5D" backward-word
-bindkey "\e\e[C" forward-word
-bindkey "\e\e[D" backward-word
+# bindkey "\e[1;5C" forward-word
+# bindkey "\e[1;5D" backward-word
+# bindkey "\e[5C" forward-word
+# bindkey "\e[5D" backward-word
+# bindkey "\e\e[C" forward-word
+# bindkey "\e\e[D" backward-word
+
+# source ~/.zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
+# [[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
+# [[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
 
 # }}}
 
@@ -257,3 +267,5 @@ source ~/dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # zprof
+eval "$(atuin init zsh)"
+eval "$(luarocks path)"

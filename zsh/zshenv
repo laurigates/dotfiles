@@ -97,4 +97,5 @@ export SDL_VIDEO_FULLSCREEN_HEAD=0
 
 export MAKEFLAGS="-j$(sysctl -n hw.logicalcpu)"
 export BAT_THEME=TwoDark
+export HOMEBREW_BUNDLE_FILE="~/dotfiles/Brewfile"
 # vim:ft=sh
