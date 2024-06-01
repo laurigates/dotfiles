@@ -23,6 +23,10 @@ list_profiles_configs() {
     done
 }
 
+list_statuses() {
+  git submodule status
+}
+
 # Function to combine base and specific config files and run Dotbot
 run_dotbot() {
     local config="$1"
@@ -41,6 +45,9 @@ run_dotbot() {
 if [[ "$1" == "--list" ]]; then
     list_profiles_configs
     exit 0
+elif [[ "$1" == "--status" ]]; then
+  list_statuses
+  exit 0
 fi
 
 cd "${BASE_DIR}"
