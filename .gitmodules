@@ -38,3 +38,6 @@
 	path = asdf
 	url = https://github.com/asdf-vm/asdf.git
 	branch = master
+[submodule "zsh/zsh-completions"]
+	path = zsh/zsh-completions
+	url = https://github.com/zsh-users/zsh-completions.git
