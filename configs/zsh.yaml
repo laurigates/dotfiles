@@ -17,6 +17,7 @@
     - if command -v luarocks; then luarocks completion zsh > ~/.zfunc/_luarocks; fi
     - if command -v minikube; then minikube completion zsh > ~/.zfunc/_minikube; fi
     - if command -v atuin; then atuin gen-completions --shell zsh --out-dir ~/.zfunc; fi
+    - if command -v k3d; then k3d completion zsh > ~/.zfunc/_k3d; fi
 
 - link:
     ~/.zshenv: zsh/zshenv
