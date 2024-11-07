@@ -1,10 +1,12 @@
 -- Nvim Treesitter configurations and abstraction layer
 return {
-  { -- Additional text-objects using treesitter. Needs to be configured.
+  {
+    "RRethy/nvim-treesitter-textsubjects",
+    dependencies = { "nvim-treesitter/nvim-treesitter", },
+  },
+  {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-    },
+    dependencies = { "nvim-treesitter/nvim-treesitter", },
   },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -100,6 +102,15 @@ return {
               ["<leader>df"] = "@function.outer",
               ["<leader>dF"] = "@class.outer",
             },
+          },
+        },
+        textsubjects = {
+          enable = true,
+          prev_selection = ',',   -- (Optional) keymap to select the previous selection
+          keymaps = {
+            ['.'] = 'textsubjects-smart',
+            [';'] = 'textsubjects-container-outer',
+            ['i;'] = { 'textsubjects-container-inner', desc = "Select inside containers (classes, functions, etc.)" },
           },
         },
       })
