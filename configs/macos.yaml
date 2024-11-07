@@ -6,6 +6,12 @@
     command: brew bundle
     description: Install and update packages defined in the Brewfile
   -
+    command: brew cleanup
+    description: Cleanup brew files
+  -
+    command: brew doctor
+    description: Brew health check
+  -
     command:
     # Disable Keyboard -> Shortcuts -> Mission Control -> Move left/right a space.
     - defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}"
