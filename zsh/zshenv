@@ -1,8 +1,19 @@
+# Remove duplicates from path
+typeset -U PATH path
+# https://stackoverflow.com/a/18077919
+# > # append
+# > path+=('/home/david/pear/bin')
+# > # or prepend
+# > path=('/home/david/pear/bin' $path)
+# > # export to sub-processes (make it inherited by child processes)
+# > export PATH
+# https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2
 path+="$HOME/.local/bin"
-export PATH
 
+export PATH
 # set terminal preference for i3
 export TERMINAL=kitty
+export BROWSER=google-chrome-stable
 
 # Configure perl to install modules in the user directory so that root privileges are not required.
 # The neovim perl module for example.
@@ -16,14 +27,7 @@ export TERMINAL=kitty
 
 # OS specific settings
 case "$(uname)" in
-'Darwin')
-	# set browser preference
-	export BROWSER="open -a Google\ Chrome"
-	;;
-'Linux')
-	# set browser preference
-	export BROWSER=google-chrome-stable
-	;;
+'Darwin') export BROWSER="open -a Google\ Chrome" ;;
 esac
 
 # use most as pager for colored man pages
@@ -61,24 +65,32 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 # Add the ability to copy reverse history search selection to the
 # clipboard.
 # Use xsel on Linux and pbcopy on macos.
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | (xsel -ib || pbcopy))+abort' --header 'Press CTRL-Y to copy command into clipboard'"
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap \
+  --bind '?:toggle-preview' \
+  --bind 'ctrl-y:execute-silent(echo -n {2..} \
+  | (xsel -ib || pbcopy))+abort' \
+  --color header:italic \
+  --header 'Press CTRL-Y to copy command into clipboard'"
 
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
 # command for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
 _fzf_compgen_path() {
+  # print -lr -- "$1"/**(om)
 	fd --hidden --follow --exclude ".git" . "$1"
 }
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
+  # print -lr -- "$1"/**(omT/)
 	fd --type d --hidden --follow --exclude ".git" . "$1"
 }
 
 # for existing man pages
 function fzf_apropos() {
-  apropos '' | fzf --preview-window=up:50% --preview 'echo {} | cut -f 1 -d " " | xargs man' | cut -f 1 -d " "
+	apropos . | fzf --preview-window=up:50% --preview 'echo {} | cut -f 1 -d "(" | xargs man'
+	# apropos '' | fzf --preview-window=up:50% --preview 'echo {} | cut -f 1 -d " " | xargs man' | cut -f 1 -d " "
 }
 
 # Install or upgrade nvim
@@ -94,8 +106,14 @@ function install_nvim () {
 
 # Fix SDL full screen output to correct monitor
 export SDL_VIDEO_FULLSCREEN_HEAD=0
+# export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
 export MAKEFLAGS="-j$(sysctl -n hw.logicalcpu)"
 export BAT_THEME=TwoDark
+
+export OLLAMA_ORIGINS="app://obsidian.md*"
+export PIPX_HOME="~/.local/pipx"
 export HOMEBREW_BUNDLE_FILE="~/dotfiles/Brewfile"
+
+source ~/.api_tokens
 # vim:ft=sh
