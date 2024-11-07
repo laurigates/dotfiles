@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install dependencies
-      run: sudo apt-get install zsh
+      run: sudo apt-get install zsh shellcheck
     - uses: actions/checkout@v4
     - name: Run dotbot profile installation
       shell: zsh {0}
