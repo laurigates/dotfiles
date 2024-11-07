@@ -1,17 +1,10 @@
-aiven-client
-ansible
-ansible-lint
 direnv
-glances
 jinja2
 jinjanator
 pip-tools
 pipx
-podman-compose
 pre-commit
 pynvim
 pytest
 python-dotenv
 pyyaml
-ruff
-yamllint
