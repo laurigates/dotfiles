@@ -1,8 +1,6 @@
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
-alias edit_aliases='nvim ~/dotfiles/zsh/aliases.zsh && source ~/dotfiles/zsh/aliases.zsh'
-
 alias cb='kitty +kitten clipboard /dev/stdin'
 
 # Easy vimrc, zshrc and zshenv editing
@@ -11,6 +9,10 @@ alias cb='kitty +kitten clipboard /dev/stdin'
 alias vimrc='nvim --cmd "cd ~/dotfiles" ~/dotfiles/neovim/init.lua'
 alias zshrc='nvim --cmd "cd ~/dotfiles" ~/dotfiles/zsh/zshrc'
 alias zshenv='nvim --cmd "cd ~/dotfiles" ~/dotfiles/zsh/zshenv'
+# alias edit_zsh='nvim --cmd "cd ~/dotfiles" "+edit ./zsh/zshenv" "+edit ./zsh/zshrc"'
+alias edit_aliases='nvim ~/dotfiles/zsh/aliases.zsh && source ~/dotfiles/zsh/aliases.zsh'
+alias reload="exec zsh"
+
 
 # use bat if it exists
 type bat >/dev/null 2>&1 && alias cat="bat"
@@ -24,7 +26,10 @@ alias s="kitty +kitten ssh"
 
 # Use lsd if it is available
 alias ls='ls --color=auto'
-type lsd >/dev/null 2>&1 && alias ls="lsd" && alias tree='lsd --tree'
+type lsd >/dev/null 2>&1 && \
+  alias ls="lsd" && \
+  alias tree='lsd --tree' && \
+  alias ll='lsd --long --almost-all'
 
 ### Git aliases
 # Mostly cherry-picked from the oh-my-zsh git plugin:
@@ -62,6 +67,9 @@ alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
 
 alias gm='git merge'
+alias gmm='git merge main'
+alias grb='git rebase'
+alias grbm='git rebase main'
 
 alias gst='git status'
 
@@ -148,6 +156,9 @@ alias kgseca='kubectl get secret --all-namespaces'
 alias kdsec='kubectl describe secret'
 alias kdelsec='kubectl delete secret'
 
+# Certificate management
+alias kgcert='kubectl get certificates'
+
 # Deployment management.
 alias kgd='kubectl get deployment'
 alias kgda='kubectl get deployment --all-namespaces'
@@ -197,6 +208,9 @@ alias klf='kubectl logs -f'
 alias klf1h='kubectl logs --since 1h -f'
 alias klf1m='kubectl logs --since 1m -f'
 alias klf1s='kubectl logs --since 1s -f'
+
+# Events
+alias kgev='kubectl get events'
 
 # File copy
 alias kcp='kubectl cp'
@@ -254,3 +268,4 @@ alias tf='terraform'
 ### Docker aliases
 alias dcls='docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'
 alias dls='docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"'
+alias dlogin='echo "$CR_PAT" | docker login ghcr.io -u laurigates --password-stdin'
