@@ -1,0 +1,8 @@
+- shell:
+  - asdf update
+  - asdf plugin-update --all
+  - brew update
+  - nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
+  - pipx upgrade-all
+  # TODO: Add any missing update actions
+  # The idea here is that this config can be installed using dotbot to update everything after a vacation

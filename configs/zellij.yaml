@@ -1,0 +1,4 @@
+- create:
+  - ~/.config/zellij
+- link:
+    ~/.config/zellij/config.kdl: zellij_config.kdl
