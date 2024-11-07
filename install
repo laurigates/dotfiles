@@ -50,7 +50,7 @@ elif [[ "$1" == "--status" ]]; then
   exit 0
 fi
 
-cd "${BASE_DIR}"
+cd "${BASE_DIR}" || exit
 
 # Sync submodule URLs
 git submodule sync --recursive
