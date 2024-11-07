@@ -1,184 +1,287 @@
-[[snippets]]
-  description = "Get hostname by IP address"
+
+[[Snippets]]
+  Description = "Get hostname by IP address"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "nbtstat -a <IP address>"
-  output = ""
 
-[[snippets]]
-  description = "Show SMART status for all disks"
+[[Snippets]]
+  Description = "Show SMART status for all disks"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "lsblk -o name -d -n -p | sudo parallel --tag smartctl -H {} | awk '/result/ { print$1\" \"$7 }'"
-  output = ""
 
-[[snippets]]
-  description = "Find what package a file belongs to"
+[[Snippets]]
+  Description = "Find what package a file belongs to"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "dpkg -S <filename>"
-  output = ""
 
-[[snippets]]
-  description = "Indicate how a command would be interpreted. Like \"which\" but more detailed."
+[[Snippets]]
+  Description = "Indicate how a command would be interpreted. Like \"which\" but more detailed."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "type <command>"
-  output = ""
 
-[[snippets]]
-  description = "One-line summary of what a command does"
+[[Snippets]]
+  Description = "One-line summary of what a command does"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "whatis <command>"
-  output = ""
 
-[[snippets]]
-  description = "List files that belong to a package"
+[[Snippets]]
+  Description = "List files that belong to a package"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "dpkg -L <package>"
-  output = ""
 
-[[snippets]]
-  description = "List windows managed by the window manager and include WM_CLASS in the list."
+[[Snippets]]
+  Description = "List windows managed by the window manager and include WM_CLASS in the list."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "wmctrl -l -x"
-  output = ""
 
-[[snippets]]
-  description = "Extend logical volume and resize the filesystem to fit the new size."
+[[Snippets]]
+  Description = "Extend logical volume and resize the filesystem to fit the new size."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "lvextend --size +<extend_amount> <device> && resize2fs <device>"
-  output = ""
 
-[[snippets]]
-  description = "Discover DHCP servers on the network."
+[[Snippets]]
+  Description = "Discover DHCP servers on the network."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "sudo nmap --script broadcast-dhcp-discover"
-  output = ""
 
-[[snippets]]
-  description = "List local ports that are listening and the related user and process."
+[[Snippets]]
+  Description = "List local ports that are listening and the related user and process."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "sudo netstat -lepunt"
-  output = ""
 
-[[snippets]]
-  description = "Mount using sshfs"
+[[Snippets]]
+  Description = "Mount using sshfs"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "sshfs <hostname>:<srcpath> <destpath>"
-  output = ""
 
-[[snippets]]
-  description = "Unmount sshfs mount"
+[[Snippets]]
+  Description = "Unmount sshfs mount"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "fusermount -u <mountpath>"
-  output = ""
 
-[[snippets]]
-  description = "List hosts scanned on the network that we were able to resolve the hostnames of. Format output in tabbed columns."
+[[Snippets]]
+  Description = "List hosts scanned on the network that we were able to resolve the hostnames of. Format output in tabbed columns."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "nmap -sL -R 172.26.11-15.0-255 -oG - | awk '$3 != \"()\" { print $1, $2, $3 }' | column -t"
-  output = ""
 
-[[snippets]]
-  description = "Show list of files installed by a package"
+[[Snippets]]
+  Description = "Show list of files installed by a package"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pacman -Ql <package_name>"
-  output = ""
 
-[[snippets]]
-  description = "Show Power_On_Hours for all disks."
+[[Snippets]]
+  Description = "Show Power_On_Hours for all disks."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "lsblk -o name -d -n -p | sudo parallel --tag smartctl -A {} | awk '/Power_On_Hours/ { print $1, $3\":\", $11 }'"
-  output = ""
 
-[[snippets]]
-  description = "List model of all hard drives."
+[[Snippets]]
+  Description = "List model of all hard drives."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "lsblk -o name -d -n -p | sudo parallel --tag hdparm -i {} | grep Model"
-  output = ""
 
-[[snippets]]
-  description = "Run short self-test on all disks"
+[[Snippets]]
+  Description = "Run short self-test on all disks"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "lsblk -o name -d -n -p | sudo parallel --tag smartctl -t short {}"
-  output = ""
 
-[[snippets]]
-  description = "Generate random string for use as a salt, password etc."
+[[Snippets]]
+  Description = "Generate random string for use as a salt, password etc."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "openssl rand -base64 32"
-  output = ""
 
-[[snippets]]
-  description = "List reverse dependencies; packages that depend or recommend the specified package."
+[[Snippets]]
+  Description = "List reverse dependencies; packages that depend or recommend the specified package."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "apt-cache rdepends --installed <package_name>"
-  output = ""
 
-[[snippets]]
-  description = "Fuzzy-search through all available packages, with package info shown in a preview window, and then install selected packages."
+[[Snippets]]
+  Description = "Fuzzy-search through all available packages, with package info shown in a preview window, and then install selected packages."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pacman -Slq | fzf --multi --preview 'pacman -Si {1}' | xargs -ro sudo pacman -S"
-  output = ""
 
-[[snippets]]
-  description = "Fuzzy-search through all available packages, with package info and file list shown in a preview window, and then install selected packages (make sure you run pacman -Fy at least once before invocation to sync the pacman file database)."
+[[Snippets]]
+  Description = "Fuzzy-search through all available packages, with package info and file list shown in a preview window, and then install selected packages (make sure you run pacman -Fy at least once before invocation to sync the pacman file database)."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pacman -Slq | fzf --multi --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \\$2}\")' | xargs -ro sudo pacman -S"
-  output = ""
 
-[[snippets]]
-  description = "Show swap usage of all processes sorted by usage in a pager"
+[[Snippets]]
+  Description = "Show swap usage of all processes sorted by usage in a pager"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 \" \" $3}END{ print \"\"}' $file; done | sort -k 2 -n -r | less"
-  output = ""
 
-[[snippets]]
-  description = "Show package dependencies and which packages it is required by."
+[[Snippets]]
+  Description = "Show package dependencies and which packages it is required by."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pacman -Qi <package_name>"
-  output = ""
 
-[[snippets]]
-  description = "List orphan packages."
+[[Snippets]]
+  Description = "List orphan packages."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pacman -Qtd"
-  output = ""
 
-[[snippets]]
-  description = "Create a dependency graph of a package."
+[[Snippets]]
+  Description = "Create a dependency graph of a package."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pactree -g <package_name> | dot -Tsvg -o <package_name>-deps.svg"
-  output = ""
 
-[[snippets]]
-  description = "List packages installed from AUR."
+[[Snippets]]
+  Description = "List packages installed from AUR."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "pacman -Qm"
-  output = ""
 
-[[snippets]]
-  description = "Scan the ed25519 fingerprint of a remote server and append it to the known_hosts file of the local machine."
+[[Snippets]]
+  Description = "Scan the ed25519 fingerprint of a remote server and append it to the known_hosts file of the local machine."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "ssh-keyscan -H -t ed25519 <ip_address> >> ~/.ssh/known_hosts"
-  output = ""
 
-[[snippets]]
-  description = "Flush DNS cache on macos"
+[[Snippets]]
+  Description = "Flush DNS cache on macos"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder"
-  output = ""
 
-[[snippets]]
-  description = "Show log messages from a process of a certain type and time period on macos."
+[[Snippets]]
+  Description = "Show log messages from a process of a certain type and time period on macos."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "log show --predicate 'process == \"<process_name>\" && messageType == \"<message_type>\"' --last <time_period>"
-  output = ""
 
-[[snippets]]
-  description = "Add monitoring enabled label to all servers in active Hetzner project."
+[[Snippets]]
+  Description = "Add monitoring enabled label to all servers in active Hetzner project."
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "hcloud server list -o columns=name -o noheader | parallel hcloud server add-label {} monitoring=enabled"
-  output = ""
 
-[[snippets]]
-  description = "Use hcloud to list server names and labels"
+[[Snippets]]
+  Description = "Use hcloud to list server names and labels"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "hcloud server list --output columns=name,labels"
-  output = ""
 
-[[snippets]]
-  description = "Print password from macos keychain"
+[[Snippets]]
+  Description = "Print password from macos keychain"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "security find-generic-password -s <password_name> -w"
-  output = ""
 
-[[snippets]]
-  description = "Add password to macos keychain"
+[[Snippets]]
+  Description = "Add password to macos keychain"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "security add-generic-password -a \"$USER\" -s <password_name> -w"
-  output = ""
 
-[[snippets]]
-  description = "Update and stage git submodules"
+[[Snippets]]
+  Description = "Update and stage git submodules"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "git submodule update --remote && git submodule foreach 'git --git-dir $toplevel/.git add $sm_path'"
-  output = ""
 
-[[snippets]]
-  description = "rsync with sudo privileges on the remote host"
+[[Snippets]]
+  Description = "rsync with sudo privileges on the remote host"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "rsync --rsync-path=\"sudo rsync\" -av <src> <dst>"
-  output = ""
 
-[[snippets]]
-  description = "Show TLS certificate information"
+[[Snippets]]
+  Description = "Show TLS certificate information"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "openssl x509 -in <certificate_file> -text -noout"
-  output = ""
 
-[[snippets]]
-  description = "Kubernetes: Release CRD deadlock"
+[[Snippets]]
+  Description = "Kubernetes: Release CRD deadlock"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
   command = "kubectl patch crd/<crd_name> -p '{\"metadata\":{\"finalizers\":[]}}' --type=merge"
-  output = ""
+
+[[Snippets]]
+  Description = "List bluetooth devices on macos"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
+  command = "system_profiler SPBluetoothDataType"
+
+[[Snippets]]
+  Description = "Delete merged git branches"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
+  command = "git switch main && git pull --prune && git branch --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" { print $1 }' | xargs -r git branch -D"
+
+[[Snippets]]
+  Description = "Convert JSON to JSONL"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
+  command = "jq -c '.[]' <filename>.json > <filename>.jsonl"
+
+[[Snippets]]
+  Description = "Get public IP address"
+  Filename = "/Users/lauri.gates/.config/pet/snippet.toml"
+  Output = ""
+  Tag = []
+  command = "curl ifconfig.me"
