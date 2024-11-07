@@ -169,6 +169,9 @@ function zvm_after_init() {
 # Additional completion definitions can be placed in this directory
 fpath+=~/.zfunc
 
+# Add completions from the zsh-completions repo
+fpath+=~/dotfiles/zsh/zsh-completions/src/
+
 # Load brew and related completions if it is installed
 if type /opt/homebrew/bin/brew &> /dev/null; then
     # Setup homebrew
