@@ -67,5 +67,12 @@ return {
   {
     "sindrets/diffview.nvim",
     opts = {},
-  }
+  },
+  {
+    "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim", -- required
+    },
+    config = true,
+  },
 }
