@@ -3,15 +3,18 @@ return {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
-        -- lua = { "stylua" },
-        -- Conform will run multiple formatters sequentially
+        lua = { "stylua" },
         python = { "isort", "ruff", "autopep8" },
         dockerfile = { "hadolint" },
         gitconfig = { "taplo" },
+        vue = { "eslint_d" },
+        typescript = { "eslint_d" },
+        typescriptreact = { "eslint_d" },
+        javascript = { "eslint_d" },
+        json = { { "prettierd", "prettier" } },
+        jsonc = { { "prettierd", "prettier" } },
         ["*"] = { "codespell" },
         ["_"] = { "trim_whitespace" },
-        -- Use a sub-list to run only the first available formatter
-        -- javascript = { { "prettierd", "prettier" } },
       },
       format_on_save = function(bufnr)
         -- Disable with a global or buffer-local variable
@@ -39,6 +42,6 @@ return {
       end, {
         desc = "Re-enable autoformat-on-save",
       })
-    end
+    end,
   },
 }
