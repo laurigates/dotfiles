@@ -30,9 +30,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-    vim.keymap.set("n", "<space>f", function()
-      vim.lsp.buf.format({ async = true })
-    end, opts)
+    -- vim.keymap.set("n", "<space>f", function()
+    --   vim.lsp.buf.format({ async = true })
+    -- end, opts)
   end,
 })
 
@@ -43,8 +43,6 @@ local on_attach = function(client, bufnr)
     navic.attach(client, bufnr)
   end
 end
-
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Automatically set up LSP servers
 require("mason-lspconfig").setup_handlers({

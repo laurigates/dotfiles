@@ -12,6 +12,8 @@ opt.undofile = true                           -- But persistent undo is nice
 -- Show autocomplete even when only one item is available, don't automatically select or insert an option. User must do the selection.
 opt.completeopt = "menuone,noselect,noinsert" -- Autocomplete options
 -- opt.clipboard = "unnamedplus"
+opt.exrc = true -- Allow loading additional neovim config from local directory `.nvim.lua`
+opt.wildmode = "longest:full,full"
 
 -----------------------------------------------------------
 -- Neovim UI
@@ -35,5 +37,22 @@ opt.listchars = "eol:↲,tab:» ,extends:›,precedes:‹,nbsp:☠,trail:·"
 opt.expandtab = true -- Use spaces instead of tabs
 opt.shiftwidth = 2   -- Shift 2 spaces when tab
 opt.tabstop = 2      -- 1 tab == 2 spaces
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-opt.foldtext = "v:lua.vim.treesitter.foldtext()"
+
+-- Treesitter folds
+-- https://www.jackfranklin.co.uk/blog/code-folding-in-vim-neovim/
+opt.foldmethod = "expr"
+opt.foldlevel = 99
+-- opt.foldlevelstart = 1
+opt.foldnestmax = 4
+opt.fillchars = {
+  foldopen = "",
+  foldclose = "",
+  fold = " ",
+  foldsep = " ",
+  diff = "╱",
+  eob = " ",
+}
+opt.foldexpr = "nvim_treesitter#foldexpr()"
+-- opt.foldtext = "v:lua.vim.treesitter.foldtext()"
+opt.foldtext = ""
+

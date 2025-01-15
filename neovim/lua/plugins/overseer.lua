@@ -1,6 +1,6 @@
 return {
   {
-    "akinsho/toggleterm.nvim", -- Plugin name (e.g., "author/repo")
+    "stevearc/overseer.nvim", -- Plugin name (e.g., "author/repo")
     -- Plugin will only load on these events
     -- event = "VeryLazy", -- Load on startup
     -- event = "BufReadPre", -- Load before file is read
@@ -31,7 +31,7 @@ return {
     -- lazy = false,
 
     -- Version tag or commit hash
-    version = "*", -- Use latest release
+    -- version = "*", -- Use latest release
     -- version = "v2.0.0", -- Use specific version
     -- commit = "8826f397", -- Use specific commit
 
@@ -39,10 +39,7 @@ return {
     -- branch = "main",
 
     -- Simple configuration using opts table (preferred)
-    opts = {
-  open_mapping = [[<c-§>]],
-      -- options here
-    },
+    opts = {},
 
     -- Complex configuration using config function
     -- config = function()
@@ -61,6 +58,5 @@ return {
     -- end,
 
     -- Uncomment section(s) above to enable them
-  }
+  },
 }
-

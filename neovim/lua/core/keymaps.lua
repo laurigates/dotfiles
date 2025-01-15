@@ -32,18 +32,20 @@ map("", "<left>", "<nop>")
 map("", "<right>", "<nop>")
 
 -- Move around splits using Ctrl + {h,j,k,l}
-map("n", "<C-h>", "<C-w>h")
-map("n", "<C-j>", "<C-w>j")
-map("n", "<C-k>", "<C-w>k")
-map("n", "<C-l>", "<C-w>l")
+-- map("n", "<C-h>", "<C-w>h")
+-- map("n", "<C-j>", "<C-w>j")
+-- map("n", "<C-k>", "<C-w>k")
+-- map("n", "<C-l>", "<C-w>l")
 
 -- Switch between buffers using H and L
 map("n", "H", ":BufferPrevious<CR>")
 map("n", "L", ":BufferNext<CR>")
 
 -- Terminal mappings
-map("n", "<C-t>", ":Term<CR>", { noremap = true }) -- open
+-- map("n", "<C-t>", ":Term<CR>", { noremap = true }) -- open
 map("t", "<Esc>", "<C-\\><C-n>") -- exit
+
+-- map("n", "<leader>g", ":G<CR>")
 
 -- vim-easy-align
 -- map('n', 'ga', '<Plug>(EasyAlign)')
