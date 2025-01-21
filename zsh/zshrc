@@ -125,7 +125,8 @@ bindkey . rationalise-dot
 # {{{ Plugins
 
 # Load asdf to manage python, nodejs, rust, go etc.
-source "$HOME/dotfiles/asdf/asdf.sh"
+#source "$HOME/dotfiles/asdf/asdf.sh"
+source /opt/homebrew/opt/asdf/libexec/asdf.sh
 source "$HOME/.asdf/plugins/golang/set-env.zsh"
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
@@ -146,7 +147,6 @@ function zvm_after_init() {
   [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
   ## Plugins to load after compinit
   source ~/dotfiles/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-  source ~/dotfiles/zsh/zsh-z/zsh-z.plugin.zsh
   # fzf-tab doesn't seem to work for brew completions e.g. kubectl
   source ~/dotfiles/zsh/fzf-tab/fzf-tab.plugin.zsh
   source ~/dotfiles/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
@@ -266,3 +266,4 @@ bindkey -s "^[[60;9u" "|"
 # zprof
 eval "$(atuin init zsh)"
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
