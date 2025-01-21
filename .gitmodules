@@ -22,10 +22,6 @@
 	path = zsh/fzf-tab
 	url = https://github.com/Aloxaf/fzf-tab.git
 	branch = master
-[submodule "powerlevel10k"]
-	path = zsh/powerlevel10k
-	url = https://github.com/romkatv/powerlevel10k.git
-	branch = master
 [submodule "zsh-vi-mode"]
 	path = zsh/zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode.git
