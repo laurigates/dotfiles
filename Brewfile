@@ -1,3 +1,4 @@
+brew "pipx"
 brew "argocd"
 brew "asdf"
 brew "atuin"

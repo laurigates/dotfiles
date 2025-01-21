@@ -1,10 +1,4 @@
-direnv
 jinja2
-jinjanator
-pip-tools
-pipx
-pre-commit
 pynvim
-pytest
 python-dotenv
 pyyaml

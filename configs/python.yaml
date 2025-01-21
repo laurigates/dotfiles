@@ -1,6 +1,3 @@
 - shell:
-  - python3 -m pip install --user pipx
-  - python3 -m pipx ensurepath
-  - pipx completions
-  - pipx install ranger-fm glances ansible ruff yamllint direnv
+  - pipx install-all ~/dotfiles/pipx_packages.json
   - pipx upgrade-all
