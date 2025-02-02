@@ -2,27 +2,12 @@
     - ~/.zsh_history_dir
 
 - shell:
-    - setup/cleanup.sh ~/.zshenv ~/.zshrc ~/.p10k.zsh ~/.config/pet
-    - if command -v pipx; then register-python-argcomplete pipx > ~/.zfunc/_pipx; fi
-    - if command -v rustup; then rustup completions zsh cargo > ~/.zfunc/_cargo; fi
-    - if command -v rustup; then rustup completions zsh > ~/.zfunc/_rustup; fi
-    - if command -v pip; then pip completion --zsh > ~/.zfunc/_pip; fi
-    - if command -v oc; then oc completion zsh > ~/.zfunc/_oc; fi
-    - if command -v docker; then docker completion zsh > ~/.zfunc/_docker; fi
-    - if command -v podman; then podman completion -f ~/.zfunc/_podman zsh; fi
-    - if command -v rpk; then rpk generate shell-completion zsh > ~/.zfunc/_rpk; fi
-    - if command -v kubectl; then kubectl completion zsh > ~/.zfunc/_kubectl; fi
-    - if command -v pdm; then pdm completion zsh > ~/.zfunc/_pdm; fi
-    - if command -v npm; then npm completion zsh > ~/.zfunc/_npm; fi
-    - if command -v luarocks; then luarocks completion zsh > ~/.zfunc/_luarocks; fi
-    - if command -v minikube; then minikube completion zsh > ~/.zfunc/_minikube; fi
-    - if command -v atuin; then atuin gen-completions --shell zsh --out-dir ~/.zfunc; fi
-    - if command -v k3d; then k3d completion zsh > ~/.zfunc/_k3d; fi
+    - setup/cleanup.sh ~/.zshenv ~/.zshrc ~/.config/pet
+    - touch ~/.api_tokens
 
 - link:
     ~/.zshenv: zsh/zshenv
     ~/.zshrc: zsh/zshrc
-    ~/.p10k.zsh: zsh/p10k.zsh
     ~/.config/pet:
       create: true
       path: pet

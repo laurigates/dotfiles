@@ -183,9 +183,6 @@ if type /opt/homebrew/bin/brew &> /dev/null; then
     source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 fi
 
-# asdf completions
-fpath+=${ASDF_DIR}/completions
-
 autoload -Uz compinit && compinit
 
 # Completion for kitty
@@ -205,9 +202,6 @@ if type brew &> /dev/null; then
 
     # Terraform completions
     complete -o nospace -C /opt/homebrew/bin/terraform terraform
-
-    # Azure CLI completions
-    source $(brew --prefix)/etc/bash_completion.d/az
 fi
 # }}}
 

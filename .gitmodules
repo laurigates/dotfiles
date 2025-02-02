@@ -26,10 +26,6 @@
 	path = zsh/zsh-vi-mode
 	url = https://github.com/jeffreytse/zsh-vi-mode.git
 	branch = master
-[submodule "asdf"]
-	path = asdf
-	url = https://github.com/asdf-vm/asdf.git
-	branch = master
 [submodule "zsh/zsh-completions"]
 	path = zsh/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions.git
