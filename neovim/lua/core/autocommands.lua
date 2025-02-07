@@ -70,6 +70,77 @@ cmd([[
 ]])
 
 -- AI commit message suggestion
-cmd([[autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG execute 'M commit']])
+-- Make functions available globally so they can be called from the autocommand
+_G.is_commit_message_empty = function()
+  -- Get all lines up to the first comment
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  for i, line in ipairs(lines) do
+    if string.match(line, "^#") then
+      -- Only check lines before the first comment
+      for j = 1, i - 1 do
+        -- If we find any non-empty line before comments, message isn't empty
+        if not string.match(lines[j], "^%s*$") then
+          return false
+        end
+      end
+      return true
+    end
+  end
+  return true
+end
 
--- opt.foldmethod = "marker" -- Enable folding (default 'foldmarker')
+_G.get_commit_type = function()
+  local buffer_name = vim.fn.bufname()
+
+  if string.match(buffer_name, "COMMIT_EDITMSG") then
+    -- Check for rebase
+    if vim.fn.search([[^# This is a combination of]], "n") > 0 then
+      return "rebase"
+      -- Check for merge
+    elseif vim.fn.search([[^# This is the commit message for a merge]], "n") > 0 then
+      return "merge"
+      -- Check for regular commit
+    elseif vim.fn.search([[^# Please enter the commit message for your changes]], "n") > 0 and
+        vim.fn.search([[^# This is a combination of]], "n") == 0 then
+      return "commit"
+    end
+  end
+  return "unknown"
+end
+
+_G.prompt_user = function(msg)
+  local response = vim.fn.input(msg .. " (y/n): ")
+  return string.lower(response) == "y"
+end
+
+_G.smart_commit_message = function()
+  -- Only proceed if commit message area is empty
+  if not _G.is_commit_message_empty() then
+    return
+  end
+
+  local commit_type = _G.get_commit_type()
+
+  -- Handle different commit types
+  if commit_type == "commit" then
+    if _G.prompt_user("Generate commit message using Gemini?") then
+      vim.cmd('M commit:gemini')
+    end
+  elseif commit_type == "rebase" then
+    -- Do nothing during rebase
+    return
+  elseif commit_type == "merge" then
+    -- Optionally handle merge commits differently
+    if _G.prompt_user("Generate merge commit message using Gemini?") then
+      vim.cmd('M commit:gemini')
+    end
+  end
+end
+
+-- Set up the autocommand
+vim.cmd([[
+  augroup SmartCommitMessage
+    autocmd!
+    autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG lua smart_commit_message()
+  augroup END
+]])
