@@ -20,7 +20,7 @@ return {
     workspaces = {
       {
         name = "work",
-        path = "~/fvh-obsidian-vault",
+        path = "~/Documents/FVH Vault/",
       },
     },
 
