@@ -1,3 +1,8 @@
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+# This won't be added again if you remove it.
+Include ~/.orbstack/ssh/config
+
 # This configuration caused issues with X11 forwarding and changing user groups taking effect.
 # Host *
 #   ControlMaster auto
