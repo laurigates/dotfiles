@@ -57,6 +57,17 @@ require("mason-lspconfig").setup_handlers({
   end,
   -- Next, you can provide a dedicated handler for specific servers.
   -- For example, a handler override for the `rust_analyzer`:
+  ["helm_ls"] = function()
+    require("lspconfig").helm_ls.setup({
+      settings = {
+        ["helm-ls"] = {
+          yamlls = {
+            path = "yaml-language-server",
+          },
+        },
+      },
+    })
+  end,
   -- ["rust_analyzer"] = function ()
   --   require("rust-tools").setup {}
   -- end
