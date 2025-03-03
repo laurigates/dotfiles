@@ -14,6 +14,11 @@ autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", ti
 augroup end
 ]])
 
+vim.filetype.add({
+  pattern = {
+    ["Dockerfile%.[%w_]+"] = "dockerfile", -- Matches Dockerfile.nginx, Dockerfile.django, etc.
+  },
+})
 -- Don't auto commenting new lines
 -- cmd([[au BufEnter * set fo-=c fo-=r fo-=o]])
 
