@@ -1,3 +1,5 @@
+brew "git-delta"
+brew "libb2"
 brew "pipx"
 brew "argocd"
 brew "asdf"
