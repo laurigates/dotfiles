@@ -10,18 +10,18 @@
     -
       command: |
         # asdf update
-        asdf plugin-update --all
+        asdf plugin update --all
         # Cache asdf plugin short names in the background
-        asdf plugin-list-all > /dev/null &
+        asdf plugin list-all > /dev/null &
         # Install plugins
-        asdf plugin-add python
-        asdf plugin-add nodejs
-        asdf plugin-add rust
-        asdf plugin-add golang
-        asdf plugin-add fzf
-        asdf plugin-add neovim
-        asdf plugin-add direnv
-        asdf plugin-add pdm
+        asdf plugin add python
+        asdf plugin add nodejs
+        asdf plugin add rust
+        asdf plugin add golang
+        asdf plugin add fzf
+        asdf plugin add neovim
+        asdf plugin add direnv
+        asdf plugin add pdm
         # install configured tool versions
         asdf uninstall neovim
         asdf install
@@ -35,6 +35,7 @@
       stderr: true
     -
       command: |
+        brew install groff autoconf
         source ./zsh/fzf-tab/fzf-tab.zsh
         build-fzf-tab-module
       description: Build fzf-tab binary for colorization
