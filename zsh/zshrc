@@ -15,6 +15,17 @@ HIST_STAMPS="dd.mm.yyyy"
 # Remove "/" from WORDCHARS so that Ctrl+W doesn't kill directory paths.
 WORDCHARS="${WORDCHARS//[\/]}"
 
+# Load brew and related completions if it is installed
+if type /opt/homebrew/bin/brew &> /dev/null; then
+    # Prepend homebrew to path
+    # Avoid using brew shellenv for setup, because brew completions are messed up
+    # eval "$(/opt/homebrew/bin/brew shellenv)"
+    path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+fi
+
+# Add asdf after brew so installed programs take precedence
+path=("$HOME/.asdf/shims" $path)
+
 ## History wrapper
 # https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/history.zsh
 function omz_history {
@@ -124,14 +135,10 @@ bindkey . rationalise-dot
 
 # {{{ Plugins
 
-# Load asdf to manage python, nodejs, rust, go etc.
-#source "$HOME/dotfiles/asdf/asdf.sh"
-source /opt/homebrew/opt/asdf/libexec/asdf.sh
-source "$HOME/.asdf/plugins/golang/set-env.zsh"
-command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
-source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
+# source "$HOME/.asdf/plugins/golang/set-env.zsh"
+# command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+# source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
 autoload -Uz zkbd
-
 
 # zsh-vi-mode
 source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
@@ -144,7 +151,8 @@ source ~/dotfiles/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 #
 # The plugin will auto execute this zvm_after_init function
 function zvm_after_init() {
-  [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
+  source <(fzf --zsh)
+
   ## Plugins to load after compinit
   source ~/dotfiles/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
   # fzf-tab doesn't seem to work for brew completions e.g. kubectl
@@ -166,22 +174,29 @@ function zvm_after_init() {
 # Additional completion definitions can be placed in this directory
 fpath+=~/.zfunc
 
-# Add completions from the zsh-completions repo
-fpath+=~/dotfiles/zsh/zsh-completions/src/
-
 # Load brew and related completions if it is installed
 if type /opt/homebrew/bin/brew &> /dev/null; then
-    # Setup homebrew
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    # Setup homebrew
-    # completions for brew and applications installed by it
-    # https://docs.brew.sh/Shell-Completion
-    fpath+="$(brew --prefix)/share/zsh/site-functions"
-
     # google-cloud-sdk path and completions
     source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
     source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 fi
+
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+eval "$(atuin init zsh)"
+eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
+eval "$(orbctl completion zsh)"
+eval "$(orb completion zsh)"
+#
+# Additional completion definitions can be placed in this directory
+fpath+=~/.zfunc
 
 autoload -Uz compinit && compinit
 
@@ -257,7 +272,5 @@ bindkey -s "^[[60;9u" "|"
 
 # }}}
 
+
 # zprof
-eval "$(atuin init zsh)"
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
