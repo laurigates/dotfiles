@@ -22,3 +22,7 @@
     - defaults read com.apple.symbolichotkeys.plist > /dev/null
     # Run reactivateSettings to apply the updated settings.
     - /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+  -
+    command:
+    - orbctl completion zsh > "${fpath[1]}/_orbctl"
+    - orb completion zsh > "${fpath[1]}/_orb"
