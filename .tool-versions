@@ -1,12 +1,10 @@
 rust 1.84.1
-python 3.12.4
+python 3.13.2t
 nodejs 23.6.0
 neovim nightly
 golang 1.21.5
 direnv 2.35.0
-fzf 0.57.0
-git 2.43.0
-act 0.2.59
+fzf 0.60.0
+git 2.48.1
 pdm 2.20.0
-pipx 1.7.1
 zellij 0.41.1
