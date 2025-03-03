@@ -44,6 +44,8 @@ local on_attach = function(client, bufnr)
   end
 end
 
+local capabilities = require("blink.cmp").get_lsp_capabilities()
+
 -- Automatically set up LSP servers
 require("mason-lspconfig").setup_handlers({
   -- The first entry (without a key) will be the default handler
