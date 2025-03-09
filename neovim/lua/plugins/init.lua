@@ -206,6 +206,13 @@ return {
         desc = "Recent",
       },
       {
+        "<leader>fh",
+        function()
+          Snacks.picker.help()
+        end,
+        desc = "Help",
+      },
+      {
         "<leader>fm",
         function()
           Snacks.picker.keymaps()
