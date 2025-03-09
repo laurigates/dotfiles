@@ -78,6 +78,6 @@ cmd([[
 vim.cmd([[
   augroup SmartCommitMessage
     autocmd!
-    autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG CodeCompanion "write a commit message conforming to conventional commit standards #buffer"
+    autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG CodeCompanion gemini "write a commit message conforming to conventional commit standards #buffer"
   augroup END
 ]])
