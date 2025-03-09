@@ -8,13 +8,13 @@ return {
     opts = {
       strategies = {
         chat = {
-          adapter = "githubmodels",
+          adapter = "anthropic",
         },
         inline = {
-          adapter = "githubmodels",
+          adapter = "anthropic",
         },
         cmd = {
-          adapter = "githubmodels",
+          adapter = "anthropic",
         },
       },
     },
