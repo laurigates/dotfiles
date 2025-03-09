@@ -1,3 +1,6 @@
+- link:
+    ~/.config/sketchybar: sketchybar
+    ~/.skhdrc: skhdrc
 - shell:
   -
     command: touch ~/.hushlogin

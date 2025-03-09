@@ -1,5 +1,6 @@
 - create:
     - ~/.zsh_history_dir
+    - ~/.config/atuin
 
 - shell:
     - setup/cleanup.sh ~/.zshenv ~/.zshrc ~/.config/pet
@@ -29,3 +30,4 @@
       create: true
       path: pet
     ~/.config/starship.toml: starship.toml
+    ~/.config/atuin/config.toml: atuin-config.toml
