@@ -1,0 +1,418 @@
+{
+  "name": "dotfiles",
+  "version": "1.0.0",
+  "workspace_spec": "1.0",
+  "description": "Comprehensive personal dotfiles repository for cross-platform environment configuration",
+  "system_prompt": "You are a configuration expert specializing in shell, editor, and development environment customization. Help optimize, debug, and enhance these dotfiles with a focus on productivity and maintainability.",
+  "groups": [
+    {
+      "name": "zsh",
+      "description": "ZSH shell configuration and plugins",
+      "vars": {
+        "base_dir": "zsh"
+      },
+      "files": [
+        {
+          "description": "Main ZSH configuration with settings, prompts, and plugin initialization",
+          "path": "${base_dir}/zshrc"
+        },
+        {
+          "description": "Environment variables and paths for all shell session types",
+          "path": "${base_dir}/zshenv"
+        },
+        {
+          "description": "Custom command shortcuts and function aliases",
+          "path": "${base_dir}/aliases.zsh"
+        },
+        {
+          "description": "ZSH plugin for fuzzy tab completion",
+          "path": "${base_dir}/fzf-tab"
+        },
+        {
+          "description": "ZSH theme with advanced customization options",
+          "path": "${base_dir}/powerlevel10k"
+        },
+        {
+          "description": "ZSH plugin for command suggestions based on history",
+          "path": "${base_dir}/zsh-autosuggestions"
+        },
+        {
+          "description": "Extended completions for ZSH",
+          "path": "${base_dir}/zsh-completions"
+        },
+        {
+          "description": "Syntax highlighting for ZSH commands",
+          "path": "${base_dir}/zsh-syntax-highlighting"
+        },
+        {
+          "description": "Vi mode for ZSH command line",
+          "path": "${base_dir}/zsh-vi-mode"
+        },
+        {
+          "description": "Directory jumping plugin for ZSH",
+          "path": "${base_dir}/zsh-z"
+        }
+      ]
+    },
+    {
+      "name": "neovim",
+      "description": "Neovim editor configuration with plugins and custom settings",
+      "vars": {
+        "base_dir": "neovim"
+      },
+      "files": [
+        {
+          "description": "Main Neovim initialization file",
+          "path": "${base_dir}/init.lua"
+        },
+        {
+          "description": "Plugin lockfile for version management",
+          "path": "${base_dir}/lazy-lock.json"
+        },
+        {
+          "description": "Automatic commands for specific events",
+          "path": "${base_dir}/lua/core/autocommands.lua"
+        },
+        {
+          "description": "Custom utility functions",
+          "path": "${base_dir}/lua/core/functions.lua"
+        },
+        {
+          "description": "Key mappings and shortcuts",
+          "path": "${base_dir}/lua/core/keymaps.lua"
+        },
+        {
+          "description": "Language Server Protocol configuration",
+          "path": "${base_dir}/lua/core/lsp.lua"
+        },
+        {
+          "description": "General editor settings and options",
+          "path": "${base_dir}/lua/core/settings.lua"
+        }
+      ],
+      "symbols": [
+        {
+          "description": "Plugin configurations",
+          "path": "${base_dir}/lua/plugins/*.lua"
+        }
+      ]
+    },
+    {
+      "name": "terminal",
+      "description": "Terminal emulator configurations",
+      "files": [
+        {
+          "description": "Kitty terminal configuration",
+          "path": "terminal/kitty.conf"
+        },
+        {
+          "description": "SSH-specific terminal settings",
+          "path": "terminal/ssh.conf"
+        },
+        {
+          "description": "Starship prompt configuration",
+          "path": "starship.toml"
+        },
+        {
+          "description": "Atuin shell history manager configuration",
+          "path": "atuin-config.toml"
+        },
+        {
+          "description": "Pet snippet manager configuration",
+          "path": "pet/config.toml"
+        },
+        {
+          "description": "Pet snippets library",
+          "path": "pet/snippet.toml"
+        }
+      ]
+    },
+    {
+      "name": "window_managers",
+      "description": "Window manager and desktop environment configurations",
+      "files": [
+        {
+          "description": "i3 window manager base configuration",
+          "path": "i3/config.base"
+        },
+        {
+          "description": "i3 config build script",
+          "path": "i3/build-config.sh"
+        },
+        {
+          "description": "Dunst notification daemon configuration",
+          "path": "i3/dunstrc"
+        },
+        {
+          "description": "i3blocks status bar configuration",
+          "path": "i3/i3blocks.conf"
+        },
+        {
+          "description": "macOS status bar configuration",
+          "path": "sketchybar/sketchybarrc"
+        },
+        {
+          "description": "skhd hotkey daemon for macOS",
+          "path": "skhdrc"
+        },
+        {
+          "description": "X resources configuration",
+          "path": "X/Xresources"
+        },
+        {
+          "description": "Rofi application launcher configuration",
+          "path": "X/config.rasi"
+        },
+        {
+          "description": "X11 initialization script",
+          "path": "X/xinitrc"
+        }
+      ],
+      "symbols": [
+        {
+          "description": "Sketchybar plugin scripts",
+          "path": "sketchybar/plugins/*.sh"
+        }
+      ]
+    },
+    {
+      "name": "tmux_zellij",
+      "description": "Terminal multiplexer configurations",
+      "files": [
+        {
+          "description": "Tmux configuration",
+          "path": "tmux/tmux.conf"
+        },
+        {
+          "description": "Tmux themes",
+          "path": "tmux/tmux-themepack"
+        },
+        {
+          "description": "Zellij terminal multiplexer configuration",
+          "path": "zellij_config.kdl"
+        }
+      ]
+    },
+    {
+      "name": "package_managers",
+      "description": "Package managers and dependencies management",
+      "files": [
+        {
+          "description": "Homebrew packages manifest",
+          "path": "Brewfile"
+        },
+        {
+          "description": "Homebrew lockfile",
+          "path": "Brewfile.lock.json"
+        },
+        {
+          "description": "ASDF version manager configuration",
+          "path": ".asdfrc"
+        },
+        {
+          "description": "ASDF configuration directory",
+          "path": "asdf"
+        },
+        {
+          "description": "Tool versions for ASDF",
+          "path": ".tool-versions"
+        },
+        {
+          "description": "Default Cargo crates to install",
+          "path": "default-cargo-crates"
+        },
+        {
+          "description": "Default Go packages to install",
+          "path": "default-golang-pkgs"
+        },
+        {
+          "description": "Default NPM packages to install",
+          "path": "default-npm-packages"
+        },
+        {
+          "description": "Default Python packages to install",
+          "path": "default-python-packages"
+        },
+        {
+          "description": "Pipx installed packages",
+          "path": "pipx_packages.json"
+        }
+      ]
+    },
+    {
+      "name": "configs",
+      "description": "Profile-specific configuration sets",
+      "vars": {
+        "base_dir": "configs"
+      },
+      "files": [
+        {
+          "description": "ASDF configuration profile",
+          "path": "${base_dir}/asdf.yaml"
+        },
+        {
+          "description": "Base configuration for all profiles",
+          "path": "${base_dir}/base.yaml"
+        },
+        {
+          "description": "Git configuration profile",
+          "path": "${base_dir}/git.yaml"
+        },
+        {
+          "description": "Go development configuration profile",
+          "path": "${base_dir}/go.yaml"
+        },
+        {
+          "description": "i3 window manager configuration profile",
+          "path": "${base_dir}/i3.yaml"
+        },
+        {
+          "description": "Kitty terminal configuration profile",
+          "path": "${base_dir}/kitty.yaml"
+        },
+        {
+          "description": "macOS specific configuration profile",
+          "path": "${base_dir}/macos.yaml"
+        },
+        {
+          "description": "Neovim configuration profile",
+          "path": "${base_dir}/neovim.yaml"
+        },
+        {
+          "description": "Python development configuration profile",
+          "path": "${base_dir}/python.yaml"
+        },
+        {
+          "description": "SSH configuration profile",
+          "path": "${base_dir}/ssh.yaml"
+        },
+        {
+          "description": "Tmux configuration profile",
+          "path": "${base_dir}/tmux.yaml"
+        },
+        {
+          "description": "Update mechanisms configuration profile",
+          "path": "${base_dir}/update.yaml"
+        },
+        {
+          "description": "Zellij configuration profile",
+          "path": "${base_dir}/zellij.yaml"
+        },
+        {
+          "description": "ZSH configuration profile",
+          "path": "${base_dir}/zsh.yaml"
+        },
+        {
+          "description": "Server environment profile",
+          "path": "${base_dir}/profile-server"
+        },
+        {
+          "description": "Full workstation profile",
+          "path": "${base_dir}/profile-workstation"
+        },
+        {
+          "description": "macOS workstation profile",
+          "path": "${base_dir}/profile-workstation-mac"
+        },
+        {
+          "description": "Minimal workstation profile",
+          "path": "${base_dir}/profile-workstation-minimal"
+        }
+      ]
+    },
+    {
+      "name": "git_ssh",
+      "description": "Git and SSH configurations",
+      "files": [
+        {
+          "description": "Git global ignore patterns",
+          "path": ".gitignore"
+        },
+        {
+          "description": "Git submodules configuration",
+          "path": ".gitmodules"
+        },
+        {
+          "description": "SSH client configuration",
+          "path": "ssh/config"
+        }
+      ]
+    },
+    {
+      "name": "setup",
+      "description": "Installation and setup scripts",
+      "files": [
+        {
+          "description": "Main installation script",
+          "path": "install"
+        },
+        {
+          "description": "i3 setup script",
+          "path": "setup/i3.sh"
+        },
+        {
+          "description": "Environment cleanup script",
+          "path": "setup/cleanup.sh"
+        },
+        {
+          "description": "Color definitions",
+          "path": "colors.sh"
+        },
+        {
+          "description": "Docker configuration",
+          "path": "Dockerfile"
+        },
+        {
+          "description": "Docker Compose configuration",
+          "path": "docker-compose.yml"
+        },
+        {
+          "description": "Docker ignore patterns",
+          "path": ".dockerignore"
+        },
+        {
+          "description": "GitHub workflow for smoke tests",
+          "path": ".github/workflows/smoke.yml"
+        }
+      ]
+    },
+    {
+      "name": "meta",
+      "description": "Repository metadata and documentation",
+      "files": [
+        {
+          "description": "Repository documentation",
+          "path": "README.md"
+        },
+        {
+          "description": "EditorConfig for consistent styling",
+          "path": ".editorconfig"
+        },
+        {
+          "description": "Spell checking configuration",
+          "path": ".codespellrc"
+        },
+        {
+          "description": "Pre-commit hooks configuration",
+          "path": ".pre-commit-config.yaml"
+        },
+        {
+          "description": "Lua formatting configuration",
+          "path": "stylua.toml"
+        },
+        {
+          "description": "Neovim Lua initialization configuration",
+          "path": ".nvim.lua"
+        },
+        {
+          "description": "Dotfiles manager",
+          "path": "dotbot"
+        },
+        {
+          "description": "Ctags exclusion patterns",
+          "path": "general/ctags.d/exclusions.ctags"
+        }
+      ]
+    }
+  ]
+}
