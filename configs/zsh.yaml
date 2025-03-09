@@ -20,6 +20,7 @@
     - if command -v atuin; then atuin gen-completions --shell zsh --out-dir ~/.zfunc; fi
     - if command -v k3d; then k3d completion zsh > ~/.zfunc/_k3d; fi
     - if command -v gh; then gh completion -s zsh > ~/.zfunc/_gh; fi
+    - if command -v argocd; then argocd completion zsh > ~/.zfunc/_argocd; fi
 
 - link:
     ~/.zshenv: zsh/zshenv
@@ -27,3 +28,4 @@
     ~/.config/pet:
       create: true
       path: pet
+    ~/.config/starship.toml: starship.toml
