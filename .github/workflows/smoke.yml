@@ -3,6 +3,15 @@ name: Smoke Test CI
 on: [push]
 
 jobs:
+  linters:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Luacheck lint neovim config
+      uses: lunarmodules/luacheck@v1
+      with:
+        args: neovim
   build-linux:
     runs-on: ubuntu-latest
     steps:
