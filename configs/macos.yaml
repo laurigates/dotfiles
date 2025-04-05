@@ -2,6 +2,8 @@
     ~/.config/sketchybar: sketchybar
     ~/.skhdrc: skhdrc
 - shell:
+  - command: fc-list | grep "Hack Nerd Font"
+    description: Check font
   -
     command: touch ~/.hushlogin
     description: Disable "last login" prompt when opening a shell
