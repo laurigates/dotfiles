@@ -22,6 +22,10 @@
     - if command -v k3d; then k3d completion zsh > ~/.zfunc/_k3d; fi
     - if command -v gh; then gh completion -s zsh > ~/.zfunc/_gh; fi
     - if command -v argocd; then argocd completion zsh > ~/.zfunc/_argocd; fi
+    - if command -v rg; then rg --generate=complete-zsh > ~/.zfunc/_rg; fi
+    - if command -v helm; then helm completion zsh > ~/.zfunc/_helm; fi
+    - if command -v mise; then mise completion zsh > ~/.zfunc/_mise; fi
+    - if command -v arduino-cli; then arduino-cli completion zsh > ~/.zfunc/_arduino-cli; fi
 
 - link:
     ~/.zshenv: zsh/zshenv
