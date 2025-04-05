@@ -23,8 +23,7 @@ if type /opt/homebrew/bin/brew &> /dev/null; then
     path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
 fi
 
-# Add asdf after brew so installed programs take precedence
-path=("$HOME/.asdf/shims" $path)
+eval "$(mise activate zsh)"
 
 ## History wrapper
 # https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/history.zsh
