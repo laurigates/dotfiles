@@ -162,6 +162,7 @@ function zvm_after_init() {
   # by asdf can be found and aliased correctly.
   source ~/dotfiles/zsh/aliases.zsh
 
+  eval "$(atuin init zsh)"
 }
 # }}}
 
@@ -188,7 +189,6 @@ fi
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-eval "$(atuin init zsh)"
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(orbctl completion zsh)"
