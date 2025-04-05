@@ -15,11 +15,13 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 
 -- Load plugins from directory
+-- ./lua/plugins/
 require("lazy").setup("plugins")
 vim.cmd([[colorscheme tokyonight]])
 
 require("core/settings")
 require("core/functions")
+require("core/commands")
 require("core/autocommands")
 require("core/lsp")
 require("core/keymaps")
