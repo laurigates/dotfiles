@@ -10,7 +10,5 @@ return {
         desc = "Oil open floating window",
       },
     },
-    -- Optional dependencies
-    dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 }
