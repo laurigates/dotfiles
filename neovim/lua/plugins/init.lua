@@ -1,5 +1,46 @@
 return {
   {
+    "folke/flash.nvim",
+    optional = true,
+    specs = {
+      {
+        "folke/snacks.nvim",
+        opts = {
+          picker = {
+            win = {
+              input = {
+                keys = {
+                  ["<a-s>"] = { "flash", mode = { "n", "i" } },
+                  ["s"] = { "flash" },
+                },
+              },
+            },
+            actions = {
+              flash = function(picker)
+                require("flash").jump({
+                  pattern = "^",
+                  label = { after = { 0, 0 } },
+                  search = {
+                    mode = "search",
+                    exclude = {
+                      function(win)
+                        return vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "snacks_picker_list"
+                      end,
+                    },
+                  },
+                  action = function(match)
+                    local idx = picker.list:row2idx(match.pos[1])
+                    picker.list:_move(idx, true, true)
+                  end,
+                })
+              end,
+            },
+          },
+        },
+      },
+    },
+  },
+  {
     "mrjones2014/legendary.nvim",
     -- since legendary.nvim handles all your keymaps/commands,
     -- its recommended to load legendary.nvim before other plugins
@@ -33,7 +74,20 @@ return {
       },
       quickfile = { enabled = true },
       dashboard = { enabled = true },
-      -- statuscolumn = { enabled = true },
+      statuscolumn = {
+        enabled = true,
+        left = { "mark", "sign" }, -- priority of signs on the left (high to low)
+        right = { "fold", "git" }, -- priority of signs on the right (high to low)
+        folds = {
+          open = false, -- show open fold icons
+          git_hl = false, -- use Git Signs hl for fold icons
+        },
+        git = {
+          -- patterns to match Git signs
+          patterns = { "GitSign", "MiniDiffSign" },
+        },
+        refresh = 50, -- refresh at most every 50ms
+      },
       words = { enabled = true },
       styles = {
         notification = {
@@ -304,87 +358,89 @@ return {
       require("mini.pairs").setup()
       require("mini.splitjoin").setup()
       require("mini.operators").setup()
+      require("mini.icons").setup()
+      require("mini.snippets").setup()
+      MiniIcons.mock_nvim_web_devicons()
       -- require('mini.jump').setup()
       -- require('mini.jump2d').setup()
-      -- local miniclue = require('mini.clue')
-      -- miniclue.setup({
-      --   triggers = {
-      --     -- Leader triggers
-      --     -- Disabled because it messes with <leader>f
-      --     -- { mode = 'n', keys = '<Leader>' },
-      --     -- { mode = 'x', keys = '<Leader>' },
-      --
-      --     -- Built-in completion
-      --     { mode = 'i', keys = '<C-x>' },
-      --
-      --     -- `g` key
-      --     { mode = 'n', keys = 'g' },
-      --     { mode = 'x', keys = 'g' },
-      --
-      --     -- Marks
-      --     { mode = 'n', keys = "'" },
-      --     { mode = 'n', keys = '`' },
-      --     { mode = 'x', keys = "'" },
-      --     { mode = 'x', keys = '`' },
-      --
-      --     -- Registers
-      --     { mode = 'n', keys = '"' },
-      --     { mode = 'x', keys = '"' },
-      --     { mode = 'i', keys = '<C-r>' },
-      --     { mode = 'c', keys = '<C-r>' },
-      --
-      --     -- Window commands
-      --     { mode = 'n', keys = '<C-w>' },
-      --
-      --     -- `z` key
-      --     { mode = 'n', keys = 'z' },
-      --     { mode = 'x', keys = 'z' },
-      --   },
-      --
-      --   clues = {
-      --     -- Enhance this by adding descriptions for <Leader> mapping groups
-      --     miniclue.gen_clues.builtin_completion(),
-      --     miniclue.gen_clues.g(),
-      --     miniclue.gen_clues.marks(),
-      --     miniclue.gen_clues.registers(),
-      --     miniclue.gen_clues.windows(),
-      --     miniclue.gen_clues.z(),
-      --   },
-      -- })
+      local miniclue = require("mini.clue")
+      miniclue.setup({
+        triggers = {
+          -- Leader triggers
+          -- Disabled because it messes with <leader>f
+          { mode = "n", keys = "<Leader>" },
+          { mode = "x", keys = "<Leader>" },
+
+          -- Built-in completion
+          { mode = "i", keys = "<C-x>" },
+
+          -- `g` key
+          { mode = "n", keys = "g" },
+          { mode = "x", keys = "g" },
+
+          -- Marks
+          { mode = "n", keys = "'" },
+          { mode = "n", keys = "`" },
+          { mode = "x", keys = "'" },
+          { mode = "x", keys = "`" },
+
+          -- Registers
+          { mode = "n", keys = '"' },
+          { mode = "x", keys = '"' },
+          { mode = "i", keys = "<C-r>" },
+          { mode = "c", keys = "<C-r>" },
+
+          -- Window commands
+          { mode = "n", keys = "<C-w>" },
+
+          -- `z` key
+          { mode = "n", keys = "z" },
+          { mode = "x", keys = "z" },
+        },
+
+        clues = {
+          -- Enhance this by adding descriptions for <Leader> mapping groups
+          miniclue.gen_clues.builtin_completion(),
+          miniclue.gen_clues.g(),
+          miniclue.gen_clues.marks(),
+          miniclue.gen_clues.registers(),
+          miniclue.gen_clues.windows(),
+          miniclue.gen_clues.z(),
+        },
+      })
     end,
   },
   "tpope/vim-speeddating",
   "tpope/vim-eunuch",
   "tpope/vim-rhubarb",
   -- nvim-bisquits makes large files load extremely slowly
-  -- {
-  --   "code-biscuits/nvim-biscuits",
-  --   opts = {
-  --     cursor_line_only = true,
-  --     default_config = {
-  --       -- max_length = 12,
-  --       -- min_distance = 5,
-  --       prefix_string = "📎"
-  --     },
-  --     -- language_config = {
-  --     --   html = {
-  --     --     prefix_string = " 🌐 "
-  --     --   },
-  --     --   javascript = {
-  --     --     prefix_string = " ✨ ",
-  --     --     max_length = 80
-  --     --   },
-  --     --   python = {
-  --     --     disabled = true
-  --     --   }
-  --     -- }
-  --   }
-  -- },
+  {
+    "code-biscuits/nvim-biscuits",
+    opts = {
+      cursor_line_only = true,
+      default_config = {
+        -- max_length = 12,
+        -- min_distance = 5,
+        prefix_string = "📎",
+      },
+      -- language_config = {
+      --   html = {
+      --     prefix_string = " 🌐 "
+      --   },
+      --   javascript = {
+      --     prefix_string = " ✨ ",
+      --     max_length = 80
+      --   },
+      --   python = {
+      --     disabled = true
+      --   }
+      -- }
+    },
+  },
   {
     "brenoprata10/nvim-highlight-colors",
     opts = {},
   },
-  "tris203/precognition.nvim",
   "towolf/vim-helm", -- Required for helm filetype detection (could probably just copy the ftdetect file)
   -- {
   --   'altermo/ultimate-autopair.nvim',
@@ -417,4 +473,5 @@ return {
     "nmac427/guess-indent.nvim",
     opts = {},
   },
+  { "meznaric/key-analyzer.nvim", opts = {} },
 }
