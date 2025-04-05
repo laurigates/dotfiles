@@ -70,6 +70,19 @@ require("mason-lspconfig").setup_handlers({
       },
     })
   end,
+  -- https://github.com/williamboman/nvim-lsp-installer/tree/main/lua/nvim-lsp-installer/servers/arduino_language_server
+  ["arduino_language_server"] = function()
+    local lspconfig = require("lspconfig")
+    lspconfig.arduino_language_server.setup({
+      cmd = {
+        "arduino-language-server",
+        "-cli-config",
+        "$HOME/.arduinoIDE/arduino-cli.yaml",
+        "-fqbn",
+        "esp32:esp32:esp32-cam",
+      },
+    })
+  end,
   -- ["rust_analyzer"] = function ()
   --   require("rust-tools").setup {}
   -- end
