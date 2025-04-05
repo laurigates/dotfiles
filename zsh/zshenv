@@ -43,6 +43,7 @@ NVIM=$(whence -p nvim)
 if command -v nvim >/dev/null 2>&1; then
 	export EDITOR='nvim'
 	export VISUAL='nvim'
+  export MANPAGER='nvim +Man!'
 	export SUDO_EDITOR=$NVIM
 else
 	export EDITOR='vim'
