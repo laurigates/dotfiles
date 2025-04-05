@@ -1,21 +1,24 @@
 return {
   {
     "olimorris/codecompanion.nvim",
+    lazy = false,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
     },
-    opts = {
-      strategies = {
-        chat = {
-          adapter = "anthropic",
-        },
-        inline = {
-          adapter = "anthropic",
-        },
-        cmd = {
-          adapter = "anthropic",
-        },
+    opts = function()
+      return require("plugins.codecompanion.init")[1].opts
+    end,
+    keys = {
+      {
+        "<leader>ch",
+        "<cmd>CodeCompanionChat Toggle<cr>",
+        desc = "CodeCompanionChat",
+      },
+      {
+        "<leader>cx",
+        "<cmd>CodeCompanionActions<cr>",
+        desc = "CodeCompanionActions",
       },
     },
   },
