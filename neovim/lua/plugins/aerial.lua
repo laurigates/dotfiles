@@ -1,10 +1,9 @@
 return {
   -- Neovim plugin for a code outline window
-  'stevearc/aerial.nvim',
+  "stevearc/aerial.nvim",
   opts = {},
   -- Optional dependencies
   dependencies = {
-     "nvim-treesitter/nvim-treesitter",
-     "nvim-tree/nvim-web-devicons"
+    "nvim-treesitter/nvim-treesitter",
   },
 }
