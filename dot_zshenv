@@ -114,7 +114,7 @@ export BAT_THEME=TwoDark
 
 export OLLAMA_ORIGINS="app://obsidian.md*"
 export PIPX_HOME="~/.local/pipx"
-export HOMEBREW_BUNDLE_FILE="~/dotfiles/Brewfile"
+export HOMEBREW_BUNDLE_FILE="~/Brewfile"
 
 source ~/.api_tokens
 # vim:ft=sh
