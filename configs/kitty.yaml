@@ -1,7 +1,0 @@
-- link:
-    ~/.config/kitty/ssh.conf:
-      create: true
-      path: terminal/ssh.conf
-    ~/.config/kitty/kitty.conf:
-      create: true
-      path: terminal/kitty.conf

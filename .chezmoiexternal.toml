@@ -1,0 +1,48 @@
+["zsh/zsh-syntax-highlighting"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-syntax-highlighting"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+["zsh/zsh-autosuggestions"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-autosuggestions"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+["tmux/tmux-themepack"]
+    type = "git-repo"
+    url = "https://github.com/jimeh/tmux-themepack.git"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+["i3/i3blocks-contrib"]
+    type = "git-repo"
+    url = "https://github.com/vivien/i3blocks-contrib.git"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+["zsh/fzf-tab"]
+    type = "git-repo"
+    url = "https://github.com/Aloxaf/fzf-tab.git"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+["zsh/zsh-vi-mode"]
+    type = "git-repo"
+    url = "https://github.com/jeffreytse/zsh-vi-mode.git"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+["zsh/zsh-completions"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-completions.git"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"

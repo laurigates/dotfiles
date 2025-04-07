@@ -1,3 +1,0 @@
-- shell:
-  - go install github.com/josephburnett/jd@latest
-  - brew install jesseduffield/lazygit/lazygit

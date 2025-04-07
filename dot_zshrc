@@ -1,0 +1,275 @@
+# http://blog.askesis.pl/post/2017/04/how-to-debug-zsh-startup-time.html
+# uncomment this and zprof at the end of this file to profile zsh startup
+# zmodload zsh/zprof
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+
+#emulate sh -c '. /etc/profile'
+
+HISTFILE="$HOME/.zsh_history_dir/$(hostname -f)"
+SAVEHIST=10000
+HISTSIZE=50000
+HIST_STAMPS="dd.mm.yyyy"
+# Remove "/" from WORDCHARS so that Ctrl+W doesn't kill directory paths.
+WORDCHARS="${WORDCHARS//[\/]}"
+
+# Load brew and related completions if it is installed
+if type /opt/homebrew/bin/brew &> /dev/null; then
+    # Prepend homebrew to path
+    # Avoid using brew shellenv for setup, because brew completions are messed up
+    # eval "$(/opt/homebrew/bin/brew shellenv)"
+    path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+fi
+
+eval "$(mise activate zsh)"
+
+## History wrapper
+# https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/history.zsh
+function omz_history {
+  local clear list
+  zparseopts -E c=clear l=list
+
+  if [[ -n "$clear" ]]; then
+    # if -c provided, clobber the history file
+    echo -n >| "$HISTFILE"
+    fc -p "$HISTFILE"
+    echo >&2 History file deleted.
+  elif [[ -n "$list" ]]; then
+    # if -l provided, run as if calling `fc' directly
+    builtin fc "$@"
+  else
+    # unless a number is provided, show all history events (starting from 1)
+    [[ ${@[-1]-} = *[0-9]* ]] && builtin fc -l "$@" || builtin fc -l "$@" 1
+  fi
+}
+
+# Timestamp format
+case ${HIST_STAMPS-} in
+  "mm/dd/yyyy") alias history='omz_history -f' ;;
+  "dd.mm.yyyy") alias history='omz_history -E' ;;
+  "yyyy-mm-dd") alias history='omz_history -i' ;;
+  "") alias history='omz_history' ;;
+  *) alias history="omz_history -t '$HIST_STAMPS'" ;;
+esac
+
+## History command configuration
+setopt extended_history       # record timestamp of command in HISTFILE
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+setopt hist_verify            # show command with history expansion to user before running it
+setopt share_history          # share command history data
+
+# Other config options
+setopt auto_cd                # change directories without cd
+setopt complete_in_word
+setopt always_to_end
+setopt interactivecomments
+setopt multios
+setopt prompt_subst
+setopt auto_menu
+# Extended glob can be problematic with git commands
+# Because of HEAD^ etc in commands
+setopt extendedglob
+
+# https://grml.org/zsh/zsh-lovers.html
+# Fuzzy matching of completions for when you mistype them:
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+# cd will never select the parent directory (e.g.: cd ../<TAB>):
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*' file-sort modification
+
+# {{{ fzf-tab related styles
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+# NOTE: I'm not sure this is working. Filenames aren't colorful.
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# preview directory's content with lsd when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --depth 1 --color always --tree $realpath'
+# switch group using `,` and `.`
+zstyle ':fzf-tab:*' switch-group ',' '.'
+# enable IP addresses in completions
+zstyle ':completion:*' use-ip true
+# tldr preview
+# zstyle ':fzf-tab:complete:tldr:argument-1' fzf-preview 'tldr --color always $word'
+# systemd unit status preview
+zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
+# Git previews
+zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
+	'git diff $word | delta'
+zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
+	'git log --color=always $word'
+zstyle ':fzf-tab:complete:git-help:*' fzf-preview \
+	'git help $word | bat -plman --color=always'
+zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
+	'case "$group" in
+	"commit tag") git show --color=always $word ;;
+	*) git show --color=always $word | delta ;;
+	esac'
+zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
+	'case "$group" in
+	"modified file") git diff $word | delta ;;
+	"recent commit object name") git show --color=always $word | delta ;;
+	*) git log --color=always $word ;;
+	esac'
+# }}}
+
+# Another method for quick change directories. Add this to your ~/.zshrc, then just enter “cd …./dir”
+rationalise-dot() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/..
+  else
+    LBUFFER+=.
+  fi
+}
+zle -N rationalise-dot
+bindkey . rationalise-dot
+
+# {{{ Plugins
+
+# source "$HOME/.asdf/plugins/golang/set-env.zsh"
+# command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+# source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
+autoload -Uz zkbd
+
+# zsh-vi-mode
+source ~/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
+
+# Since the default initialization mode, this plugin will overwrite the
+# previous key bindings, this causes the key bindings of other plugins (i.e.
+# fzf, zsh-autocomplete, etc.) to fail.
+#
+# The function below solves the compatibility issue.
+#
+# The plugin will auto execute this zvm_after_init function
+function zvm_after_init() {
+  source <(fzf --zsh)
+
+  ## Plugins to load after compinit
+  source ~/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
+  # fzf-tab doesn't seem to work for brew completions e.g. kubectl
+  source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
+  source ~/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+
+  # Load aliases after asdf so that conditional aliases for executables managed
+  # by asdf can be found and aliased correctly.
+  source ~/zsh/aliases.zsh
+
+  eval "$(atuin init zsh)"
+}
+# }}}
+
+# {{{ Completions
+#
+# NOTE: Completions need to be loaded before compinit is run.
+#
+
+# Additional completion definitions can be placed in this directory
+fpath+=~/.zfunc
+
+# Load brew and related completions if it is installed
+if type /opt/homebrew/bin/brew &> /dev/null; then
+    # google-cloud-sdk path and completions
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
+
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
+eval "$(orbctl completion zsh)"
+eval "$(orb completion zsh)"
+#
+# Additional completion definitions can be placed in this directory
+fpath+=~/.zfunc
+
+autoload -Uz compinit && compinit
+
+# Completion for kitty
+# The kitty docs specify that this has to be called after compinit
+# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
+if type kitty &> /dev/null; then
+    kitty +complete setup zsh | source /dev/stdin
+fi
+
+# negation, so that at least one exits on 0
+# [ ! "$(find ~/.zcompdump -mtime +1)" ] || compinit; compinit -C
+
+# Load brew completions if it is installed
+if type brew &> /dev/null; then
+    # Enable loading bash completions
+    autoload -U +X bashcompinit && bashcompinit
+
+    # Terraform completions
+    complete -o nospace -C /opt/homebrew/bin/terraform terraform
+fi
+# }}}
+
+# {{{ Keybinds
+
+##### Unbind problematic bindings
+# Unbind Alt+tab from zvm_readkeys_handler
+# This doesn't take effect for some reason.
+# It works when run manually.
+# I think the main problem with this bind is that Alt+Tab causes this keycode as well.
+# This causes ZSH to go into vim-mode when I accidentally press Alt+Tab instead of Command+Tab on macos.
+# bindkey -r "^["
+
+##### Fix tmux key mappings
+# Fix Home/End keys
+# bindkey "\e[1~" beginning-of-line
+# bindkey "\e[4~" end-of-line
+
+# Delete/Insert keys
+# bindkey "\e[3~" delete-char
+# bindkey "\e[2~" quoted-insert
+
+# Alt+c
+bindkey "ç" fzf-cd-widget
+
+# Add a PC-like bind for pipe on macos
+# command + < is similar to Alt Gr + <
+bindkey -s "^[[60;9u" "|"
+
+# bindkey -s "\e]" "~"
+# bindkey -s "\e4" "$"
+
+# mappings for "page up" and "page down" to step to the beginning/end
+# of the history
+# bindkey "\e[5~" beginning-of-history
+# bindkey "\e[6~" end-of-history
+
+# alternate mappings for "page up" and "page down" to search the history
+# bindkey "\e[5~" history-search-backward
+# bindkey "\e[6~" history-search-forward
+
+# mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
+# bindkey "\e[1;5C" forward-word
+# bindkey "\e[1;5D" backward-word
+# bindkey "\e[5C" forward-word
+# bindkey "\e[5D" backward-word
+# bindkey "\e\e[C" forward-word
+# bindkey "\e\e[D" backward-word
+
+# source ~/.zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
+# [[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
+# [[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
+
+# }}}
+
+
+# zprof

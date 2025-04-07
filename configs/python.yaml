@@ -1,3 +1,0 @@
-- shell:
-  - pipx install-all ~/dotfiles/pipx_packages.json
-  - pipx upgrade-all
