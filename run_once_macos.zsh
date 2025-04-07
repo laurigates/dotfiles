@@ -11,7 +11,7 @@ touch ~/.hushlogin
 
 # Install and update packages
 echo "Installing and updating packages..."
-brew bundle
+brew bundle --file ~/Brewfile
 
 # Cleanup brew files
 echo "Cleaning up brew files..."
