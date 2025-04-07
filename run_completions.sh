@@ -96,4 +96,8 @@ if command -v orb >/dev/null 2>&1; then
   orb completion zsh > ~/.zfunc/_orb
 fi
 
+if command -v fd >/dev/null 2>&1; then
+  fd --gen-completions > ~/.zfunc/_fd
+fi
+
 echo "ZSH completions have been generated in ~/.zfunc"
