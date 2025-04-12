@@ -40,17 +40,11 @@ esac
 # in the path of the root user.
 NVIM=$(whence -p nvim)
 
-if command -v nvim >/dev/null 2>&1; then
-	export EDITOR='nvim'
-	export VISUAL='nvim'
-  export MANPAGER='nvim +Man!'
-	export SUDO_EDITOR=$NVIM
-else
-	export EDITOR='vim'
-	export VISUAL='vim'
-	export SUDO_EDITOR='vim'
-fi
-# No need to source ruby or nvm here, because the zsh plugins already do that!
+export EDITOR=nvim
+export SUDO_EDITOR=nvim
+export KUBE_EDITOR=nvim
+export VISUAL=nvim
+export MANPAGER='nvim +Man!'
 
 # Use fd by default, fallback to find
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude '.git' || find . -type f"
