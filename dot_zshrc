@@ -160,7 +160,7 @@ function zvm_after_init() {
 
   # Load aliases after asdf so that conditional aliases for executables managed
   # by asdf can be found and aliased correctly.
-  source ~/zsh/aliases.zsh
+  source ~/aliases.zsh
 
   eval "$(atuin init zsh)"
 }
