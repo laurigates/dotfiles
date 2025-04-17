@@ -18,13 +18,19 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install zsh shellcheck
     - uses: actions/checkout@v4
-    - name: Run dotbot profile installation
+    - name: Run chezmoi apply
       shell: zsh {0}
-      run: zsh -c "./install workstation"
+      run:
+        - /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        - brew install chezmoi mise
+        - chezmoi apply
   build-macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Run dotbot profile installation
+    - name: Run chezmoi apply
       shell: zsh {0}
-      run: zsh -c "./install workstation-mac"
+      run:
+        - /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        - brew install chezmoi mise
+        - chezmoi apply
