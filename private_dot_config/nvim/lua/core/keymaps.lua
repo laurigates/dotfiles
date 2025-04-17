@@ -3,11 +3,11 @@
 -----------------------------------------------------------
 
 local function map(mode, lhs, rhs, opts)
-  local options = { noremap = true, silent = true }
-  if opts then
-    options = vim.tbl_extend("force", options, opts)
-  end
-  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+	local options = { noremap = true, silent = true }
+	if opts then
+		options = vim.tbl_extend("force", options, opts)
+	end
+	vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
 -- Change leader to space
@@ -20,10 +20,10 @@ vim.g.mapleader = " "
 map("n", "gp", "`[v`]")
 
 -- Clear search highlighting with <leader> and c
-map("n", "<leader>c", ":nohl<CR>")
+-- map("n", "<leader>c", ":nohl<CR>")
 
 -- Map Esc to jj
-map("i", "jj", "<Esc>")
+-- map("i", "jj", "<Esc>")
 
 -- Don't use arrow keys
 map("", "<up>", "<nop>")
