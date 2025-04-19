@@ -9,27 +9,16 @@ typeset -U PATH path
 # > export PATH
 # https://gist.github.com/Linerre/f11ad4a6a934dcf01ee8415c9457e7b2
 path+="$HOME/.local/bin"
-path+="/home/linuxbrew/.linuxbrew/bin"
 
 export PATH
 # set terminal preference for i3
 export TERMINAL=kitty
-export BROWSER=google-chrome-stable
 
-# Configure perl to install modules in the user directory so that root privileges are not required.
-# The neovim perl module for example.
-# https://metacpan.org/pod/local::lib
-# https://neovim.io/doc/user/provider.html#provider-perl
-#
-# These commands to install neovim extension:
-# cpan App::cpanminus
-# cpan -m -n Neovim::Ext
-# eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
-
-# OS specific settings
-case "$(uname)" in
-'Darwin') export BROWSER="open -a Google\ Chrome" ;;
-esac
+{{ if eq .chezmoi.os "darwin" }}
+	export BROWSER="open -a Google\ Chrome"
+{{ else if eq .chezmoi.os "linux" }}
+	export BROWSER=google-chrome-stable
+{{ end }}
 
 # use most as pager for colored man pages
 # export PAGER=most
@@ -94,22 +83,11 @@ function fzf_apropos() {
 	# apropos '' | fzf --preview-window=up:50% --preview 'echo {} | cut -f 1 -d " " | xargs man' | cut -f 1 -d " "
 }
 
-# Install or upgrade nvim
-function install_nvim () {
-    # Use zsh builtin read function. When the -q option is used it returns
-    # success when y/Y is pressed.
-    if read -q "choice?Press Y/y to install neovim:"; then
-      nvim_install_cmd
-    else
-      echo "Skipping neovim installation."
-    fi
-}
-
 # Fix SDL full screen output to correct monitor
 export SDL_VIDEO_FULLSCREEN_HEAD=0
 # export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
-export MAKEFLAGS="-j$(sysctl -n hw.logicalcpu)"
+export MAKEFLAGS="-j{{ .cpu.threads }}"
 export BAT_THEME=TwoDark
 
 export OLLAMA_ORIGINS="app://obsidian.md*"

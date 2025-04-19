@@ -16,11 +16,15 @@ HIST_STAMPS="dd.mm.yyyy"
 WORDCHARS="${WORDCHARS//[\/]}"
 
 # Load brew and related completions if it is installed
+# Prepend homebrew to path
+# Avoid using brew shellenv for setup, because brew completions are messed up
+# eval "$(/opt/homebrew/bin/brew shellenv)"
 if type /opt/homebrew/bin/brew &> /dev/null; then
-    # Prepend homebrew to path
-    # Avoid using brew shellenv for setup, because brew completions are messed up
-    # eval "$(/opt/homebrew/bin/brew shellenv)"
-    path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+{{ if eq .chezmoi.os "darwin" }}
+  path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+{{ else if eq .chezmoi.os "linux" }}
+  path=("/home/linuxbrew/.linuxbrew/bin" "/home/linuxbrew/.linuxbrew/sbin" $path)
+{{ end }}
 fi
 
 eval "$(mise activate zsh)"
@@ -83,7 +87,7 @@ zstyle ':completion:*:approximate:*' max-errors 1 numeric
 zstyle ':completion:*:cd:*' ignore-parents parent pwd
 zstyle ':completion:*' file-sort modification
 
-# {{{ fzf-tab related styles
+# fzf-tab related styles
 # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
 # set descriptions format to enable group support
@@ -119,7 +123,7 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	"recent commit object name") git show --color=always $word | delta ;;
 	*) git log --color=always $word ;;
 	esac'
-# }}}
+#
 
 # Another method for quick change directories. Add this to your ~/.zshrc, then just enter “cd …./dir”
 rationalise-dot() {
@@ -132,7 +136,7 @@ rationalise-dot() {
 zle -N rationalise-dot
 bindkey . rationalise-dot
 
-# {{{ Plugins
+# Plugins
 
 # source "$HOME/.asdf/plugins/golang/set-env.zsh"
 # command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
@@ -164,9 +168,9 @@ function zvm_after_init() {
 
   eval "$(atuin init zsh)"
 }
-# }}}
 
-# {{{ Completions
+
+# Completions
 #
 # NOTE: Completions need to be loaded before compinit is run.
 #
@@ -217,9 +221,9 @@ if type brew &> /dev/null; then
     # Terraform completions
     complete -o nospace -C /opt/homebrew/bin/terraform terraform
 fi
-# }}}
 
-# {{{ Keybinds
+
+# Keybinds
 
 ##### Unbind problematic bindings
 # Unbind Alt+tab from zvm_readkeys_handler
@@ -268,8 +272,5 @@ bindkey -s "^[[60;9u" "|"
 # source ~/.zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
 # [[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
 # [[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
-
-# }}}
-
 
 # zprof
