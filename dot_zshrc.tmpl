@@ -14,14 +14,16 @@ WORDCHARS="${WORDCHARS//[\/]}"
 # Load brew and related completions if it is installed
 # Prepend homebrew to path
 # Avoid using brew shellenv for setup, because brew completions are messed up
-if type /opt/homebrew/bin/brew &> /dev/null; then
 # Handle macos and linux paths for homebrew
 {{ if eq .chezmoi.os "darwin" }}
+if type /opt/homebrew/bin/brew &> /dev/null; then
   path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
-{{ else if eq .chezmoi.os "linux" }}
-  path=("/home/linuxbrew/.linuxbrew/bin" "/home/linuxbrew/.linuxbrew/sbin" $path)
-{{ end }}
 fi
+{{ else if eq .chezmoi.os "linux" }}
+if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
+  path=("/home/linuxbrew/.linuxbrew/bin" "/home/linuxbrew/.linuxbrew/sbin" $path)
+fi
+{{ end }}
 
 eval "$(mise activate zsh)"
 
@@ -192,8 +194,8 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
-# OrbStack is only for macos
 {{ if eq .chezmoi.os "darwin" }}
+# OrbStack is only for macos
 eval "$(orbctl completion zsh)"
 eval "$(orb completion zsh)"
 {{ end }}
