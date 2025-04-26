@@ -1,6 +1,6 @@
 # vim:fileencoding=utf-8:ft=conf:foldmethod=marker
 
-#: Fonts {{{
+#: Fonts {{ "{{" }}}{
 
 #: kitty has very powerful font management. You can configure
 #: individual font faces and even specify special fonts for particular
@@ -55,9 +55,9 @@ box_drawing_scale 0.001, 1, 1.5, 2
 #: monitor DPI to arrive at a pixel value. There must be four values
 #: corresponding to thin, normal, thick, and very thick lines.
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Cursor customization {{{
+#: Cursor customization {{ "{{" }}}{
 # cursor #cccccc
 
 #: Default cursor color
@@ -79,9 +79,9 @@ cursor_stop_blinking_after 15.0
 #: specified number of seconds of keyboard inactivity. Set to zero to
 #: never stop blinking.
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Scrollback {{{
+#: Scrollback {{ "{{" }}}{
 
 scrollback_lines 2000
 
@@ -107,9 +107,9 @@ wheel_scroll_multiplier 5.0
 #: scrolling on platforms such as macOS and Wayland. Use negative
 #: numbers to change scroll direction.
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Mouse {{{
+#: Mouse {{ "{{" }}}{
 # url_color #0087BD
 url_style curly
 
@@ -152,9 +152,9 @@ focus_follows_mouse no
 #: Set the active window to the window under the mouse when moving the
 #: mouse around
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Performance tuning {{{
+#: Performance tuning {{ "{{" }}}{
 
 repaint_delay 8
 
@@ -182,9 +182,9 @@ sync_to_monitor yes
 #: keyboard repeat rate, you may notice some slight input latency. If
 #: so, set this to no.
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Terminal bell {{{
+#: Terminal bell {{ "{{" }}}{
 
 enable_audio_bell no
 
@@ -207,9 +207,9 @@ bell_on_tab yes
 #: windows in the tab and the window is not the currently focused
 #: window
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Window layout {{{
+#: Window layout {{ "{{" }}}{
 
 remember_window_size  yes
 initial_window_width  640
@@ -282,9 +282,9 @@ inactive_text_alpha 1.0
 #: Fade the text in inactive windows by the specified amount (a number
 #: between zero and one, with zero being fully faded).
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Tab bar {{{
+#: Tab bar {{ "{{" }}}{
 
 tab_bar_edge bottom
 
@@ -322,9 +322,9 @@ inactive_tab_font_style normal
 
 #: Tab bar colors and styles
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Color scheme {{{
+#: Color scheme {{ "{{" }}}{
 # foreground #93faac
 # background #002530
 
@@ -395,9 +395,9 @@ dim_opacity 0.75
 
 #: white
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Advanced {{{
+#: Advanced {{ "{{" }}}{
 
 shell .
 
@@ -476,9 +476,9 @@ term xterm-kitty
 #: from key-presses, to colors, to various advanced features may not
 #: work.
 
-#: }}}
+#: }}{{"}}"}}
 
-#: OS specific tweaks {{{
+#: OS specific tweaks {{ "{{" }}}{
 {{ if eq .chezmoi.os "darwin" -}}
 # macos_titlebar_color system
 
@@ -542,9 +542,9 @@ macos_custom_beam_cursor yes
 #: mouse cursor invisible on dual GPU machines.
 {{- end }}
 
-#: }}}
+#: }}{{"}}"}}
 
-#: Keyboard shortcuts {{{
+#: Keyboard shortcuts {{ "{{" }}}{
 
 #: For a list of key names, see: GLFW keys
 #: <http://www.glfw.org/docs/latest/group__keys.html>. The name to use
@@ -729,9 +729,9 @@ map kitty_mod+alt+t set_tab_title
 #: the current tab rather than at the end of the tabs list, use::
 
 #:     map ctrl+t new_tab !neighbor [optional cmd to run]
-#: }}}
+#: }}{{"}}"}}
 
-#: Layout management {{{
+#: Layout management {{ "{{" }}}{
 
 map kitty_mod+l next_layout
 
@@ -777,9 +777,9 @@ map ctrl+down neighboring_window down
 #: Similarly, to switch back to the previous layout::
 
 #:    map ctrl+alt+p last_used_layout
-#: }}}
+#: }}{{"}}"}}
 
-#: Font sizes {{{
+#: Font sizes {{ "{{" }}}{
 
 #: You can change the font size for all top-level kitty windows at a
 #: time or only the current one.
@@ -795,9 +795,9 @@ map kitty_mod+backspace change_font_size all 0
 #: To setup shortcuts to change only the current window's font size::
 
 #:     map kitty_mod+f6 change_font_size current 10.0
-#: }}}
+#: }}{{"}}"}}
 
-#: Select and act on visible text {{{
+#: Select and act on visible text {{ "{{" }}}{
 
 #: Use the hints kitten to select text and either pass it to an
 #: external program or insert it into the terminal or copy it to the
@@ -838,9 +838,9 @@ map kitty_mod+p>h kitten hints --type hash --program -
 
 #: The hints kitten has many more modes of operation that you can map
 #: to different shortcuts. For a full description see kittens/hints.
-#: }}}
+#: }}{{"}}"}}
 
-#: Miscellaneous {{{
+#: Miscellaneous {{ "{{" }}}{
 
 map kitty_mod+f11    toggle_fullscreen
 map kitty_mod+u      kitten unicode_input
@@ -891,7 +891,7 @@ map kitty_mod+delete clear_terminal reset active
 #:     map ctrl+alt+a send_text normal Word\x1b[H
 #:     map ctrl+alt+a send_text application Word\x1bOH
 
-#: }}}
+#: }}{{"}}"}}
 
 {{ if eq .chezmoi.os "darwin" -}}
 # Custom Option/Alt key mappings for macOS (when macos_option_as_alt is no)
@@ -906,7 +906,7 @@ map opt+right send_text all \x1bf # forward-word (alt+arrow)
 map opt+backspace send_text all \x1b\x7f # backward-kill-word
 {{- end }}
 
-# }}}
+# }}{{"}}"}}
 
 
 # BEGIN_KITTY_THEME
