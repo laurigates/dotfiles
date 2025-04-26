@@ -272,8 +272,8 @@ fi
 # Unbind problematic bindings
 # bindkey -r "^[" # Example: Unbind Alt key if needed
 
-# Alt+c for fzf-cd-widget (Note: 'ç' might be specific to your keyboard layout for Alt+c)
-bindkey "ç" fzf-cd-widget
+# Alt+c for fzf-cd-widget (Mapped in kitty.conf to send ESC+c)
+bindkey '\ec' fzf-cd-widget
 
 # Add a PC-like bind for pipe on macos (Command + <)
 # This sequence "^[[60;9u" might be specific to your terminal/setup
