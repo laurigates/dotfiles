@@ -27,7 +27,19 @@ fi
 
 eval "$(mise activate zsh)"
 
-## History wrapper
+
+#======================================================================
+# History Configuration
+#======================================================================
+
+setopt extended_history       # record timestamp of command in HISTFILE
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+setopt hist_verify            # show command with history expansion to user before running it
+setopt share_history          # share command history data
+
+## History command wrapper (from Oh My Zsh)
 # https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/history.zsh
 function omz_history {
   local clear list
@@ -56,15 +68,11 @@ case ${HIST_STAMPS-} in
   *) alias history="omz_history -t '$HIST_STAMPS'" ;;
 esac
 
-## History command configuration
-setopt extended_history       # record timestamp of command in HISTFILE
-setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
-setopt hist_ignore_dups       # ignore duplicated commands history list
-setopt hist_ignore_space      # ignore commands that start with space
-setopt hist_verify            # show command with history expansion to user before running it
-setopt share_history          # share command history data
 
-# Other config options
+#======================================================================
+# Zsh Options (setopt)
+#======================================================================
+
 setopt auto_cd                # change directories without cd
 setopt complete_in_word
 setopt always_to_end
@@ -76,6 +84,12 @@ setopt auto_menu
 # Because of HEAD^ etc in commands
 setopt extendedglob
 
+
+#======================================================================
+# Completion System Configuration (zstyle)
+#======================================================================
+
+# General completion settings
 # https://grml.org/zsh/zsh-lovers.html
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _complete _match _approximate
@@ -85,23 +99,15 @@ zstyle ':completion:*:approximate:*' max-errors 1 numeric
 zstyle ':completion:*:cd:*' ignore-parents parent pwd
 zstyle ':completion:*' file-sort modification
 
-# fzf-tab related styles
-# disable sort when completing `git checkout`
-zstyle ':completion:*:git-checkout:*' sort false
-# set descriptions format to enable group support
-zstyle ':completion:*:descriptions' format '[%d]'
-# set list-colors to enable filename colorizing
-# NOTE: I'm not sure this is working. Filenames aren't colorful.
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-# preview directory's content with lsd when completing cd
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --depth 1 --color always --tree $realpath'
-# switch group using `,` and `.`
-zstyle ':fzf-tab:*' switch-group ',' '.'
-# enable IP addresses in completions
-zstyle ':completion:*' use-ip true
-# tldr preview
+# fzf-tab specific styles
+zstyle ':completion:*:git-checkout:*' sort false # disable sort when completing `git checkout`
+zstyle ':completion:*:descriptions' format '[%d]' # set descriptions format to enable group support
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} # set list-colors (needs verification)
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd --depth 1 --color always --tree $realpath' # preview directory content
+zstyle ':fzf-tab:*' switch-group ',' '.' # switch group using `,` and `.`
+# tldr preview example:
 # zstyle ':fzf-tab:complete:tldr:argument-1' fzf-preview 'tldr --color always $word'
-# systemd unit status preview
+# systemd unit status preview (Linux only)
 zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
 # Git previews
 zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
@@ -121,9 +127,16 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	"recent commit object name") git show --color=always $word | delta ;;
 	*) git log --color=always $word ;;
 	esac'
-#
 
-# Another method for quick change directories. Add this to your ~/.zshrc, then just enter “cd …./dir”
+# Enable IP addresses in completions (moved from fzf-tab section for clarity)
+zstyle ':completion:*' use-ip true
+
+
+#======================================================================
+# Helper Functions & Widgets
+#======================================================================
+
+# Rationalise dots for quick directory changes (cd ../<TAB>)
 rationalise-dot() {
   if [[ $LBUFFER = *.. ]]; then
     LBUFFER+=/..
@@ -134,10 +147,13 @@ rationalise-dot() {
 zle -N rationalise-dot
 bindkey . rationalise-dot
 
-# Plugins
 
-# source "$HOME/.asdf/plugins/golang/set-env.zsh"
-# command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+#======================================================================
+# Plugin Sourcing
+#======================================================================
+
+# source "$HOME/.asdf/plugins/golang/set-env.zsh" # Example if needed
+# command -v direnv &>/dev/null && eval "$(direnv hook zsh)" # Example if needed
 # source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
 autoload -Uz zkbd
 
@@ -147,37 +163,132 @@ source ~/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
 source ~/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 
-# Source fzf bindings
+
+#======================================================================
+# FZF Configuration
+#======================================================================
+
+# Source fzf keybindings and completions
 source <(fzf --zsh)
+
+
+#======================================================================
+# Aliases
+#======================================================================
 
 # Load aliases after plugins so that conditional aliases for executables managed
 # by asdf can be found and aliased correctly.
 source ~/aliases.zsh
 
-# Since the default initialization mode, this plugin will overwrite the
-# previous key bindings, this causes the key bindings of other plugins (i.e.
-# fzf, zsh-autocomplete, etc.) to fail.
-#
-# The function below solves the compatibility issue.
-#
-# The plugin will auto execute this zvm_after_init function
-# function zvm_after_init() {
-#   # Source fzf bindings here for zsh-vi-mode compatibility
-#   source <(fzf --zsh)
-#
-#   # Load aliases after asdf so that conditional aliases for executables managed
-#   # by asdf can be found and aliased correctly.
-#   source ~/aliases.zsh
-#
-#   eval "$(atuin init zsh)"
-# }
-# Removing zsh-vi-mode, so zvm_after_init is no longer needed.
-# Moved contents outside.
+
+#======================================================================
+# Environment Variables & Path
+#======================================================================
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 
-# Completions
-#
-# NOTE: Completions need to be loaded before compinit is run.
+#======================================================================
+# Tool Initializations (Starship, Zoxide, Atuin, etc.)
+#======================================================================
+
+eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
+eval "$(atuin init zsh)"
+
+{{ if eq .chezmoi.os "darwin" }}
+# OrbStack (macOS only)
+eval "$(orbctl completion zsh)"
+eval "$(orb completion zsh)"
+{{ end }}
+
+
+#======================================================================
+# Completion System Initialization
+#======================================================================
+
+# Add custom completion directory to fpath
+# NOTE: This needs to be before compinit
+fpath+=~/.zfunc
+
+# Load Homebrew specific completions (if available)
+# Needs to be before compinit if they add to fpath or define functions compinit should know
+{{ if eq .chezmoi.os "darwin" }}
+if type /opt/homebrew/bin/brew &> /dev/null; then
+    # google-cloud-sdk path and completions
+    # Ensure these are sourced before compinit if they modify fpath or define completion functions
+    [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ] && \
+      source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
+      source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
+{{ else if eq .chezmoi.os "linux" }}
+if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
+    # Add Linux paths for brew completions if needed
+    # Example:
+    # [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ] && \
+    #   source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    # [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
+    #   source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+    : # Placeholder if no specific Linux brew completions needed here yet
+fi
+{{ end }}
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# Initialize the completion system
+autoload -Uz compinit && compinit
+
+# Load completions that must run *after* compinit
+
+# Completion for kitty
+# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
+if type kitty &> /dev/null; then
+    kitty +complete setup zsh | source /dev/stdin
+fi
+
+# Load Homebrew bash completions (if available)
+# Requires bashcompinit to be loaded after compinit
+if type brew &> /dev/null; then
+    # Enable loading bash completions
+    autoload -U +X bashcompinit && bashcompinit
+
+    # Load specific bash completions provided by brew packages
+    # Example: Terraform completions
+    if [ -x "$(brew --prefix)/bin/terraform" ]; then
+      complete -o nospace -C "$(brew --prefix)/bin/terraform" terraform
+    fi
+    # Add other bash completions here if needed
+fi
+
+
+#======================================================================
+# Keybindings
+#======================================================================
+
+# Unbind problematic bindings
+# bindkey -r "^[" # Example: Unbind Alt key if needed
+
+# Alt+c for fzf-cd-widget (Note: 'ç' might be specific to your keyboard layout for Alt+c)
+bindkey "ç" fzf-cd-widget
+
+# Add a PC-like bind for pipe on macos (Command + <)
+# This sequence "^[[60;9u" might be specific to your terminal/setup
+bindkey -s "^[[60;9u" "|"
+
+# Example zkbd usage (uncomment and configure if needed)
+# source ~/.zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
+# [[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
+# [[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
+
+
+#======================================================================
+# Profiling (Optional)
+#======================================================================
+# zprof # Uncomment this if zmodload zsh/zprof is uncommented at the top
 #
 
 # Additional completion definitions can be placed in this directory
