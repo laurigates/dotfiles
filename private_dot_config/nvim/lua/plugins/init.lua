@@ -1,48 +1,15 @@
+-- This file is intentionally left empty or contains non-plugin configurations.
+-- Plugin definitions are automatically loaded by lazy.nvim from individual files
+-- in this directory (e.g., `plugins/telescope.lua`, `plugins/treesitter.lua`).
 return {
+  -- You can add non-plugin specific configurations here if needed,
+  -- or configurations that need to be loaded before other plugins.
+
+  -- Example commented-out plugins from original file:
   -- "folke/which-key.nvim",
-  {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
-  },
-  {
-    "folke/neoconf.nvim",
-    cmd = "Neoconf",
-    opts = {},
-  },
   -- "tpope/vim-speeddating",
   -- "tpope/vim-eunuch",
   -- "tpope/vim-rhubarb",
-  -- nvim-bisquits makes large files load extremely slowly
-  {
-    "code-biscuits/nvim-biscuits",
-    opts = {
-      cursor_line_only = true,
-      default_config = {
-        -- max_length = 12,
-        -- min_distance = 5,
-        prefix_string = "📎",
-      },
-      -- language_config = {
-      --   html = {
-      --     prefix_string = " 🌐 "
-      --   },
-      --   javascript = {
-      --     prefix_string = " ✨ ",
-      --     max_length = 80
-      --   },
-      --   python = {
-      --     disabled = true
-      --   }
-      -- }
-    },
-  },
-  {
-    "brenoprata10/nvim-highlight-colors",
-    opts = {},
-  },
-  "towolf/vim-helm", -- Required for helm filetype detection (could probably just copy the ftdetect file)
   -- {
   --   'altermo/ultimate-autopair.nvim',
   --   event = { 'InsertEnter', 'CmdlineEnter' },
@@ -51,7 +18,6 @@ return {
   --     --Config goes here
   --   },
   -- }
-  "stevearc/vim-arduino",
   -- {
   --   "nvimtools/none-ls.nvim",
   --   dependencies = {
@@ -70,9 +36,4 @@ return {
   --     })
   --   end,
   -- },
-  {
-    "nmac427/guess-indent.nvim",
-    opts = {},
-  },
-  { "meznaric/key-analyzer.nvim", opts = {} },
 }
