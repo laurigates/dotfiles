@@ -30,7 +30,15 @@ This setup uses [mise-en-place](https://mise.jdx.dev/) (formerly `rtx`) to manag
 
 ## Further Documentation
 
-For more detailed information, see the following documents:
+## Components Overview
+
+For a detailed breakdown of the tools and components managed by these dotfiles (like chezmoi, mise, Zsh plugins, Neovim setup, etc.), see:
+
+-   [Components and Workflow Tools](./docs/components.md)
+
+## Further Documentation
+
+For more specific guides, see the following documents:
 
 -   [Platform Specific Notes](./docs/platform_specific.md)
 -   [Container Testing](./docs/container_testing.md)
