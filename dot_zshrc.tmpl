@@ -155,7 +155,7 @@ bindkey . rationalise-dot
 # source "$HOME/.asdf/plugins/golang/set-env.zsh" # Example if needed
 # command -v direnv &>/dev/null && eval "$(direnv hook zsh)" # Example if needed
 # source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc" &>/dev/null
-autoload -Uz zkbd
+# autoload -Uz zkbd # Load zkbd module (used for keybindings below, if uncommented)
 
 ## Plugins (Load before zsh-vi-mode if they don't depend on its bindings)
 source ~/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
@@ -209,9 +209,9 @@ eval "$(orb completion zsh)"
 # Completion System Initialization
 #======================================================================
 
-# Add custom completion directory to fpath
+# Add custom completion directory to fpath (if not already added above)
 # NOTE: This needs to be before compinit
-fpath+=~/.zfunc
+# fpath+=~/.zfunc # This is already added in the Plugin Sourcing section
 
 # Load Homebrew specific completions (if available)
 # Needs to be before compinit if they add to fpath or define functions compinit should know
