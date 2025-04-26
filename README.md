@@ -2,119 +2,127 @@
 
 ## Overview
 
-This repository contains my personal dotfiles and configurations for setting up a development environment. It leverages [dotbot](https://github.com/anishathalye/dotbot) for installation and management.
+This repository contains my personal dotfiles, managed using [chezmoi](https://www.chezmoi.io/). It sets up my development environment, including configurations for Zsh, Neovim, Git, and various development tools. Tool versions are managed using [mise-en-place](https://mise.jdx.dev/).
 
 ## Installation
 
-Clone the repository with submodules:
+1.  **Install chezmoi:** Follow the instructions on the [chezmoi installation guide](https://www.chezmoi.io/install/).
+2.  **Initialize chezmoi with this repository:**
+    ```bash
+    chezmoi init https://github.com/laurigates/dotfiles.git
+    ```
+3.  **Review the changes:** Check which files chezmoi plans to create or modify.
+    ```bash
+    chezmoi diff
+    ```
+4.  **Apply the changes:**
+    ```bash
+    chezmoi apply -v
+    ```
 
-```bash
-git clone --recurse-submodules git@github.com:laurigates/dotfiles
-```
+## Tool Management with mise-en-place
 
-### Basic Installation
+This setup uses [mise-en-place](https://mise.jdx.dev/) (formerly `rtx`) to manage development tool versions (like Node.js, Python, Go, etc.).
 
-To install the default workstation configuration:
+-   Tool versions are defined in the `.config/mise/config.toml` file (managed by chezmoi).
+-   After cloning or updating the dotfiles, run `mise install` in your shell to install the specified tool versions.
+-   `mise` automatically activates the correct tool versions when you enter a directory containing a `mise.toml` or `.tool-versions` file.
 
-```bash
-./install workstation
-```
+## Platform Specific Notes
 
-### Specific Configurations
+### zkbd Configuration
 
-To install a specific configuration, such as `rust`:
+Run `zkbd` after installation to configure Zsh key bindings if needed.
 
-```bash
-./install rust
-```
+### macOS Specific Notes
 
-### List Available Configurations
+#### Key Bindings
 
-To see all available configurations:
+Ensure macOS key bindings are configured to allow focus switching between windows if desired.
 
-```bash
-./install --list
-```
+#### Jumping Between Words (Terminal)
 
-## zkbd Configuration
+To use `Ctrl+Left Arrow` and `Ctrl+Right Arrow` for word jumping in Zsh/terminal applications, you may need to disable the default macOS Mission Control shortcuts for these key combinations in System Settings > Keyboard > Keyboard Shortcuts > Mission Control.
 
-Run `zkbd` to configure your keyboard settings.
-
-## macOS Specific Notes
-
-### Key Bindings
-
-To enable moving focus to the next window, configure macOS key bindings accordingly.
-
-### Jumping Between Words
-
-Disable system-level shortcuts for `ctrl+left arrow` and `ctrl+right arrow` to use these shortcuts in `zsh`.
-
-![MacOS ctrl+arrow shortcuts that have to be disabled](images/macos_ctrlarrow.png)
+![macOS ctrl+arrow shortcuts to disable](images/macos_ctrlarrow.png)
 
 ## Container Testing
 
+You can test the dotfiles configuration within a container environment.
+
 ### Build the Container
 
-Use Docker or Podman to build the container image:
+Use Docker or Podman:
 
 ```bash
+# Using Docker
 docker build . -t laurigates/dotfiles
+
+# Using Podman
 podman build . -t laurigates/dotfiles --format docker
 ```
 
 ### Run the Container
 
-Run the container image:
-
 ```bash
+# Using Docker
 docker run --rm -it laurigates/dotfiles:latest
+
+# Using Podman
 podman run --rm -it laurigates/dotfiles:latest
 ```
+
+Inside the container, the dotfiles should be applied, providing the configured Zsh and Neovim environment.
 
 ## Debugging
 
 ### Debugging PATH
 
-To debug the `PATH` variable, display everything that happens when starting the shell, run a simple command, and filter the output:
+To see how the `PATH` variable is constructed, especially with `mise` integration:
 
 ```bash
 zsh -x -c 'printenv PATH' 2>&1 | rg PATH
 ```
+Or use `mise`'s built-in debugging:
+```bash
+mise doctor
+mise exec -- zsh -x -c 'printenv PATH' 2>&1 | rg PATH
+```
+
 
 ### Debugging Neovim Configuration
 
-Start Neovim in a clean state:
+-   **Start Neovim in a clean state:**
+    ```bash
+    nvim --clean
+    ```
+    *(Note: Modern Neovim often doesn't require `-u init.lua` if `init.lua` is standard)*
 
-```bash
-nvim --clean -u init.lua
-```
-
-Use the following commands to debug Neovim's LSP configuration:
-
-```
-:Neoconf lsp
-:Neoconf show
-```
+-   **Debug LSP configuration:**
+    ```
+    :LspInfo
+    :LspLog
+    :checkhealth
+    ```
+    *(Note: `:Neoconf` might be specific to a plugin; standard commands are `:LspInfo`, `:LspLog`, `:checkhealth`)*
 
 ### Debugging Zsh Completions
 
-To reset and reinitialize Zsh completions:
+If completions are not working correctly:
 
 ```bash
-rm -f ~/.zcompdump; compinit
+rm -f ~/.zcompdump* # Remove existing dump files
+exec zsh # Restart Zsh to regenerate completions
 ```
 
-## Testing
+## Verifying Zsh Environment
 
-### Verifying Zsh Environment
+After installation, check the following Zsh features:
 
-Ensure the following features work as expected:
-
-- `git <tab>`: Produces colorful FZF completions provided by `fzf-tab`.
-- `kubectl <tab>`: Produces monochrome completions.
-- `ctrl+r`: Opens FZF history search.
-- `alt/option+c`: Opens FZF directory search.
-- `ctrl+t`: Opens FZF file search.
-- `fzf`: Displays syntax-highlighted previews provided by `bat`.
-- `stty -a`: Displays terminal settings.
+-   `git <tab>`: Should trigger FZF-based completions (potentially via `fzf-tab`).
+-   `kubectl <tab>`: Should provide Kubernetes completions.
+-   `ctrl+r`: Opens FZF history search.
+-   `alt/option+c`: Opens FZF directory search (`cd` into selected directory).
+-   `ctrl+t`: Opens FZF file search (insert selected file path).
+-   `fzf` (command): Should display syntax-highlighted previews if `bat` is integrated.
+-   `stty -a`: Displays current terminal settings.
