@@ -44,25 +44,47 @@ defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to rea
 # Apply updated settings
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
 
-# Build fzf-tab module
-# Note: This depends on brew install completing first.
-# Consider moving this to a separate 'onchange' task if fzf-tab source changes often.
-echo "Building fzf-tab module for colorization (requires brew install groff autoconf)..."
-if command -v brew &> /dev/null && brew list groff &> /dev/null && brew list autoconf &> /dev/null; then
-  # Assuming fzf-tab source is managed by chezmoi at this location
-  FZF_TAB_SOURCE="{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"
-  if [ -f "$FZF_TAB_SOURCE" ]; then
-    echo "Sourcing $FZF_TAB_SOURCE and building module..."
-    # Ensure ZDOTDIR is not interfering if running outside a normal zsh session
-    unset ZDOTDIR
-    # Source the script and run the build function in a subshell to avoid polluting the task environment
-    ( source "$FZF_TAB_SOURCE" && build-fzf-tab-module ) || echo "Warning: Failed to build fzf-tab module."
-  else
-    echo "Warning: fzf-tab source file not found at $FZF_TAB_SOURCE."
-  fi
-else
-  echo "Warning: groff or autoconf not installed via brew. Skipping fzf-tab build."
+echo "macOS setup task complete!"
+"""
+
+[build_fzf_tab]
+    os = ["darwin"] # Only run on macOS
+    # Run whenever the source fzf-tab file changes
+    condition = "onchange", "{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"
+    stdout = true
+    stderr = true
+    description = "Build fzf-tab module when its source file changes"
+    command = """
+#!/bin/zsh
+
+echo "Checking dependencies for fzf-tab build..."
+if ! command -v brew &> /dev/null; then
+  echo "Error: brew command not found. Cannot check dependencies."
+  exit 1
+fi
+if ! brew list groff &> /dev/null || ! brew list autoconf &> /dev/null; then
+  echo "Warning: groff or autoconf not installed via brew. Skipping fzf-tab build. Run 'brew install groff autoconf' or ensure they are in the Brewfile."
+  exit 0 # Exit successfully, as this might be expected if dependencies aren't met yet
 fi
 
-echo "macOS setup task complete!"
+FZF_TAB_SOURCE="{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"
+echo "Attempting to build fzf-tab module from $FZF_TAB_SOURCE..."
+
+if [ -f "$FZF_TAB_SOURCE" ]; then
+  echo "Sourcing $FZF_TAB_SOURCE and building module..."
+  # Ensure ZDOTDIR is not interfering if running outside a normal zsh session
+  unset ZDOTDIR
+  # Source the script and run the build function in a subshell
+  ( source "$FZF_TAB_SOURCE" && build-fzf-tab-module )
+  if [ $? -eq 0 ]; then
+    echo "fzf-tab module built successfully."
+  else
+    echo "Warning: Failed to build fzf-tab module."
+    # Optionally exit with an error code if build failure should stop chezmoi apply
+    # exit 1
+  fi
+else
+  echo "Error: fzf-tab source file not found at $FZF_TAB_SOURCE."
+  exit 1 # Exit with error as the file it depends on is missing
+fi
 """
