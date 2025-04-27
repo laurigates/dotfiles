@@ -46,9 +46,9 @@ map("n", "L", ":BufferNext<CR>")
 map("t", "<Esc>", "<C-\\><C-n>") -- exit
 
 -- map("n", "<leader>g", ":G<CR>")
-map("n", "<leader>gc", ":G commit -v<CR>")
-map("n", "<leader>gp", ":G push<CR>")
-map("n", "<leader>gw", ":Gwrite<CR>")
+-- map("n", "<leader>gc", ":G commit -v<CR>")
+-- map("n", "<leader>gp", ":G push<CR>")
+-- map("n", "<leader>gw", ":Gwrite<CR>")
 
 -- vim-easy-align
 -- map('n', 'ga', '<Plug>(EasyAlign)')
