@@ -8,20 +8,27 @@
     stderr = true # Show errors during apply
     description = "Install, cleanup and update neovim plugins"
 
-[macos_setup]
+[macos_hush_login]
+    os = ["darwin"]
+    condition = "once"
+    stdout = true
+    stderr = true
+    description = "Disable 'last login' prompt by creating ~/.hushlogin"
+    command = "touch"
+    args = ["~/.hushlogin"]
+
+[macos_brew_bundle]
     os = ["darwin"] # Only run on macOS
     condition = "once"
     stdout = true
     stderr = true
-    description = "Run macOS specific setup steps"
+    description = "Install/update packages via Brewfile, cleanup, and check health"
     command = """
 #!/bin/zsh
 
-echo "Checking for required font..."
-fc-list | grep "Hack Nerd Font" || echo "Warning: 'Hack Nerd Font' not found. Please install it manually."
-
-echo "Disabling 'last login' prompt..."
-touch ~/.hushlogin
+echo "Checking for required font (installed via Brewfile)..."
+# This check assumes 'font-hack-nerd-font' is in the Brewfile
+fc-list | grep "Hack Nerd Font" || echo "Warning: 'Hack Nerd Font' not found. Check Brewfile and brew bundle output."
 
 echo "Installing and updating packages via Brewfile..."
 # Use the path to the Brewfile within the source directory
@@ -33,18 +40,34 @@ brew cleanup
 echo "Running brew health check..."
 brew doctor
 
+echo "Homebrew tasks complete!"
+"""
+
+[macos_keyboard_shortcuts]
+    os = ["darwin"]
+    condition = "once"
+    stdout = true
+    stderr = true
+    description = "Configure macOS keyboard shortcuts for Mission Control"
+    command = """
+#!/bin/zsh
+
 echo "Configuring macOS keyboard shortcuts..."
 # Disable Keyboard -> Shortcuts -> Mission Control -> Move left/right a space.
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "Failed to disable shortcut 79"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "Failed to disable shortcut 80"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "Failed to disable shortcut 81"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "Failed to disable shortcut 82"
+
+echo "Updating defaults cache..."
 # Update in-memory cache
 defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to read symbolichotkeys"
+
+echo "Applying updated settings..."
 # Apply updated settings
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
 
-echo "macOS setup task complete!"
+echo "Keyboard shortcut configuration complete!"
 """
 
 [build_fzf_tab]
