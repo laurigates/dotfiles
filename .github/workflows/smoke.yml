@@ -1,36 +1,113 @@
 name: Smoke Test CI
 
-on: [push]
+on:
+  push:
+    branches: [ main ] # Or your default branch name
+  pull_request:
+    branches: [ main ] # Or your default branch name
 
-jobs:
-  linters:
+  lint-ubuntu:
+    name: Linters (Ubuntu)
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Luacheck lint neovim config
-      uses: lunarmodules/luacheck@v1
-      with:
-        args: neovim
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Install dependencies
-      run: sudo apt-get install zsh shellcheck
-    - uses: actions/checkout@v4
-    - name: Run chezmoi apply
-      shell: zsh {0}
-      run:
-        - /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        - brew install chezmoi mise
-        - chezmoi apply
-  build-macos:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew (Linux)
+        uses: Homebrew/actions/setup-homebrew@v1
+
+      - name: Install Dependencies
+        run: |
+          brew install chezmoi shellcheck actionlint
+          sudo apt-get update && sudo apt-get install -y luacheck
+
+      - name: Run actionlint
+        run: actionlint -color
+
+      - name: Run shellcheck
+        # Find all .sh and .zsh files, excluding .git directory, and run shellcheck
+        run: |
+          find . -type f \( -name "*.sh" -o -name "*.zsh" \) -not -path "./.git/*" -print0 | xargs -0 shellcheck -x
+
+      - name: Run luacheck
+        # Assuming neovim config is under private_dot_config/nvim/lua
+        run: luacheck private_dot_config/nvim/lua
+
+      - name: Run chezmoi verify
+        run: chezmoi verify .
+
+  lint-macos:
+    name: Linters (macOS)
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Run chezmoi apply
-      shell: zsh {0}
-      run:
-        - /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        - brew install chezmoi mise
-        - chezmoi apply
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew # Ensure brew is available and in PATH
+        uses: Homebrew/actions/setup-homebrew@v1
+
+      - name: Check Brewfile
+        run: brew bundle check --file=Brewfile
+
+  build-linux:
+    name: Build (Ubuntu)
+    runs-on: ubuntu-latest
+    needs: [lint-ubuntu] # Run after linters pass
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew (Linux)
+        uses: Homebrew/actions/setup-homebrew@v1
+
+      - name: Cache Homebrew
+        uses: actions/cache@v4
+        with:
+          path: /home/linuxbrew/.cache/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+
+      - name: Install Dependencies
+        # Install chezmoi, mise, and any deps needed *before* chezmoi apply (e.g., neovim for tasks)
+        run: |
+          brew install chezmoi neovim
+
+      - name: Setup mise
+        uses: nick-fields/setup-mise@v0
+
+      - name: Run chezmoi apply
+        # Use -v for verbose output, useful for debugging CI failures
+        run: chezmoi apply -v
+
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
+    needs: [lint-macos] # Run after macOS linters pass
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew # Ensure brew is available and in PATH
+        uses: Homebrew/actions/setup-homebrew@v1
+
+      - name: Cache Homebrew
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+
+      - name: Install Dependencies
+        # Install chezmoi, mise, and any deps needed *before* chezmoi apply
+        # (neovim, groff, autoconf for tasks)
+        run: |
+          brew install chezmoi neovim groff autoconf
+
+      - name: Setup mise
+        uses: nick-fields/setup-mise@v0
+
+      - name: Run chezmoi apply
+        # Use -v for verbose output
+        run: chezmoi apply -v
