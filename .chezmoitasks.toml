@@ -1,0 +1,68 @@
+# Tasks to run with 'chezmoi apply'
+
+[install_neovim_plugins]
+    command = "nvim"
+    args = ["--headless", "+Lazy! sync", "+MasonUpdate", "+qa"]
+    condition = "once"
+    stdout = true # Show output during apply
+    stderr = true # Show errors during apply
+    description = "Install, cleanup and update neovim plugins"
+
+[macos_setup]
+    os = ["darwin"] # Only run on macOS
+    condition = "once"
+    stdout = true
+    stderr = true
+    description = "Run macOS specific setup steps"
+    command = """
+#!/bin/zsh
+
+echo "Checking for required font..."
+fc-list | grep "Hack Nerd Font" || echo "Warning: 'Hack Nerd Font' not found. Please install it manually."
+
+echo "Disabling 'last login' prompt..."
+touch ~/.hushlogin
+
+echo "Installing and updating packages via Brewfile..."
+# Use the path to the Brewfile within the source directory
+brew bundle --file {{ .chezmoi.sourceDir }}/Brewfile || echo "Warning: brew bundle failed. Check Brewfile path and brew installation."
+
+echo "Cleaning up brew files..."
+brew cleanup
+
+echo "Running brew health check..."
+brew doctor
+
+echo "Configuring macOS keyboard shortcuts..."
+# Disable Keyboard -> Shortcuts -> Mission Control -> Move left/right a space.
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "Failed to disable shortcut 79"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "Failed to disable shortcut 80"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "Failed to disable shortcut 81"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "Failed to disable shortcut 82"
+# Update in-memory cache
+defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to read symbolichotkeys"
+# Apply updated settings
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
+
+# Build fzf-tab module
+# Note: This depends on brew install completing first.
+# Consider moving this to a separate 'onchange' task if fzf-tab source changes often.
+echo "Building fzf-tab module for colorization (requires brew install groff autoconf)..."
+if command -v brew &> /dev/null && brew list groff &> /dev/null && brew list autoconf &> /dev/null; then
+  # Assuming fzf-tab source is managed by chezmoi at this location
+  FZF_TAB_SOURCE="{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"
+  if [ -f "$FZF_TAB_SOURCE" ]; then
+    echo "Sourcing $FZF_TAB_SOURCE and building module..."
+    # Ensure ZDOTDIR is not interfering if running outside a normal zsh session
+    unset ZDOTDIR
+    # Source the script and run the build function in a subshell to avoid polluting the task environment
+    ( source "$FZF_TAB_SOURCE" && build-fzf-tab-module ) || echo "Warning: Failed to build fzf-tab module."
+  else
+    echo "Warning: fzf-tab source file not found at $FZF_TAB_SOURCE."
+  fi
+else
+  echo "Warning: groff or autoconf not installed via brew. Skipping fzf-tab build."
+fi
+
+echo "macOS setup task complete!"
+"""
