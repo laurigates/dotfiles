@@ -74,11 +74,10 @@ cmd([[
   au BufRead *zshrc setlocal foldmethod=marker
 ]])
 
--- Set up the autocommand
-vim.cmd([[
+cmd([[
   augroup SmartCommitMessage
     autocmd!
-    autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG call SmartCommitMessage()
+    autocmd BufRead,BufNewFile .git/COMMIT_EDITMSG, FileType gitcommit call SmartCommitMessage()
   augroup END
 
   function! SmartCommitMessage()
