@@ -78,6 +78,14 @@ cmd([[
 vim.cmd([[
   augroup SmartCommitMessage
     autocmd!
-    autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG CodeCompanion gemini Write a terse commit message conforming to conventional commit standards. Specify the target or area of concern of the change in parentheses after the change type e.g. fix(helm/moodle) or feat(apps/moodle). #buffer"
+    autocmd BufRead,BufNewFile *.git/COMMIT_EDITMSG call SmartCommitMessage()
   augroup END
+
+  function! SmartCommitMessage()
+    " Move the cursor to the start of the buffer
+    execute 'normal! gg0'
+
+    " Execute the CodeCompanion command
+    CodeCompanion gemini Write a terse commit message conforming to conventional commit standards. Specify the target or area of concern of the change in parentheses after the change type e.g. fix(helm/moodle) or feat(apps/moodle)). #buffer
+  endfunction
 ]])
