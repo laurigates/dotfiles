@@ -50,7 +50,7 @@ echo "macOS setup task complete!"
 [build_fzf_tab]
     os = ["darwin"] # Only run on macOS
     # Run whenever the source fzf-tab file changes
-    condition = "onchange", "{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"
+    condition = ["onchange", "{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"]
     stdout = true
     stderr = true
     description = "Build fzf-tab module when its source file changes"
