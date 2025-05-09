@@ -15,9 +15,9 @@ augroup end
 ]])
 
 vim.filetype.add({
-  pattern = {
-    ["Dockerfile%.[%w_]+"] = "dockerfile", -- Matches Dockerfile.nginx, Dockerfile.django, etc.
-  },
+	pattern = {
+		["Dockerfile%.[%w_]+"] = "dockerfile", -- Matches Dockerfile.nginx, Dockerfile.django, etc.
+	},
 })
 -- Don't auto commenting new lines
 -- cmd([[au BufEnter * set fo-=c fo-=r fo-=o]])
@@ -77,7 +77,7 @@ cmd([[
 cmd([[
   augroup SmartCommitMessage
     autocmd!
-    autocmd BufRead,BufNewFile .git/COMMIT_EDITMSG, FileType gitcommit call SmartCommitMessage()
+    autocmd BufRead,BufNewFile COMMIT_EDITMSG call SmartCommitMessage()
   augroup END
 
   function! SmartCommitMessage()
@@ -85,6 +85,6 @@ cmd([[
     execute 'normal! gg0'
 
     " Execute the CodeCompanion command
-    CodeCompanion gemini Write a terse commit message conforming to conventional commit standards. Specify the target or area of concern of the change in parentheses after the change type e.g. fix(helm/moodle) or feat(apps/moodle)). #buffer
+    CodeCompanion gemini Write a terse commit message conforming to conventional commit standards. Specify the target or area of concern of the change in parentheses after the change type e.g. fix(helm/moodle) or feat(apps/moodleb)). #buffer
   endfunction
 ]])

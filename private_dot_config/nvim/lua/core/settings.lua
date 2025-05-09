@@ -32,6 +32,7 @@ opt.linebreak = true -- Wrap on word boundary
 opt.scrolloff = 12 -- Start scrolling before reaching the edge when moving with j/k
 opt.diffopt:append("vertical,iwhite,algorithm:histogram,hiddenoff")
 opt.listchars = "eol:↲,tab:» ,extends:›,precedes:‹,nbsp:☠,trail:·"
+require("vim._extui").enable({}) -- Enable experimental cmdline features
 
 -----------------------------------------------------------
 -- Tabs, indent
@@ -47,12 +48,12 @@ opt.foldlevel = 99
 -- opt.foldlevelstart = 1
 opt.foldnestmax = 4
 opt.fillchars = {
-	foldopen = "",
-	foldclose = "",
-	fold = " ",
-	foldsep = " ",
-	diff = "╱",
-	eob = " ",
+  foldopen = "",
+  foldclose = "",
+  fold = " ",
+  foldsep = " ",
+  diff = "╱",
+  eob = " ",
 }
 opt.foldexpr = "nvim_treesitter#foldexpr()"
 -- opt.foldtext = "v:lua.vim.treesitter.foldtext()"
