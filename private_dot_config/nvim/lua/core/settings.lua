@@ -6,15 +6,15 @@ local opt = vim.opt -- Set options (global/buffer/windows-scoped)
 -----------------------------------------------------------
 -- General
 -----------------------------------------------------------
-opt.mouse = "a" -- Enable mouse support
+-- opt.mouse = "a" -- Enable mouse support
 opt.swapfile = false -- Swap file isn't needed
 opt.undofile = true -- But persistent undo is nice
 -- Show autocomplete even when only one item is available, don't automatically select or insert an option. User must do the selection.
-opt.completeopt = "menuone,noselect,noinsert" -- Autocomplete options
+-- opt.completeopt = "menuone,noselect,noinsert" -- Autocomplete options
 -- opt.clipboard = "unnamedplus"
 opt.exrc = true -- Allow loading additional neovim config from local directory `.nvim.lua`
-opt.wildmode = "longest:full,full"
-opt.timeoutlen = 500
+-- opt.wildmode = "longest:full,full"
+-- opt.timeoutlen = 500
 opt.title = true
 
 -----------------------------------------------------------
@@ -26,7 +26,7 @@ opt.showmatch = true -- Highlight matching parenthesis
 -- Ignore case when searching or replacing when the search is only lower case
 opt.ignorecase = true
 opt.smartcase = true
-opt.inccommand = "nosplit" -- Live preview of substitution results
+-- opt.inccommand = "nosplit" -- Live preview of substitution results
 
 opt.linebreak = true -- Wrap on word boundary
 opt.scrolloff = 12 -- Start scrolling before reaching the edge when moving with j/k
@@ -56,5 +56,5 @@ opt.fillchars = {
   eob = " ",
 }
 opt.foldexpr = "nvim_treesitter#foldexpr()"
--- opt.foldtext = "v:lua.vim.treesitter.foldtext()"
-opt.foldtext = ""
+opt.foldtext = "nvim_treesitter#foldtext()"
+-- opt.foldtext = ""

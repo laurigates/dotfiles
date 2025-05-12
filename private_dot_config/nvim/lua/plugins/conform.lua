@@ -29,6 +29,8 @@ return {
       javascript = { "eslint_d" },
       json = { "prettierd", "prettier", stop_after_first = true },
       jsonc = { "prettierd", "prettier", stop_after_first = true },
+      markdown = { "prettierd", "injected" },
+      yaml = { "yamlfmt", "injected" },
       ["*"] = { "codespell" },
       ["_"] = { "trim_whitespace" },
     },
