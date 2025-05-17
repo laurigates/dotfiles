@@ -1,6 +1,14 @@
+---@module "lazy"
+---@type LazySpec
 return {
   "saghen/blink.cmp",
   version = "*",
+  dependencies = {
+    "Kaiser-Yang/blink-cmp-git",
+    "mikavilpas/blink-ripgrep.nvim",
+  },
+  ---@module 'blink.cmp'
+  ---@type blink.cmp.Config
   opts = {
     completion = {
       menu = {
@@ -28,13 +36,32 @@ return {
     },
     -- Experimental signature help support
     signature = { enabled = true },
-    enabled = function()
-      return not vim.tbl_contains({ "gitcommit" }, vim.bo.filetype)
-    end,
+    -- enabled = function()
+    -- -- Disable in gitcommits because it messes up codecompanion commit message input
+    --   return not vim.tbl_contains({ "gitcommit" }, vim.bo.filetype)
+    -- end,
+    snippets = { preset = "mini_snippets" },
     sources = {
       -- add lazydev to your completion providers
-      default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+      default = { "lsp", "path", "snippets", "buffer", "ripgrep" },
+      per_filetype = {
+        -- optionally inherit from the `default` sources
+        lua = { inherit_defaults = true, "lazydev" },
+        -- use git source in git commits only
+        gitcommit = { inherit_defaults = true, "git" },
+      },
       providers = {
+        ripgrep = {
+          module = "blink-ripgrep",
+          name = "Ripgrep",
+        },
+        git = {
+          module = "blink-cmp-git",
+          name = "Git",
+          opts = {
+            -- options for the blink-cmp-git
+          },
+        },
         lazydev = {
           name = "LazyDev",
           module = "lazydev.integrations.blink",

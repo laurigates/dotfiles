@@ -38,6 +38,7 @@ return {
 				mini_pick = true,
 			},
 		},
+		cmd = "Neogit",
 		keys = {
 			-- Neogit Mappings
 			{ "<leader>ng", "<cmd>Neogit<cr>", desc = "Open Neogit" },
