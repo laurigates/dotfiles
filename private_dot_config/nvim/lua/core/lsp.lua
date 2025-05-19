@@ -2,6 +2,11 @@
 -- Refer to :h vim.lsp.config() for more information.
 vim.lsp.config("*", {
   capabilities = vim.lsp.protocol.make_client_capabilities(),
+  on_attach = function(client, bufnr)
+    if client.server_capabilities.documentSymbolProvider then
+      require("nvim-navic").attach(client, bufnr)
+    end
+  end,
 })
 
 require("mason").setup()
