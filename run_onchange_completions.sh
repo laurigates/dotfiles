@@ -100,4 +100,8 @@ if command -v fd >/dev/null 2>&1; then
   fd --gen-completions > ~/.zfunc/_fd
 fi
 
+if command -v aider >/dev/null 2>&1; then
+  aider --shell-completions zsh > ~/.zfunc/_aider
+fi
+
 echo "ZSH completions have been generated in ~/.zfunc"

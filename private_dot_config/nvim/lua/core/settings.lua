@@ -16,6 +16,7 @@ opt.exrc = true -- Allow loading additional neovim config from local directory `
 -- opt.wildmode = "longest:full,full"
 -- opt.timeoutlen = 500
 opt.title = true
+opt.autoread = true
 
 -----------------------------------------------------------
 -- Neovim UI

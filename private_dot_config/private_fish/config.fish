@@ -1,5 +1,5 @@
 if status is-interactive
-  source ~/.api-tokens
+  source ~/.api_tokens
   starship init fish | source
   atuin init fish | source
 
