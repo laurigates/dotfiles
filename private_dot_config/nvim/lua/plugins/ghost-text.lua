@@ -1,8 +1,6 @@
 return {
-  {
-    "wallpants/ghost-text.nvim",
-    opts = {
-      -- config goes here
-    },
+  "wallpants/ghost-text.nvim",
+  opts = {
+    -- config goes here
   },
 }

@@ -1,24 +1,24 @@
 return {
-	["Arduino Code workflow"] = {
-		strategy = "workflow",
-		description = "Use a workflow to guide an LLM in writing code for Arduino/ESP32/STM32",
-		opts = {
-			-- index = 4,
-			-- is_default = true,
-			-- short_name = "acw",
-		},
-		prompts = {
-			{
-				{
-					name = "Setup Arduino Workflow",
-					role = "user",
-					opts = { auto_submit = false },
-					content = function()
-						-- Leverage auto_tool_mode which disables the requirement of approvals and automatically saves any edited buffer
-						vim.g.codecompanion_auto_tool_mode = true
+  ["Arduino Code workflow"] = {
+    strategy = "workflow",
+    description = "Use a workflow to guide an LLM in writing code for Arduino/ESP32/STM32",
+    opts = {
+      -- index = 4,
+      -- is_default = true,
+      -- short_name = "acw",
+    },
+    prompts = {
+      {
+        {
+          name = "Setup Arduino Workflow",
+          role = "user",
+          opts = { auto_submit = false },
+          content = function()
+            -- Leverage auto_tool_mode which disables the requirement of approvals and automatically saves any edited buffer
+            vim.g.codecompanion_auto_tool_mode = true
 
-						-- Some clear instructions for the LLM to follow
-						return [[### Instructions
+            -- Some clear instructions for the LLM to follow
+            return [[### Instructions
 
 You will help me write, compile, upload, and monitor code for an Arduino-compatible board. I will provide the initial request. You **must** use the specific Board FQBN, Sketch Path (usually the buffer being edited), Serial Port, and Baud Rate provided by me (the user) when invoking the tools.
 
@@ -55,32 +55,31 @@ When providing code solutions, please apply these key principles:
 6. Fail Fast: Detect and report errors as soon as possible.
 7. Convention over Configuration: Follow established patterns to minimize decisions.
 8. JEDI (Just Enough Design Initially): Balance planning with flexibility for future changes.]]
-					end,
-				},
-			},
-			-- Potentially add more steps here for reflection/refinement based on tool output
-			{
-				{
-					name = "Repeat On Failure",
-					role = "user",
-					opts = {
-						auto_submit = true,
-						submit_delay = 2000, -- Allow time to read tool output
-					},
-					-- Only trigger if the last tool run reported an error or unexpected output
-					-- (This requires more complex state tracking or specific flags from tools)
-					-- For now, let's simplify and assume user interaction guides repetition,
-					-- or add a simpler check like:
-					condition = function(chat)
-						-- Basic check: see if the last message indicates failure
-						local last_msg = chat.messages[#chat.messages]
-						return last_msg and last_msg.role == "user" and string.match(last_msg.content, "(failed|error)")
-					end,
-					-- repeat_until = function(chat) ... end -- Add logic if needed
-					content = "The previous step failed or produced unexpected results. Please analyze the output, propose a fix using the @editor tool, and repeat the compile/upload/monitor cycle starting from step 2.",
-				},
-			},
-		},
-	},
+          end,
+        },
+      },
+      -- Potentially add more steps here for reflection/refinement based on tool output
+      {
+        {
+          name = "Repeat On Failure",
+          role = "user",
+          opts = {
+            auto_submit = true,
+            submit_delay = 2000, -- Allow time to read tool output
+          },
+          -- Only trigger if the last tool run reported an error or unexpected output
+          -- (This requires more complex state tracking or specific flags from tools)
+          -- For now, let's simplify and assume user interaction guides repetition,
+          -- or add a simpler check like:
+          condition = function(chat)
+            -- Basic check: see if the last message indicates failure
+            local last_msg = chat.messages[#chat.messages]
+            return last_msg and last_msg.role == "user" and string.match(last_msg.content, "(failed|error)")
+          end,
+          -- repeat_until = function(chat) ... end -- Add logic if needed
+          content = "The previous step failed or produced unexpected results. Please analyze the output, propose a fix using the @editor tool, and repeat the compile/upload/monitor cycle starting from step 2.",
+        },
+      },
+    },
+  },
 }
-
