@@ -13,6 +13,12 @@ if status is-interactive
   abbr -a gd git diff
   abbr -a gm git merge
   abbr -a gst git status
+  abbr -a ga git add
 
   abbr -a vim nvim
+  abbr -a ca chezmoi apply
 end
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
