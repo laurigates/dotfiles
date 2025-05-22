@@ -1,75 +1,45 @@
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0 # Use a recent version
-  hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: check-yaml
-    # Exclude files known to have issues if necessary, e.g.:
-    # exclude: >
-    #   (?x)^(
-    #     path/to/problematic/file.yaml
-    #   )$
-  - id: check-toml
-  - id: check-added-large-files
-
-- repo: https://github.com/koalaman/shellcheck-precommit
-  rev: v0.10.0 # Updated version
-  hooks:
-  - id: shellcheck
-    # Removed exclude_types: [zsh] to lint zsh files too
-    # args: ["--severity=warning"] # Optionally only show errors and warnings
-
-- repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.28.3 # Use a recent version
-  hooks:
-    - id: check-github-workflows
-
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v3.2.0 # Use a recent version
-  hooks:
-    - id: conventional-pre-commit
-      stages: [commit-msg]
-
-- repo: https://github.com/JohnnyMorganz/StyLua
-  rev: v0.20.0 # Use a recent version
-  hooks:
-    - id: stylua
-      # Uses .stylua.toml found in the root directory by default,
-      # but explicitly specifying is fine too.
-      args: ["--config-path", ".stylua.toml"]
-
-# - repo: https://github.com/doublify/pre-commit-rust # Uncomment if you have Rust projects
-#   rev: v1.0
-#   hooks:
-#     - id: fmt
-#     - id: cargo-check
-#     - id: clippy
-
-- repo: https://github.com/pre-commit/mirrors-prettier
-  rev: v4.0.0-alpha.8 # Use a recent version or stable v3+
-  hooks:
-    - id: prettier
-      types_or: [yaml, json, markdown, toml] # Format common config/doc files
-
-- repo: https://github.com/rhysd/actionlint
-  rev: v1.7.1 # Use a recent version
-  hooks:
-    - id: actionlint
-
-# Assuming Python/Poetry usage based on Brewfile
-- repo: https://github.com/python-poetry/poetry
-  rev: '1.8.2' # Specify a version
-  hooks:
-    - id: poetry-check
-    - id: poetry-lock --no-update # Ensure lock file is consistent without updating deps
-    # - id: poetry-export # Optional: if you want to export requirements.txt
-    #   args: ["-f", "requirements.txt", "-o", "requirements.txt"]
-
-# Assuming Python/Ruff usage
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: 'v0.4.4' # Specify a version
-  hooks:
-    - id: ruff # Linter
-      args: [--fix, --exit-non-zero-on-fix]
-    - id: ruff-format # Formatter
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0 # Use a recent version
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        # Exclude files known to have issues if necessary, e.g.:
+        # exclude: >
+        #   (?x)^(
+        #     path/to/problematic/file.yaml
+        #   )$
+      - id: check-toml
+      - id: check-added-large-files
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0 # Updated version
+    hooks:
+      - id: shellcheck
+        # Removed exclude_types: [zsh] to lint zsh files too
+        # args: ["--severity=warning"] # Optionally only show errors and warnings
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.28.3 # Use a recent version
+    hooks:
+      - id: check-github-workflows
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.2.0 # Use a recent version
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v0.20.0 # Use a recent version
+    hooks:
+      - id: stylua
+        # Uses .stylua.toml found in the root directory by default,
+        # but explicitly specifying is fine too.
+        args: ["--config-path", ".stylua.toml"]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8 # Use a recent version or stable v3+
+    hooks:
+      - id: prettier
+        types_or: [yaml, json, markdown, toml] # Format common config/doc files
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.1 # Use a recent version
+    hooks:
+      - id: actionlint
