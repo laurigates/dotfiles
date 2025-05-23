@@ -1,0 +1,67 @@
+set -x MAKEFLAGS "-j{{ .cpu.threads }}"
+set -x BAT_THEME TwoDark
+
+set -x OLLAMA_ORIGINS "app://obsidian.md*"
+set -x PIPX_HOME "~/.local/pipx"
+set -x HOMEBREW_BUNDLE_FILE "~/Brewfile"
+
+if status is-interactive
+  source ~/.api_tokens
+# Load brew and related completions if it is installed
+# Prepend homebrew to path
+# Avoid using brew shellenv for setup, because brew completions are messed up
+# Handle macos and linux paths for homebrew
+{{ if eq .chezmoi.os "darwin" }}
+if type /opt/homebrew/bin/brew &> /dev/null
+  fish_add_path /opt/homebrew/bin
+  fish_add_path /opt/homebrew/sbin
+end
+{{ else if eq .chezmoi.os "linux" }}
+if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null
+  fish_add_path /home/linuxbrew/.linuxbrew/bin
+  fish_add_path /home/linuxbrew/.linuxbrew/sbin
+end
+{{ end }}
+
+# Set these envs after mise has been initialized since neovim may be installed by mise.
+# Nvim exists in my home folder in some environments.
+# This will find it in my path and get the absolute path.
+# The absolute path is required so that sudoedit will be able to
+# find the executable, because my personal bin folder does not exist
+# in the path of the root user.
+set -x NVIM $(type -p nvim)
+
+if command -v nvim >/dev/null 2>&1
+	set -x EDITOR 'nvim'
+	set -x VISUAL 'nvim'
+  set -x MANPAGER 'nvim +Man!'
+	set -x SUDO_EDITOR $NVIM
+else
+	set -x EDITOR 'vim'
+	set -x VISUAL 'vim'
+	set -x SUDO_EDITOR 'vim'
+end
+
+  starship init fish | source
+  atuin init fish | source
+  mise activate fish | source
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
+
+  abbr -a k kubectl
+  abbr -a ll lsd --long --almost-all
+  abbr -a tree lsd --tree
+
+  abbr -a gsw git switch
+  abbr -a gc git commit -v
+  abbr -a gp git push
+  abbr -a gd git diff
+  abbr -a gm git merge
+  abbr -a gst git status
+  abbr -a ga git add
+
+  abbr -a vim nvim
+  abbr -a ca chezmoi apply
+end
