@@ -15,7 +15,7 @@ return {
     },
     keys = {
       -- Octo Mappings
-      { "<leader>go", "<cmd>Octo<cr>", desc = "Open Octo" },
+      { "<leader>go", "<cmd>Octo actions<cr>", desc = "Open Octo" },
       { "<leader>goc", "<cmd>Octo comment add<cr>", desc = "Add Octo Comment" },
       { "<leader>goi", "<cmd>Octo issue create<cr>", desc = "Create Octo Issue" },
       { "<leader>gop", "<cmd>Octo pr create<cr>", desc = "Create Octo PR" },

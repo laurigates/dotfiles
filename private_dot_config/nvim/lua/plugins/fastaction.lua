@@ -1,5 +1,7 @@
 return {
-  "Chaitanyabsprip/fastaction.nvim",
-  ---@type FastActionConfig
-  opts = {},
+  {
+    "Chaitanyabsprip/fastaction.nvim",
+    ---@type FastActionConfig
+    opts = {},
+  },
 }

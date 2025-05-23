@@ -1,3 +1,5 @@
 return {
-  "stevearc/vim-arduino",
+  {
+    "stevearc/vim-arduino",
+  },
 }
