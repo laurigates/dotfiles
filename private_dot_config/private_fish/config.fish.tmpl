@@ -7,6 +7,8 @@ set -x HOMEBREW_BUNDLE_FILE "~/Brewfile"
 
 if status is-interactive
   source ~/.api_tokens
+  fish_vi_key_bindings
+  fish_add_path ~/.local/bin
 # Load brew and related completions if it is installed
 # Prepend homebrew to path
 # Avoid using brew shellenv for setup, because brew completions are messed up
@@ -65,3 +67,5 @@ source ~/.orbstack/shell/init2.fish 2>/dev/null || :
   abbr -a vim nvim
   abbr -a ca chezmoi apply
 end
+
+# vim: set filetype=fish :
