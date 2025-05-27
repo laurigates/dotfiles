@@ -1,6 +1,12 @@
 -- lua/plugins/git.lua
 return {
-  -- "tpope/vim-fugitive",
+  {
+    "tpope/vim-fugitive",
+    keys = {
+      { "<leader>gc", "<cmd>G commit -v<cr>", desc = "Git commit" },
+      { "<leader>gp", "<cmd>G push<cr>", desc = "Git push" },
+    },
+  },
   { -- GitHub interface
     "pwntester/octo.nvim",
     cmd = "Octo",
@@ -24,27 +30,28 @@ return {
     },
   },
   { "akinsho/git-conflict.nvim", version = "*", config = true },
-  {
-    "NeogitOrg/neogit",
-    dependencies = {
-      "nvim-lua/plenary.nvim", -- required
-      "sindrets/diffview.nvim",
-    },
-    config = true,
-    opts = {
-      disable_insert_on_commit = true,
-      graph_style = "kitty",
-      integrations = {
-        mini_pick = true,
-      },
-    },
-    cmd = "Neogit",
-    keys = {
-      -- Neogit Mappings
-      { "<leader>ng", "<cmd>Neogit<cr>", desc = "Open Neogit" },
-      { "<leader>ngl", "<cmd>NeogitLog<cr>", desc = "Neogit Log" },
-      { "<leader>nb", "<cmd>NeogitBranch<cr>", desc = "Neogit Branch" },
-      { "<leader>ns", "<cmd>NeogitStash<cr>", desc = "Neogit Stash" },
-    },
-  },
+  { "sindrets/diffview.nvim" },
+  -- {
+  -- 	"NeogitOrg/neogit",
+  -- 	dependencies = {
+  -- 		"nvim-lua/plenary.nvim", -- required
+  -- 		"sindrets/diffview.nvim",
+  -- 	},
+  -- 	config = true,
+  -- 	opts = {
+  -- 		-- disable_insert_on_commit = true,
+  -- 		graph_style = "kitty",
+  -- 		-- integrations = {
+  -- 		-- 	mini_pick = true,
+  -- 		-- },
+  -- 	},
+  -- 	cmd = "Neogit",
+  -- 	keys = {
+  -- 		-- Neogit Mappings
+  -- 		{ "<leader>ng", "<cmd>Neogit<cr>", desc = "Open Neogit" },
+  -- 		{ "<leader>ngl", "<cmd>NeogitLog<cr>", desc = "Neogit Log" },
+  -- 		{ "<leader>nb", "<cmd>NeogitBranch<cr>", desc = "Neogit Branch" },
+  -- 		{ "<leader>ns", "<cmd>NeogitStash<cr>", desc = "Neogit Stash" },
+  -- 	},
+  -- },
 }
