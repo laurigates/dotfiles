@@ -1,0 +1,53 @@
+# Chezmoi data for package management
+[packages]
+  [packages.pipx]
+    # Python tools managed by pipx
+    tools = [
+      "ansible",
+      "argcomplete",
+      "asciinema",
+      "cookiecutter",
+      "glances",
+      "jinjanator",
+      "pdm",
+      "pre-commit",
+      "ranger-fm",
+      "ruff",
+      "uv",
+      "vectorcode",
+      "yamllint"
+    ]
+
+  [packages.completion_tools]
+    # Tools that provide shell completions
+    zsh_tools = [
+      "pipx",
+      "rustup",
+      "pip",
+      "oc",
+      "docker",
+      "podman",
+      "rpk",
+      "kubectl",
+      "pdm",
+      "npm",
+      "luarocks",
+      "minikube",
+      "atuin",
+      "k3d",
+      "gh",
+      "argocd",
+      "rg",
+      "helm",
+      "mise",
+      "arduino-cli",
+      "orbctl",
+      "orb",
+      "fd",
+      "aider"
+    ]
+
+[platform]
+  # Platform-specific settings will be populated by templates
+  cpu_cores = 0
+  cpu_threads = 0

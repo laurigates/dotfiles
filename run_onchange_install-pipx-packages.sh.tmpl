@@ -1,0 +1,31 @@
+{{- /* chezmoi:template */ -}}
+#!/bin/bash
+
+# {{ range .packages.pipx.tools }}{{ . }} {{ end }}
+# Generated pipx package installation script
+
+set -euo pipefail
+
+echo "🐍 Installing Python tools via pipx..."
+
+# Ensure pipx is available
+if ! command -v pipx >/dev/null 2>&1; then
+    echo "❌ pipx not found. Please install pipx first."
+    exit 1
+fi
+
+# Install each package declaratively
+{{- range .packages.pipx.tools }}
+if ! pipx list --short | grep -q "^{{ . }} "; then
+    echo "📦 Installing {{ . }}..."
+    pipx install {{ . }}
+else
+    echo "✅ {{ . }} already installed"
+fi
+{{- end }}
+
+# Upgrade all installed packages
+echo "⬆️  Upgrading all pipx packages..."
+pipx upgrade-all
+
+echo "✅ pipx package installation completed!"

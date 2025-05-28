@@ -1,0 +1,93 @@
+{{- /* chezmoi:template */ -}}
+#!/bin/bash
+
+# {{ range .packages.completion_tools.zsh_tools }}{{ . }} {{ end }}
+# Script to generate ZSH completions for various CLI tools
+# Places all completion files in ~/.zfunc directory
+
+set -euo pipefail
+
+{{- if eq .chezmoi.os "darwin" }}
+# macOS-specific completion directory
+COMP_DIR="$HOME/.zfunc"
+{{- else if eq .chezmoi.os "linux" }}
+# Linux completion directory
+COMP_DIR="$HOME/.zfunc"
+{{- end }}
+
+echo "🔧 Generating ZSH completions in ${COMP_DIR}..."
+
+# Create completion directory if it doesn't exist
+mkdir -p "${COMP_DIR}"
+
+# Counter for tracking generated completions
+generated=0
+skipped=0
+
+{{- range .packages.completion_tools.zsh_tools }}
+
+# Generate completion for {{ . }}
+if command -v {{ . }} >/dev/null 2>&1; then
+    echo "📝 Generating completion for {{ . }}..."
+    case "{{ . }}" in
+        "pipx")
+            if command -v register-python-argcomplete >/dev/null 2>&1; then
+                register-python-argcomplete {{ . }} > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            else
+                echo "⚠️  register-python-argcomplete not found for {{ . }}"
+            fi
+            ;;
+        "rustup")
+            {{ . }} completions zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "pip")
+            {{ . }} completion --zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "podman")
+            {{ . }} completion -f "${COMP_DIR}/_{{ . }}" zsh 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "rpk")
+            {{ . }} generate shell-completion zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "atuin")
+            {{ . }} gen-completions --shell zsh --out-dir "${COMP_DIR}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "gh")
+            {{ . }} completion -s zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "rg")
+            {{ . }} --generate=complete-zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "fd")
+            {{ . }} --gen-completions > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        "aider")
+            {{ . }} --shell-completions zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+        *)
+            # Default completion pattern for most tools
+            {{ . }} completion zsh > "${COMP_DIR}/_{{ . }}" 2>/dev/null || echo "⚠️  Failed to generate {{ . }} completion"
+            ;;
+    esac
+
+    if [[ -f "${COMP_DIR}/_{{ . }}" ]]; then
+        ((generated++))
+    fi
+else
+    echo "⏭️  {{ . }} not found, skipping completion"
+    ((skipped++))
+fi
+{{- end }}
+
+# Special case for cargo (via rustup)
+if command -v rustup >/dev/null 2>&1; then
+    echo "📝 Generating completion for cargo..."
+    rustup completions zsh cargo > "${COMP_DIR}/_cargo" 2>/dev/null || echo "⚠️  Failed to generate cargo completion"
+    if [[ -f "${COMP_DIR}/_cargo" ]]; then
+        ((generated++))
+    fi
+fi
+
+echo "✅ ZSH completions generation completed!"
+echo "📊 Generated: ${generated}, Skipped: ${skipped}"
+echo "📁 Completions saved in: ${COMP_DIR}"
