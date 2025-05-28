@@ -6,7 +6,7 @@ return {
     ---@type snacks.Config
     opts = {
       picker = { enabled = true },
-      git = { enabled = true },
+      -- git = { enabled = true },
       gitbrowse = { enabled = true },
       bigfile = { enabled = true },
       -- scroll = { enabled = true },
@@ -60,13 +60,13 @@ return {
         end,
         desc = "Delete Buffer",
       },
-      {
-        "<leader>gg",
-        function()
-          Snacks.lazygit()
-        end,
-        desc = "Lazygit",
-      },
+      -- {
+      --   "<leader>gg",
+      --   function()
+      --     Snacks.lazygit()
+      --   end,
+      --   desc = "Lazygit",
+      -- },
       {
         "<leader>gb",
         function()

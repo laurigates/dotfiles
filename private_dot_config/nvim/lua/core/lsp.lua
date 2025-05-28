@@ -9,10 +9,10 @@ vim.lsp.config("*", {
   end,
 })
 
-require("mason").setup()
-require("mason-lspconfig").setup({
-  -- ensure_installed = { "rust_analyzer", "lua_ls" }
-})
+-- require("mason").setup()
+-- require("mason-lspconfig").setup({
+--   -- ensure_installed = { "rust_analyzer", "lua_ls" }
+-- })
 
 vim.lsp.config("terraformls", {
   settings = {

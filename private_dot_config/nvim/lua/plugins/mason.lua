@@ -6,6 +6,7 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
     },
+    event = "VeryLazy",
   },
   {
     "williamboman/mason.nvim",
