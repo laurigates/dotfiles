@@ -1,7 +1,7 @@
 return {
   chat = {
-    adapter = "gemini",
-    model = "gemini-2.5-pro-exp-03-25",
+    adapter = "anthropic",
+    -- model = "gemini-2.5-pro-exp-03-25",
     tools = {
       arduino_compile = {
         description = "Compile an Arduino sketch and export binaries.",
@@ -468,11 +468,13 @@ where:
     },
   },
   inline = {
-    adapter = "gemini",
-    model = "gemini-2.5-pro-exp-03-25",
+    adapter = "anthropic",
+    -- adapter = "gemini",
+    -- model = "gemini-2.5-pro-exp-03-25",
   },
   cmd = {
-    adapter = "gemini",
-    model = "gemini-2.5-pro-exp-03-25",
+    adapter = "anthropic",
+    -- adapter = "gemini",
+    -- model = "gemini-2.5-pro-exp-03-25",
   },
 }

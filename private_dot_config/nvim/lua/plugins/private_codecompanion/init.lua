@@ -23,6 +23,11 @@ return {
       "ravitemer/mcphub.nvim",
     },
     opts = {
+      -- display = {
+      --   action_palette = {
+      --     provider = "snacks",
+      --   },
+      -- },
       prompt_library = prompt_library,
       strategies = strategies,
       extensions = {

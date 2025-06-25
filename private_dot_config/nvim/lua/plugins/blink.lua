@@ -19,7 +19,8 @@ return {
                 ellipsis = false,
                 text = function(ctx)
                   local kind_icon, _, _ = require("mini.icons").get("lsp", ctx.kind)
-                  return kind_icon
+
+                  return kind_icon .. " (" .. ctx.source_name .. ")"
                 end,
                 -- Optionally, you may also use the highlights from mini.icons
                 highlight = function(ctx)

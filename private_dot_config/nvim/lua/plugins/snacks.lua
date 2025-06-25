@@ -60,13 +60,13 @@ return {
         end,
         desc = "Delete Buffer",
       },
-      {
-        "<leader>gg",
-        function()
-          Snacks.lazygit()
-        end,
-        desc = "Lazygit",
-      },
+      -- {
+      --   "<leader>gg",
+      --   function()
+      --     Snacks.lazygit()
+      --   end,
+      --   desc = "Lazygit",
+      -- },
       {
         "<leader>gb",
         function()
@@ -81,20 +81,20 @@ return {
         end,
         desc = "Git Browse",
       },
-      {
-        "<leader>gf",
-        function()
-          Snacks.lazygit.log_file()
-        end,
-        desc = "Lazygit Current File History",
-      },
-      {
-        "<leader>gl",
-        function()
-          Snacks.lazygit.log()
-        end,
-        desc = "Lazygit Log (cwd)",
-      },
+      -- {
+      --   "<leader>gf",
+      --   function()
+      --     Snacks.lazygit.log_file()
+      --   end,
+      --   desc = "Lazygit Current File History",
+      -- },
+      -- {
+      --   "<leader>gl",
+      --   function()
+      --     Snacks.lazygit.log()
+      --   end,
+      --   desc = "Lazygit Log (cwd)",
+      -- },
       {
         "<leader>cR",
         function()
@@ -184,7 +184,7 @@ return {
       {
         "<leader>fc",
         function()
-          Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
+          Snacks.picker.files({ cwd = "~/.local/share/chezmoi" })
         end,
         desc = "Find Config File",
       },

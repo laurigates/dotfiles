@@ -25,13 +25,14 @@ return {
         dockerfile = { "hadolint" },
         gitconfig = { "taplo" },
         vue = { "eslint_d" },
+        terraform = { "terraform" },
         typescript = { "eslint_d" },
         typescriptreact = { "eslint_d" },
         javascript = { "eslint_d" },
-        json = { "prettierd", "prettier", stop_after_first = true },
-        jsonc = { "prettierd", "prettier", stop_after_first = true },
+        json = { "prettierd" },
+        jsonc = { "prettierd" },
         markdown = { "prettierd", "injected" },
-        yaml = { "yamlfmt", "injected" },
+        -- yaml = { "yamlfmt", "injected" },
         ["*"] = { "codespell" },
         ["_"] = { "trim_whitespace" },
       },
@@ -40,9 +41,30 @@ return {
         lsp_format = "fallback",
       },
       -- Set up format-on-save
-      format_on_save = { timeout_ms = 500 },
+      format_on_save = function(bufnr)
+        -- Disable autoformat on certain filetypes
+        local ignore_filetypes = { "sql", "java" }
+        if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
+          return
+        end
+        -- Disable with a global or buffer-local variable
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
+        end
+        -- Disable autoformat for files in a certain path
+        local bufname = vim.api.nvim_buf_get_name(bufnr)
+        if bufname:match("/node_modules/") then
+          return
+        end
+        -- ...additional logic...
+        return { timeout_ms = 500, lsp_format = "fallback" }
+      end,
       -- Customize formatters
       formatters = {
+        terraform = {
+          command = "terraform fmt",
+          -- append_args = { "fmt" },
+        },
         shfmt = {
           prepend_args = { "-i", "2" },
         },
