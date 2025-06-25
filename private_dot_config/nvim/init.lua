@@ -18,7 +18,6 @@ vim.g.mapleader = " "
 -- ./lua/plugins/
 require("lazy").setup("plugins")
 vim.cmd([[colorscheme tokyonight]])
-
 require("core/settings")
 require("core/functions")
 require("core/commands")

@@ -15,9 +15,9 @@ augroup end
 ]])
 
 vim.filetype.add({
-	pattern = {
-		["Dockerfile%.[%w_]+"] = "dockerfile", -- Matches Dockerfile.nginx, Dockerfile.django, etc.
-	},
+  pattern = {
+    ["Dockerfile%.[%w_]+"] = "dockerfile", -- Matches Dockerfile.nginx, Dockerfile.django, etc.
+  },
 })
 -- Don't auto comment new lines
 -- cmd([[au BufEnter * set fo-=c fo-=r fo-=o]])
@@ -52,28 +52,3 @@ cmd([[
 --     autocmd TermOpen * startinsert
 --     autocmd BufLeave term://* stopinsert
 -- ]]
-
-cmd([[
-  augroup SmartCommitMessage
-    autocmd!
-    autocmd BufRead,BufNewFile */.git/COMMIT_EDITMSG call SmartCommitMessage()
-  augroup END
-
-  function! SmartCommitMessage()
-    " Get the staged diff output
-    let l:staged_diff = system('git diff --staged --word-diff --diff-algorithm histogram')
-    if v:shell_error != 0
-        echomsg "CodeCompanion: Failed to get git diff --staged. Error: " . l:staged_diff
-        return
-    endif
-
-    " Escape newlines to '\n' and double quotes to '\"' for proper inclusion in the command string
-    let l:escaped_diff = substitute(l:staged_diff, '\n', '\\n', 'g')
-    let l:escaped_diff = substitute(l:escaped_diff, '"', '\"', 'g')
-
-    " Move the cursor to the start of the buffer
-    " execute 'normal! gg0'
-    " Execute the CodeCompanion command, passing the escaped diff as input
-    execute 'CodeCompanion gemini Write a terse commit message conforming to conventional commit standards. #buffer "' . l:escaped_diff . '"'
-  endfunction
-]])
