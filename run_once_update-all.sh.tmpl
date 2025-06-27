@@ -1,7 +1,6 @@
 {{- /* chezmoi:template */ -}}
 #!/usr/bin/env bash
 
-# {{ now | date "2006-01-02 15:04:05" }}
 # Update script for refreshing all tools after a vacation
 
 set -euo pipefail
@@ -29,7 +28,7 @@ fi
 # Update Neovim plugins and tools
 if command -v nvim >/dev/null 2>&1; then
     echo "⚙️  Updating Neovim plugins and LSP tools..."
-    nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
+    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
 else
     echo "⚠️  Neovim not found, skipping plugin updates"
 fi

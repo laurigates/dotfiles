@@ -279,9 +279,9 @@ eval "$(zoxide init zsh)"
 eval "$(atuin init zsh)"
 
 {{ if eq .chezmoi.os "darwin" }}
-# OrbStack (macOS only)
-eval "$(orbctl completion zsh)"
-eval "$(orb completion zsh)"
+# OrbStack (macOS only) - moved after compinit to avoid compdef errors
+# eval "$(orbctl completion zsh)"
+# eval "$(orb completion zsh)"
 {{ end }}
 
 
@@ -323,6 +323,16 @@ fi
 autoload -Uz compinit && compinit
 
 # Load completions that must run *after* compinit
+
+{{ if eq .chezmoi.os "darwin" }}
+# OrbStack completions (macOS only)
+if command -v orbctl >/dev/null 2>&1; then
+    eval "$(orbctl completion zsh)"
+fi
+if command -v orb >/dev/null 2>&1; then
+    eval "$(orb completion zsh)"
+fi
+{{ end }}
 
 # Completion for kitty
 # https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty

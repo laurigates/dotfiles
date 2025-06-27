@@ -23,11 +23,9 @@ local function trigger_smart_commit_message_prompt()
 
   local staged_diff = table.concat(staged_diff_lines, "\n")
 
-  -- Use the CodeCompanion Lua API to run the prompt directly.
+  -- Use the CodeCompanion API to run the prompt directly.
   -- This is safer and avoids issues with special characters in the command line.
-  require("codecompanion.prompt").run({
-    prompt_name = "SmartCommitMessage",
-    -- Provide the diff content to be used for the #buffer placeholder in your prompt.
+  require("codecompanion").prompt("SmartCommitMessage", {
     buffer = staged_diff,
   })
 end
@@ -45,7 +43,10 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 return {
   ["SmartCommitMessage"] = {
     strategy = "chat",
-    model = "gemini-1.5-flash", -- Or your preferred fast model like gemini-flash
+    opts = {
+      adapter = "gemini",
+      model = "gemini-1.5-flash", -- Or your preferred fast model like gemini-flash
+    },
     description = "Generates a conventional commit message from staged git changes.",
     prompts = {
       {
