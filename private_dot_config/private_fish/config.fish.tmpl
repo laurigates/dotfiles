@@ -53,26 +53,194 @@ end
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init2.fish 2>/dev/null || :
 
-  abbr -a k kubectl
-  abbr -a ll lsd --long --almost-all
-  abbr -a tree lsd --tree
-
-  abbr -a gsw git switch
-  abbr -a gc git commit -v
-  abbr -a gp git push
-  abbr -a gd git diff
-  abbr -a gm git merge
-  abbr -a gst git status
-  abbr -a ga git add
-  abbr -a gl git pull
-  abbr -a glog git log
-  abbr -a grb git rebase
-  abbr -a gfap git fetch --all --prune
-
-  abbr -a vim nvim
+  # Basic utilities
+  abbr -a chap chezmoi apply
   abbr -a ca chezmoi apply
+  abbr -a cb 'kitty +kitten clipboard /dev/stdin'
+  abbr -a preview 'fzf --preview "bat --color always {}"'
+  abbr -a icat 'kitty +kitten icat'
+  abbr -a s 'kitty +kitten ssh'
+  abbr -a vim nvim
 
+  # Use bat if available
+  if command -v bat >/dev/null
+    abbr -a cat bat
+  end
+
+  # Use lsd if available
+  if command -v lsd >/dev/null
+    abbr -a ls lsd
+    abbr -a ll 'lsd --long --almost-all'
+    abbr -a tree 'lsd --tree'
+  else
+    abbr -a ll 'ls -la'
+  end
+
+  # Git aliases
+  abbr -a ga 'git add'
+  abbr -a gc 'git commit -v'
+  abbr -a gl 'git pull'
+  abbr -a gla 'git pull --autostash'
+  abbr -a gp 'git push'
+  abbr -a gb 'git branch'
+  abbr -a gba 'git branch -a'
+  abbr -a gbd 'git branch -d'
+  abbr -a gbD 'git branch -D'
+  abbr -a gd 'git diff'
+  abbr -a gdca 'git diff --cached'
+  abbr -a gdcw 'git diff --cached --word-diff'
+  abbr -a gfap 'git fetch --all --prune'
+  abbr -a glg 'git log --stat'
+  abbr -a glgp 'git log --stat -p'
+  abbr -a glgg 'git log --graph'
+  abbr -a glgga 'git log --graph --decorate --all'
+  abbr -a glgm 'git log --graph --max-count=10'
+  abbr -a glo 'git log --oneline --decorate'
+  abbr -a glol 'git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset"'
+  abbr -a glols 'git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --stat'
+  abbr -a glod 'git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset"'
+  abbr -a glods 'git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset" --date=short'
+  abbr -a glola 'git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --all'
+  abbr -a glog 'git log --oneline --decorate --graph'
+  abbr -a gloga 'git log --oneline --decorate --graph --all'
+  abbr -a gm 'git merge'
+  abbr -a gmm 'git merge main'
+  abbr -a grb 'git rebase'
+  abbr -a grbm 'git rebase main'
+  abbr -a gst 'git status'
+  abbr -a gsw 'git switch'
+
+  # Kubectl aliases
+  abbr -a k kubectl
+  abbr -a kca 'kubectl --all-namespaces'
+  abbr -a kaf 'kubectl apply -f'
+  abbr -a keti 'kubectl exec -t -i'
+  abbr -a kcuc 'kubectl config use-context'
+  abbr -a kcsc 'kubectl config set-context'
+  abbr -a kcdc 'kubectl config delete-context'
+  abbr -a kccc 'kubectl config current-context'
+  abbr -a kcgc 'kubectl config get-contexts'
+  abbr -a kdel 'kubectl delete'
+  abbr -a kdelf 'kubectl delete -f'
+  abbr -a kgp 'kubectl get pods'
+  abbr -a kgpa 'kubectl get pods --all-namespaces'
+  abbr -a kgpw 'kubectl get pods --watch'
+  abbr -a kgpwide 'kubectl get pods -o wide'
+  abbr -a kep 'kubectl edit pods'
+  abbr -a kdp 'kubectl describe pods'
+  abbr -a kdelp 'kubectl delete pods'
+  abbr -a kgpall 'kubectl get pods --all-namespaces -o wide'
+  abbr -a kgpl 'kubectl get pods -l'
+  abbr -a kgpn 'kubectl get pods -n'
+  abbr -a kgs 'kubectl get svc'
+  abbr -a kgsa 'kubectl get svc --all-namespaces'
+  abbr -a kgsw 'kubectl get svc --watch'
+  abbr -a kgswide 'kubectl get svc -o wide'
+  abbr -a kes 'kubectl edit svc'
+  abbr -a kds 'kubectl describe svc'
+  abbr -a kdels 'kubectl delete svc'
+  abbr -a kgi 'kubectl get ingress'
+  abbr -a kgia 'kubectl get ingress --all-namespaces'
+  abbr -a kei 'kubectl edit ingress'
+  abbr -a kdi 'kubectl describe ingress'
+  abbr -a kdeli 'kubectl delete ingress'
+  abbr -a kgns 'kubectl get namespaces'
+  abbr -a kens 'kubectl edit namespace'
+  abbr -a kdns 'kubectl describe namespace'
+  abbr -a kdelns 'kubectl delete namespace'
+  abbr -a kcn 'kubectl config set-context --current --namespace'
+  abbr -a kgcm 'kubectl get configmaps'
+  abbr -a kgcma 'kubectl get configmaps --all-namespaces'
+  abbr -a kecm 'kubectl edit configmap'
+  abbr -a kdcm 'kubectl describe configmap'
+  abbr -a kdelcm 'kubectl delete configmap'
+  abbr -a kgsec 'kubectl get secret'
+  abbr -a kgseca 'kubectl get secret --all-namespaces'
+  abbr -a kdsec 'kubectl describe secret'
+  abbr -a kdelsec 'kubectl delete secret'
+  abbr -a kgcert 'kubectl get certificates'
+  abbr -a kgd 'kubectl get deployment'
+  abbr -a kgda 'kubectl get deployment --all-namespaces'
+  abbr -a kgdw 'kubectl get deployment --watch'
+  abbr -a kgdwide 'kubectl get deployment -o wide'
+  abbr -a ked 'kubectl edit deployment'
+  abbr -a kdd 'kubectl describe deployment'
+  abbr -a kdeld 'kubectl delete deployment'
+  abbr -a ksd 'kubectl scale deployment'
+  abbr -a krsd 'kubectl rollout status deployment'
+  abbr -a kgrs 'kubectl get replicaset'
+  abbr -a kdrs 'kubectl describe replicaset'
+  abbr -a kers 'kubectl edit replicaset'
+  abbr -a krh 'kubectl rollout history'
+  abbr -a kru 'kubectl rollout undo'
+  abbr -a kgss 'kubectl get statefulset'
+  abbr -a kgssa 'kubectl get statefulset --all-namespaces'
+  abbr -a kgssw 'kubectl get statefulset --watch'
+  abbr -a kgsswide 'kubectl get statefulset -o wide'
+  abbr -a kess 'kubectl edit statefulset'
+  abbr -a kdss 'kubectl describe statefulset'
+  abbr -a kdelss 'kubectl delete statefulset'
+  abbr -a ksss 'kubectl scale statefulset'
+  abbr -a krsss 'kubectl rollout status statefulset'
+  abbr -a kpf 'kubectl port-forward'
+  abbr -a kga 'kubectl get all'
+  abbr -a kgaa 'kubectl get all --all-namespaces'
+  abbr -a kl 'kubectl logs'
+  abbr -a kl1h 'kubectl logs --since 1h'
+  abbr -a kl1m 'kubectl logs --since 1m'
+  abbr -a kl1s 'kubectl logs --since 1s'
+  abbr -a klf 'kubectl logs -f'
+  abbr -a klf1h 'kubectl logs --since 1h -f'
+  abbr -a klf1m 'kubectl logs --since 1m -f'
+  abbr -a klf1s 'kubectl logs --since 1s -f'
+  abbr -a kgev 'kubectl get events'
+  abbr -a kcp 'kubectl cp'
+  abbr -a kgno 'kubectl get nodes'
+  abbr -a keno 'kubectl edit node'
+  abbr -a kdno 'kubectl describe node'
+  abbr -a kdelno 'kubectl delete node'
+  abbr -a kgpvc 'kubectl get pvc'
+  abbr -a kgpvca 'kubectl get pvc --all-namespaces'
+  abbr -a kgpvcw 'kubectl get pvc --watch'
+  abbr -a kepvc 'kubectl edit pvc'
+  abbr -a kdpvc 'kubectl describe pvc'
+  abbr -a kdelpvc 'kubectl delete pvc'
+  abbr -a kdsa 'kubectl describe sa'
+  abbr -a kdelsa 'kubectl delete sa'
+  abbr -a kgds 'kubectl get daemonset'
+  abbr -a kgdsw 'kubectl get daemonset --watch'
+  abbr -a keds 'kubectl edit daemonset'
+  abbr -a kdds 'kubectl describe daemonset'
+  abbr -a kdelds 'kubectl delete daemonset'
+  abbr -a kgcj 'kubectl get cronjob'
+  abbr -a kecj 'kubectl edit cronjob'
+  abbr -a kdcj 'kubectl describe cronjob'
+  abbr -a kdelcj 'kubectl delete cronjob'
+  abbr -a kgj 'kubectl get job'
+  abbr -a kej 'kubectl edit job'
+  abbr -a kdj 'kubectl describe job'
+  abbr -a kdelj 'kubectl delete job'
+
+  # hcloud aliases
+  abbr -a h hcloud
+  abbr -a hcu 'hcloud context use'
+  abbr -a hsl 'hcloud server list'
+  abbr -a hsd 'hcloud server describe'
+  abbr -a hsll 'hcloud server list --output columns=name,labels'
+  abbr -a hssh 'hcloud server ssh -u lgates'
+
+  # Terraform aliases
   abbr -a tf terraform
+
+  # Docker aliases
+  abbr -a dcls 'docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'
+  abbr -a dls 'docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"'
+  abbr -a dlogin 'echo "$CR_PAT" | docker login ghcr.io -u laurigates --password-stdin'
+
+  # Custom functions
+  function kres
+    kubectl set env $argv REFRESHED_AT=(date +%Y%m%d%H%M%S)
+  end
 end
 
 # vim: set filetype=fish :
