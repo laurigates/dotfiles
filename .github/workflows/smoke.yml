@@ -81,6 +81,28 @@ jobs:
         # Use -v for verbose output, useful for debugging CI failures
         run: chezmoi apply -v
 
+      - name: Test zsh autosuggestions initialization
+        run: |
+          # Test that zsh-autosuggestions loads immediately in fresh shell
+          timeout 10s zsh -c '
+            source ~/.zshrc
+            # Check if plugin loaded by testing for ZSH_AUTOSUGGEST_STRATEGY variable
+            if [[ -n "$ZSH_AUTOSUGGEST_STRATEGY" ]]; then
+              echo "✅ zsh-autosuggestions loaded successfully"
+            else
+              echo "❌ zsh-autosuggestions failed to load"
+              exit 1
+            fi
+
+            # Test that autosuggestion functions are available
+            if typeset -f _zsh_autosuggest_start > /dev/null; then
+              echo "✅ zsh-autosuggestions functions available"
+            else
+              echo "❌ zsh-autosuggestions functions not found"
+              exit 1
+            fi
+          '
+
   build-macos:
     name: Build (macOS)
     runs-on: macos-latest
@@ -112,3 +134,25 @@ jobs:
       - name: Run chezmoi apply
         # Use -v for verbose output
         run: chezmoi apply -v
+
+      - name: Test zsh autosuggestions initialization
+        run: |
+          # Test that zsh-autosuggestions loads immediately in fresh shell
+          timeout 10s zsh -c '
+            source ~/.zshrc
+            # Check if plugin loaded by testing for ZSH_AUTOSUGGEST_STRATEGY variable
+            if [[ -n "$ZSH_AUTOSUGGEST_STRATEGY" ]]; then
+              echo "✅ zsh-autosuggestions loaded successfully"
+            else
+              echo "❌ zsh-autosuggestions failed to load"
+              exit 1
+            fi
+
+            # Test that autosuggestion functions are available
+            if typeset -f _zsh_autosuggest_start > /dev/null; then
+              echo "✅ zsh-autosuggestions functions available"
+            else
+              echo "❌ zsh-autosuggestions functions not found"
+              exit 1
+            fi
+          '

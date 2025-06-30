@@ -334,6 +334,11 @@ if command -v orb >/dev/null 2>&1; then
 fi
 {{ end }}
 
+# Skaffold completion
+if command -v skaffold >/dev/null 2>&1; then
+    eval "$(skaffold completion zsh)"
+fi
+
 # Completion for kitty
 # https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
 if type kitty &> /dev/null; then
