@@ -233,8 +233,8 @@ source ~/.orbstack/shell/init2.fish 2>/dev/null || :
   abbr -a tf terraform
 
   # Docker aliases
-  abbr -a dcls 'docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'
-  abbr -a dls 'docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"'
+  abbr -a dcls 'docker compose ps --format "table {{`{{.Service}}`}}\t{{`{{.Ports}}`}}\t{{`{{.Status}}`}}"'
+  abbr -a dls 'docker ps --format "table {{`{{.Names}}`}}\t{{`{{.Ports}}`}}\t{{`{{.Status}}`}}"'
   abbr -a dlogin 'echo "$CR_PAT" | docker login ghcr.io -u laurigates --password-stdin'
 
   # Custom functions
