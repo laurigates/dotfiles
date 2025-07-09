@@ -20,32 +20,32 @@
 
   [packages.completion_tools]
     # Tools that provide shell completions
-    zsh_tools = [
-      "pipx",
-      "rustup",
-      "pip",
-      "oc",
-      "docker",
-      "podman",
-      "rpk",
-      "kubectl",
-      "pdm",
-      "npm",
-      "luarocks",
-      "minikube",
-      "atuin",
-      "k3d",
-      "gh",
-      "argocd",
-      "rg",
-      "helm",
-      "mise",
-      "arduino-cli",
-      "orbctl",
-      "orb",
-      "fd",
-      "aider"
-    ]
+    [packages.completion_tools.zsh_completions]
+      pipx = "register-python-argcomplete pipx"
+      rustup = "rustup completions zsh"
+      pip = "pip completion --zsh"
+      podman = "podman completion -f zsh"
+      rpk = "rpk generate shell-completion zsh"
+      atuin = "atuin gen-completions --shell zsh"
+      gh = "gh completion -s zsh"
+      rg = "rg --generate=complete-zsh"
+      fd = "fd --gen-completions"
+      aider = "aider --shell-completions zsh"
+      cargo = "rustup completions zsh cargo"
+      oc = "oc completion zsh"
+      docker = "docker completion zsh"
+      kubectl = "kubectl completion zsh"
+      pdm = "pdm completion zsh"
+      npm = "npm completion zsh"
+      luarocks = "luarocks completion zsh"
+      minikube = "minikube completion zsh"
+      k3d = "k3d completion zsh"
+      argocd = "argocd completion zsh"
+      helm = "helm completion zsh"
+      mise = "mise completion zsh"
+      "arduino-cli" = "arduino-cli completion zsh"
+      orbctl = "orbctl completion zsh"
+      orb = "orb completion zsh"
 
 [platform]
   # Platform-specific settings will be populated by templates

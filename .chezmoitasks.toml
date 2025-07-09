@@ -1,78 +1,197 @@
 # Tasks to run with 'chezmoi apply'
 
-[install_neovim_plugins]
-    command = "nvim"
-    args = ["--headless", "+Lazy! sync", "+MasonUpdate", "+qa"]
-    condition = "once"
-    stdout = true # Show output during apply
-    stderr = true # Show errors during apply
-    description = "Install, cleanup and update neovim plugins"
-
-[macos_hush_login]
-    os = ["darwin"]
+[setup.once]
     condition = "once"
     stdout = true
     stderr = true
-    description = "Disable 'last login' prompt by creating ~/.hushlogin"
-    command = "touch"
-    args = ["~/.hushlogin"]
-
-[macos_brew_bundle]
-    os = ["darwin"] # Only run on macOS
-    condition = "once"
-    stdout = true
-    stderr = true
-    description = "Install/update packages via Brewfile, cleanup, and check health"
+    description = "First time setup for the system"
     command = """
-#!/bin/zsh
+#!/bin/bash
+set -euo pipefail
 
-echo "Checking for required font (installed via Brewfile)..."
-# This check assumes 'font-hack-nerd-font' is in the Brewfile
-fc-list | grep "Hack Nerd Font" || echo "Warning: 'Hack Nerd Font' not found. Check Brewfile and brew bundle output."
+echo "Starting initial setup..."
 
-echo "Installing and updating packages via Brewfile..."
-# Use the path to the Brewfile within the source directory
-brew bundle --file {{ .chezmoi.sourceDir }}/Brewfile || echo "Warning: brew bundle failed. Check Brewfile path and brew installation."
+# Configure git
+echo "Configuring git..."
+git config --global pull.rebase true
+git config --global init.defaultBranch main
+git config --global filter.lfs.clean 'git-lfs clean -- %f'
+git config --global filter.lfs.smudge 'git-lfs smudge -- %f'
+git config --global filter.lfs.process 'git-lfs filter-process'
+git config --global filter.lfs.required true
+git config --global rebase.autoStash true
+git config --global rebase.autosquash true
+git config --global core.pager delta
+git config --global interactive.diffFilter 'delta --color-only'
+git config --global delta.navigate true
+git config --global delta.light false
+git config --global merge.conflictstyle diff3
+git config --global merge.ff only
+git config --global diff.colorMoved zebra
+git config --global diff.algorithm histogram
+git config --global rerere.enabled true
+git config --global rerere.autoupdate true
+git config --global push.default current
+git config --global push.autoSetupRemote true
+git config --global color.ui auto
+git config --global log.date iso
+git config --global help.autocorrect 20
 
-echo "Cleaning up brew files..."
-brew cleanup
+# Install neovim plugins
+echo "Installing neovim plugins..."
+nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
 
-echo "Running brew health check..."
-brew doctor
+if [[ "$(uname)" == "Darwin" ]]; then
+    echo "Running macOS specific setup..."
 
-echo "Homebrew tasks complete!"
+    # Hush login
+    echo "Disabling 'last login' prompt..."
+    touch ~/.hushlogin
+
+    # Keyboard shortcuts
+    echo "Configuring macOS keyboard shortcuts..."
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "Failed to disable shortcut 79"
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "Failed to disable shortcut 80"
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "Failed to disable shortcut 81"
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "Failed to disable shortcut 82"
+    defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to read symbolichotkeys"
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
+fi
+
+# Brew setup for both macOS and Linux
+echo "Setting up brew..."
+if [[ "$(uname)" == "Darwin" ]]; then
+    brew bundle --file {{ .chezmoi.sourceDir }}/Brewfile || echo "Warning: brew bundle failed. Check Brewfile path and brew installation."
+    brew cleanup
+    brew doctor
+else
+    /home/linuxbrew/.linuxbrew/bin/brew bundle --file {{ .chezmoi.sourceDir }}/Brewfile || echo "Warning: brew bundle failed. Check Brewfile path and brew installation."
+    /home/linuxbrew/.linuxbrew/bin/brew cleanup
+    /home/linuxbrew/.linuxbrew/bin/brew doctor
+fi
+
+echo "Initial setup completed!"
 """
 
-[macos_keyboard_shortcuts]
-    os = ["darwin"]
-    condition = "once"
+[packages.update]
+    condition = ["onchange", "{{ .chezmoi.sourceDir }}/.chezmoidata.toml", "{{ .chezmoi.sourceDir }}/Brewfile"]
     stdout = true
     stderr = true
-    description = "Configure macOS keyboard shortcuts for Mission Control"
+    description = "Update all packages and tools"
     command = """
-#!/bin/zsh
+#!/bin/bash
+set -euo pipefail
 
-echo "Configuring macOS keyboard shortcuts..."
-# Disable Keyboard -> Shortcuts -> Mission Control -> Move left/right a space.
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "Failed to disable shortcut 79"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "Failed to disable shortcut 80"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "Failed to disable shortcut 81"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "Failed to disable shortcut 82"
+echo "🔄 Starting comprehensive update process..."
 
-echo "Updating defaults cache..."
-# Update in-memory cache
-defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to read symbolichotkeys"
+# Brew
+if [[ "$(uname)" == "Darwin" ]]; then
+    echo "📦 Updating Homebrew packages..."
+    brew update && brew upgrade && brew cleanup
+else
+    echo "📦 Updating Homebrew packages..."
+    /home/linuxbrew/.linuxbrew/bin/brew update && /home/linuxbrew/.linuxbrew/bin/brew upgrade && /home/linuxbrew/.linuxbrew/bin/brew cleanup
+fi
 
-echo "Applying updated settings..."
-# Apply updated settings
-/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
+# mise
+if command -v mise >/dev/null 2>&1; then
+    echo "🛠️  Updating mise and tool versions..."
+    mise upgrade
+else
+    echo "⚠️  mise not found, skipping tool updates"
+fi
 
-echo "Keyboard shortcut configuration complete!"
+# Neovim
+if command -v nvim >/dev/null 2>&1; then
+    echo "⚙️  Updating Neovim plugins and LSP tools..."
+    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
+else
+    echo "⚠️  Neovim not found, skipping plugin updates"
+fi
+
+# pipx
+if command -v pipx >/dev/null 2>&1; then
+    echo "🐍 Installing and updating Python tools via pipx..."
+    {{- range .packages.pipx.tools }}
+    if ! pipx list --short | grep -q "^{{ . }} "; then
+        echo "📦 Installing {{ . }}..."
+        pipx install {{ . }}
+    else
+        echo "✅ {{ . }} already installed"
+    fi
+    {{- end }}
+    echo "⬆️  Upgrading all pipx packages..."
+pipx upgrade-all
+else
+    echo "⚠️  pipx not found, skipping Python package updates"
+fi
+
+echo "✅ Update process completed successfully!"
 """
 
-[build_fzf_tab]
+[completions.generate]
+    condition = ["onchange", "{{ .chezmoi.sourceDir }}/.chezmoidata.toml"]
+    stdout = true
+    stderr = true
+    description = "Generate ZSH completions for various CLI tools"
+    command = """
+#!/bin/bash
+set -euo pipefail
+
+COMP_DIR="$HOME/.zfunc"
+mkdir -p "${COMP_DIR}"
+
+echo "🔧 Generating ZSH completions in ${COMP_DIR}..."
+generated=0
+skipped=0
+
+{{- range $tool, $cmd := .packages.completion_tools.zsh_completions }}
+if command -v {{ $tool }} >/dev/null 2>&1; then
+    echo "📝 Generating completion for {{ $tool }}..."
+    {{ $cmd }} > "${COMP_DIR}/_{{ $tool }}" 2>/dev/null || echo "⚠️  Failed to generate {{ $tool }} completion"
+    if [[ -f "${COMP_DIR}/_{{ $tool }}" ]]; then
+        ((generated++))
+    fi
+else
+    echo "⏭️  {{ $tool }} not found, skipping completion"
+    ((skipped++))
+fi
+{{- end }}
+
+echo "✅ ZSH completions generation completed!"
+echo "📊 Generated: ${generated}, Skipped: ${skipped}"
+echo "📁 Completions saved in: ${COMP_DIR}"
+"""
+
+[shell.display_colors]
+    condition = "always"
+    stdout = true
+    stderr = true
+    description = "Display terminal colors"
+    command = """
+#!/bin/sh
+awk -v term_cols="${width:-$(tput cols)}" 'BEGIN{
+    s="  ";
+    for (colnum = 0; colnum<term_cols; colnum++) {
+        r = 255-(colnum*255/term_cols);
+        g = (colnum*510/term_cols);
+        b = (colnum*255/term_cols);
+        if (g>255) g = 510-g;
+        printf "\033[48;2;%d;%d;%dm", r,g,b;
+        printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+        printf "%s\033[0m", substr(s,colnum%2+1,1);
+    }
+    printf "\033[1mbold\033[0m\n";
+    printf "\033[3mitalic\033[0m\n";
+    printf "\033[3m\033[1mbold italic\033[0m\n";
+    printf "\033[4munderline\033[0m\n";
+    printf "\033[9mstrikethrough\033[0m\n";
+    printf "\033[31mred text\033[0m\n";
+}'
+"""
+
+[zsh.build_fzf_tab]
     os = ["darwin"] # Only run on macOS
-    # Run whenever the source fzf-tab file changes
     condition = ["onchange", "{{ .chezmoi.sourceDir }}/private_dot_config/zsh/fzf-tab/fzf-tab.zsh"]
     stdout = true
     stderr = true
