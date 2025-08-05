@@ -1,0 +1,3 @@
+- Set up release-please release automation
+- Manifest based release
+- Configure to update release number in all relevant files using the extra-files directive

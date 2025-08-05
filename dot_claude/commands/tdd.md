@@ -1,0 +1,5 @@
+- configure pre-commit
+- configure automatic documentation generation based on annotations and comments using github actions and publish on GitHub Pages
+- Create unit and integration tests
+- Use github actions to run tests
+- Auto-Publish Test Coverage Report on GitHub Pages

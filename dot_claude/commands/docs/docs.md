@@ -1,0 +1,2 @@
+- Set up documentation build based on annotations
+- Set up build job to publish docs on GitHub pages

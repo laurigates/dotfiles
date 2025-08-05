@@ -1,0 +1,11 @@
+- Use the GitHub MCP to check for unmerged pull requests and prompt the user to process those before continuing
+- Run `git switch main && git pull && git switch -c <branch_name>`
+- Fetch list of issues using the GitHub MCP
+- Use zen to resolve issues using gemini pro
+- Use planner to generate a detailed plan
+- Write tests to detect the issues
+- Implement the fixes and do a final precommit check by continuing from the previous codereview
+- Commit the fix, make sure to tag the issue in the commit message e.g. "fixes #1"
+- Run `git push` and submit a PR using the GitHub MCP
+- Run `git switch main && git merge <branch_name>`
+- Proceed to the next issue

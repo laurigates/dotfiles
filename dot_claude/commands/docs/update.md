@@ -1,0 +1,3 @@
+- Analyze the current design
+- Update README.md based on analysis
+- Update docs/ based on analysis
