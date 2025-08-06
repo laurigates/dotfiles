@@ -237,9 +237,6 @@ bindkey . rationalise-dot
 ## Plugins (Load before zsh-vi-mode if they don't depend on its bindings)
 [ -f ~/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh ] && \
   source ~/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-# fzf-tab doesn't seem to work for brew completions e.g. kubectl
-[ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
-  source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
 [ -f ~/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh ] && \
   source ~/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 
@@ -323,6 +320,9 @@ fi
 autoload -Uz compinit && compinit
 
 # Load completions that must run *after* compinit
+
+[ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
+  source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
 
 {{ if eq .chezmoi.os "darwin" }}
 # OrbStack completions (macOS only)
