@@ -324,26 +324,6 @@ autoload -Uz compinit && compinit
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
 
-{{ if eq .chezmoi.os "darwin" }}
-# OrbStack completions (macOS only)
-if command -v orbctl >/dev/null 2>&1; then
-    eval "$(orbctl completion zsh)"
-fi
-if command -v orb >/dev/null 2>&1; then
-    eval "$(orb completion zsh)"
-fi
-{{ end }}
-
-# Skaffold completion
-if command -v skaffold >/dev/null 2>&1; then
-    eval "$(skaffold completion zsh)"
-fi
-
-# Completion for kitty
-# https://sw.kovidgoyal.net/kitty/index.html#configuring-kitty
-if type kitty &> /dev/null; then
-    kitty +complete setup zsh | source /dev/stdin
-fi
 
 # Load Homebrew bash completions (if available)
 # Requires bashcompinit to be loaded after compinit

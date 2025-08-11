@@ -37,6 +37,10 @@ git config --global color.ui auto
 git config --global log.date iso
 git config --global help.autocorrect 20
 
+# Install pre-commit hooks
+echo "Installing pre-commit hooks..."
+(cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+
 # Install neovim plugins
 echo "Installing neovim plugins..."
 nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
@@ -104,7 +108,7 @@ fi
 # Neovim
 if command -v nvim >/dev/null 2>&1; then
     echo "⚙️  Updating Neovim plugins and LSP tools..."
-    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
+nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
 else
     echo "⚠️  Neovim not found, skipping plugin updates"
 fi
@@ -177,16 +181,16 @@ awk -v term_cols="${width:-$(tput cols)}" 'BEGIN{
         g = (colnum*510/term_cols);
         b = (colnum*255/term_cols);
         if (g>255) g = 510-g;
-        printf "\033[48;2;%d;%d;%dm", r,g,b;
-        printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
-        printf "%s\033[0m", substr(s,colnum%2+1,1);
+        printf "\\033[48;2;%d;%d;%dm", r,g,b;
+        printf "\\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+        printf "%s\\033[0m", substr(s,colnum%2+1,1);
     }
-    printf "\033[1mbold\033[0m\n";
-    printf "\033[3mitalic\033[0m\n";
-    printf "\033[3m\033[1mbold italic\033[0m\n";
-    printf "\033[4munderline\033[0m\n";
-    printf "\033[9mstrikethrough\033[0m\n";
-    printf "\033[31mred text\033[0m\n";
+    printf "\\033[1mbold\\033[0m\n";
+    printf "\\033[3mitalic\\033[0m\n";
+    printf "\\033[3m\\033[1mbold italic\\033[0m\n";
+    printf "\\033[4munderline\\033[0m\n";
+    printf "\\033[9mstrikethrough\\033[0m\n";
+    printf "\\033[31mred text\\033[0m\n";
 }'
 """
 
@@ -229,4 +233,31 @@ else
   echo "Error: fzf-tab source file not found at $FZF_TAB_SOURCE."
   exit 1 # Exit with error as the file it depends on is missing
 fi
+"""
+
+[update_ai_tools]
+    condition = "always"
+    stdout = true
+    stderr = true
+    description = "Update all AI tools"
+    command = """
+#!/bin/sh
+pipx install "vectorcode[mcp,cli]"
+npm i -g @anthropic-ai/claude-code
+npm install -g @google/gemini-cli
+pipx install git+https://github.com/arben-adm/mcp-sequential-thinking
+pipx inject sequential-thinking portalocker
+pipx install git+https://github.com/BeehiveInnovations/zen-mcp-server
+go install github.com/github/github-mcp-server/cmd/github-mcp-server@latest
+claude mcp add --scope=user lsp-basedpyright-langserver -- npx -y tritlo/lsp-mcp basedpyright-langserver ~/.local/share/nvim/mason/bin/basedpyright-langserver --stdio
+claude mcp add lsp-clangd -- npx -y tritlo/lsp-mcp clangd ~/.local/share/nvim/mason/bin/clangd --stdio
+claude mcp add --scope=user --transport=sse graphiti-memory -- http://localhost:8000/sse
+claude mcp add kicad -- ~/repos/kicad-mcp/.venv/bin/python ~/repos/kicad-mcp/main.py
+claude mcp add --scope=user vectorcode -- vectorcode-mcp-server
+claude mcp add --scope user zen-mcp-server -- uvx --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server
+claude mcp add --scope user playwright -- npx -y "@playwright/mcp@latest"
+claude mcp add context7 -- npx -y @upstash/context7-mcp
+claude mcp add github -- github-mcp-server stdio
+claude mcp add lsp-mcp -- npx -y tritlo/lsp-mcp typescript ~/.local/share/nvim/mason/bin/typescript-language-server --stdio
+claude mcp add --scope=user podio-mcp -- npx https://github.com/ForumViriumHelsinki/podio-mcp
 """

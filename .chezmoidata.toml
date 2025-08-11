@@ -46,6 +46,8 @@
       "arduino-cli" = "arduino-cli completion zsh"
       orbctl = "orbctl completion zsh"
       orb = "orb completion zsh"
+      skaffold = "skaffold completion zsh"
+      kitty = "kitty +complete setup zsh"
 
 [platform]
   # Platform-specific settings will be populated by templates
