@@ -1,8 +1,8 @@
 ---
 name: nodejs-developer
 color: "#68D391"
-description: Use this agent when you need specialized modern Node.js development expertise with Bun runtime, Vite build tool, Vue 3 framework, Pinia state management, and Vuetify UI components. This agent provides deep expertise in high-performance JavaScript/TypeScript development with cutting-edge tooling.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__lsp-basedpyright-langserver__start_lsp, mcp__lsp-basedpyright-langserver__open_document, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-basedpyright-langserver__get_completions, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot
+description: Use proactively for modern Node.js development with Bun, Vite, Vue 3, Pinia, and TypeScript.
+tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot, mcp__sequential-thinking__process_thought, mcp__sequential-thinking__generate_summary, mcp__sequential-thinking__clear_history, mcp__sequential-thinking__export_session, mcp__sequential-thinking__import_session, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__delete_entity_edge, mcp__graphiti-memory__delete_episode, mcp__graphiti-memory__get_entity_edge, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph
 ---
 
 <role>

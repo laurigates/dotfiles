@@ -1,8 +1,8 @@
 ---
 name: memory-keeper
 color: "#A29BFE"
-description: Use this agent when you need specialized knowledge graph memory management including long-term information storage, pattern recognition, decision history retrieval, or when institutional knowledge preservation is required. This agent provides deep memory management capabilities beyond simple note-taking.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+description: Use proactively for knowledge graph management, pattern recognition, decision history capture, and institutional knowledge preservation.
+tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__sequential-thinking__process_thought, mcp__sequential-thinking__generate_summary, mcp__sequential-thinking__clear_history, mcp__sequential-thinking__export_session, mcp__sequential-thinking__import_session
 ---
 
 <role>

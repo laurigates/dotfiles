@@ -1,8 +1,8 @@
 ---
 name: service-design-expert
 color: "#E91E63"
-description: Use this agent when you need specialized service design and usability expertise including user experience architecture, service blueprints, interaction design, accessibility, user journey mapping, or when creating human-centered digital experiences is required. This agent provides deep UX/service design expertise beyond basic interface design.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, WebFetch, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+description: Use proactively for service design including UX architecture, service blueprints, interaction design, accessibility, and user journey mapping.
+tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, WebFetch, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__sequential-thinking__process_thought, mcp__sequential-thinking__generate_summary, mcp__sequential-thinking__clear_history, mcp__sequential-thinking__export_session, mcp__sequential-thinking__import_session, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__delete_entity_edge, mcp__graphiti-memory__delete_episode, mcp__graphiti-memory__get_entity_edge, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph
 ---
 
 <role>
