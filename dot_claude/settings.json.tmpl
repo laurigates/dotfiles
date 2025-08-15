@@ -1,11 +1,27 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr view:*)",
+      "Bash(npm test:*)",
+      "mcp__podio-mcp__list_notifications"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "model": "sonnet",
+  "feedbackSurveyState": {
+    "lastShownTime": 1754075292901
+  },
   "hooks": {
     "user-prompt-submit": {
       "command": "~/.claude/hooks/user-prompt-submit.sh",
       "timeout": 5000
     },
     "assistant-response-start": {
-      "command": "~/.claude/hooks/assistant-response-start.sh", 
+      "command": "~/.claude/hooks/assistant-response-start.sh",
       "timeout": 5000
     },
     "assistant-response-complete": {
