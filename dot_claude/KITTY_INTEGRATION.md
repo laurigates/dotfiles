@@ -45,7 +45,7 @@ This integration provides dynamic tab titles and a central status hub for Claude
 
 ### Hook Scripts
 - `~/.claude/hooks/user-prompt-submit.sh`
-- `~/.claude/hooks/assistant-response-start.sh` 
+- `~/.claude/hooks/assistant-response-start.sh`
 - `~/.claude/hooks/assistant-response-complete.sh`
 
 ### Configuration
