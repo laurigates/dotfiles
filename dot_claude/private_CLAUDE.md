@@ -4,11 +4,15 @@ This document outlines the high-level design principles and operational mandates
 
 ## Operational Mandate: Subagent Delegation Protocol
 
-**ALL RESPONSES MUST START WITH A YAML FRONTMATTER BLOCK DECLARING THE SUBAGENT.**
+**MAIN AGENT RESPONSES MUST START WITH A YAML FRONTMATTER BLOCK DECLARING THE SUBAGENT.**
 
-Before any other output, your response must begin with a YAML frontmatter block specifying the subagent selection.
+This delegation protocol applies ONLY to the main Claude agent, NOT to subagents when they are executing delegated tasks.
 
-**Strict Format:**
+**When you are the main agent** (not executing as a delegated subagent), your response must begin with a YAML frontmatter block specifying the subagent selection.
+
+**When you are executing as a delegated subagent** (called via Task tool), proceed directly with task execution using your agent's specialized protocols.
+
+**Strict Format for Main Agent:**
 
 ```yaml
 ---
@@ -29,7 +33,7 @@ reason: Version control operations are required
 ---
 ```
 
-This is a strict requirement. No other text or explanation should precede this frontmatter block.
+**Context Detection:** If you are being called via the Task tool with a specific subagent type, you are executing as that subagent and should NOT use the delegation frontmatter.
 
 ## Memory Integration Protocol
 
