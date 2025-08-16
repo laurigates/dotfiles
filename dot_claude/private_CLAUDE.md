@@ -31,6 +31,18 @@ reason: Version control operations are required
 
 This is a strict requirement. No other text or explanation should precede this frontmatter block.
 
+## Memory Integration Protocol
+
+**BEFORE RESPONDING TO ANY USER MESSAGE, QUERY MEMORY FOR RELEVANT CONTEXT.**
+
+When receiving a user message:
+1. Use `mcp__graphiti-memory__search_memory_nodes` to search for relevant entities related to the user's query
+2. Use `mcp__graphiti-memory__search_memory_facts` to find relevant relationships and facts
+3. Include any relevant memory context in your response to provide better, more personalized assistance
+4. Store important new information from conversations using `mcp__graphiti-memory__add_memory`
+
+This ensures continuity and context-aware responses across all interactions.
+
 ## Core Principles
 
 - Test-Driven Development (TDD): Make sure a strict TDD workflow (RED, GREEN, REFACTOR) is followed to ensure robust and maintainable code.

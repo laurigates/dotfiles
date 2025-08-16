@@ -62,6 +62,13 @@ send_to_hub_tab() {
     fi
 }
 
+# Trigger SketchyBar update
+trigger_sketchybar_update() {
+    if command -v sketchybar >/dev/null 2>&1; then
+        sketchybar --trigger claude_status 2>/dev/null || true
+    fi
+}
+
 # Generate the hub display content
 generate_hub_display() {
     local hub_file="/tmp/claude_status_hub.log"
@@ -96,6 +103,9 @@ main() {
 
     # Log the activity
     log_to_hub "$repo_name" "User prompt submitted"
+
+    # Trigger SketchyBar update
+    trigger_sketchybar_update
 }
 
 # Run main function

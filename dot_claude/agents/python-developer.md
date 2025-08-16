@@ -3,6 +3,7 @@ name: python-developer
 color: "#3776AB"
 description: Modern Python development with uv, ruff, pytest, type hints, and pyproject.toml configuration.
 tools: [Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__context7__resolve-library-id, mcp__context7__get-library-docs]
+execution_log: true
 ---
 
 # Python Development Specialist
@@ -43,3 +44,18 @@ tools: [Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__context7__resol
 - `ruff check .` - Lint codebase
 - `ruff format .` - Format code
 - `mypy .` - Type checking
+
+## Response Protocol (MANDATORY)
+**Use standardized response format from ~/.claude/workflows/response_template.md**
+- Log all uv/ruff/pytest commands with complete output
+- Include test coverage percentages and type checking results
+- Verify code quality metrics (linting, formatting, type errors)
+- Store execution data in Graphiti Memory with group_id="python_development"
+- Report any dependency conflicts or environment issues
+- Document test failures with specific error details and resolutions
+
+**FILE-BASED CONTEXT SHARING:**
+- READ before starting: `.claude/tasks/current-workflow.md`, `.claude/docs/git-expert-output.md`, dependency agent outputs
+- UPDATE during execution: `.claude/status/python-developer-progress.md` with implementation progress, test results
+- CREATE after completion: `.claude/docs/python-developer-output.md` with code structure, API specs, environment setup
+- SHARE for next agents: Package dependencies, environment variables, API endpoints, database schemas, test coverage

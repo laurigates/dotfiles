@@ -11,22 +11,41 @@
     "deny": [],
     "ask": []
   },
+{{- $settingsFile := joinPath .chezmoi.homeDir ".claude" "settings.json" }}
+{{- if stat $settingsFile }}
+{{- $existing := $settingsFile | include | fromJson }}
+  "model": {{ $existing.model | toJson }},
+  "feedbackSurveyState": {{ $existing.feedbackSurveyState | toJson }},
+{{- else }}
   "model": "sonnet",
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901
   },
+{{- end }}
   "hooks": {
-    "user-prompt-submit": {
-      "command": "~/.claude/hooks/user-prompt-submit.sh",
-      "timeout": 5000
-    },
-    "assistant-response-start": {
-      "command": "~/.claude/hooks/assistant-response-start.sh",
-      "timeout": 5000
-    },
-    "assistant-response-complete": {
-      "command": "~/.claude/hooks/assistant-response-complete.sh",
-      "timeout": 5000
-    }
+    "UserPromptSubmit": [
+      {
+        "matcher": {},
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/user-prompt-submit.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": {},
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/assistant-response-complete.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
   }
 }
