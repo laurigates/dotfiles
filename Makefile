@@ -145,6 +145,16 @@ update: ## Update all tools and packages
 	else \
 		echo "$(YELLOW)Warning: pipx not found$(RESET)"; \
 	fi
+	@echo "$(GREEN)Updating Claude CLI completion...$(RESET)"
+	@$(MAKE) update-claude-completion
+
+update-claude-completion: ## Update Claude CLI zsh completion
+	@echo "$(BLUE)Updating Claude CLI completion...$(RESET)"
+	@if [ -x "./scripts/generate-claude-completion-simple.sh" ]; then \
+		./scripts/generate-claude-completion-simple.sh; \
+	else \
+		echo "$(YELLOW)Warning: Claude completion generator not found$(RESET)"; \
+	fi
 
 clean: ## Clean up temporary files and caches
 	@echo "$(BLUE)Cleaning up...$(RESET)"
