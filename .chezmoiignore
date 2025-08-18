@@ -1,4 +1,7 @@
-CLAUDE.md
+# Dotfiles repo specific Claude memory files are named CLAUDE.md
+# Claude memory files that should be copied by chezmoi are prefixed with private to differentiate them.
+# e.g. dot_claude/private_CLAUDE.md.
+/**/CLAUDE.md
 README.md
 Dockerfile
 docker-compose.yml
