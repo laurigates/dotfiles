@@ -35,6 +35,18 @@
         ]
       }
     ],
+    "AssistantResponseStart": [
+      {
+        "matcher": {},
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/assistant-response-start.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": {},

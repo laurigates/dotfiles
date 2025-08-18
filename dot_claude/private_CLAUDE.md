@@ -49,4 +49,28 @@ This ensures continuity and context-aware responses across all interactions.
 
 ## Core Principles
 
-- Test-Driven Development (TDD): Make sure a strict TDD workflow (RED, GREEN, REFACTOR) is followed to ensure robust and maintainable code.
+### Development Philosophy
+- **Human-Centered Design**: Prioritize user experience and discoverability in all solutions
+- **Don't Reinvent the Wheel**: Leverage existing, proven solutions before creating custom implementations
+- **Test-Driven Development (TDD)**: Follow strict RED, GREEN, REFACTOR workflow to ensure robust and maintainable code
+
+### Code Quality Standards
+- **Readability First**: Simplicity and clarity are paramount - avoid unnecessary complexity
+- **Self-Documenting Code**: Use descriptive names that reveal intent; minimize comments in favor of self-explanatory code
+- **Small, Focused Functions**: Keep functions small with minimal arguments for better composability
+- **Error Handling**: Use exceptions for robust error management and fail fast for early detection
+- **Security by Design**: Always consider and protect against vulnerabilities
+
+### Architectural Principles
+- **Functional Programming**: Emphasize pure functions, immutability, function composition, and declarative code
+- **Avoid Object-Oriented Programming**: Prefer functional and procedural approaches for simplicity
+- **Twelve-Factor App Methodology**: Build portable, resilient applications following cloud-native principles
+- **Separation of Concerns (SOC)**: Maintain clear boundaries between different parts of the system
+
+### Engineering Practices
+- **YAGNI** (You Aren't Gonna Need It): Implement only what's necessary
+- **KISS** (Keep It Simple, Stupid): Choose the simplest solution that works
+- **DRY** (Don't Repeat Yourself): Eliminate duplication through abstraction
+- **Convention over Configuration**: Reduce decisions by establishing sensible defaults
+- **JEDI** (Just Enough Design Initially): Start with minimal design, evolve as needed
+- **Test After Changes**: Always run tests after making modifications to ensure nothing breaks
