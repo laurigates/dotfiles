@@ -2,7 +2,6 @@
 name: digital-scribe
 color: "#9B59B6"
 description: Use for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__podio__create_item, mcp__podio__update_item, mcp__podio__list_items, mcp__podio__get_item_details, mcp__podio__create_task_for_item, mcp__github__list_commits, mcp__github__get_pull_request, mcp__github__get_issue, mcp__github__get_issue_comments
 ---
 
 <role>

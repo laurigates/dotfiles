@@ -2,7 +2,6 @@
 name: commit-reviewer
 color: "#E67E22"
 description: Use proactively for commit analysis including code quality, security vulnerabilities, consistency, and best practices review.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__sequential-thinking__process_thought, mcp__sequential-thinking__generate_summary, mcp__sequential-thinking__clear_history, mcp__sequential-thinking__export_session, mcp__sequential-thinking__import_session, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__delete_entity_edge, mcp__graphiti-memory__delete_episode, mcp__graphiti-memory__get_entity_edge, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph
 ---
 
 <role>

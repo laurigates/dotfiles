@@ -4,6 +4,8 @@
 
 #emulate sh -c '. /etc/profile'
 
+set -o vi
+
 # set terminal preference for i3
 export TERMINAL=kitty
 
@@ -13,20 +15,70 @@ export TERMINAL=kitty
 	export BROWSER=google-chrome-stable
 {{ end }}
 
-# Use fd by default, fallback to find
-export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude '.git' || find . -type f"
+
+{{/*
+# =============================================================================
+#
+# FZF CONFIGURATION
+#
+# =============================================================================
+*/}}
+
+{{/*
+# -----------------------------------------------------------------------------
+# FZF Default Command (for standalone fzf and Ctrl+T)
+# -----------------------------------------------------------------------------
+# Sets the default command to list files sorted by modification date.
+*/}}
+{{ if eq .chezmoi.os "darwin" }}
+  {{/* --- macOS Configuration --- */}}
+  {{ if (lookPath "fd") }}
+    export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude '.git' -0 | xargs -0 -r stat -f '%m %N' | sort -nr | sed 's/^[^ ]* //'"
+  {{ else }}
+    export FZF_DEFAULT_COMMAND="find . -type f -print0 | xargs -0 -r stat -f '%m %N' | sort -nr | sed 's/^[^ ]* //'"
+  {{ end }}
+{{ else if eq .chezmoi.os "linux" }}
+  {{/* --- Linux Configuration --- */}}
+  {{ if (lookPath "fd") }}
+    export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude '.git' -0 | xargs -0 -r stat -c '%Y %n' | sort -nr | sed 's/^[^ ]* //'"
+  {{ else }}
+    export FZF_DEFAULT_COMMAND="find . -type f -printf '%T@ %p\n' | sort -nr | sed 's/^[^ ]* //'"
+  {{ end }}
+{{ end }}
+
+{{/*
+# -----------------------------------------------------------------------------
+# FZF Preview Command
+# -----------------------------------------------------------------------------
+# Sets a universal preview command, checking for `bat` and `tree`.
+*/}}
+{{- $filePreviewer := "cat {}" -}}
+{{- if (lookPath "bat") -}}
+{{-   $filePreviewer = "bat --style=numbers,changes --wrap never --color always {}" -}}
+{{- end -}}
+
+{{- $dirPreviewer := "ls -la {}" -}}
+{{- if (lookPath "tree") -}}
+{{-   $dirPreviewer = "tree -C {}" -}}
+{{- end -}}
+
+export FZF_PREVIEW_COMMAND="if [ -d {} ]; then {{ $dirPreviewer }}; else {{ $filePreviewer }}; fi"
+
+{{/*
+# -----------------------------------------------------------------------------
+# FZF Keybinding Options (Ctrl+T, Ctrl+R, Alt+C)
+# -----------------------------------------------------------------------------
+*/}}
+# Use the default command for Ctrl+T and add preview options.
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null' --tiebreak=index"
 
-# Preview files with bat and directories with tree
-export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
-export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
-
-# Preview directory tree when using Alt+C
+# Options for Alt+C (directory changer).
+{{ if (lookPath "tree") -}}
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+{{ end -}}
 
-# Add the ability to copy reverse history search selection to the
-# clipboard.
-# Use xsel on Linux and pbcopy on macos.
+# Options for Ctrl+R (history search) with copy-to-clipboard functionality.
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap \
   --bind '?:toggle-preview' \
   --bind 'ctrl-y:execute-silent(echo -n {2..} \
@@ -34,19 +86,38 @@ export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap 
   --color header:italic \
   --header 'Press CTRL-Y to copy command into clipboard'"
 
-# Use fd (https://github.com/sharkdp/fd) instead of the default find
-# command for listing path candidates.
-# - The first argument to the function ($1) is the base path to start traversal
-# - See the source code (completion.{bash,zsh}) for the details.
+{{/*
+# -----------------------------------------------------------------------------
+# FZF Fuzzy Completion Commands (**<TAB>)
+# -----------------------------------------------------------------------------
+# Override the default completion functions to sort by modification date.
+*/}}
+# Override for file completion.
 _fzf_compgen_path() {
-  # print -lr -- "$1"/**(om)
-	fd --hidden --follow --exclude ".git" . "$1"
+  local path="${1:-.}"
+  {{ if eq .chezmoi.os "darwin" -}}
+    {{ if (lookPath "fd") -}}
+      fd --type f --hidden --follow --exclude '.git' . "$path" -0 | xargs -0 -r stat -f '%m %N' | sort -nr | sed 's/^[^ ]* //'
+    {{ else -}}
+      find "$path" -type f -print0 | xargs -0 -r stat -f '%m %N' | sort -nr | sed 's/^[^ ]* //'
+    {{ end -}}
+  {{ else if eq .chezmoi.os "linux" -}}
+    {{ if (lookPath "fd") -}}
+      fd --type f --hidden --follow --exclude '.git' . "$path" -0 | xargs -0 -r stat -c '%Y %n' | sort -nr | sed 's/^[^ ]* //'
+    {{ else -}}
+      find "$path" -type f -printf '%T@ %p\n' | sort -nr | sed 's/^[^ ]* //'
+    {{ end -}}
+  {{ end -}}
 }
 
-# Use fd to generate the list for directory completion
+# Override for directory completion.
 _fzf_compgen_dir() {
-  # print -lr -- "$1"/**(omT/)
-	fd --type d --hidden --follow --exclude ".git" . "$1"
+  local path="${1:-.}"
+  {{ if (lookPath "fd") -}}
+    fd --type d --hidden --follow --exclude ".git" . "$path"
+  {{ else -}}
+    find "$path" -type d
+  {{ end -}}
 }
 
 # for existing man pages
@@ -150,7 +221,7 @@ esac
 # Zsh Options (setopt)
 #======================================================================
 
-setopt auto_cd                # change directories without cd
+setopt auto_cd              # change directories without cd
 setopt complete_in_word
 setopt always_to_end
 setopt interactivecomments
@@ -242,7 +313,7 @@ bindkey . rationalise-dot
 
 
 #======================================================================
-# FZF Configuration
+# FZF Sourcing (keybindings & completions)
 #======================================================================
 
 # Source fzf keybindings and completions

@@ -12,6 +12,23 @@ This is the chezmoi source directory for `~/.claude` - a sophisticated Claude Co
 - **Persistent Memory**: Learning and context retention across sessions
 - **Cross-Project Coordination**: Shared knowledge and task handoffs between agents
 
+## Interaction Style
+
+### Constructive Skepticism
+- **Question First Approach**: Be constructively skeptical of requests to add new tools or services
+- **Use Case Analysis**: Ask probing questions about specific use cases and requirements before implementing
+- **Existing Infrastructure**: Point out when existing infrastructure can solve a problem
+- **Impact Assessment**: Highlight potential maintenance, operational, and security implications
+- **Simplicity Preference**: Suggest simpler alternatives when complex solutions are proposed
+
+### Decision Framework
+When evaluating requests:
+1. Can existing tools/infrastructure solve this?
+2. What is the minimal solution that meets the actual need?
+3. What are the long-term maintenance implications?
+4. Are there security or operational risks?
+5. Is the complexity justified by the value?
+
 ## Core Architecture
 
 ### Subagent Delegation System
@@ -117,6 +134,7 @@ All agents include:
 - **UserPromptSubmit**: Pre-processing, status updates, context preparation
 - **AssistantResponseStart**: Response initiation tracking, tab title updates
 - **AssistantResponseComplete**: Completion processing, ready state indication
+- **PreCommitFix**: Safe formatter for Claude's automated commits, preserves atomic commit scope
 
 ## Memory Integration
 
@@ -180,6 +198,12 @@ mcp__graphiti-memory__add_memory(
 
 ## Development Environment
 
+### Pre-commit Integration
+- **Safe Formatting**: `pre-commit-fix.sh` ensures only originally staged files are re-staged
+- **Atomic Commits**: Prevents unrelated changes from being included in Claude's commits
+- **Repository Integration**: Works with existing `.pre-commit-config.yaml` setup
+- **Failure Handling**: Gracefully handles formatter errors while preserving commit scope
+
 ### Tool Integration
 - **GitHub MCP**: Repository operations, issue/PR management
 - **Context7 MCP**: Current documentation and best practices
@@ -224,6 +248,10 @@ claude chat --agent memory-keeper "show recent executions"
 # Hook execution verification
 chmod +x ~/.claude/hooks/*.sh
 ~/.claude/hooks/user-prompt-submit.sh  # Test manually
+
+# Pre-commit hook testing (with staged files)
+git add some-file.txt
+~/.claude/hooks/pre-commit-fix.sh  # Test formatting safety
 
 # Kitty integration testing
 kitty @ set-tab-title "test"

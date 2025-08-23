@@ -245,7 +245,7 @@ _claude_mcp_servers() {
     if command -v claude >/dev/null 2>&1; then
         servers=(${(f)"$(claude mcp list 2>/dev/null | grep -E '^[a-zA-Z0-9_-]+:' | cut -d: -f1)"})
     fi
-    
+
     # Fallback to common server names if the command fails
     if [[ ${#servers} -eq 0 ]]; then
         servers=(

@@ -2,7 +2,6 @@
 name: python-developer
 color: "#3776AB"
 description: Modern Python development with uv, ruff, pytest, type hints, and pyproject.toml configuration.
-tools: [Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__context7__resolve-library-id, mcp__context7__get-library-docs]
 execution_log: true
 ---
 

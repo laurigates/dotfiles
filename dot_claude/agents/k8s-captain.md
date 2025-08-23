@@ -2,7 +2,6 @@
 name: k8s-captain
 color: "#326CE5"
 description: Use for all Kubernetes-related tasks, including deployment, management, and troubleshooting of containerized applications.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, kubectl
 ---
 
 <role>

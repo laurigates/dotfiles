@@ -2,7 +2,6 @@
 name: container-maestro
 color: "#0db7ed"
 description: Use proactively for container development including Dockerfiles, orchestration, 12-factor principles, and Skaffold workflows.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, docker, skaffold
 ---
 
 <role>

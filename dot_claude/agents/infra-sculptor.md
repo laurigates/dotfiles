@@ -2,7 +2,6 @@
 name: infra-sculptor
 color: "#623CE4"
 description: Use for all Infrastructure as Code (IaC) tasks using Terraform. Manages cloud and on-prem resources with precision.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, terraform
 ---
 
 <role>

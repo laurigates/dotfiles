@@ -11,7 +11,7 @@ The completion system automatically generates zsh completion functions for the C
 ### 1. Completion Generator Script
 - **Location**: `scripts/generate-claude-completion-simple.sh`
 - **Purpose**: Parses `claude --help` and subcommand help outputs to generate zsh completion functions
-- **Features**: 
+- **Features**:
   - Extracts commands, options, and descriptions automatically
   - Handles nested subcommands (config, mcp, install)
   - Provides dynamic completion for models, config keys, and MCP servers

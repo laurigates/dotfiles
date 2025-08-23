@@ -30,15 +30,15 @@ check_claude_cli() {
 # but with updated help text parsing
 generate_completion() {
     log "Generating updated Claude CLI completion..."
-    
+
     # Create directory if needed
     mkdir -p "$(dirname "$COMPLETION_FILE")"
-    
+
     # Get current help outputs
     local main_help=$(claude --help 2>/dev/null)
     local config_help=$(claude config --help 2>/dev/null)
     local mcp_help=$(claude mcp --help 2>/dev/null)
-    
+
     # Extract commands from main help
     local main_commands=$(echo "$main_help" | sed -n '/^Commands:/,/^$/p' | grep -E '^  [a-z]' | sed 's/^  //' | while read -r line; do
         cmd=$(echo "$line" | awk '{print $1}')
@@ -47,7 +47,7 @@ generate_completion() {
         desc=$(echo "$desc" | sed 's/\[[^]]*\]//g' | sed 's/  */ /g' | sed 's/^ *//' | sed 's/ *$//')
         echo "        '$cmd:$desc'"
     done)
-    
+
     # Extract config commands
     local config_commands=$(echo "$config_help" | sed -n '/^Commands:/,/^$/p' | grep -E '^  [a-z]' | sed 's/^  //' | while read -r line; do
         cmd=$(echo "$line" | awk '{print $1}')
@@ -56,7 +56,7 @@ generate_completion() {
         desc=$(echo "$desc" | sed 's/\[[^]]*\]//g' | sed 's/  */ /g' | sed 's/^ *//' | sed 's/ *$//')
         echo "        '$cmd:$desc'"
     done)
-    
+
     # Extract MCP commands
     local mcp_commands=$(echo "$mcp_help" | sed -n '/^Commands:/,/^$/p' | grep -E '^  [a-z]' | sed 's/^  //' | while read -r line; do
         cmd=$(echo "$line" | awk '{print $1}')
@@ -310,7 +310,7 @@ _claude_mcp_servers() {
     if command -v claude >/dev/null 2>&1; then
         servers=(${(f)"$(claude mcp list 2>/dev/null | grep -E '^[a-zA-Z0-9_-]+:' | cut -d: -f1)"})
     fi
-    
+
     # Fallback to common server names if the command fails
     if [[ ${#servers} -eq 0 ]]; then
         servers=(
@@ -334,7 +334,7 @@ COMPLETION_EOF
     if ! zsh -n "$COMPLETION_FILE" 2>/dev/null; then
         error "Generated completion file has syntax errors"
     fi
-    
+
     success "Updated Claude CLI completion: $COMPLETION_FILE"
 }
 
@@ -342,14 +342,14 @@ main() {
     log "Starting Claude CLI completion generation (simple version)"
     check_claude_cli
     generate_completion
-    
+
     # Add to git if not tracked
     if ! git -C "$DOTFILES_DIR" ls-files --error-unmatch "$COMPLETION_FILE" >/dev/null 2>&1; then
         log "Adding completion file to git..."
         git -C "$DOTFILES_DIR" add "$COMPLETION_FILE"
         success "Added completion file to git tracking"
     fi
-    
+
     success "Claude CLI completion generation complete!"
     echo
     echo "To use the updated completion:"

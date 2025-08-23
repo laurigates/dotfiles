@@ -2,7 +2,6 @@
 name: pipeline-engineer
 color: "#20BF6B"
 description: Use proactively for CI/CD pipelines including GitHub Actions, deployment automation, build optimization, and pipeline monitoring.
-tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS, WebFetch, mcp__github__create_pull_request, mcp__github__list_pull_requests, mcp__github__get_pull_request, mcp__github__create_branch, mcp__github__list_branches, mcp__github__create_issue, mcp__github__update_issue, mcp__github__list_issues, mcp__github__get_issue, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__sequential-thinking__process_thought, mcp__sequential-thinking__generate_summary, mcp__sequential-thinking__clear_history, mcp__sequential-thinking__export_session, mcp__sequential-thinking__import_session, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__delete_entity_edge, mcp__graphiti-memory__delete_episode, mcp__graphiti-memory__get_entity_edge, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph
 ---
 
 <role>

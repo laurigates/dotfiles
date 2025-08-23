@@ -80,7 +80,10 @@ sketchybar --add item chevron left \
 # volume is registered. More info about the event system can be found here:
 # https://felixkratz.github.io/SketchyBar/config/events
 
-sketchybar --add item clock right \
+sketchybar --add item claude left \
+           --set claude script="$PLUGIN_DIR/claude.sh" \
+           --subscribe claude claude_status \
+           --add item clock right \
            --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh" \
            --add item volume right \
            --set volume script="$PLUGIN_DIR/volume.sh" \

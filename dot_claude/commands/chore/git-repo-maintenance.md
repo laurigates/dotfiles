@@ -1,4 +1,0 @@
-- Check for accidentally committed files
-- Update .gitignore
-- Delete merged branches, including ones that have been merged using GitHub through a PR
-- Clean up redundant stashes

@@ -4,8 +4,10 @@ When the user types `/quickpr`, follow these instructions to execute a quick wor
 
 ## Step-by-Step Instructions
 
-- Create branch if on main branch and switch to it
-- Stage only relevant files explicitly in one `git add` command
-- Analyze staged files to create meaningful conventional commit
-- Push changes to origin
-- Create a pull request with a concise description using GitHub MCP or gh cli if GitHub MCP fails
+- Use this command to get the repo name with owner: `gh repo view --json nameWithOwner`
+- If on the main branch, create a new branch using `git switch -c <branch_name>`
+- View the diff using `git diff --word-diff --diff-algorithm=histogram`
+- Group the changes into a logical set of commits. Keep commits to a manageable size for readability and so they are easy to understand
+  - Write a concise and humble conventional commit messages based on the staged content
+- Push to origin and create a pull request
+  - Write a concise and humble PR description using the GitHub MCP

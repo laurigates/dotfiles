@@ -895,6 +895,17 @@ map kitty_mod+delete clear_terminal reset active
 
 #: # endregion
 
+#: Claude Code Integration # region
+
+# Show Claude Code status overlay
+map cmd+shift+c launch --type=overlay --title="Claude Sessions" ~/.claude/show-status-overlay.sh
+
+#: Launch the Claude Code monitoring overlay in a floating window.
+#: This provides a comprehensive view of all active Claude sessions,
+#: their status, todo counts, and activity levels.
+
+#: # endregion
+
 {{ if eq .chezmoi.os "darwin" -}}
 # Custom Option/Alt key mappings for macOS (when macos_option_as_alt is no)
 # Send ESC+key sequence for common Alt shortcuts

@@ -10,11 +10,16 @@ Chezmoi dotfiles repository with cross-platform development environment configur
 
 ## Essential Commands
 ```bash
-chezmoi apply -v                      # Apply changes
-chezmoi diff                          # Preview changes
+chezmoi diff                          # ALWAYS preview changes before applying
+chezmoi apply -v                      # Apply changes (after reviewing diff)
 chezmoi verify .                      # Verify integrity
 ./run_once_update-all.sh              # Update all tools
 ```
+
+### Chezmoi Best Practices
+- **ALWAYS run `chezmoi diff` before `chezmoi apply`** to review what will change
+- Use `chezmoi diff | head -50` for quick preview of large changesets
+- When making changes in the chezmoi source directory, verify with diff before applying
 
 ## Linting Commands
 ```bash

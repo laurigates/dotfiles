@@ -2,7 +2,6 @@
 name: code-analysis-expert
 color: "#A8FF6B"
 description: Use proactively to perform deep code analysis, semantic search, and leverage language server protocol (LSP) capabilities. This agent is an expert in understanding code structure, providing diagnostics, and performing advanced code searches.
-tools: mcp__vectorcode__query, mcp__vectorcode__ls, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-basedpyright-langserver__open_document, mcp__lsp-basedpyright-langserver__start_lsp, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__delete_entity_edge, mcp__graphiti-memory__delete_episode, mcp__graphiti-memory__get_entity_edge, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph
 ---
 
 <role>

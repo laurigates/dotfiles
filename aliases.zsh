@@ -1,4 +1,5 @@
 alias chap='chezmoi apply'
+alias ccd='chezmoi cd'
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
@@ -25,10 +26,11 @@ alias icat="kitty +kitten icat"
 
 alias s="kitty +kitten ssh"
 
-# Use lsd if it is available
-alias ls='ls --color=auto'
+# Claude voice notification management
+alias voice-config='cd ~/.claude/voice-notify-project && uv run voice-config'
+alias voice-test='cd ~/.claude/voice-notify-project && uv run voice-notify'
+
 type lsd >/dev/null 2>&1 && \
-  alias ls="lsd" && \
   alias tree='lsd --tree' && \
   alias ll='lsd --long --almost-all'
 

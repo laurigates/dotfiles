@@ -6,10 +6,24 @@
       "Bash(gh pr checks:*)",
       "Bash(gh pr view:*)",
       "Bash(npm test:*)",
-      "mcp__podio-mcp__list_notifications"
+      "mcp__podio-mcp__list_notifications",
+      "mcp__context7__*",
+      "mcp__sequential-thinking__*",
+      "mcp__graphiti-memory__*",
+      "mcp__zen-mcp-server__*"
     ],
-    "deny": [],
-    "ask": []
+    "deny": [
+      "Bash(git add .)",
+      "Bash(git add -A)",
+      "Bash(git add --all)",
+      "Bash(git add *)",
+      "Bash(git commit -a*)"
+    ],
+    "ask": [],
+    "additionalDirectories": [
+      "~/Documents/FVH Vault",
+      "~/repos/infrastructure.wiki"
+    ]
   },
 {{- $settingsFile := joinPath .chezmoi.homeDir ".claude" "settings.json" }}
 {{- if stat $settingsFile }}
@@ -25,7 +39,6 @@
   "hooks": {
     "UserPromptSubmit": [
       {
-        "matcher": {},
         "hooks": [
           {
             "type": "command",
@@ -35,21 +48,20 @@
         ]
       }
     ],
-    "AssistantResponseStart": [
+    "PreToolUse": [
       {
-        "matcher": {},
+        "matcher": "Bash(*git add*)",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/assistant-response-start.sh",
-            "timeout": 5000
+            "command": "~/.claude/hooks/pre-commit-fix.sh",
+            "timeout": 10000
           }
         ]
       }
     ],
     "Stop": [
       {
-        "matcher": {},
         "hooks": [
           {
             "type": "command",

@@ -2,7 +2,6 @@
 name: docs-expert
 color: "#4A90E2"
 description: Generate documentation from code annotations, API references, README creation, and GitHub Pages setup.
-tools: [Read, Write, Edit, MultiEdit, Grep, Glob, LS, mcp__github__create_or_update_file, mcp__github__create_branch, mcp__github__create_pull_request]
 ---
 
 # Documentation Generation Specialist

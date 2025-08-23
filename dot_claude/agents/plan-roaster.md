@@ -2,7 +2,6 @@
 name: plan-roaster
 color: "#E74C3C"
 description: Use proactively to critique plans, identify hidden assumptions, and find potential flaws before implementation. This agent acts as a pessimistic, experienced senior engineer to stress-test our thinking.
-tools: Bash, Read, Grep, Glob, LS
 ---
 
 <role>

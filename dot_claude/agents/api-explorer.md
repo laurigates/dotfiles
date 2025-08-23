@@ -2,7 +2,6 @@
 name: api-explorer
 color: "#FF4785"
 description: Explore and integrate with REST APIs when documentation is limited or unavailable. Discovers endpoints, infers schemas, and generates client code.
-tools: [Bash, Read, Write, Edit, MultiEdit, WebFetch, WebSearch, Grep, Glob, LS, mcp__context7__resolve-library-id, mcp__context7__get-library-docs]
 ---
 
 # API Explorer

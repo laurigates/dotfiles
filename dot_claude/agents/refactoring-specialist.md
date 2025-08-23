@@ -2,7 +2,6 @@
 name: refactoring-specialist
 color: "#FD79A8"
 description: Code refactoring including quality improvement, SOLID principles, design patterns, and behavior-preserving improvements.
-tools: [Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS, mcp__context7__resolve-library-id, mcp__context7__get-library-docs]
 ---
 
 # Refactoring Specialist

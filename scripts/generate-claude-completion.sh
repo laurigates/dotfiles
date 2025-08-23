@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Generate zsh completion for Claude CLI
-# This script parses `claude --help` and subcommand outputs to automatically 
+# This script parses `claude --help` and subcommand outputs to automatically
 # create and maintain the zsh completion function
 
 set -euo pipefail
@@ -50,7 +50,7 @@ check_claude_cli() {
 parse_help() {
     local help_output="$1"
     local section="$2"  # "Commands" or "Options"
-    
+
     echo "$help_output" | awk -v section="$section" '
         BEGIN { in_section = 0 }
         $0 ~ "^" section ":" { in_section = 1; next }
@@ -76,14 +76,14 @@ parse_help() {
 # Parse options more precisely to handle various formats
 parse_options() {
     local help_output="$1"
-    
+
     echo "$help_output" | awk '
         BEGIN { in_options = 0 }
         /^Options:/ { in_options = 1; next }
         /^[A-Z][a-z]+:/ && in_options { in_options = 0 }
         in_options && /^  / {
             gsub(/^  /, "")
-            
+
             # Handle different option formats
             if ($0 ~ /^-[a-zA-Z], --[a-zA-Z-]+/) {
                 # -d, --debug format
@@ -119,12 +119,12 @@ parse_options() {
                 }
                 long = ""
             }
-            
+
             gsub(/^ */, "", desc)
             gsub(/\[/, "\\[", desc)
             gsub(/\]/, "\\]", desc)
             gsub(/"/, "\\\"", desc)
-            
+
             if (short != "" && long != "") {
                 printf "('\''%s %s'\'')%s%s,--'%s'\''}'[%s]'\''\n", short, long, "{", short, substr(long, 3), desc
             } else if (long != "") {
@@ -139,7 +139,7 @@ parse_options() {
 # Extract argument completions from help text
 parse_arguments() {
     local help_output="$1"
-    
+
     echo "$help_output" | awk '
         /^Arguments:/ { in_args = 1; next }
         /^Options:/ && in_args { in_args = 0 }
@@ -165,7 +165,7 @@ get_claude_models() {
     if models_output=$(claude config get model 2>/dev/null); then
         # Parse available models if possible
         echo "sonnet:Latest Sonnet model"
-        echo "opus:Latest Opus model" 
+        echo "opus:Latest Opus model"
         echo "haiku:Latest Haiku model"
         echo "claude-sonnet-4-20250514:Claude Sonnet 4"
         echo "claude-3-5-sonnet-20241022:Claude 3.5 Sonnet"
@@ -229,13 +229,13 @@ EOF
 generate_main_function() {
     local main_help
     main_help=$(claude --help 2>/dev/null)
-    
+
     local commands
     commands=$(parse_help "$main_help" "Commands")
-    
+
     local options
     options=$(parse_options "$main_help")
-    
+
     cat << 'EOF'
 #compdef claude
 
@@ -298,10 +298,10 @@ EOF
 generate_config_function() {
     local config_help
     config_help=$(claude config --help 2>/dev/null)
-    
+
     local commands
     commands=$(parse_help "$config_help" "Commands")
-    
+
     cat << 'EOF'
 
 _claude_config() {
@@ -365,10 +365,10 @@ EOF
 generate_mcp_function() {
     local mcp_help
     mcp_help=$(claude mcp --help 2>/dev/null)
-    
+
     local commands
     commands=$(parse_help "$mcp_help" "Commands")
-    
+
     cat << 'EOF'
 
 _claude_mcp() {
@@ -470,7 +470,7 @@ _claude_models() {
     local -a models
     models=(
 EOF
-    
+
     get_claude_models | while IFS=: read -r model desc; do
         echo "        '$model:$desc'"
     done
@@ -502,7 +502,7 @@ _claude_mcp_servers() {
     if command -v claude >/dev/null 2>&1; then
         servers=(${(f)"$(claude mcp list 2>/dev/null | grep -E '^[a-zA-Z0-9_-]+:' | cut -d: -f1)"})
     fi
-    
+
     # Fallback to common server names if the command fails
     if [[ ${#servers} -eq 0 ]]; then
         servers=(
@@ -525,9 +525,9 @@ EOF
 # Main function to generate the complete completion file
 generate_completion() {
     local temp_completion="${TEMP_DIR}/_claude"
-    
+
     log "Generating Claude CLI completion..."
-    
+
     {
         generate_main_function
         generate_config_function
@@ -535,25 +535,25 @@ generate_completion() {
         generate_install_function
         generate_helper_functions
     } > "$temp_completion"
-    
+
     # Validate the generated completion file
     if ! zsh -n "$temp_completion" 2>/dev/null; then
         error "Generated completion file has syntax errors"
     fi
-    
+
     # Create the directory if it doesn't exist
     mkdir -p "$(dirname "$COMPLETION_FILE")"
-    
+
     # Compare with existing file to see if update is needed
     if [[ -f "$COMPLETION_FILE" ]] && cmp -s "$temp_completion" "$COMPLETION_FILE"; then
         log "Completion file is already up to date"
         return 0
     fi
-    
+
     # Install the new completion file
     cp "$temp_completion" "$COMPLETION_FILE"
     success "Updated Claude CLI completion: $COMPLETION_FILE"
-    
+
     # Show diff if there was an existing file
     if [[ -f "$COMPLETION_FILE.bak" ]]; then
         log "Changes made:"
@@ -574,11 +574,11 @@ track_completion_file() {
 # Main execution
 main() {
     log "Starting Claude CLI completion generation"
-    
+
     check_claude_cli
     generate_completion
     track_completion_file
-    
+
     success "Claude CLI completion generation complete!"
     echo
     echo "To use the updated completion:"

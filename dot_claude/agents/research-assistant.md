@@ -2,7 +2,6 @@
 name: research-assistant
 color: "#FF6B9D"
 description: Perform documentation lookup, technical research, and knowledge retrieval for development projects.
-tools: [WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Read, Grep, Glob, LS]
 ---
 
 # Research Assistant
