@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""Text-to-image generation using Google Gemini."""
+
+import argparse
+import sys
+from io import BytesIO
+from pathlib import Path
+
+try:
+    from google import genai
+    from PIL import Image
+except ImportError as e:
+    print(f"Error: Missing required package - {e}", file=sys.stderr)
+    print("Install with: pip install google-genai pillow", file=sys.stderr)
+    sys.exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate images from text prompts using Google Gemini Imagen 3.0",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  t2i "a serene mountain landscape at sunset"
+  t2i "abstract art in blue and gold" --aspect 16:9
+  t2i "modern office interior" --output office.jpg --count 2
+
+Aspect ratios: 1:1, 3:4, 4:3, 9:16, 16:9
+        """
+    )
+
+    parser.add_argument("prompt", help="Text prompt to generate the image from")
+    parser.add_argument(
+        "--output", "-o",
+        default="gemini-image.png",
+        help="Output filename (default: gemini-image.png)"
+    )
+    parser.add_argument(
+        "--count", "-n",
+        type=int,
+        default=1,
+        choices=[1, 2, 3, 4],
+        help="Number of images to generate (1-4, default: 1)"
+    )
+    parser.add_argument(
+        "--aspect",
+        default="1:1",
+        choices=["1:1", "3:4", "4:3", "9:16", "16:9"],
+        help="Aspect ratio (default: 1:1)"
+    )
+    parser.add_argument(
+        "--format",
+        default="jpeg",
+        choices=["jpeg", "png"],
+        help="Output format (default: jpeg)"
+    )
+    parser.add_argument(
+        "--no-show",
+        action="store_true",
+        help="Don't display the image after generation"
+    )
+
+    args = parser.parse_args()
+
+    try:
+        client = genai.Client()
+    except Exception as e:
+        print(f"Error initializing Gemini client: {e}", file=sys.stderr)
+        print("Make sure GOOGLE_API_KEY is set in your environment", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Generating {args.count} image(s) with prompt: {args.prompt}")
+
+    mime_type = f"image/{args.format}"
+
+    try:
+        result = client.models.generate_images(
+            model='imagen-3.0-generate-002',
+            prompt=args.prompt,
+            config=dict(
+                number_of_images=args.count,
+                output_mime_type=mime_type,
+                person_generation="ALLOW_ADULT",
+                aspect_ratio=args.aspect
+            )
+        )
+    except Exception as e:
+        print(f"Error generating image: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    output_path = Path(args.output)
+    base_name = output_path.stem
+    extension = output_path.suffix or f".{args.format}"
+
+    for i, generated_image in enumerate(result.generated_images):
+        image = Image.open(BytesIO(generated_image.image.image_bytes))
+
+        if args.count > 1:
+            filename = f"{base_name}_{i+1}{extension}"
+        else:
+            filename = f"{base_name}{extension}"
+
+        image.save(filename)
+        print(f"Saved: {filename}")
+
+        if not args.no_show:
+            image.show()
+
+if __name__ == "__main__":
+    main()

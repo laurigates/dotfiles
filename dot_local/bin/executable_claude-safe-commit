@@ -1,0 +1,16 @@
+#!/bin/bash
+# Claude-safe commit wrapper
+# Ensures pre-commit hooks run only on staged files
+
+set -euo pipefail
+
+# Source the pre-commit fix script if it exists
+PRE_COMMIT_FIX="$HOME/.claude/hooks/pre-commit-fix.sh"
+
+if [[ -f "$PRE_COMMIT_FIX" ]] && [[ -x "$PRE_COMMIT_FIX" ]]; then
+    echo "Running Claude's safe pre-commit formatter..."
+    "$PRE_COMMIT_FIX"
+fi
+
+# Now run the actual git commit with all passed arguments
+exec git commit "$@"
