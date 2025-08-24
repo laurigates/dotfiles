@@ -1,0 +1,9 @@
+# Files to remove from target directory
+# Add patterns for files that should be deleted from the destination
+# when they no longer exist in the source
+
+# Example patterns (uncomment and modify as needed):
+# ~/.config/old-tool/
+# ~/.deprecated-dotfile
+# .claude/agents/**/*.md
+# .claude/commands/**/*.md
