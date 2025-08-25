@@ -17,16 +17,16 @@ from typing import Dict, Optional, Tuple
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 try:
-    import google.generativeai as genai
-    from google.generativeai import types
+    from google import genai
+    from google.genai import types
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
-    logger.warning("google-generativeai not installed. Will use fallback to macOS 'say' command.")
+    logger.warning("google-genai not installed. Will use fallback to macOS 'say' command.")
 
 
 class VoiceNotifier:
@@ -96,8 +96,7 @@ class VoiceNotifier:
             return
 
         try:
-            genai.configure(api_key=api_key)
-            self.gemini_client = genai.GenerativeModel("gemini-2.5-flash-preview-tts")
+            self.gemini_client = genai.Client(api_key=api_key)
             logger.info("Gemini API client initialized successfully.")
         except Exception as e:
             logger.error(f"Failed to initialize Gemini client: {e}")
@@ -128,8 +127,24 @@ class VoiceNotifier:
             "style": project_config.get("style", self.config["default_style"])
         }
 
-    def analyze_message_style(self, message: str) -> str:
+    def analyze_message_style(self, message: str, event_type: Optional[str] = None) -> str:
         """Analyze message content to determine appropriate speech style."""
+        # Use provided event type if available
+        if event_type:
+            style_map = {
+                'success': 'success',
+                'error': 'error',
+                'test_success': 'success',
+                'test_failure': 'error',
+                'git_operation': 'tool_use',
+                'bug_fix': 'success',
+                'creation': 'success',
+                'general': 'neutral'
+            }
+            if event_type in style_map:
+                return style_map[event_type]
+
+        # Fall back to content analysis
         message_lower = message.lower()
 
         # Error indicators
@@ -138,7 +153,7 @@ class VoiceNotifier:
             return "error"
 
         # Success indicators
-        success_keywords = ["completed", "done", "success", "finished", "ready", "applied"]
+        success_keywords = ["completed", "done", "success", "finished", "ready", "applied", "fixed", "created"]
         if any(keyword in message_lower for keyword in success_keywords):
             return "success"
 
@@ -147,7 +162,7 @@ class VoiceNotifier:
             return "waiting"
 
         # Tool use indicators
-        tool_keywords = ["running", "executing", "processing", "analyzing"]
+        tool_keywords = ["running", "executing", "processing", "analyzing", "updated", "modified"]
         if any(keyword in message_lower for keyword in tool_keywords):
             return "tool_use"
 
@@ -163,9 +178,10 @@ class VoiceNotifier:
             style_instruction = self.config["message_styles"].get(style, "calmly")
             formatted_text = f"Say {style_instruction}: {text}"
 
-            response = self.gemini_client.generate_content(
+            response = self.gemini_client.models.generate_content(
+                model="gemini-2.5-flash-preview-tts",
                 contents=formatted_text,
-                generation_config=types.GenerationConfig(
+                config=types.GenerateContentConfig(
                     response_modalities=["AUDIO"],
                     speech_config=types.SpeechConfig(
                         voice_config=types.VoiceConfig(
@@ -178,12 +194,19 @@ class VoiceNotifier:
             )
 
             # Extract audio data
-            if hasattr(response, 'candidates') and response.candidates:
-                for part in response.candidates[0].content.parts:
-                    if hasattr(part, 'inline_data') and part.inline_data.mime_type.startswith('audio/'):
-                        return part.inline_data.data
+            if response and response.candidates:
+                candidate = response.candidates[0]
+                if candidate.content and candidate.content.parts:
+                    for part in candidate.content.parts:
+                        # Check for inline_data with audio
+                        if part.inline_data and part.inline_data.mime_type:
+                            if part.inline_data.mime_type.startswith('audio/'):
+                                # The data is already bytes, return it directly
+                                audio_data = part.inline_data.data
+                                logger.debug(f"Found audio data: {len(audio_data)} bytes, type: {part.inline_data.mime_type}")
+                                return audio_data
 
-            logger.warning("No audio data found in Gemini response.")
+            logger.warning("No audio data found in Gemini response")
             return None
 
         except Exception as e:
@@ -210,21 +233,26 @@ class VoiceNotifier:
         return None
 
     def save_cached_audio(self, cache_key: str, audio_data: bytes) -> None:
-        """Save audio data to cache."""
+        """Save audio data to cache as WAV."""
         if not self.config.get("use_cache", True):
             return
 
         cache_file = self.cache_dir / f"{cache_key}.wav"
         try:
-            cache_file.write_bytes(audio_data)
+            # Convert PCM to WAV before caching
+            wav_data = self._pcm_to_wav(audio_data, sample_rate=24000, channels=1, bits_per_sample=16)
+            cache_file.write_bytes(wav_data)
         except Exception as e:
             logger.error(f"Error saving to cache: {e}")
 
     def play_audio(self, audio_data: bytes) -> bool:
         """Play audio data using afplay."""
         try:
+            # Convert PCM to WAV by adding WAV header
+            wav_data = self._pcm_to_wav(audio_data, sample_rate=24000, channels=1, bits_per_sample=16)
+
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
-                temp_file.write(audio_data)
+                temp_file.write(wav_data)
                 temp_file.flush()
 
                 # Play audio with volume control
@@ -234,6 +262,9 @@ class VoiceNotifier:
                     capture_output=True, text=True
                 )
 
+                if result.returncode != 0:
+                    logger.debug(f"afplay error: {result.stderr}")
+
                 # Clean up temp file
                 os.unlink(temp_file.name)
 
@@ -242,6 +273,35 @@ class VoiceNotifier:
         except Exception as e:
             logger.error(f"Error playing audio: {e}")
             return False
+
+    def _pcm_to_wav(self, pcm_data: bytes, sample_rate: int = 24000, channels: int = 1, bits_per_sample: int = 16) -> bytes:
+        """Convert raw PCM data to WAV format by adding header."""
+        import struct
+
+        # Calculate sizes
+        byte_rate = sample_rate * channels * bits_per_sample // 8
+        block_align = channels * bits_per_sample // 8
+        data_size = len(pcm_data)
+
+        # Create WAV header
+        wav_header = struct.pack(
+            '<4sI4s4sIHHIIHH4sI',
+            b'RIFF',                    # ChunkID
+            36 + data_size,              # ChunkSize
+            b'WAVE',                     # Format
+            b'fmt ',                     # Subchunk1ID
+            16,                          # Subchunk1Size (16 for PCM)
+            1,                           # AudioFormat (1 for PCM)
+            channels,                    # NumChannels
+            sample_rate,                 # SampleRate
+            byte_rate,                   # ByteRate
+            block_align,                 # BlockAlign
+            bits_per_sample,             # BitsPerSample
+            b'data',                     # Subchunk2ID
+            data_size                    # Subchunk2Size
+        )
+
+        return wav_header + pcm_data
 
     def fallback_say(self, text: str, voice: Optional[str] = None) -> bool:
         """Fallback to macOS say command."""
@@ -273,7 +333,7 @@ class VoiceNotifier:
             return False
 
     def notify(self, message: str, project: Optional[str] = None, style: Optional[str] = None) -> bool:
-        """Main notification method."""
+        """Main notification method with enhanced event-type awareness."""
         if not self.config.get("enabled", True):
             logger.info("Voice notifications are disabled.")
             return True
@@ -281,9 +341,12 @@ class VoiceNotifier:
         # Get voice configuration for project
         voice_config = self.get_voice_config(project)
 
-        # Determine style if not provided
+        # Determine style if not provided - now accepts event_type format
         if not style:
             style = self.analyze_message_style(message)
+        else:
+            # If style is an event type, convert it to speech style
+            style = self.analyze_message_style(message, event_type=style)
 
         logger.info(f"Voice notification: {message[:50]}... (voice: {voice_config['voice']}, style: {style})")
 
