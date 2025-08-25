@@ -20,9 +20,9 @@ update_tab_title() {
     local repo_name
     repo_name=$(get_repo_name)
 
-    # Only update if we're in kitty
-    if [[ "${TERM}" == "xterm-kitty" ]] && command -v kitty >/dev/null 2>&1; then
-        kitty @ set-tab-title "$repo_name | 🤖 Responding..." 2>/dev/null || true
+    # Only update if we're in kitty and can access the terminal properly
+    if [[ "${TERM}" == "xterm-kitty" ]] && command -v kitty >/dev/null 2>&1 && [[ -c /dev/tty ]]; then
+        kitty @ set-tab-title "$repo_name | 🤖 Responding..." >/dev/null 2>&1 || true
     fi
 }
 

@@ -50,6 +50,16 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Task|Read|Grep|Search|TodoWrite|mcp__graphiti-memory__search.*|WebFetch|WebSearch|Glob|LS",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/assistant-response-start.sh",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
         "matcher": "Bash(*git add*)",
         "hooks": [
           {
