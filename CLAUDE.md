@@ -27,6 +27,14 @@ shellcheck **/*.sh                    # Shell scripts
 luacheck private_dot_config/nvim/lua  # Neovim config
 actionlint                            # GitHub Actions
 brew bundle check --file=Brewfile     # Brewfile integrity
+pre-commit run --all-files            # Run all pre-commit hooks
+```
+
+### Secret Scanning
+```bash
+detect-secrets scan --baseline .secrets.baseline  # Scan for new secrets
+detect-secrets audit .secrets.baseline            # Review flagged secrets
+pre-commit run detect-secrets --all-files         # Run via pre-commit
 ```
 
 ## Key Files & Directories
@@ -54,3 +62,6 @@ Multi-platform testing (Ubuntu/macOS) with linting → build stages in `.github/
 - API tokens in `~/.api_tokens` (not in repo)
 - Private files use `private_` prefix
 - No secrets committed
+- **detect-secrets** pre-commit hook prevents accidental secret commits
+- **TruffleHog** scans for leaked credentials in git history
+- Both tools run automatically on commit via pre-commit hooks
