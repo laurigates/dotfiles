@@ -50,6 +50,7 @@ This ensures continuity and context-aware responses across all interactions.
 ## Core Principles
 
 ### Development Philosophy
+- **PRD-First Development**: Every new feature or significant change MUST have a Product Requirements Document (PRD) created before any implementation begins. Use the `prd-writer` subagent for all feature requests.
 - **Human-Centered Design**: Prioritize user experience and discoverability in all solutions
 - **Don't Reinvent the Wheel**: Leverage existing, proven solutions before creating custom implementations
 - **Test-Driven Development (TDD)**: Follow strict RED, GREEN, REFACTOR workflow to ensure robust and maintainable code
