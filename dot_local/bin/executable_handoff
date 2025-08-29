@@ -1,0 +1,362 @@
+#!/bin/bash
+# Deployment Handoff Message Generator
+# Generates professional handoff messages for deployed resources
+
+set -euo pipefail
+
+# Colors for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly BLUE='\033[0;34m'
+readonly YELLOW='\033[1;33m'
+readonly NC='\033[0m' # No Color
+
+# Default values
+SERVICE_NAME=""
+DEPLOYMENT_TYPE=""
+ENVIRONMENT="production"
+FORMAT="podio"
+DETAIL_LEVEL="standard"
+
+# Help function
+show_help() {
+    cat << EOF
+Usage: handoff [OPTIONS] [SERVICE_NAME] [DEPLOYMENT_TYPE]
+
+Generate professional handoff messages for deployed resources and services.
+
+ARGUMENTS:
+    SERVICE_NAME        Name of the deployed service/resource
+    DEPLOYMENT_TYPE     Type of deployment (web-app, api, database, etc.)
+
+OPTIONS:
+    -e, --environment   Deployment environment (production|staging|development)
+    -f, --format       Output format (podio|slack|markdown|email)
+    -d, --detail       Detail level (minimal|standard|comprehensive)
+    -h, --help         Show this help message
+
+EXAMPLES:
+    handoff "User API" "web-service"
+    handoff -e staging -f markdown "Payment System" "microservice"
+    handoff --detail comprehensive "Database Cluster" "infrastructure"
+
+This tool generates Podio-friendly handoff messages with deployment details,
+access information, and developer checklists.
+EOF
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -e|--environment)
+            ENVIRONMENT="$2"
+            shift 2
+            ;;
+        -f|--format)
+            FORMAT="$2"
+            shift 2
+            ;;
+        -d|--detail)
+            DETAIL_LEVEL="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            if [[ -z "$SERVICE_NAME" ]]; then
+                SERVICE_NAME="$1"
+            elif [[ -z "$DEPLOYMENT_TYPE" ]]; then
+                DEPLOYMENT_TYPE="$1"
+            else
+                echo -e "${RED}Error: Too many arguments${NC}" >&2
+                show_help >&2
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Interactive prompts for missing information
+if [[ -z "$SERVICE_NAME" ]]; then
+    echo -e "${BLUE}Enter service/resource name:${NC}"
+    read -r SERVICE_NAME
+fi
+
+if [[ -z "$DEPLOYMENT_TYPE" ]]; then
+    echo -e "${BLUE}Enter deployment type (web-app, api, database, infrastructure, etc.):${NC}"
+    read -r DEPLOYMENT_TYPE
+fi
+
+# Get repository information
+get_repo_info() {
+    local repo_url=""
+    local branch=""
+    local commit=""
+    
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        repo_url=$(git config --get remote.origin.url 2>/dev/null || echo "Not available")
+        branch=$(git branch --show-current 2>/dev/null || echo "Not available")
+        commit=$(git rev-parse --short HEAD 2>/dev/null || echo "Not available")
+    else
+        repo_url="Not a git repository"
+        branch="N/A"
+        commit="N/A"
+    fi
+    
+    echo "$repo_url|$branch|$commit"
+}
+
+# Generate current timestamp
+get_timestamp() {
+    date '+%Y-%m-%d %H:%M:%S %Z'
+}
+
+# Get deployer information
+get_deployer() {
+    local deployer=""
+    if git config --get user.name > /dev/null 2>&1; then
+        deployer=$(git config --get user.name)
+        local email=$(git config --get user.email 2>/dev/null || "")
+        if [[ -n "$email" ]]; then
+            deployer="$deployer <$email>"
+        fi
+    else
+        deployer="$USER"
+    fi
+    echo "$deployer"
+}
+
+# Generate handoff message based on format
+generate_handoff_message() {
+    local service_name="$1"
+    local deployment_type="$2"
+    local environment="$3"
+    local format="$4"
+    local detail_level="$5"
+    
+    local repo_info
+    local repo_url branch commit
+    repo_info=$(get_repo_info)
+    IFS='|' read -r repo_url branch commit <<< "$repo_info"
+    
+    local timestamp
+    timestamp=$(get_timestamp)
+    
+    local deployer
+    deployer=$(get_deployer)
+    
+    case $format in
+        podio|markdown)
+            generate_podio_format "$service_name" "$deployment_type" "$environment" "$detail_level" \
+                                 "$repo_url" "$branch" "$commit" "$timestamp" "$deployer"
+            ;;
+        slack)
+            generate_slack_format "$service_name" "$deployment_type" "$environment" "$detail_level" \
+                                 "$repo_url" "$branch" "$commit" "$timestamp" "$deployer"
+            ;;
+        email)
+            generate_email_format "$service_name" "$deployment_type" "$environment" "$detail_level" \
+                                 "$repo_url" "$branch" "$commit" "$timestamp" "$deployer"
+            ;;
+        *)
+            echo -e "${RED}Error: Unsupported format '$format'${NC}" >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Podio/Markdown format
+generate_podio_format() {
+    local service_name="$1" deployment_type="$2" environment="$3" detail_level="$4"
+    local repo_url="$5" branch="$6" commit="$7" timestamp="$8" deployer="$9"
+    
+    cat << EOF
+## 🚀 Deployment Handoff: $service_name
+
+**Service**: $service_name
+**Type**: $deployment_type
+**Environment**: $environment
+**Deployment Date**: $timestamp
+**Deployed By**: $deployer
+
+### 📋 Service Overview
+- **Purpose**: [Brief description of $service_name functionality]
+- **Technology Stack**: [Languages/frameworks used]
+- **Status**: ✅ Active and operational
+
+### 🔗 Access Information
+- **Service URL**: [Primary access point - to be provided]
+- **Admin Dashboard**: [Management interface - if applicable]
+- **API Documentation**: [API docs location - if applicable]
+- **Health Check**: [Monitoring endpoint - to be configured]
+
+### 📚 Documentation & Resources
+- **Repository**: $repo_url
+- **Branch/Tag**: $branch (commit: $commit)
+- **Setup Guide**: [Link to configuration instructions]
+- **Troubleshooting**: [Link to known issues and solutions]
+
+EOF
+
+    if [[ "$detail_level" == "comprehensive" ]]; then
+        cat << EOF
+### 🔧 Technical Details
+- **Architecture**: [High-level system design]
+- **Dependencies**: [External services and libraries]
+- **Configuration**: [Key environment variables and settings]
+- **Database**: [Connection details - non-sensitive]
+- **File Storage**: [Asset/file locations]
+
+### 📊 Monitoring & Operations
+- **Logging**: [Log locations and access methods]
+- **Monitoring**: [Health dashboards and alerting]
+- **Backups**: [Backup procedures and schedules]
+- **Scaling**: [Auto-scaling configuration]
+
+EOF
+    fi
+
+    cat << EOF
+### ✅ Developer Handoff Checklist
+- [ ] Review service functionality and purpose
+- [ ] Access all provided URLs and interfaces
+- [ ] Verify monitoring and alerting setup
+- [ ] Test basic functionality
+- [ ] Review configuration and environment variables
+EOF
+
+    if [[ "$detail_level" == "comprehensive" ]]; then
+        cat << EOF
+- [ ] Check backup and recovery procedures
+- [ ] Review security configurations
+- [ ] Test deployment process
+- [ ] Validate logging and monitoring
+- [ ] Document any additional findings
+EOF
+    fi
+
+    cat << EOF
+
+### 📞 Support & Contact
+For questions or issues with this deployment:
+1. Check the troubleshooting guide first
+2. Review application logs
+3. Contact $deployer for immediate assistance
+
+### 🔄 Next Steps
+- [ ] Complete developer handoff checklist
+- [ ] Schedule knowledge transfer session (if needed)
+- [ ] Update team documentation with any new learnings
+
+---
+*Generated on $timestamp*
+*Handoff message for $service_name ($deployment_type) in $environment*
+EOF
+}
+
+# Slack format
+generate_slack_format() {
+    local service_name="$1" deployment_type="$2" environment="$3" detail_level="$4"
+    local repo_url="$5" branch="$6" commit="$7" timestamp="$8" deployer="$9"
+    
+    cat << EOF
+🚀 *Deployment Handoff: $service_name*
+
+*Service:* $service_name
+*Type:* $deployment_type  
+*Environment:* $environment
+*Deployed By:* $deployer
+*Date:* $timestamp
+
+📋 *Quick Overview*
+• Purpose: [Brief description]
+• Status: ✅ Active and operational
+• Repository: $repo_url
+• Branch: $branch (commit: $commit)
+
+🔗 *Access Points*
+• Service URL: [To be provided]
+• Admin Dashboard: [If applicable]
+• Health Check: [To be configured]
+
+✅ *Handoff Checklist*
+□ Review service functionality
+□ Access all URLs and interfaces  
+□ Verify monitoring setup
+□ Test basic functionality
+
+📞 *Need Help?*
+Contact $deployer for questions or issues.
+
+Generated: $timestamp
+EOF
+}
+
+# Email format
+generate_email_format() {
+    local service_name="$1" deployment_type="$2" environment="$3" detail_level="$4"
+    local repo_url="$5" branch="$6" commit="$7" timestamp="$8" deployer="$9"
+    
+    cat << EOF
+Subject: Deployment Handoff - $service_name ($environment)
+
+Hello,
+
+This email contains handoff information for the recently deployed $service_name.
+
+DEPLOYMENT DETAILS:
+- Service Name: $service_name
+- Type: $deployment_type
+- Environment: $environment
+- Deployment Date: $timestamp
+- Deployed By: $deployer
+
+REPOSITORY INFORMATION:
+- Repository: $repo_url
+- Branch: $branch
+- Commit: $commit
+
+ACCESS INFORMATION:
+- Service URL: [To be provided]
+- Admin Dashboard: [If applicable] 
+- API Documentation: [If applicable]
+- Health Check Endpoint: [To be configured]
+
+DEVELOPER HANDOFF CHECKLIST:
+□ Review service functionality and purpose
+□ Access all provided URLs and interfaces
+□ Verify monitoring and alerting setup
+□ Test basic functionality
+□ Review configuration and environment variables
+
+SUPPORT CONTACT:
+For questions or issues with this deployment, please contact $deployer.
+
+Best regards,
+Automated Deployment System
+
+---
+Generated on $timestamp
+EOF
+}
+
+# Main execution
+main() {
+    echo -e "${GREEN}Generating handoff message for '$SERVICE_NAME' ($DEPLOYMENT_TYPE)...${NC}"
+    echo -e "${BLUE}Environment: $ENVIRONMENT${NC}"
+    echo -e "${BLUE}Format: $FORMAT${NC}"
+    echo -e "${BLUE}Detail Level: $DETAIL_LEVEL${NC}"
+    echo ""
+    
+    generate_handoff_message "$SERVICE_NAME" "$DEPLOYMENT_TYPE" "$ENVIRONMENT" "$FORMAT" "$DETAIL_LEVEL"
+    
+    echo ""
+    echo -e "${GREEN}✅ Handoff message generated successfully!${NC}"
+    echo -e "${YELLOW}💡 Copy the message above to your Podio ticket or communication platform.${NC}"
+}
+
+# Run main function
+main "$@"
