@@ -58,23 +58,22 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 ## Documentation Requirements
 **ALWAYS check documentation before implementing changes or features.**
 
-### Implementation Guidelines
-- **Verify syntax and parameters** in official documentation before coding
-- **Check for breaking changes** and version compatibility requirements
-- **Review best practices** and recommended patterns in the tool's documentation
-- **Validate configuration options** against current documentation versions
+### Implementation Checklist
+Before implementing any changes or features, complete this checklist:
+
+1. **Read relevant documentation sections thoroughly**
+2. **Verify syntax and parameters** in official documentation before coding
+3. **Check for breaking changes** and version compatibility requirements
+4. **Review best practices** and recommended patterns in the tool's documentation
+5. **Validate configuration options** against current documentation versions
+6. **Check for deprecated features** that should be avoided
+7. **Confirm implementation details match current best practices**
 
 ### Critical Documentation Sources
 - Tool-specific documentation (mise, Fish, Neovim, Homebrew, chezmoi)
 - GitHub Actions documentation for workflow modifications
 - Platform-specific guides for cross-platform compatibility
 - Security documentation for secrets handling and API token management
-
-### Before Any Implementation
-1. Read relevant documentation sections thoroughly
-2. Verify syntax and available options
-3. Check for deprecated features or breaking changes
-4. Confirm implementation details match current best practices
 
 ## CI Pipeline
 Multi-platform testing (Ubuntu/macOS) with linting → build stages in `.github/workflows/smoke.yml`
