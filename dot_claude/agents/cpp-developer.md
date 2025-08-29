@@ -78,10 +78,10 @@ project(MyProject VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # For clang tools integration
 
-find_package(conan REQUIRED)
-conan_cmake_configure(REQUIRES fmt/8.1.1
-                      GENERATORS cmake_find_package)
+# Modern Conan 2.0 integration
+find_package(fmt REQUIRED)
 
 add_executable(myapp src/main.cpp)
 target_link_libraries(myapp PRIVATE fmt::fmt)
@@ -149,15 +149,16 @@ auto process_data(const std::vector<int>& input) {
     return input 
         | std::views::filter([](int n) { return n > 0; })
         | std::views::transform([](int n) { return n * 2; })
-        | std::ranges::to<std::vector>();
+        | std::ranges::to<std::vector>(); // C++23 feature
 }
 ```
 
 **Coroutines (C++20)**
 ```cpp
 #include <coroutine>
+#include <generator> // C++23, or use custom implementation for C++20
 
-generator<int> fibonacci() {
+std::generator<int> fibonacci() {
     int a = 0, b = 1;
     while (true) {
         co_yield a;
