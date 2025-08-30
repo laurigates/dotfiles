@@ -61,6 +61,11 @@ source ~/.orbstack/shell/init2.fish 2>/dev/null || :
   abbr -a icat 'kitty +kitten icat'
   abbr -a s 'kitty +kitten ssh'
   abbr -a vim nvim
+  
+  # Kitty protocol cleanup command
+  if test "$TERM" = "xterm-kitty"
+    abbr -a ckp clean-kitty-protocol
+  end
 
   # Use bat if available
   if command -v bat >/dev/null

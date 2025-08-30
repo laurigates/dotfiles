@@ -6,6 +6,11 @@
 
 set -euo pipefail
 
+# Source the kitty protocol filter library
+if [[ -f "$HOME/.claude/lib/kitty-protocol-filter.sh" ]]; then
+    source "$HOME/.claude/lib/kitty-protocol-filter.sh"
+fi
+
 # Capture stdin data containing hook input JSON
 HOOK_INPUT=""
 if [ -t 0 ]; then
@@ -42,9 +47,12 @@ update_tab_title() {
     local repo_name
     repo_name=$(get_repo_name)
 
-    # Only update if we're in kitty and can access the terminal properly
-    if [[ "${TERM}" == "xterm-kitty" ]] && command -v kitty >/dev/null 2>&1 && [[ -c /dev/tty ]]; then
-        kitty @ set-tab-title "$repo_name | ✓ Ready" >/dev/null 2>&1 || true
+    # Use safe kitty command wrapper if available, otherwise fallback to direct command
+    if declare -f safe_set_tab_title >/dev/null 2>&1; then
+        safe_set_tab_title "$repo_name | ✓ Ready"
+    elif [[ "${TERM}" == "xterm-kitty" ]] && command -v kitty >/dev/null 2>&1 && [[ -c /dev/tty ]]; then
+        # Fallback: Redirect all kitty remote control output to prevent protocol leakage
+        kitty @ set-tab-title "$repo_name | ✓ Ready" >/dev/null 2>&1 < /dev/null || true
     fi
 }
 
