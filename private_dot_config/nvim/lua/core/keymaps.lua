@@ -54,6 +54,100 @@ map("t", "<Esc>", "<C-\\><C-n>") -- exit
 -- map('n', 'ga', '<Plug>(EasyAlign)')
 -- map('x', 'ga', '<Plug>(EasyAlign)')
 
+-- JSON to Lua conversion using vim.json.decode()
+local function json_to_lua()
+  local mode = vim.fn.mode()
+  local json_text
+
+  if mode == 'v' or mode == 'V' or mode == '\22' then -- visual modes
+    -- Get visually selected text
+    local start_pos = vim.fn.getpos("'<")
+    local end_pos = vim.fn.getpos("'>")
+    local lines = vim.fn.getline(start_pos[2], end_pos[2])
+    
+    if #lines == 1 then
+      -- Single line selection
+      json_text = string.sub(lines[1], start_pos[3], end_pos[3])
+    else
+      -- Multi-line selection
+      json_text = table.concat(lines, "\n")
+    end
+  else
+    -- Normal mode: get current line
+    json_text = vim.fn.getline('.')
+  end
+
+  -- Try to decode JSON
+  local success, lua_obj = pcall(vim.json.decode, json_text)
+  
+  if not success then
+    vim.notify("Invalid JSON: " .. lua_obj, vim.log.levels.ERROR)
+    return
+  end
+
+  -- Convert Lua object to string representation
+  local function serialize_lua(obj, indent)
+    indent = indent or 0
+    local spacing = string.rep("  ", indent)
+    
+    if type(obj) == "table" then
+      local result = "{\n"
+      local is_array = true
+      local max_index = 0
+      
+      -- Check if it's an array
+      for k, _ in pairs(obj) do
+        if type(k) ~= "number" then
+          is_array = false
+          break
+        else
+          max_index = math.max(max_index, k)
+        end
+      end
+      
+      if is_array then
+        for i = 1, max_index do
+          if obj[i] ~= nil then
+            result = result .. spacing .. "  " .. serialize_lua(obj[i], indent + 1) .. ",\n"
+          end
+        end
+      else
+        for k, v in pairs(obj) do
+          local key = type(k) == "string" and (k:match("^[%a_][%w_]*$") and k or '["' .. k .. '"]') or "[" .. k .. "]"
+          result = result .. spacing .. "  " .. key .. " = " .. serialize_lua(v, indent + 1) .. ",\n"
+        end
+      end
+      
+      result = result .. spacing .. "}"
+      return result
+    elseif type(obj) == "string" then
+      return '"' .. obj:gsub('"', '\\"') .. '"'
+    else
+      return tostring(obj)
+    end
+  end
+
+  local lua_str = serialize_lua(lua_obj)
+  
+  -- Replace the text
+  if mode == 'v' or mode == 'V' or mode == '\22' then -- visual modes
+    -- Replace selected text
+    vim.cmd('normal! c' .. lua_str)
+  else
+    -- Replace current line
+    vim.fn.setline('.', lua_str)
+  end
+  
+  vim.notify("JSON converted to Lua", vim.log.levels.INFO)
+end
+
+-- Map <leader>jl for "JSON to Lua"
+vim.keymap.set({'n', 'v'}, '<leader>jl', json_to_lua, { 
+  noremap = true, 
+  silent = true, 
+  desc = "Convert JSON to Lua using vim.json.decode()" 
+})
+
 -- Surround like delete/change surrounding function calls
 -- map('n', 'dsf', 'ds)db', { noremap = false })
 -- map('n', 'csf', '[(cb')
