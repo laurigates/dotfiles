@@ -28,8 +28,8 @@
 {{- $settingsFile := joinPath .chezmoi.homeDir ".claude" "settings.json" }}
 {{- if stat $settingsFile }}
 {{- $existing := $settingsFile | include | fromJson }}
-  "model": {{ $existing.model | toJson }},
-  "feedbackSurveyState": {{ $existing.feedbackSurveyState | toJson }},
+  "model": {{ if hasKey $existing "model" }}{{ $existing.model | toJson }}{{ else }}"sonnet"{{ end }},
+  "feedbackSurveyState": {{ if hasKey $existing "feedbackSurveyState" }}{{ $existing.feedbackSurveyState | toJson }}{{ else }}{ "lastShownTime": 1754075292901 }{{ end }},
 {{- else }}
   "model": "sonnet",
   "feedbackSurveyState": {
