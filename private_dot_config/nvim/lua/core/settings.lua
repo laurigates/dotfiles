@@ -33,7 +33,11 @@ opt.linebreak = true -- Wrap on word boundary
 opt.scrolloff = 12 -- Start scrolling before reaching the edge when moving with j/k
 opt.diffopt:append("vertical,iwhite,algorithm:histogram,hiddenoff")
 opt.listchars = "eol:↲,tab:» ,extends:›,precedes:‹,nbsp:☠,trail:·"
-require("vim._extui").enable({}) -- Enable experimental cmdline features
+-- Safely enable experimental cmdline features if available
+local ok, extui = pcall(require, "vim._extui")
+if ok and extui.enable then
+  extui.enable({})
+end
 
 -----------------------------------------------------------
 -- Tabs, indent
