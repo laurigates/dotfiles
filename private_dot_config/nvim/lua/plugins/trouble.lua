@@ -1,7 +1,17 @@
 return {
   {
     "folke/trouble.nvim",
-    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    opts = {
+      -- Example of opts overriding - these options merge with defaults
+      modes = {
+        lsp_document_symbols = {
+          mode = "lsp_document_symbols",
+          focus = false,
+          win = { position = "right", size = { width = 0.3 } },
+          filter = { range = true },
+        },
+      },
+    },
     cmd = "Trouble",
     keys = {
       {
