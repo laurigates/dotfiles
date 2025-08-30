@@ -18,8 +18,8 @@ class VoiceConfig:
     def __init__(self) -> None:
         self.config_path = Path.home() / ".claude" / "voice-config.json"
         # Use the uv-managed entry point with proper working directory
-        self.voice_project_dir = Path.home() / ".claude" / "voice-notify-project"
-        self.voice_script_cmd = ["uv", "run", "voice-notify"]
+        self.voice_project_dir = Path.home() / ".claude" / "hooks" / "voice-notify"
+        self.voice_script_cmd = ["uv", "run", "python", "notify.py"]
 
     def load_config(self) -> dict[str, Any]:
         """Load the current configuration."""

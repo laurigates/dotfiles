@@ -16,8 +16,10 @@ alias edit_aliases='nvim ~/dotfiles/zsh/aliases.zsh && source ~/dotfiles/zsh/ali
 alias reload="exec zsh"
 
 
-# use bat if it exists
-type bat >/dev/null 2>&1 && alias cat="bat"
+# Configure these aliases unless in Claude code
+# Otherwise it will be confused when the standard command is different from the norm
+[ ! $CLAUDECODE ] && type bat >/dev/null 2>&1 \
+  && alias cat="bat"
 
 # fzf preview
 alias preview="fzf --preview 'bat --color \"always\" {}'"
@@ -27,10 +29,13 @@ alias icat="kitty +kitten icat"
 alias s="kitty +kitten ssh"
 
 # Claude voice notification management
-alias voice-config='cd ~/.claude/voice-notify-project && uv run voice-config'
-alias voice-test='cd ~/.claude/voice-notify-project && uv run voice-notify'
+alias voice-config='cd ~/.claude/hooks/voice-notify && uv run python config.py'
+alias voice-test='cd ~/.claude/hooks/voice-notify && uv run python notify.py'
 
-type lsd >/dev/null 2>&1 && \
+# Configure these aliases unless in Claude code
+# Otherwise it will be confused when the standard command is different from the norm
+[ ! $CLAUDECODE ] && type lsd >/dev/null 2>&1 && \
+  alias ls='lsd -A' \
   alias tree='lsd --tree' && \
   alias ll='lsd --long --almost-all'
 
