@@ -55,22 +55,40 @@ map("t", "<Esc>", "<C-\\><C-n>") -- exit
 -- map('x', 'ga', '<Plug>(EasyAlign)')
 
 -- JSON to Lua conversion using vim.json.decode()
-local function json_to_lua()
+function json_to_lua()
   local mode = vim.fn.mode()
   local json_text
 
   if mode == 'v' or mode == 'V' or mode == '\22' then -- visual modes
-    -- Get visually selected text
+    -- Get visually selected text using treesitter method for accurate selection
     local start_pos = vim.fn.getpos("'<")
     local end_pos = vim.fn.getpos("'>")
-    local lines = vim.fn.getline(start_pos[2], end_pos[2])
     
-    if #lines == 1 then
-      -- Single line selection
-      json_text = string.sub(lines[1], start_pos[3], end_pos[3])
+    -- Use vim.fn.getregion for accurate visual selection
+    if vim.fn.has('nvim-0.10') == 1 and vim.fn.getregion then
+      local region = vim.fn.getregion(start_pos, end_pos, { type = mode })
+      json_text = table.concat(region, "\n")
     else
-      -- Multi-line selection
-      json_text = table.concat(lines, "\n")
+      -- Fallback for older versions
+      local lines = vim.fn.getline(start_pos[2], end_pos[2])
+      
+      if #lines == 1 then
+        -- Single line selection - fix the column handling
+        local start_col = start_pos[3]
+        local end_col = mode == 'v' and end_pos[3] or #lines[1]
+        json_text = string.sub(lines[1], start_col, end_col)
+      else
+        -- Multi-line selection
+        if #lines > 1 then
+          -- Fix first line (from start position to end)
+          lines[1] = string.sub(lines[1], start_pos[3])
+          -- Fix last line (from start to end position)
+          if mode == 'v' then
+            lines[#lines] = string.sub(lines[#lines], 1, end_pos[3])
+          end
+        end
+        json_text = table.concat(lines, "\n")
+      end
     end
   else
     -- Normal mode: get current line
@@ -121,7 +139,7 @@ local function json_to_lua()
       result = result .. spacing .. "}"
       return result
     elseif type(obj) == "string" then
-      return '"' .. obj:gsub('"', '\\"') .. '"'
+      return string.format('%q', obj)
     else
       return tostring(obj)
     end
@@ -131,8 +149,9 @@ local function json_to_lua()
   
   -- Replace the text
   if mode == 'v' or mode == 'V' or mode == '\22' then -- visual modes
-    -- Replace selected text
-    vim.cmd('normal! c' .. lua_str)
+    -- Replace selected text safely
+    vim.cmd('normal! d')
+    vim.api.nvim_put({lua_str}, 'c', true, true)
   else
     -- Replace current line
     vim.fn.setline('.', lua_str)
@@ -142,11 +161,8 @@ local function json_to_lua()
 end
 
 -- Map <leader>jl for "JSON to Lua"
-vim.keymap.set({'n', 'v'}, '<leader>jl', json_to_lua, { 
-  noremap = true, 
-  silent = true, 
-  desc = "Convert JSON to Lua using vim.json.decode()" 
-})
+map('n', '<leader>jl', '<cmd>lua json_to_lua()<CR>', { desc = "Convert JSON to Lua using vim.json.decode()" })
+map('v', '<leader>jl', '<cmd>lua json_to_lua()<CR>', { desc = "Convert JSON to Lua using vim.json.decode()" })
 
 -- Surround like delete/change surrounding function calls
 -- map('n', 'dsf', 'ds)db', { noremap = false })
