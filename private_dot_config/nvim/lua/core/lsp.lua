@@ -11,13 +11,22 @@ vim.lsp.config("*", {
 
 -- require("mason").setup()
 -- require("mason-lspconfig").setup({
---   -- ensure_installed = { "rust_analyzer", "lua_ls" }
+--   -- ensure_installed = { "rust_analyzer", "lua_ls", "jsonls" }
 -- })
 
 vim.lsp.config("terraformls", {
   settings = {
     ["terraform"] = {
       experimentalFeatures = { prefillRequiredFields = true, validateOnSave = true },
+    },
+  },
+})
+
+vim.lsp.config("jsonls", {
+  settings = {
+    json = {
+      schemas = require('schemastore').json.schemas(),
+      validate = { enable = true },
     },
   },
 })

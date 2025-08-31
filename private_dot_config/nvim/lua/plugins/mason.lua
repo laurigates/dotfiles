@@ -40,6 +40,7 @@ return {
         },
         opts = { lsp = { auto_attach = true } },
       },
+      "b0o/schemastore.nvim",
     },
     -- your lsp config or other stuff
   },
