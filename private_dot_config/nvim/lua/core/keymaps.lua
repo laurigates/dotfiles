@@ -79,13 +79,11 @@ function json_to_lua()
         json_text = string.sub(lines[1], start_col, end_col)
       else
         -- Multi-line selection
-        if #lines > 1 then
-          -- Fix first line (from start position to end)
-          lines[1] = string.sub(lines[1], start_pos[3])
-          -- Fix last line (from start to end position)
-          if mode == 'v' then
-            lines[#lines] = string.sub(lines[#lines], 1, end_pos[3])
-          end
+        -- Fix first line (from start position to end)
+        lines[1] = string.sub(lines[1], start_pos[3])
+        -- Fix last line (from start to end position)
+        if mode == 'v' then
+          lines[#lines] = string.sub(lines[#lines], 1, end_pos[3])
         end
         json_text = table.concat(lines, "\n")
       end
@@ -113,21 +111,25 @@ function json_to_lua()
       local is_array = true
       local max_index = 0
       
-      -- Check if it's an array
+      -- Check if it's an array (consecutive integer keys starting from 1)
+      local count = 0
       for k, _ in pairs(obj) do
-        if type(k) ~= "number" then
+        if type(k) ~= "number" or k <= 0 or k ~= math.floor(k) then
           is_array = false
           break
-        else
-          max_index = math.max(max_index, k)
         end
+        count = count + 1
+        max_index = math.max(max_index, k)
+      end
+      
+      -- Additional check: ensure no gaps (consecutive keys)
+      if is_array and count > 0 and count ~= max_index then
+        is_array = false
       end
       
       if is_array then
         for i = 1, max_index do
-          if obj[i] ~= nil then
-            result = result .. spacing .. "  " .. serialize_lua(obj[i], indent + 1) .. ",\n"
-          end
+          result = result .. spacing .. "  " .. serialize_lua(obj[i], indent + 1) .. ",\n"
         end
       else
         for k, v in pairs(obj) do
