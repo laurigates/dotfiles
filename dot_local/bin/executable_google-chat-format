@@ -31,16 +31,16 @@ OPTIONS:
 EXAMPLES:
     # Convert text from argument
     google-chat-format "# Header\n**bold text**"
-    
+
     # Convert from file
     google-chat-format -f document.md
-    
+
     # Convert clipboard content
     google-chat-format -c
-    
+
     # Preview changes
     google-chat-format -p -f document.md
-    
+
     # Edit file in-place
     google-chat-format -f document.md -i
 
@@ -51,30 +51,30 @@ EOF
 # Convert text to Google Chat format
 convert_text() {
     local text="$1"
-    
+
     # Convert headers to bold
     text=$(echo "$text" | sed -E 's/^### (.*)/\*\1\*/g')
     text=$(echo "$text" | sed -E 's/^## (.*)/\*\1\*/g')
     text=$(echo "$text" | sed -E 's/^# (.*)/\*\1\*/g')
-    
+
     # Convert double asterisk bold to single asterisk
     text=$(echo "$text" | sed -E 's/\*\*([^*]+)\*\*/\*\1\*/g')
-    
+
     # Convert underscore bold to asterisk
     text=$(echo "$text" | sed -E 's/__([^_]+)__/\*\1\*/g')
-    
+
     # Convert list markers to bullet points
     text=$(echo "$text" | sed -E 's/^[[:space:]]*[-*+][[:space:]]/• /g')
-    
+
     # Fix label formatting (convert **Label:** to *Label:*)
     text=$(echo "$text" | sed -E 's/\*\*([^:]+):\*\*/\*\1:\*/g')
-    
+
     # Remove excessive blank lines (more than 2 consecutive)
     text=$(echo "$text" | sed -E '/^[[:space:]]*$/N;/\n[[:space:]]*$/N;/\n[[:space:]]*\n[[:space:]]*$/d')
-    
+
     # Ensure single blank line between sections (after bold headers)
     text=$(echo "$text" | sed -E '/^\*.*\*$/{N;/\n[^[:space:]]/s/\n/\n\n/;}')
-    
+
     echo "$text"
 }
 
@@ -120,7 +120,7 @@ main() {
     local in_place=false
     local preview=false
     local input_text=""
-    
+
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -151,7 +151,7 @@ main() {
                 ;;
         esac
     done
-    
+
     # Get input text
     if [[ "$use_clipboard" == true ]]; then
         input_text=$(get_clipboard)
@@ -168,10 +168,10 @@ main() {
         input_text=$(cat)
         echo -e "${YELLOW}Processing stdin...${NC}" >&2
     fi
-    
+
     # Convert the text
     converted_text=$(convert_text "$input_text")
-    
+
     # Handle output
     if [[ "$preview" == true ]]; then
         echo -e "${GREEN}=== ORIGINAL ===${NC}"
