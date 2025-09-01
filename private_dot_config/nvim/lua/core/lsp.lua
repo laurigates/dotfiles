@@ -1,13 +1,27 @@
 -- Add the same capabilities to ALL server configurations.
 -- Refer to :h vim.lsp.config() for more information.
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+-- Check if blink.cmp is available and merge capabilities
+local ok, blink = pcall(require, 'blink.cmp')
+if ok then
+  capabilities = vim.tbl_deep_extend('force', capabilities, blink.get_lsp_capabilities())
+end
+
+-- Add onTypeFormatting capability for blink.cmp compatibility
+capabilities.textDocument.onTypeFormatting = { dynamicRegistration = false }
+
 vim.lsp.config("*", {
-  capabilities = vim.lsp.protocol.make_client_capabilities(),
+  capabilities = capabilities,
   on_attach = function(client, bufnr)
     if client.server_capabilities.documentSymbolProvider then
       require("nvim-navic").attach(client, bufnr)
     end
   end,
 })
+
+-- Enable LSP on-type formatting
+vim.lsp.on_type_formatting.enable()
 
 -- require("mason").setup()
 -- require("mason-lspconfig").setup({
