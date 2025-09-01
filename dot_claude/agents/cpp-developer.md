@@ -116,7 +116,7 @@ class FileHandler {
 private:
     std::unique_ptr<FILE, decltype(&fclose)> file_;
 public:
-    explicit FileHandler(const std::string& path) 
+    explicit FileHandler(const std::string& path)
         : file_(fopen(path.c_str(), "r"), &fclose) {
         if (!file_) throw std::runtime_error("Failed to open file");
     }
@@ -141,7 +141,7 @@ constexpr T square(T value) {
 #include <algorithm>
 
 auto process_data(const std::vector<int>& input) {
-    return input 
+    return input
         | std::views::filter([](int n) { return n > 0; })
         | std::views::transform([](int n) { return n * 2; })
         | std::ranges::to<std::vector>(); // C++23 feature
@@ -225,7 +225,7 @@ std::snprintf(safe_buffer.data(), safe_buffer.size(), "Format: %s", input.data()
 ```cpp
 // Always validate array/container access
 template<typename Container, typename Index>
-constexpr auto safe_access(const Container& container, Index idx) 
+constexpr auto safe_access(const Container& container, Index idx)
     -> std::optional<typename Container::value_type> {
     if (idx >= 0 && static_cast<size_t>(idx) < container.size()) {
         return container[idx];
@@ -247,13 +247,13 @@ class SecureBuffer {
 private:
     std::unique_ptr<unsigned char[]> data_;
     size_t size_;
-    
+
 public:
     explicit SecureBuffer(size_t size) : size_(size) {
         data_ = std::make_unique<unsigned char[]>(size);
         // Initialize with secure random data if needed
     }
-    
+
     ~SecureBuffer() {
         // Securely clear memory before deallocation
         if (data_) {

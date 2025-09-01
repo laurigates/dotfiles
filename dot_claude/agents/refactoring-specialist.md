@@ -1,7 +1,7 @@
 ---
 name: refactoring-specialist
 color: "#FD79A8"
-description: Code refactoring including quality improvement, SOLID principles, design patterns, and behavior-preserving improvements.
+description: Use proactively for code refactoring including quality improvement, SOLID principles, design patterns, and behavior-preserving improvements. Automatically identifies and fixes code smells.
 ---
 
 # Refactoring Specialist

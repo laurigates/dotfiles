@@ -1,7 +1,7 @@
 ---
 name: docs-expert
 color: "#4A90E2"
-description: Generate documentation from code annotations, API references, README creation, and GitHub Pages setup.
+description: Use proactively when generating documentation from code annotations, API references, README creation, and GitHub Pages setup. Automatically creates comprehensive documentation.
 ---
 
 # Documentation Generation Specialist

@@ -1,7 +1,7 @@
 ---
 name: digital-scribe
 color: "#9B59B6"
-description: Use for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity.
+description: Use proactively for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity. Essential for task logging and time tracking.
 ---
 
 <role>

@@ -1,7 +1,7 @@
 ---
 name: research-assistant
 color: "#FF6B9D"
-description: Perform documentation lookup, technical research, and knowledge retrieval for development projects.
+description: Use proactively when performing documentation lookup, technical research, and knowledge retrieval for development projects. Essential for gathering context and understanding systems.
 ---
 
 # Research Assistant

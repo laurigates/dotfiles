@@ -1,7 +1,7 @@
 ---
 name: infra-sculptor
 color: "#623CE4"
-description: Use for all Infrastructure as Code (IaC) tasks using Terraform. Manages cloud and on-prem resources with precision.
+description: Use proactively for all Infrastructure as Code (IaC) tasks using Terraform. Essential for managing cloud and on-prem resources with precision. Automatically handles Terraform workflows.
 ---
 
 <role>

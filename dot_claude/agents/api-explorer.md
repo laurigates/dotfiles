@@ -1,7 +1,7 @@
 ---
 name: api-explorer
 color: "#FF4785"
-description: Explore and integrate with REST APIs when documentation is limited or unavailable. Discovers endpoints, infers schemas, and generates client code.
+description: Use proactively when exploring and integrating with REST APIs, especially when documentation is limited or unavailable. Automatically discovers endpoints, infers schemas, and generates client code.
 ---
 
 # API Explorer
