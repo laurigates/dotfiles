@@ -33,8 +33,8 @@ Currently, users have only visual indicators when Claude finishes tasks. This cr
 ## Technical Requirements
 
 ### Voice Generation
-- **Primary**: Gemini API text-to-speech with 30+ voice options
-- **Fallback**: macOS `say` command for reliability
+- **Primary**: Gemini API text-to-speech with 30+ voice options (default - uses GEMINI_API_KEY)
+- **Fallback**: macOS `say` command for reliability when API key not available
 - **Audio Format**: 24kHz output for high quality
 
 ### Voice Configuration System
@@ -89,6 +89,7 @@ Based on Gemini API documentation:
 class VoiceNotifier:
     def __init__(self, config_path):
         self.config = self.load_config(config_path)
+        # Default to Gemini API, initialized with GEMINI_API_KEY from environment
         self.gemini_client = self.init_gemini_client()
 
     def notify(self, message, project=None, style=None):
@@ -172,9 +173,10 @@ def analyze_message_style(message_content):
 ## Configuration and Customization
 
 ### Initial Setup
-1. **Voice Testing**: Interactive voice selection wizard
-2. **Project Mapping**: Automatic detection of repositories with manual override
-3. **Style Preferences**: User preference gathering for notification styles
+1. **API Key Configuration**: Set GEMINI_API_KEY environment variable (defaults to this if available)
+2. **Voice Testing**: Interactive voice selection wizard using Gemini API voices
+3. **Project Mapping**: Automatic detection of repositories with manual override
+4. **Style Preferences**: User preference gathering for notification styles
 
 ### Runtime Configuration
 - **Enable/Disable**: Global toggle and per-session control
@@ -190,7 +192,9 @@ def analyze_message_style(message_content):
 
 ### API Integration
 ```python
-# Gemini TTS Configuration
+# Gemini TTS Configuration (default - uses GEMINI_API_KEY environment variable)
+import os
+client = genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
 response = client.models.generate_content(
     model="gemini-2.5-flash-preview-tts",
     contents=f"Say {style}: {message}",
@@ -208,6 +212,7 @@ response = client.models.generate_content(
 ```
 
 ### Error Handling
+- **API Key Missing**: Check for GEMINI_API_KEY environment variable, fallback to macOS `say` if not present
 - **API Failures**: Automatic fallback to macOS `say` command
 - **Network Issues**: Cached responses for common messages
 - **Rate Limiting**: Intelligent queuing and API quota management
@@ -254,9 +259,9 @@ response = client.models.generate_content(
 ## Rollout Plan
 
 ### Phase 1: Core Implementation
-- Basic voice notification with single voice
+- Basic voice notification with single voice using Gemini API (default)
 - Hook integration for `Stop` events
-- Simple configuration system
+- Simple configuration system with GEMINI_API_KEY detection
 
 ### Phase 2: Enhanced Features
 - Multi-voice support
@@ -271,7 +276,7 @@ response = client.models.generate_content(
 ## Risk Mitigation
 
 ### Technical Risks
-- **API Dependency**: Robust fallback to system TTS
+- **API Dependency**: Defaults to Gemini API when GEMINI_API_KEY present, robust fallback to system TTS otherwise
 - **Audio Issues**: Graceful failure without blocking workflow
 - **Performance Impact**: Async processing and caching
 

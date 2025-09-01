@@ -131,14 +131,19 @@ class CasualSummarizer:
         """Build a prompt for Gemini to generate a casual summary."""
 
         # Start with the base instruction
-        prompt = """Generate a brief, casual, and friendly voice notification message based on the following context.
-The message should be conversational, like a helpful colleague telling you what they just did.
-Keep it under 15 words and make it natural for text-to-speech.
+        prompt = """OUTPUT ONLY THE NOTIFICATION MESSAGE. NO PREAMBLE. NO EXPLANATION.
+Generate a brief, casual voice notification that describes SPECIFICALLY what was done.
+The message should sound like a colleague telling you what they just accomplished.
+Be specific about files, commands, or actions taken. Avoid generic phrases.
+DO NOT include phrases like "Here's a notification" or "Okay" at the start.
 
 Context:
 """
 
         # Add relevant context details
+        if context.get('project_name'):
+            prompt += f"- Project: {context['project_name']}\n"
+
         if context.get('primary_activity'):
             prompt += f"- Primary activity: {context['primary_activity']}\n"
 
@@ -151,7 +156,15 @@ Context:
             prompt += f"- Tools used: {tools_list}\n"
 
         if context.get('commands_run'):
-            prompt += f"- Commands run: {', '.join(context['commands_run'][:2])}\n"
+            # Show more detail about commands
+            cmd_details = []
+            for cmd in context['commands_run'][:3]:
+                # Keep meaningful parts of commands
+                if len(cmd) > 60:
+                    cmd_details.append(cmd[:60] + "...")
+                else:
+                    cmd_details.append(cmd)
+            prompt += f"- Commands run: {'; '.join(cmd_details)}\n"
 
         if context.get('tests_results'):
             results = context['tests_results']
@@ -181,13 +194,20 @@ Context:
 
         # Add examples for consistency
         prompt += """
-Examples of good messages:
-- "Just fixed those TypeScript errors in your components!"
-- "I've updated your Docker config and it's ready to go!"
-- "Created the new API endpoints you needed!"
-- "Ran into some build issues - check the logs!"
+Examples of GOOD specific messages:
+"Fixed the linting errors in voice-notify.py!"
+"Updated the TypeScript interfaces in components.tsx!"
+"Ran ruff format on all Python files - they're clean now!"
+"Created new Docker config in the infrastructure folder!"
+"All 42 tests are passing in the backend module!"
 
-Now generate a similar casual message for the above context:"""
+Examples of BAD generic messages to AVOID:
+"Pushed the updated code"
+"Made some changes to files"
+"Updated the project"
+"Fixed some issues"
+
+OUTPUT ONLY THE MESSAGE TEXT (be specific about what was actually done):"""
 
         return prompt
 
