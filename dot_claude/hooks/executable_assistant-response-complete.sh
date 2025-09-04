@@ -64,6 +64,9 @@ trigger_voice_notification() {
     local voice_notify_dir="$HOME/.claude/hooks/voice-notify"
     local hooks_dir="$HOME/.claude/hooks"
 
+    # Check for debug mode
+    local debug_mode="${CLAUDE_VOICE_DEBUG:-false}"
+
     # Try enhanced notification with transcript context
     if [[ -d "$voice_notify_dir" ]] && \
        [[ -f "$voice_notify_dir/notify.py" ]] && \
@@ -81,11 +84,23 @@ trigger_voice_notification() {
             local transcript_input
             transcript_input=$(echo "{\"transcript_path\": \"$TRANSCRIPT_PATH\", \"project_name\": \"$repo_name\"}" | jq -c . 2>/dev/null || echo "{\"transcript_path\": \"$TRANSCRIPT_PATH\", \"project_name\": \"$repo_name\"}")
 
+            if [[ "$debug_mode" == "true" ]]; then
+                echo "[DEBUG] Transcript input: $transcript_input" >&2
+            fi
+
             context_json=$(echo "$transcript_input" | (cd "$hooks_dir" && uv run python transcript_context_extractor.py) 2>/dev/null || echo "{}")
+
+            if [[ "$debug_mode" == "true" ]]; then
+                echo "[DEBUG] Extracted context: $context_json" >&2
+            fi
 
             # Generate casual summary from the context
             if [[ -f "$hooks_dir/casual_summarizer.py" ]] && [[ "$context_json" != "{}" ]]; then
                 casual_message=$(echo "$context_json" | (cd "$hooks_dir" && uv run python casual_summarizer.py) 2>/dev/null || echo "Task completed in $repo_name!")
+            fi
+
+            if [[ "$debug_mode" == "true" ]]; then
+                echo "[DEBUG] Generated message: $casual_message" >&2
             fi
 
             # Get event type from context

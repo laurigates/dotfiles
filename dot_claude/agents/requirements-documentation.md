@@ -1,7 +1,9 @@
 ---
-name: prd-writer
+name: requirements-documentation
+model: inherit
 color: "#9C27B0"
 description: Use proactively whenever new features are requested or planned. Creates comprehensive Product Requirements Documents (PRDs) before any implementation begins.
+tools: Read, Write, TodoWrite, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

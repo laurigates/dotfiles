@@ -1,9 +1,8 @@
 ---
-name: json-expert
-color: "#FFD700"
+name: json-processing
+model: inherit
 description: JSON processing, validation, schema management, and large file handling with LSP integration.
-tools: [Read, Write, Edit, MultiEdit, Bash, Grep, Glob, LS, mcp__sequential-thinking__*, mcp__graphiti-memory__*]
-execution_log: true
+tools: Write, Edit, MultiEdit, Grep, Glob, LS, Read, WebFetch, TodoWrite, WebSearch, mcp__lsp-jsonls__get_info_on_location, mcp__lsp-jsonls__get_completions, mcp__lsp-jsonls__get_code_actions, mcp__lsp-jsonls__restart_lsp_server, mcp__lsp-jsonls__start_lsp, mcp__lsp-jsonls__open_document, mcp__lsp-jsonls__close_document, mcp__lsp-jsonls__get_diagnostics, mcp__lsp-jsonls__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 # JSON Processing Expert
@@ -156,7 +155,7 @@ cat data.json | jq '[.[] | select(.active == true)] | sort_by(.priority)' > filt
 ### Large File Handling
 ```bash
 # Use streaming for very large files
-cat huge.json | jq --stream '. as $item | select($item[0][0] == "target_field")' 
+cat huge.json | jq --stream '. as $item | select($item[0][0] == "target_field")'
 
 # Parallel processing with GNU parallel
 echo '{}' | parallel -j4 'cat large-{}.json | jq ".[]" > processed-{}.json' ::: {1..4}
@@ -178,8 +177,8 @@ echo '{}' | parallel -j4 'cat large-{}.json | jq ".[]" > processed-{}.json' ::: 
 ```bash
 # Complex filtering with multiple conditions
 jq '.[] | select(
-  .status == "active" and 
-  .priority > 5 and 
+  .status == "active" and
+  .priority > 5 and
   (.tags | contains(["urgent"]))
 )' data.json
 
@@ -215,7 +214,7 @@ repos:
         entry: python -m json.tool
         language: system
         files: \.json$
-      
+
       - id: json-format
         name: Format JSON files
         entry: jq '.'
@@ -230,7 +229,7 @@ repos:
   run: |
     find . -name "*.json" -not -path "./node_modules/*" | \
     xargs -I {} jsonschema -i {} schema.json
-    
+
 - name: Check JSON formatting
   run: |
     find . -name "*.json" | while read file; do
@@ -304,7 +303,7 @@ jq -r '["Field1", "Field2", "Field3"], (.[] | [.field1, .field2, .field3]) | @cs
 - Log all JSON processing commands with performance metrics
 - Include file sizes, processing times, and memory usage
 - Report validation results with detailed error locations
-- Store execution data in Graphiti Memory with group_id="json_processing" 
+- Store execution data in Graphiti Memory with group_id="json_processing"
 - Document schema validation failures with specific error messages
 - Provide optimization recommendations for large file operations
 

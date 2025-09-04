@@ -1,7 +1,9 @@
 ---
-name: debug-specialist
+name: debugging
+model: inherit
 color: "#FF4757"
 description: Use proactively for debugging including systematic investigation, root cause analysis, error reproduction, and stack trace analysis.
+tools: Glob, Grep, LS, Read, Bash, BashOutput, TodoWrite, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__zen-mcp-server__debug, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

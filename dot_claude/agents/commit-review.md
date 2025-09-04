@@ -1,7 +1,9 @@
 ---
-name: commit-reviewer
+name: commit-review
+model: inherit
 color: "#E67E22"
 description: Use proactively for commit analysis including code quality, security vulnerabilities, consistency, and best practices review.
+tools: Glob, Grep, LS, Read, Bash, mcp__github__get_commit, mcp__github__get_pull_request, mcp__github__get_pull_request_diff, mcp__github__get_pull_request_files, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

@@ -1,7 +1,9 @@
 ---
-name: research-assistant
+name: research-documentation
+model: inherit
 color: "#FF6B9D"
 description: Use proactively when performing documentation lookup, technical research, and knowledge retrieval for development projects. Essential for gathering context and understanding systems.
+tools: Read, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 # Research Assistant

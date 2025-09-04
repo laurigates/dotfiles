@@ -1,5 +1,6 @@
 ---
-name: "Command Expert"
+name: command-automation
+model: inherit
 color: "#E67E22"
 description: "Use proactively when creating or improving Claude Code commands, slash commands, and workflow templates. Essential for command optimization, template standardization, workflow automation, quality gates, and cross-platform project initialization."
 tools: ["Read", "Write", "Edit", "MultiEdit", "Bash", "Glob", "Grep"]

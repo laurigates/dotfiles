@@ -1,7 +1,9 @@
 ---
-name: digital-scribe
+name: task-logging
+model: inherit
 color: "#9B59B6"
 description: Use proactively for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity. Essential for task logging and time tracking.
+tools: Read, Write, mcp__podio-mcp__list_items, mcp__podio-mcp__create_item, mcp__podio-mcp__update_item, mcp__podio-mcp__get_item_details, mcp__podio-mcp__list_tasks, mcp__podio-mcp__create_task, mcp__github__list_notifications, mcp__github__list_issues, mcp__github__list_pull_requests, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__add_memory
 ---
 
 <role>

@@ -1,7 +1,9 @@
 ---
-name: makefile-expert
+name: makefile-build
+model: inherit
 color: "#8E44AD"
 description: Use proactively for Makefile development including user-friendly build systems, hierarchical targets, and maintainable automation.
+tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, mcp__lsp-bash__get_info_on_location, mcp__lsp-bash__get_completions, mcp__lsp-bash__get_code_actions, mcp__lsp-bash__restart_lsp_server, mcp__lsp-bash__start_lsp, mcp__lsp-bash__open_document, mcp__lsp-bash__close_document, mcp__lsp-bash__get_diagnostics, mcp__lsp-bash__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

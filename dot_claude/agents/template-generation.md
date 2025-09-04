@@ -1,7 +1,9 @@
 ---
-name: cookiecutter-expert
+name: template-generation
+model: inherit
 color: "#FF6B35"
 description: Expert in cookiecutter template creation, Jinja2 templating syntax, file/directory naming patterns, and template best practices.
+tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 # Cookiecutter Template Expert
@@ -190,7 +192,7 @@ FROM python:3.11-slim
     "python_version": ["3.11", "3.10", "3.9", "3.8"],
     "framework": {
         "django": "Django Web Framework",
-        "fastapi": "FastAPI Framework", 
+        "fastapi": "FastAPI Framework",
         "flask": "Flask Microframework",
         "none": "No framework"
     },
@@ -392,7 +394,7 @@ database = "{{cookiecutter.database}}"
 def remove_unused_files():
     """Remove files based on configuration."""
     files_to_remove = []
-    
+
     # Remove Docker files if not using Docker
     if not use_docker:
         files_to_remove.extend([
@@ -400,7 +402,7 @@ def remove_unused_files():
             "docker-compose.yml",
             ".dockerignore"
         ])
-    
+
     # Remove test files if not including tests
     if not include_tests:
         files_to_remove.extend([
@@ -408,7 +410,7 @@ def remove_unused_files():
             "pytest.ini",
             ".coveragerc"
         ])
-    
+
     # Remove CI files if not using CI
     if not include_ci:
         files_to_remove.extend([
@@ -416,14 +418,14 @@ def remove_unused_files():
             ".gitlab-ci.yml",
             ".travis.yml"
         ])
-    
+
     # Remove framework-specific files
     if framework == "none":
         files_to_remove.extend([
             "requirements/",
             "config/"
         ])
-    
+
     # Remove database files if no database
     if database == "none":
         files_to_remove.extend([
@@ -431,7 +433,7 @@ def remove_unused_files():
             "models.py",
             "database.py"
         ])
-    
+
     for file_path in files_to_remove:
         path = Path(file_path)
         if path.exists():
@@ -447,7 +449,7 @@ def initialize_git():
     try:
         subprocess.run(["git", "init"], check=True, capture_output=True)
         print("📦 Initialized git repository")
-        
+
         subprocess.run(["git", "add", "."], check=True, capture_output=True)
         subprocess.run([
             "git", "commit", "-m", "Initial commit from cookiecutter template"
@@ -464,14 +466,14 @@ def setup_virtual_environment():
             "python", "-m", "venv", ".venv"
         ], check=True, capture_output=True)
         print("🐍 Created virtual environment")
-        
+
         # Install requirements if they exist
         if Path("requirements.txt").exists():
             if os.name == 'nt':  # Windows
                 pip_path = ".venv/Scripts/pip"
             else:  # Unix-like
                 pip_path = ".venv/bin/pip"
-            
+
             subprocess.run([
                 pip_path, "install", "-r", "requirements.txt"
             ], check=True, capture_output=True)
@@ -482,13 +484,13 @@ def setup_virtual_environment():
 def create_initial_structure():
     """Create any additional directories or files."""
     directories = []
-    
+
     if include_tests:
         directories.extend([
             "tests/unit",
             "tests/integration"
         ])
-    
+
     if framework == "django":
         directories.extend([
             "static",
@@ -501,7 +503,7 @@ def create_initial_structure():
             "app/models",
             "app/schemas"
         ])
-    
+
     for directory in directories:
         Path(directory).mkdir(parents=True, exist_ok=True)
         # Create __init__.py for Python packages
@@ -516,19 +518,19 @@ def display_next_steps():
     print("="*50)
     print("\nNext steps:")
     print("1. cd {{cookiecutter.project_slug}}")
-    
+
     if use_docker:
         print("2. docker-compose up -d  # Start development environment")
     else:
         print("2. source .venv/bin/activate  # Activate virtual environment")
         print("   # On Windows: .venv\\Scripts\\activate")
-    
+
     if include_tests:
         if "{{cookiecutter.test_framework}}" == "pytest":
             print("3. pytest  # Run tests")
         else:
             print("3. python -m unittest  # Run tests")
-    
+
     if framework == "django":
         print("4. python manage.py migrate  # Setup database")
         print("5. python manage.py runserver  # Start development server")
@@ -536,7 +538,7 @@ def display_next_steps():
         print("4. uvicorn main:app --reload  # Start development server")
     elif framework == "flask":
         print("4. flask run  # Start development server")
-    
+
     print("\n📚 Documentation:")
     print("   - README.md contains project information")
     if include_ci:
@@ -547,7 +549,7 @@ def display_next_steps():
 def main():
     """Run post-generation setup."""
     print("⚙️  Setting up your project...")
-    
+
     remove_unused_files()
     create_initial_structure()
     initialize_git()
@@ -577,13 +579,13 @@ def test_template_generation():
         'framework': 'fastapi',
         'use_docker': 'y'
     }
-    
+
     result = main.cookiecutter(
         'template_directory',
         extra_context=extra_context,
         output_dir='output'
     )
-    
+
     project_dir = Path(result)
     assert project_dir.exists()
     assert (project_dir / 'README.md').exists()
@@ -595,13 +597,13 @@ def test_template_without_docker():
         'project_name': 'No Docker Project',
         'use_docker': 'n'
     }
-    
+
     result = main.cookiecutter(
         'template_directory',
         extra_context=extra_context,
         output_dir='output'
     )
-    
+
     project_dir = Path(result)
     assert not (project_dir / 'Dockerfile').exists()
 
@@ -612,16 +614,16 @@ def test_framework_variations(framework):
         'project_name': f'{framework.title()} Project',
         'framework': framework
     }
-    
+
     result = main.cookiecutter(
         'template_directory',
         extra_context=extra_context,
         output_dir='output'
     )
-    
+
     project_dir = Path(result)
     assert project_dir.exists()
-    
+
     # Framework-specific assertions
     if framework == 'django':
         assert (project_dir / 'manage.py').exists()

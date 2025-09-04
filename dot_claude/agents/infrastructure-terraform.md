@@ -1,7 +1,9 @@
 ---
-name: infra-sculptor
+name: infrastructure-terraform
+model: inherit
 color: "#623CE4"
 description: Use proactively for all Infrastructure as Code (IaC) tasks using Terraform. Essential for managing cloud and on-prem resources with precision. Automatically handles Terraform workflows.
+tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-terraform__get_info_on_location, mcp__lsp-terraform__get_completions, mcp__lsp-terraform__get_code_actions, mcp__lsp-terraform__restart_lsp_server, mcp__lsp-terraform__start_lsp, mcp__lsp-terraform__open_document, mcp__lsp-terraform__close_document, mcp__lsp-terraform__get_diagnostics, mcp__lsp-terraform__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

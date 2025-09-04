@@ -6,6 +6,7 @@ Simple CLI tool to manage voice notification settings for Claude Code.
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -94,6 +95,21 @@ class VoiceConfig:
         state = "enabled" if config["enabled"] else "disabled"
         print(f"✓ Voice notifications {state}")
 
+    def set_model(self, model: str) -> None:
+        """Set the TTS model to use."""
+        config = self.load_config()
+        valid_models = ["native-audio", "tts"]
+
+        if model not in valid_models:
+            print(f"✗ Invalid model '{model}'. Valid options: {', '.join(valid_models)}")
+            return
+
+        config["model"] = model
+        self.save_config(config)
+
+        model_name = "Native Audio Dialog" if model == "native-audio" else "Text-to-Speech"
+        print(f"✓ Set model to '{model}' ({model_name})")
+
     def show_status(self) -> None:
         """Show current configuration status."""
         config = self.load_config()
@@ -101,10 +117,14 @@ class VoiceConfig:
         print("Voice Notification Status")
         print("=" * 30)
         print(f"Enabled: {'Yes' if config.get('enabled', True) else 'No'}")
+        print(f"Model: {config.get('model', 'tts')} {'(Native Audio Dialog)' if config.get('model', 'native-audio') == 'native-audio' else '(Text-to-Speech)'}")
         print(f"Default Voice: {config.get('default_voice', 'Zephyr')}")
         print(f"Default Style: {config.get('default_style', 'cheerful')}")
+        print(f"Language: {config.get('language', 'en-GB')}")
         print(f"Volume: {config.get('volume', 0.7)}")
         print(f"Cache: {'Enabled' if config.get('use_cache', True) else 'Disabled'}")
+        print(f"AI Summaries: {'Enabled' if os.getenv('CLAUDE_VOICE_USE_AI_SUMMARIES', 'false').lower() == 'true' else 'Disabled'}")
+        print(f"Debug Mode: {'Enabled' if os.getenv('CLAUDE_VOICE_DEBUG', 'false').lower() == 'true' else 'Disabled'}")
 
         projects = config.get("projects", {})
         if projects:
@@ -127,14 +147,29 @@ class VoiceConfig:
         print("\n1. Testing current voice...")
         self.test_voice()
 
-        # Voice selection
-        print("\n2. Voice Selection")
-        self.list_voices()
-        voice = input(
-            f"\nChoose default voice (current: {config.get('default_voice', 'Zephyr')}): "
+        # Model selection
+        print("\n2. Model Selection")
+        print("Available models:")
+        print("• native-audio: Gemini 2.5 Flash Native Audio Dialog (more natural, conversational)")
+        print("• tts: Gemini 2.5 Flash Text-to-Speech (traditional TTS with voice selection)")
+        current_model = config.get("model", "native-audio")
+        model = input(
+            f"\nChoose model (current: {current_model}): "
         ).strip()
-        if voice:
-            config["default_voice"] = voice
+        if model and model in ["native-audio", "tts"]:
+            config["model"] = model
+
+        # Voice selection (only for TTS model)
+        if config.get("model", "native-audio") == "tts":
+            print("\n3. Voice Selection")
+            self.list_voices()
+            voice = input(
+                f"\nChoose default voice (current: {config.get('default_voice', 'Zephyr')}): "
+            ).strip()
+            if voice:
+                config["default_voice"] = voice
+        else:
+            print("\n3. Voice selection skipped (not used with native-audio model)")
 
         # Style selection
         styles = list(config.get("message_styles", {}).keys())
@@ -173,6 +208,7 @@ def main() -> None:
         print("\nUsage:")
         print("  voice-config status              # Show current configuration")
         print("  voice-config toggle              # Enable/disable notifications")
+        print("  voice-config model <model>      # Set model (native-audio or tts)")
         print("  voice-config test [voice] [style] # Test a voice")
         print("  voice-config voices              # List available voices")
         print("  voice-config setup               # Interactive setup wizard")
@@ -185,6 +221,11 @@ def main() -> None:
         config_tool.show_status()
     elif command == "toggle":
         config_tool.toggle_notifications()
+    elif command == "model":
+        if len(sys.argv) < 3:
+            print("Usage: voice-config model <native-audio|tts>")
+            sys.exit(1)
+        config_tool.set_model(sys.argv[2])
     elif command == "test":
         voice = sys.argv[2] if len(sys.argv) > 2 else None
         style = sys.argv[3] if len(sys.argv) > 3 else None

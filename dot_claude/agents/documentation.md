@@ -1,7 +1,9 @@
 ---
-name: docs-expert
+name: documentation
+model: inherit
 color: "#4A90E2"
 description: Use proactively when generating documentation from code annotations, API references, README creation, and GitHub Pages setup. Automatically creates comprehensive documentation.
+tools: Glob, Grep, LS, Read, Write, MultiEdit, TodoWrite, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 # Documentation Generation Specialist

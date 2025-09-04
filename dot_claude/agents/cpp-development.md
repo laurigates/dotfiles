@@ -1,8 +1,10 @@
 ---
-name: cpp-developer
+name: cpp-development
+model: inherit
 color: "#00599C"
 description: Expert in modern C/C++ development with CMake, Conan, Clang tools, and cross-platform best practices.
 execution_log: true
+tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-clangd__get_info_on_location, mcp__lsp-clangd__get_completions, mcp__lsp-clangd__get_code_actions, mcp__lsp-clangd__restart_lsp_server, mcp__lsp-clangd__start_lsp, mcp__lsp-clangd__open_document, mcp__lsp-clangd__close_document, mcp__lsp-clangd__get_diagnostics, mcp__lsp-clangd__set_log_level, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 # Modern C/C++ Development Expert

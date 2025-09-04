@@ -1,7 +1,9 @@
 ---
-name: api-explorer
+name: api-integration
+model: inherit
 color: "#FF4785"
 description: Use proactively when exploring and integrating with REST APIs, especially when documentation is limited or unavailable. Automatically discovers endpoints, infers schemas, and generates client code.
+tools: Read, Bash, WebFetch, TodoWrite, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 # API Explorer

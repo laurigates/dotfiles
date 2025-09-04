@@ -29,8 +29,9 @@ class CasualSummarizer:
     def __init__(self):
         """Initialize the summarizer with Gemini API if available."""
         self.gemini_model = None
+        self.use_ai_summaries = os.getenv("CLAUDE_VOICE_USE_AI_SUMMARIES", "false").lower() == "true"
 
-        if GEMINI_AVAILABLE:
+        if GEMINI_AVAILABLE and self.use_ai_summaries:
             api_key = os.getenv("GOOGLE_API_KEY")
             if api_key:
                 try:
@@ -97,10 +98,14 @@ class CasualSummarizer:
         Returns:
             Casual, conversational summary string
         """
-        if self.gemini_model:
+        # Always try templates first for accuracy
+        template_summary = self._generate_detailed_summary(context, event_type)
+
+        # Only use Gemini if explicitly enabled and template failed
+        if self.gemini_model and self.use_ai_summaries and not template_summary:
             return self._generate_with_gemini(context, event_type)
-        else:
-            return self._generate_with_templates(context, event_type)
+
+        return template_summary or self._generate_with_templates(context, event_type)
 
     def _generate_with_gemini(self, context: Dict[str, Any], event_type: str) -> str:
         """Use Gemini API to generate a natural summary."""
@@ -210,6 +215,87 @@ Examples of BAD generic messages to AVOID:
 OUTPUT ONLY THE MESSAGE TEXT (be specific about what was actually done):"""
 
         return prompt
+
+    def _generate_detailed_summary(self, context: Dict[str, Any], event_type: str) -> str:
+        """Generate accurate summary using actual context data."""
+        summary_parts = []
+
+        # Primary activity takes precedence
+        activity = context.get('primary_activity')
+
+        # Handle specific activities with actual data
+        if activity == 'tests_passed' and context.get('test_results'):
+            summary_parts.append(f"All tests passed! {context['test_results']}")
+
+        elif activity == 'tests_failed' and context.get('test_results'):
+            summary_parts.append(f"Tests completed: {context['test_results']}")
+
+        elif activity == 'git_commit' and context.get('git_operations'):
+            summary_parts.append("Made a git commit")
+            if context.get('files_modified'):
+                files_str = ', '.join(context['files_modified'][:3])
+                summary_parts.append(f"with changes to {files_str}")
+
+        elif activity == 'modified_python_files' and context.get('files_modified'):
+            files = [f for f in context['files_modified'] if f.endswith('.py')][:3]
+            if len(files) == 1:
+                summary_parts.append(f"Updated Python file {files[0]}")
+            else:
+                summary_parts.append(f"Updated {len(files)} Python files including {files[0]}")
+
+        elif activity == 'modified_javascript_files' and context.get('files_modified'):
+            files = [f for f in context['files_modified'] if f.endswith(('.ts', '.tsx', '.js', '.jsx'))][:3]
+            if len(files) == 1:
+                summary_parts.append(f"Updated {files[0]}")
+            else:
+                summary_parts.append(f"Updated {len(files)} JavaScript/TypeScript files")
+
+        elif activity == 'updated_documentation' and context.get('files_modified'):
+            docs = [f for f in context['files_modified'] if f.endswith(('.md', '.txt', '.rst'))]
+            if docs:
+                summary_parts.append(f"Updated documentation in {', '.join(docs[:2])}")
+
+        elif activity == 'linting' and context.get('commands_run'):
+            lint_cmds = [c for c in context['commands_run'] if 'lint' in c.lower() or 'ruff' in c.lower()]
+            if lint_cmds:
+                summary_parts.append(f"Ran linting: {lint_cmds[0][:50]}")
+
+        elif activity == 'building' and context.get('commands_run'):
+            build_cmds = [c for c in context['commands_run'] if 'build' in c.lower()]
+            if build_cmds:
+                summary_parts.append(f"Built the project")
+
+        elif activity == 'installing_dependencies':
+            summary_parts.append("Installed project dependencies")
+
+        elif context.get('files_modified'):
+            # Fallback to listing specific files
+            count = len(context['files_modified'])
+            if count == 1:
+                summary_parts.append(f"Modified {context['files_modified'][0]}")
+            elif count <= 3:
+                files_str = ', '.join(context['files_modified'])
+                summary_parts.append(f"Modified {files_str}")
+            else:
+                summary_parts.append(f"Modified {count} files including {context['files_modified'][0]}")
+
+        elif context.get('commands_run'):
+            # Report specific commands that were run
+            cmd = context['commands_run'][0]
+            if len(cmd) > 60:
+                cmd = cmd[:60] + "..."
+            summary_parts.append(f"Executed: {cmd}")
+
+        else:
+            # No specific data available
+            return ""
+
+        # Add error information if present
+        if context.get('errors_encountered') and event_type == 'error':
+            summary_parts.append(f"(encountered {len(context['errors_encountered'])} errors)")
+
+        # Join parts into natural sentence
+        return ' '.join(summary_parts) if summary_parts else ""
 
     def _generate_with_templates(self, context: Dict[str, Any], event_type: str) -> str:
         """Generate a summary using fallback templates."""

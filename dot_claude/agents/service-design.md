@@ -1,7 +1,9 @@
 ---
-name: service-design-expert
+name: service-design
+model: inherit
 color: "#E91E63"
 description: Use proactively for service design including UX architecture, service blueprints, interaction design, accessibility, and user journey mapping.
+tools: Read, Write, MultiEdit, TodoWrite, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

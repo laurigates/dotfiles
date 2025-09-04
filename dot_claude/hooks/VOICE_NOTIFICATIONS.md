@@ -4,12 +4,15 @@ A sophisticated voice notification system that provides contextual, spoken feedb
 
 ## Features
 
+- **Accurate Reporting**: Reports exactly what was done (files modified, commands run, tests passed) instead of generic messages
 - **Contextual Notifications**: Extracts actual work performed from Claude's transcript to generate relevant messages
 - **Natural Speech**: Uses Gemini 2.5 Flash TTS for high-quality, natural-sounding voice output
 - **Project Awareness**: Automatically includes project name in notifications
 - **Event-Based Styling**: Different notification styles for success, errors, tests, creation, etc.
 - **Smart Caching**: Caches generated audio for repeated messages
 - **Fallback Support**: Falls back to macOS `say` command when Gemini is unavailable
+- **Debug Mode**: Trace context extraction and message generation with `CLAUDE_VOICE_DEBUG=true`
+- **AI Control**: Optional AI summaries (disabled by default for accuracy)
 
 ## Components
 
@@ -22,9 +25,10 @@ A sophisticated voice notification system that provides contextual, spoken feedb
    - Provides macOS fallback
 
 2. **`casual_summarizer.py`** - Message generation
-   - Creates natural, conversational summaries
-   - Uses Gemini to generate context-aware messages
-   - Falls back to templates when API unavailable
+   - Creates accurate, template-based summaries from actual context
+   - Optional Gemini AI generation (disabled by default)
+   - Reports specific files, commands, and test results
+   - Falls back to generic templates only when no context available
 
 3. **`transcript_context_extractor.py`** - Context extraction
    - Reads Claude Code JSONL transcripts
@@ -72,19 +76,20 @@ Voice settings are stored in `~/.claude/voice-config.json`:
 ```json
 {
   "enabled": true,
+  "model": "tts",              // "tts" or "native-audio"
   "default_voice": "Zephyr",
-  "language": "en-GB",  // Default to British English
+  "language": "en-GB",         // Default to British English
   "volume": 0.7,
   "use_cache": true,
   "projects": {
     "my-project": {
       "voice": "Puck",
       "style": "professional",
-      "language": "fi-FI"  // Finnish for this project
+      "language": "fi-FI"      // Finnish for this project
     },
     "infrastructure": {
       "voice": "Kore",
-      "language": "en-US"  // American English for this project
+      "language": "en-US"      // American English for this project
     }
   },
   "message_styles": {
@@ -93,6 +98,19 @@ Voice settings are stored in `~/.claude/voice-config.json`:
     "test_success": "happily"
   }
 }
+```
+
+### Environment Variables
+
+```bash
+# Control AI summary generation (disabled by default for accuracy)
+export CLAUDE_VOICE_USE_AI_SUMMARIES=false
+
+# Enable debug mode to see what's happening
+export CLAUDE_VOICE_DEBUG=true
+
+# Override language globally
+export CLAUDE_VOICE_LANGUAGE=en-US
 ```
 
 #### Language Configuration Priority
@@ -142,13 +160,18 @@ Gemini TTS supports many languages including:
 
 ### Example Notifications
 
-Based on actual context extracted:
+Accurate reporting based on actual context:
 
-- ✅ "Fixed those TypeScript errors in components.tsx!"
-- 📦 "Created new Docker config in the infrastructure repo!"
-- ✅ "All 42 tests are passing in the backend project!"
-- ⚠️ "Ran into build issues in the frontend - check the logs!"
-- 🎯 "Updated the API endpoints and they're ready to go!"
+- ✅ "Updated 2 Python files including notify.py"
+- 📦 "Modified 5 files including app.ts"
+- ✅ "All tests passed! 15 tests passed"
+- ⚠️ "Tests completed: 3 tests failed"
+- 🎯 "Executed: docker-compose up -d --build"
+- 📝 "Updated documentation in README.md, CONTRIBUTING.md"
+- 🔧 "Ran linting: ruff check . --fix"
+- 💾 "Made a git commit with changes to setup.py, requirements.txt"
+- 🏗️ "Built the project"
+- 📦 "Installed project dependencies"
 
 ## Context Extraction
 
@@ -287,11 +310,20 @@ context = extractor.extract_from_transcript(transcript_path, max_lines=200)
 - Typical latency: 1-2 seconds from task completion
 - Fallback to `say` command is near-instant
 
+## Recent Improvements
+
+- [x] **Accurate Context Reporting**: Now reports actual files and commands instead of generic messages
+- [x] **Template-Based Summaries**: Specific messages based on extracted context
+- [x] **Debug Mode**: Added `CLAUDE_VOICE_DEBUG` for troubleshooting
+- [x] **AI Control**: Made AI summaries optional (disabled by default)
+- [x] **Native Audio Support**: Ready for Gemini 2.5 Flash Native Audio Dialog
+- [x] **Model Selection**: Switch between TTS and native audio models
+
 ## Future Enhancements
 
-- [ ] Multi-language support
 - [ ] Custom wake words for attention
 - [ ] Integration with system notifications
 - [ ] Voice selection based on error severity
 - [ ] User preference learning
 - [ ] Notification history and replay
+- [ ] Support for more granular context (line numbers, function names)

@@ -1,7 +1,9 @@
 ---
-name: security-auditor
+name: security-audit
+model: inherit
 color: "#E17055"
 description: Use proactively for security analysis including vulnerability scanning, dependency audits, secret detection, compliance validation, and threat modeling.
+tools: Glob, Grep, LS, Read, Bash, TodoWrite, WebSearch, mcp__lsp-typescript__get_diagnostics, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-clangd__get_diagnostics, mcp__lsp-rust__get_diagnostics, mcp__lsp-terraform__get_diagnostics, mcp__lsp-docker__get_diagnostics, mcp__lsp-yaml__get_diagnostics, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
 
 <role>

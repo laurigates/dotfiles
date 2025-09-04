@@ -145,6 +145,7 @@ class TranscriptContextExtractor:
                     if tool_name == 'Edit' or tool_name == 'Write' or tool_name == 'MultiEdit':
                         file_path = tool.get('input', {}).get('file_path', '')
                         if file_path and file_path not in context['files_modified']:
+                            # Keep the full filename for better context
                             context['files_modified'].append(Path(file_path).name)
 
                     elif tool_name == 'Bash':
