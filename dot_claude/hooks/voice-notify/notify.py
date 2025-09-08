@@ -103,9 +103,9 @@ class VoiceNotifier:
 
     def init_gemini_client(self) -> None:
         """Initialize Gemini API client."""
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            logger.warning("GOOGLE_API_KEY not found. Voice notifications will use macOS 'say' fallback.")
+            logger.warning("GEMINI_API_KEY not found. Voice notifications will use macOS 'say' fallback.")
             self.gemini_client = None
             return
 

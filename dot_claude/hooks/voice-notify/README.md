@@ -122,7 +122,7 @@ export CLAUDE_VOICE_LANGUAGE=en-US
 
 - Python 3.10+
 - macOS (for audio playback via `afplay`)
-- GOOGLE_API_KEY environment variable (optional, falls back to macOS say)
+- GEMINI_API_KEY environment variable (optional, falls back to macOS say)
 - uv package manager
 
 ## Development
@@ -182,7 +182,7 @@ The voice notification system is integrated with Claude Code's hook system, spec
 
 ## Troubleshooting
 
-1. **No sound**: Check that your GOOGLE_API_KEY is set and valid
+1. **No sound**: Check that your GEMINI_API_KEY is set and valid
 2. **Generic messages**: Ensure `CLAUDE_VOICE_USE_AI_SUMMARIES=false` (default) for accurate reporting
 3. **Debug messages**: Set `CLAUDE_VOICE_DEBUG=true` to see context extraction and message generation
 4. **Fallback to say command**: The system automatically falls back to macOS `say` if Gemini API is unavailable

@@ -47,7 +47,7 @@ uv run python config.py test
 - **Audio Processing**: Receives raw PCM from Gemini API, converts to WAV using struct.pack for efficient in-memory conversion
 - **Caching**: WAV files cached in `~/.claude/voice-cache/` with hash-based naming
 - **Configuration**: JSON-based config at `~/.claude/voice-config.json` supporting per-project voices and styles
-- **Environment**: Requires GOOGLE_API_KEY for Gemini API, falls back gracefully to macOS `say`
+- **Environment**: Requires GEMINI_API_KEY for Gemini API, falls back gracefully to macOS `say`
 
 ### Voice Configuration Structure
 
