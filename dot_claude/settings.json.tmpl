@@ -15,7 +15,7 @@
     "deny": [
       "Bash(git add .)",
       "Bash(git add -A)",
-      "Bash(git add --all)",
+      "Bash(git add --all)"
     ],
     "ask": [],
     "additionalDirectories": [
@@ -42,6 +42,11 @@
             "type": "command",
             "command": "~/.claude/hooks/user-prompt-submit.sh",
             "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/obsidian-logger.sh",
+            "timeout": 3000
           }
         ]
       }
