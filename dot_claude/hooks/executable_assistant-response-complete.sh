@@ -1,34 +1,40 @@
 #!/bin/bash
 
 # Claude Code Hook: assistant-response-complete
-# Called when Claude finishes responding
-# Enhanced with event context capture and casual summaries
+# Simplified version with better error handling and direct context passing
 
 set -euo pipefail
 
-# Capture stdin data containing hook input JSON
+# Debug mode
+DEBUG="${CLAUDE_HOOKS_DEBUG:-false}"
+DEBUG_LOG="/tmp/claude_hooks_debug.log"
+
+debug_log() {
+    if [[ "$DEBUG" == "true" ]]; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] assistant-response-complete: $*" >> "$DEBUG_LOG"
+    fi
+}
+
+# Capture stdin (JSON from Claude Code)
 HOOK_INPUT=""
-if [ -t 0 ]; then
-    # No stdin available
-    HOOK_INPUT=""
-else
-    # Read stdin - this is JSON from Claude Code
+if [ ! -t 0 ]; then
     HOOK_INPUT=$(cat)
+    debug_log "Received input: ${HOOK_INPUT:0:200}..."
 fi
 
-# Extract transcript_path from the JSON input
+# Extract transcript_path from JSON
 TRANSCRIPT_PATH=""
 if [[ -n "$HOOK_INPUT" ]]; then
-    # Use jq if available, otherwise fall back to simple grep
     if command -v jq >/dev/null 2>&1; then
         TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty' 2>/dev/null || echo "")
     else
-        # Simple extraction without jq
+        # Fallback without jq
         TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | grep -oP '"transcript_path"\s*:\s*"[^"]+' | cut -d'"' -f4 || echo "")
     fi
+    debug_log "Extracted transcript path: $TRANSCRIPT_PATH"
 fi
 
-# Get basic repository name
+# Get repository name for context
 get_repo_name() {
     if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         basename "$(git rev-parse --show-toplevel)"
@@ -37,98 +43,104 @@ get_repo_name() {
     fi
 }
 
-# Update kitty tab title to ready state
-update_tab_title() {
-    local repo_name
-    repo_name=$(get_repo_name)
+REPO_NAME=$(get_repo_name)
+debug_log "Repository: $REPO_NAME"
 
-    # Only update if we're in kitty and can access the terminal properly
-    if [[ "${TERM}" == "xterm-kitty" ]] && command -v kitty >/dev/null 2>&1 && [[ -c /dev/tty ]]; then
-        kitty @ set-tab-title "$repo_name | ✓ Ready" >/dev/null 2>&1 || true
+# Update kitty tab title
+update_tab_title() {
+    if [[ "${TERM}" == "xterm-kitty" ]] && command -v kitty >/dev/null 2>&1; then
+        kitty @ set-tab-title "$REPO_NAME | ✓ Ready" 2>/dev/null || true
+        debug_log "Updated kitty tab title"
     fi
 }
 
-# Trigger SketchyBar update (status system will handle detailed status)
-trigger_sketchybar_update() {
+# Trigger SketchyBar update
+trigger_sketchybar() {
     if command -v sketchybar >/dev/null 2>&1; then
         sketchybar --trigger claude_status 2>/dev/null || true
+        debug_log "Triggered SketchyBar update"
     fi
 }
 
-# Voice notification with context-aware casual summaries
-trigger_voice_notification() {
-    local repo_name
-    repo_name=$(get_repo_name)
-
-    # Voice notification directory
-    local voice_notify_dir="$HOME/.claude/hooks/voice-notify"
+# Process notifications (voice and Obsidian logging)
+process_notifications() {
     local hooks_dir="$HOME/.claude/hooks"
 
-    # Check for debug mode
-    local debug_mode="${CLAUDE_VOICE_DEBUG:-false}"
+    # Skip if no transcript available
+    if [[ -z "$TRANSCRIPT_PATH" ]] || [[ ! -f "$TRANSCRIPT_PATH" ]]; then
+        debug_log "No transcript available, using fallback notifications"
 
-    # Try enhanced notification with transcript context
-    if [[ -d "$voice_notify_dir" ]] && \
-       [[ -f "$voice_notify_dir/notify.py" ]] && \
-       command -v uv >/dev/null 2>&1; then
-
-        local context_json="{}"
-        local casual_message="Task completed in $repo_name!"
-        local event_type="general"
-
-        # Extract context from transcript if available
-        if [[ -n "$TRANSCRIPT_PATH" ]] && [[ -f "$TRANSCRIPT_PATH" ]] && \
-           [[ -f "$hooks_dir/transcript_context_extractor.py" ]]; then
-
-            # Extract context from transcript
-            local transcript_input
-            transcript_input=$(echo "{\"transcript_path\": \"$TRANSCRIPT_PATH\", \"project_name\": \"$repo_name\"}" | jq -c . 2>/dev/null || echo "{\"transcript_path\": \"$TRANSCRIPT_PATH\", \"project_name\": \"$repo_name\"}")
-
-            if [[ "$debug_mode" == "true" ]]; then
-                echo "[DEBUG] Transcript input: $transcript_input" >&2
-            fi
-
-            context_json=$(echo "$transcript_input" | (cd "$hooks_dir" && uv run python transcript_context_extractor.py) 2>/dev/null || echo "{}")
-
-            if [[ "$debug_mode" == "true" ]]; then
-                echo "[DEBUG] Extracted context: $context_json" >&2
-            fi
-
-            # Generate casual summary from the context
-            if [[ -f "$hooks_dir/casual_summarizer.py" ]] && [[ "$context_json" != "{}" ]]; then
-                casual_message=$(echo "$context_json" | (cd "$hooks_dir" && uv run python casual_summarizer.py) 2>/dev/null || echo "Task completed in $repo_name!")
-            fi
-
-            if [[ "$debug_mode" == "true" ]]; then
-                echo "[DEBUG] Generated message: $casual_message" >&2
-            fi
-
-            # Get event type from context
-            event_type=$(echo "$context_json" | (cd "$hooks_dir" && uv run python -c "import sys, json; data = json.load(sys.stdin); print(data.get('event_type', 'general'))") 2>/dev/null || echo "general")
+        # Simple fallback voice notification
+        if [[ -f "$hooks_dir/voice-notify/notify.py" ]] && command -v uv >/dev/null 2>&1; then
+            (cd "$hooks_dir/voice-notify" && uv run python notify.py "Task completed!" "$REPO_NAME" "general" 2>/dev/null) &
         fi
+        return
+    fi
 
-        # Trigger voice notification
-        if [[ -n "$casual_message" ]]; then
-            (cd "$voice_notify_dir" && uv run python notify.py "$casual_message" "$repo_name" "$event_type") 2>/dev/null &
+    # Extract context using unified extractor
+    local context_json=""
+    if [[ -f "$hooks_dir/context_extractor.py" ]]; then
+        debug_log "Extracting context from transcript"
+
+        # Create input JSON for context extractor
+        local extractor_input="{\"transcript_path\": \"$TRANSCRIPT_PATH\"}"
+
+        # Extract context
+        context_json=$(echo "$extractor_input" | python3 "$hooks_dir/context_extractor.py" 2>/dev/null)
+
+        if [[ -z "$context_json" ]] || [[ "$context_json" == "{}" ]]; then
+            debug_log "Context extraction returned empty"
+            context_json="{\"primary_activity\": \"general\", \"success\": true}"
         else
-            # Fallback to simple message if no context available
-            local messages=(
-                "Task completed successfully!"
-                "I'm ready for your next request."
-                "All done with that task!"
-                "Ready when you are!"
-            )
-            local message="${messages[$((RANDOM % ${#messages[@]}))]}"
-            (cd "$voice_notify_dir" && uv run python notify.py "$message" "$repo_name" "success") 2>/dev/null &
+            debug_log "Extracted context: ${context_json:0:200}..."
         fi
+    else
+        debug_log "Context extractor not found"
+        context_json="{\"primary_activity\": \"general\", \"success\": true}"
+    fi
+
+    # Add project name to context
+    context_json=$(echo "$context_json" | jq --arg repo "$REPO_NAME" '. + {project_name: $repo}' 2>/dev/null || echo "$context_json")
+
+    # Send context to voice notifier
+    if [[ -f "$hooks_dir/voice-notify/notify_simple.py" ]]; then
+        debug_log "Sending to voice notifier"
+        echo "$context_json" | python3 "$hooks_dir/voice-notify/notify_simple.py" 2>/dev/null &
+    elif [[ -f "$hooks_dir/voice-notify/notify.py" ]] && command -v uv >/dev/null 2>&1; then
+        # Fallback to original notify.py with a generated message
+        local message="Task completed in $REPO_NAME"
+        local activity=$(echo "$context_json" | jq -r '.primary_activity // "general"' 2>/dev/null || echo "general")
+
+        case "$activity" in
+            tests_passed) message="All tests passed!" ;;
+            tests_failed) message="Some tests failed." ;;
+            git_commit) message="Made a git commit." ;;
+            modified_python) message="Updated Python code." ;;
+            modified_javascript) message="Updated JavaScript code." ;;
+            error_encountered) message="Encountered some errors." ;;
+            *) message="Task completed!" ;;
+        esac
+
+        debug_log "Using fallback voice notification: $message"
+        (cd "$hooks_dir/voice-notify" && uv run python notify.py "$message" "$REPO_NAME" "$activity" 2>/dev/null) &
+    fi
+
+    # Send context to Obsidian logger
+    if [[ -f "$hooks_dir/obsidian-logger/obsidian_logger.py" ]]; then
+        debug_log "Sending to Obsidian logger"
+        echo "$context_json" | python3 "$hooks_dir/obsidian-logger/obsidian_logger.py" 2>/dev/null &
     fi
 }
 
 # Main execution
 main() {
+    debug_log "Hook started"
+
     update_tab_title
-    trigger_sketchybar_update
-    trigger_voice_notification
+    trigger_sketchybar
+    process_notifications
+
+    debug_log "Hook completed"
 }
 
 # Run main function
