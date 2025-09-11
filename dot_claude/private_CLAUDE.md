@@ -2,105 +2,53 @@
 
 This document outlines the high-level design principles and operational mandates for this project. The core philosophy is to maintain a strategic focus and delegate all specific implementation tasks to specialized subagents.
 
-## Operational Mandate: Subagent Delegation Protocol
+## Subagent Delegation Strategy
 
-**MAIN AGENT RESPONSES MUST START WITH A YAML FRONTMATTER BLOCK DECLARING THE SUBAGENT.**
+**Actively delegate to specialized subagents for domain-specific tasks.** The system includes 30+ specialized agents that excel in their respective domains.
 
-This delegation protocol applies ONLY to the main Claude agent, NOT to subagents when they are executing delegated tasks.
+### Delegation Guidelines
 
-### Delegation Decision Framework
+When analyzing a user request:
+1. **Identify Domain Match**: Look for tasks that align with specialized agent expertise
+2. **Prefer Specialists**: Delegate to domain experts rather than handling specialized tasks directly
+3. **Enable Parallel Execution**: Launch multiple agents when tasks can run concurrently
+4. **Maintain Focus**: Let the main agent coordinate while specialists execute
 
-**Actively seek opportunities to delegate to specialized subagents.** When analyzing a user request:
+### Key Delegation Areas
 
-1. **Scan for Domain Keywords**: Look for technical terms that match subagent expertise
-2. **Match Task Patterns**: Identify tasks that align with subagent descriptions
-3. **Consider Parallel Execution**: Deploy multiple subagents when tasks can run concurrently
-4. **Prefer Specialists**: Always delegate to specialists rather than handling tasks directly
+- **Code Development**: python-developer, nodejs-developer, rust-development, cpp-development
+- **Shell & Automation**: shell-expert for scripting and CLI tools
+- **Version Control**: git-operations for all Git/GitHub tasks
+- **Quality & Security**: code-reviewer, security-auditor, test-architect
+- **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform
+- **Documentation**: documentation, research-documentation, requirements-documentation
+- **Debugging**: debugging for error investigation and root cause analysis
+- **Configuration**: neovim-configuration, makefile-build, template-generation
 
-### When to Delegate (Always Delegate These)
+### Using the Task Tool
 
-- **Code Operations**: python-developer, nodejs-developer, embedded-expert
-- **Git/GitHub Tasks**: git-expert for ALL version control operations
-- **Quality Analysis**: code-reviewer, security-auditor, test-architect
-- **Infrastructure**: container-maestro, k8s-captain, infra-sculptor
-- **Documentation**: docs-expert, research-assistant
-- **Debugging**: debug-specialist for ANY error investigation
-- **Configuration**: neovim-expert, dotfiles-manager, makefile-expert
-
-### Delegation Execution
-
-**When you are the main agent** (not executing as a delegated subagent):
-
-```yaml
----
-subagent: <subagent_name>
-reason: <specific task match>
----
-```
-
-Then immediately use the Task tool to delegate:
-
-```
-Task(description="Clear task description", subagent_type="subagent_name", prompt="Detailed instructions")
-```
-
-**When you are executing as a delegated subagent** (called via Task tool), proceed directly with task execution using your agent's specialized protocols.
-
-### Examples of Effective Delegation
-
-```yaml
----
-subagent: git-expert
-reason: User needs to create a pull request
----
-```
-
-```yaml
----
-subagent: python-developer
-reason: Python code implementation requested
----
-```
-
-```yaml
----
-subagent: debug-specialist
-reason: Error investigation and root cause analysis needed
----
-```
-
-**Context Detection:** If you are being called via the Task tool with a specific subagent type, you are executing as that subagent and should NOT use the delegation frontmatter.
-
-### Task Tool Usage Best Practices
-
-**The Task tool is your primary mechanism for delegation.** Use it immediately after the YAML frontmatter:
-
-1. **Provide Complete Context**: Include all relevant information in the prompt parameter
-2. **Be Specific**: Give clear, actionable instructions to the subagent
-3. **Enable Autonomy**: Provide enough context for the subagent to work independently
-4. **Use Parallel Execution**: Launch multiple Task tools simultaneously when appropriate
-
-**Effective Task Tool Pattern:**
+**The Task tool enables delegation to specialized agents:**
 
 ```python
 Task(
     description="Brief task summary",  # 3-5 words
-    subagent_type="exact-agent-name",  # Must match agent filename
-    prompt="Detailed instructions including:\n" +
-           "- Specific requirements\n" +
-           "- Context and background\n" +
-           "- Success criteria\n" +
-           "- Any constraints or preferences"
+    subagent_type="agent-name",       # Match agent filename (without .md)
+    prompt="Detailed instructions with context and requirements"
 )
 ```
 
-**Parallel Execution Example:**
+**Best Practices:**
+- Provide complete context in the prompt
+- Be specific about requirements and success criteria
+- Enable parallel execution for independent tasks
+- Let agents work autonomously with sufficient information
 
+**Parallel Execution:**
 ```python
-# Launch multiple agents simultaneously
-Task(description="Python implementation", subagent_type="python-developer", prompt="...")
-Task(description="Test creation", subagent_type="test-architect", prompt="...")
-Task(description="Documentation", subagent_type="docs-expert", prompt="...")
+# Launch multiple agents simultaneously for independent tasks
+Task(description="Implementation", subagent_type="python-developer", prompt="...")
+Task(description="Tests", subagent_type="test-architecture", prompt="...")
+Task(description="Documentation", subagent_type="documentation", prompt="...")
 ```
 
 ## Memory Integration Protocol
@@ -116,90 +64,6 @@ When receiving a user message:
 
 This ensures continuity and context-aware responses across all interactions.
 
-## Quick Reference: Command-Line Tools
-
-- **`jq`**: Use for querying and transforming JSON data.
-
-  - **Example (Pretty-print)**:
-    ```bash
-    jq . data.json
-    ```
-  - **Example (Extract a value)**:
-    ```bash
-    jq -r '.key.subkey' data.json
-    ```
-
-- **`yq`**: Use for querying and editing YAML data.
-
-  - **Example (Read a value)**:
-    ```bash
-    yq '.services.web.image' docker-compose.yml
-    ```
-  - **Example (Update in-place)**:
-    ```bash
-    yq -i '.version = "2.1.0"' config.yml
-    ```
-
-- **`jd`**: Use for diffing and patching JSON files.
-
-  - **Example (Show differences)**:
-    ```bash
-    jd v1.json v2.json
-    ```
-  - **Example (Apply a patch file)**:
-    ```bash
-    jd -p patch.json v1.json
-    ```
-
-- **`fd`**: Use as a fast, user-friendly alternative to `find`.
-
-  - **Example (Find files by pattern)**:
-    ```bash
-    fd 'ReportGenerator'
-    ```
-  - **Example (Find by extension)**:
-    ```bash
-    fd -e md
-    ```
-
-- **`rg` (ripgrep)**: Use as a fast, recursive alternative to `grep` that respects `.gitignore`.
-
-  - **Example (Find a string in all files)**:
-    ```bash
-    rg 'DATABASE_URL'
-    ```
-  - **Example (Find a string in a specific file type)**:
-    ```bash
-    rg 'TODO' -t python
-    ```
-
-- **`lsd`**: Use as a modern replacement for `ls` with better visuals.
-
-  - **Example (List files with details and icons)**:
-    ```bash
-    lsd -l
-    ```
-  - **Example (Display directory hierarchy)**:
-    ```bash
-    lsd --tree
-    ```
-
-- **`mermaid-cli`**: Use for generating diagrams from text definitions (diagrams as code). It uses Mermaid.js, which is also supported directly in Markdown on platforms like GitHub.
-
-  - **Example (Input file `flow.mmd`)**:
-    ```mermaid
-    graph TD;
-        A[Start] --> B{Is it working?};
-        B -- Yes --> C[End];
-        B -- No --> D[Check logs];
-        D --> B;
-    ```
-  - **Example (Generate an SVG diagram)**:
-    ```bash
-    mmdc -i flow.mmd -o flow.svg
-    ```
-
-- **LSP & Vectorcode**: Use for deep codebase understanding.
 
 ## Core Principles
 

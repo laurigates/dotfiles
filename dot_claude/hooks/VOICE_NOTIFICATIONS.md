@@ -52,7 +52,7 @@ A sophisticated voice notification system that provides contextual, spoken feedb
 
 2. **Google API Key**:
    ```bash
-   export GOOGLE_API_KEY="your-api-key-here"  # pragma: allowlist secret
+   export GEMINI_API_KEY="your-api-key-here"  # pragma: allowlist secret
    ```
 
 3. **Language Setting** (optional):
@@ -205,13 +205,13 @@ echo '{"context": {"project_name": "test"}, "event_type": "success"}' | \
 ### Gemini Issues
 ```bash
 # Verify API key
-echo $GOOGLE_API_KEY
+echo $GEMINI_API_KEY
 
 # Test Gemini directly
 cd ~/.claude/hooks
 uv run python -c "
 from google import genai
-client = genai.Client(api_key='$GOOGLE_API_KEY')
+client = genai.Client(api_key='$GEMINI_API_KEY')
 print('Gemini connected successfully')
 "
 ```

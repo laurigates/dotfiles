@@ -182,47 +182,114 @@ OUTPUT ONLY THE LOG ENTRY:"""
     def _generate_with_template(self, context: Dict[str, Any]) -> Optional[str]:
         """Generate a summary using templates based on context."""
         activity = context.get('primary_activity', 'general')
-        emoji = Config.ACTIVITY_EMOJIS.get(activity, '💡')
 
-        # Build summary based on activity type
-        if activity == 'tests_passed' and context.get('tests_results'):
-            return f"{emoji} All tests passed"
+        # Map activities to emojis
+        emoji_map = {
+            'tests_passed': '✅',
+            'tests_failed': '❌',
+            'git_commit': '💾',
+            'git_push': '🚀',
+            'git_operation': '🔀',
+            'modified_python': '🐍',
+            'modified_javascript': '📜',
+            'modified_file': '✏️',
+            'modified_files': '📝',
+            'updated_docs': '📚',
+            'linting': '🧹',
+            'building': '📦',
+            'installing': '📥',
+            'error_encountered': '⚠️',
+            'ran_commands': '⚙️',
+            'general': '💡'
+        }
 
-        elif activity == 'tests_failed' and context.get('tests_results'):
-            results = context['tests_results']
-            failed = results.get('failed', 'some')
-            return f"{emoji} {failed} tests failed"
+        emoji = emoji_map.get(activity, '💡')
 
-        elif activity == 'git_commit' and context.get('git_operations'):
+        # Build specific summaries based on activity and actual data
+        if activity == 'tests_passed' and context.get('test_results'):
+            return f"{emoji} {context['test_results']}"
+
+        elif activity == 'tests_failed' and context.get('test_results'):
+            return f"{emoji} {context['test_results']}"
+
+        elif activity == 'git_commit':
+            files = context.get('files_modified', [])
+            if files:
+                if len(files) == 1:
+                    return f"{emoji} Committed {files[0]}"
+                else:
+                    return f"{emoji} Committed {len(files)} files"
             return f"{emoji} Made git commit"
 
-        elif activity in ['created', 'modified', 'fixed'] and context.get('files_modified'):
-            files = context['files_modified']
-            if len(files) == 1:
-                filename = Path(files[0]).name
-                return f"{emoji} {activity.capitalize()} {filename}"
-            else:
-                return f"{emoji} {activity.capitalize()} {len(files)} files"
+        elif activity == 'git_push':
+            return f"{emoji} Pushed to remote"
+
+        elif activity == 'modified_python':
+            files = [f for f in context.get('files_modified', []) if f.endswith('.py')]
+            if files:
+                if len(files) == 1:
+                    return f"{emoji} Modified {files[0]}"
+                else:
+                    return f"{emoji} Modified {len(files)} Python files"
+            return f"{emoji} Modified Python code"
+
+        elif activity == 'modified_javascript':
+            files = [f for f in context.get('files_modified', []) if f.endswith(('.js', '.ts', '.jsx', '.tsx'))]
+            if files:
+                if len(files) == 1:
+                    return f"{emoji} Modified {files[0]}"
+                else:
+                    return f"{emoji} Modified {len(files)} JS/TS files"
+            return f"{emoji} Modified JavaScript code"
+
+        elif activity == 'updated_docs':
+            files = [f for f in context.get('files_modified', []) if f.endswith(('.md', '.txt', '.rst'))]
+            if files:
+                return f"{emoji} Updated {files[0]}"
+            return f"{emoji} Updated documentation"
+
+        elif activity == 'linting':
+            cmds = context.get('commands_run', [])
+            for cmd in cmds:
+                if 'ruff' in cmd:
+                    return f"{emoji} Ran ruff linting"
+                elif 'eslint' in cmd:
+                    return f"{emoji} Ran ESLint"
+            return f"{emoji} Ran linter"
 
         elif activity == 'building':
             return f"{emoji} Built project"
 
-        elif activity == 'linting':
-            return f"{emoji} Ran linter"
-
-        elif activity == 'installing_dependencies':
+        elif activity == 'installing':
             return f"{emoji} Installed dependencies"
 
-        elif context.get('commands_run'):
-            cmd = context['commands_run'][0].split()[0]
-            return f"{emoji} Ran {cmd}"
+        elif activity == 'error_encountered':
+            errors = context.get('errors', [])
+            if errors:
+                return f"{emoji} Encountered {len(errors)} errors"
+            return f"{emoji} Encountered errors"
 
         elif context.get('files_modified'):
-            count = len(context['files_modified'])
-            return f"{emoji} Modified {count} file{'s' if count > 1 else ''}"
+            files = context['files_modified']
+            if len(files) == 1:
+                return f"✏️ Modified {files[0]}"
+            elif len(files) <= 3:
+                return f"📝 Modified {', '.join(files)}"
+            else:
+                return f"📝 Modified {len(files)} files"
 
-        # Don't log if no meaningful activity
-        return None
+        elif context.get('commands_run'):
+            cmd = context['commands_run'][0]
+            # Extract meaningful command info
+            if len(cmd) > 50:
+                cmd = cmd[:50] + "..."
+            return f"⚙️ Ran: {cmd}"
+
+        # Don't log generic activities without specific data
+        if activity == 'general' and not context.get('files_modified') and not context.get('commands_run'):
+            return None
+
+        return f"{emoji} Completed task"
 
     def _append_to_log(self, entry: str):
         """Append an entry to the log file."""
@@ -231,41 +298,28 @@ OUTPUT ONLY THE LOG ENTRY:"""
 
 
 def parse_context_from_stdin() -> Dict[str, Any]:
-    """Parse context from stdin (from event_context_parser or direct)."""
+    """Parse context from stdin (from unified context extractor)."""
     try:
         input_data = sys.stdin.read()
 
-        # Try to parse as JSON
-        data = json.loads(input_data)
+        if not input_data:
+            logger.warning("No input data received")
+            return {}
 
-        # Check if it's from event_context_parser
-        if 'context' in data:
-            context = data['context']
-        else:
-            context = data
+        # Parse JSON context
+        context = json.loads(input_data)
 
-        # Try to get project name from git
-        project_name = None
-        try:
-            import subprocess
-            result = subprocess.run(
-                ['git', 'rev-parse', '--show-toplevel'],
-                capture_output=True,
-                text=True,
-                timeout=1
-            )
-            if result.returncode == 0:
-                project_name = Path(result.stdout.strip()).name
-        except:
-            pass
-
-        if project_name:
-            context['project_name'] = project_name
+        # The context should already have everything we need from the unified extractor
+        logger.debug(f"Parsed context: {json.dumps(context, indent=2)}")
 
         return context
 
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse JSON context: {e}")
+        logger.error(f"Input was: {input_data[:500]}...")  # Log first 500 chars for debugging
+        return {}
     except Exception as e:
-        logger.error(f"Failed to parse context: {e}")
+        logger.error(f"Unexpected error parsing context: {e}")
         return {}
 
 
