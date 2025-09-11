@@ -2,6 +2,7 @@
 name: /init-project
 description: Initializes a project with a standard dev environment, including pre-commit hooks, a release workflow, a Makefile, and a Dockerfile.
 argument-hint: "python|node|go|generic"
+allowed-tools: Bash(ls:*), Bash(pwd:*), Bash(pre-commit install:*), Write
 ---
 
 You are about to initialize a new project structure. Your primary goal is to create a robust, modern development environment based on the user's specified project type.

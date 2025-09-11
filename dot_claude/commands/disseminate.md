@@ -2,11 +2,22 @@
 
 Cross-platform information synchronization between GitHub and Podio for consistent project tracking and task management.
 
+## Configuration
+
+### Default Podio Workspace
+```yaml
+org_label: fvh
+space_label: iot-workspace
+app_label: datadev-kanban
+```
+
+**Note:** All Podio-MCP operations now require explicit workspace coordinates. The above defaults are used when not specified otherwise.
+
 ## Synchronization Workflow
 
 ### Phase 1: Discovery & Assessment
 
-- Query Podio for active items and recent updates using `mcp__podio-mcp__list_items`
+- Query Podio for active items and recent updates using `mcp__podio-mcp__list_items` with coordinates `org_label="fvh", space_label="iot-workspace", app_label="datadev-kanban"`
 - Fetch GitHub issues and pull requests using `mcp__github__list_issues` and `mcp__github__list_pull_requests`
 - Identify synchronization opportunities by matching:
   - Issue titles/descriptions with Podio item titles/descriptions
@@ -33,7 +44,7 @@ Cross-platform information synchronization between GitHub and Podio for consiste
 
 - **Enrich Podio Items:**
 
-  - Add GitHub issue/PR links to descriptions using `mcp__podio-mcp__update_item`
+  - Add GitHub issue/PR links to descriptions using `mcp__podio-mcp__update_item` with workspace coordinates
   - Include recent commit summaries and PR status updates
   - Update status based on GitHub issue/PR state
   - Add relevant GitHub milestone information
@@ -104,7 +115,7 @@ Focus on enriching existing linked items with additional context and information
 
 1. **Discovery Phase:**
 
-   - Use `mcp__podio-mcp__list_items` with appropriate filters
+   - Use `mcp__podio-mcp__list_items` with workspace coordinates (`org_label="fvh", space_label="iot-workspace", app_label="datadev-kanban"`) and appropriate filters
    - Use `mcp__github__list_issues` and `mcp__github__search_issues` for comprehensive coverage
    - Build correlation matrix between platforms
 
@@ -116,8 +127,8 @@ Focus on enriching existing linked items with additional context and information
 
 3. **Synchronization Phase:**
 
-   - Execute updates using `mcp__podio-mcp__update_item` and `mcp__github__update_issue`
-   - Create new items/issues where appropriate using `mcp__podio-mcp__create_item` and `mcp__github__create_issue`
+   - Execute updates using `mcp__podio-mcp__update_item` (with workspace coordinates) and `mcp__github__update_issue`
+   - Create new items/issues where appropriate using `mcp__podio-mcp__create_item` (with workspace coordinates) and `mcp__github__create_issue`
    - Add cross-platform references and context
 
 4. **Validation Phase:**

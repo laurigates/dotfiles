@@ -1,79 +1,46 @@
-# Code Review Command
+---
+allowed-tools: Bash(find:*), Bash(ls:*), Read, Write, Edit
+description: Perform comprehensive code review with automated fixes
+argument-hint: "[PATH]"
+---
 
-Perform comprehensive code review with automated fixes using zen-mcp-server.
+## Context
 
-## Usage
-```bash
-claude chat --file ~/.claude/commands/codereview.md [PATH]
-```
+- Review path: !`echo "${1:-.}"`
+- Files to review: !`find ${1:-.} -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rs" \) 2>/dev/null | head -20`
+- Test files: !`find ${1:-.} -type f -name "*test*" 2>/dev/null | wc -l`
+- Project size: !`find ${1:-.} -type f -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rs" | xargs wc -l 2>/dev/null | tail -1`
 
-## Arguments
-- `PATH` (optional): Directory or file to review (defaults to current directory)
+## Your task
 
-## Workflow
+### 1. Analysis
+- Use `mcp__zen-mcp-server__codereview` with Gemini Pro
+- Set review type: full (or security/performance/quick as needed)
+- Configure thinking mode based on complexity
 
-1. **Initial Analysis**
-   - Use `mcp__zen-mcp-server__codereview` with Gemini Pro model
-   - Specify review type (full, security, performance, or quick)
-   - Set confidence level and thinking mode based on complexity
+### 2. Planning
+- Use `mcp__zen-mcp-server__planner` for action plan
+- Prioritize critical issues first
+- Group related fixes together
 
-2. **Planning Phase**
-   - Use `mcp__zen-mcp-server__planner` to generate detailed action plan
-   - Identify critical issues requiring immediate attention
-   - Prioritize fixes by impact and complexity
+### 3. Review Focus
+- **Quality**: Naming, structure, maintainability
+- **Security**: Input validation, authentication, secrets
+- **Performance**: Bottlenecks, memory, optimization
+- **Architecture**: SOLID principles, patterns, coupling
+- **Testing**: Coverage gaps, edge cases
 
-3. **Review Categories**
-   - **Code Quality**: Naming, structure, readability, maintainability
-   - **Security**: Vulnerabilities, input validation, authentication, secrets
-   - **Performance**: Bottlenecks, memory leaks, optimization opportunities
-   - **Architecture**: Design patterns, SOLID principles, coupling issues
-   - **Testing**: Coverage gaps, test quality, edge cases
+### 4. Fix Implementation
+- Apply fixes incrementally
+- Validate after each fix
+- Maintain git history for rollback
 
-4. **Issue Documentation**
-   Each identified issue includes:
-   - Severity level (critical, high, medium, low)
-   - File location and line numbers
-   - Clear description of the problem
-   - Suggested fix with code example
-   - Impact assessment
+### 5. Validation
+- Run existing tests
+- Use `mcp__zen-mcp-server__precommit` for final check
+- Ensure no regressions
 
-5. **Automated Fixes**
-   - Generate fixes for identified issues
-   - Apply fixes incrementally with validation
-   - Maintain git history for rollback capability
-
-6. **Validation**
-   - Run existing tests after each fix
-   - Use `mcp__zen-mcp-server__precommit` for final validation
-   - Continue from previous codereview context for consistency
-   - Ensure no regressions introduced
-
-7. **Report Generation**
-   - Summary of issues found and fixed
-   - Remaining issues requiring manual intervention
-   - Recommendations for long-term improvements
-   - Metrics: issues by category and severity
-
-## Configuration Options
-
-```yaml
-review_type: full           # full, security, performance, quick
-severity_filter: all        # critical, high, medium, low, all
-auto_fix: true             # Apply fixes automatically
-standards: project         # project, pep8, google, custom
-thinking_mode: high        # minimal, low, medium, high, max
-```
-
-## Integration Points
-
-- **Memory**: Stores review patterns in Graphiti for learning
-- **Pre-commit**: Validates changes before committing
-- **CI/CD**: Can be triggered in GitHub Actions
-- **Documentation**: Updates code comments and docstrings
-
-## Success Criteria
-- All critical issues addressed
-- Code quality metrics improved
-- Tests still passing
-- No new vulnerabilities introduced
-- Performance maintained or improved
+### 6. Report
+- Summary of issues found/fixed
+- Remaining manual interventions needed
+- Improvement recommendations
