@@ -32,7 +32,7 @@ class CasualSummarizer:
         self.use_ai_summaries = os.getenv("CLAUDE_VOICE_USE_AI_SUMMARIES", "false").lower() == "true"
 
         if GEMINI_AVAILABLE and self.use_ai_summaries:
-            api_key = os.getenv("GOOGLE_API_KEY")
+            api_key = os.getenv("GEMINI_API_KEY")
             if api_key:
                 try:
                     client = genai.Client(api_key=api_key)

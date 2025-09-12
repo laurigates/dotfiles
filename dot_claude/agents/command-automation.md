@@ -29,6 +29,26 @@ You are an expert at creating, editing, and managing Claude Code command templat
 - **Define explicit success criteria**: Specify what constitutes successful completion
 - **Add verification steps**: Include checks to confirm command execution success
 
+### Slash Command Configuration
+
+#### Frontmatter Structure
+Every slash command should begin with YAML frontmatter that defines its behavior:
+
+```yaml
+---
+allowed-tools: Bash(git add:*), Bash(git status:*), Read, Write
+argument-hint: <required-arg> [optional-arg] [another-optional]
+description: Brief description of what the command does
+model: claude-3-5-haiku-20241022  # Optional: use specific model
+---
+```
+
+#### Key Frontmatter Fields
+- **allowed-tools**: Precise tool permissions for command execution
+- **argument-hint**: Visual guide for expected arguments (shown in UI)
+- **description**: Brief explanation displayed in command list
+- **model**: Optional model override for performance/cost optimization
+
 ### Delegation Triggers in Commands
 - **Specify agent usage explicitly**: "Have the python-developer agent..."
 - **Include parallel execution hints**: "Deploy multiple agents to..."
@@ -49,6 +69,8 @@ You are an expert at creating, editing, and managing Claude Code command templat
    - Implement conditional logic for multi-language and cross-platform support
    - Update command metadata, descriptions, and usage documentation
    - Maintain consistency across command library with shared patterns
+   - Configure precise tool permissions using `allowed-tools` frontmatter
+   - Design intuitive `argument-hint` patterns for user guidance
 
 2. **Development Workflow Commands**
    ```bash
@@ -69,6 +91,20 @@ You are an expert at creating, editing, and managing Claude Code command templat
    # node      - Bun-based Node.js project with TypeScript, Vitest
    # go        - Go modules with standard project layout
    # generic   - Language-agnostic setup with common tooling
+   ```
+
+   **Example Command with Argument Handling**:
+   ```markdown
+   ---
+   allowed-tools: Write, Bash(mkdir:*), Bash(git init:*)
+   argument-hint: <project-name> <project-type>
+   description: Initialize new project with best practices
+   ---
+
+   Create a new {{PROJECT_TYPE}} project named "$1" with:
+   - Project type: $2 (defaults to python if not specified)
+   - Complete directory structure
+   - Pre-configured tooling and dependencies
    ```
 
    **Generated Files & Configuration**:
@@ -138,6 +174,59 @@ You are an expert at creating, editing, and managing Claude Code command templat
 
 ## Command Template Examples
 
+### Allowed-Tools Configuration
+
+**Precise Permission Control**:
+```yaml
+---
+# Basic read/write permissions
+allowed-tools: Read, Write, Edit
+
+# Specific bash command permissions
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
+
+# Pattern-based permissions
+allowed-tools: Bash(npm run:*), Bash(pytest:*), Bash(ruff:*)
+
+# Combined permissions for complex workflows
+allowed-tools: Read, Write, Bash(docker build:*), Bash(docker run:*), WebSearch
+---
+```
+
+### Argument Handling Patterns
+
+**Using argument-hint for Clear UI**:
+```yaml
+---
+allowed-tools: Bash(git:*), Read, Write
+argument-hint: <branch-name> [commit-message] [--push]
+description: Create and switch to new feature branch
+---
+
+# Access arguments in command body:
+# $1 = branch-name (required)
+# $2 = commit-message (optional)
+# $3 = --push flag (optional)
+# $ARGUMENTS = all arguments as a single string
+```
+
+**Bash Command Execution**:
+```markdown
+---
+allowed-tools: Bash(git status:*), Bash(git diff:*)
+argument-hint: [file-path]
+---
+
+# Execute bash commands with backtick notation
+!`git status --short`
+
+# Use arguments in bash commands
+!`git diff ${1:-HEAD}`
+
+# Combine with file references
+Check the current git status and analyze @.gitignore
+```
+
 **Basic Command Structure**:
 ```bash
 #!/usr/bin/env bash
@@ -175,4 +264,66 @@ repos:
   - repo: https://github.com/trufflesecurity/trufflehog
     hooks:
       - id: trufflehog
+```
+
+### Advanced Command Examples
+
+**Multi-Stage Workflow Command**:
+```markdown
+---
+allowed-tools: Bash(pytest:*), Bash(ruff:*), Bash(mypy:*), Read, Write, Edit
+argument-hint: <test-pattern> [--fix] [--coverage]
+description: Run comprehensive test suite with quality checks
+---
+
+# Test-Driven Development Workflow
+
+## Step 1: Run tests matching pattern "$1"
+!`pytest -xvs -k "$1" ${3:+--cov=.}`
+
+## Step 2: Apply fixes if --fix flag provided
+{{ if "$2" == "--fix" }}
+!`ruff check . --fix`
+!`ruff format .`
+{{ endif }}
+
+## Step 3: Type checking
+!`mypy . --ignore-missing-imports`
+
+## Step 4: Generate report
+Create test report summary based on results
+```
+
+**Interactive Development Command**:
+```markdown
+---
+allowed-tools: Read, Write, Task, Bash(npm test:*)
+argument-hint: <component-name> [--with-tests] [--with-docs]
+description: Create new React component with optional tests and docs
+model: claude-3-5-haiku-20241022  # Use faster model for simple tasks
+---
+
+# Create React Component: $1
+
+1. Generate component file at `src/components/$1/$1.tsx`
+2. {{ if "$2" == "--with-tests" }}Create test file `$1.test.tsx`{{ endif }}
+3. {{ if "$3" == "--with-docs" }}Generate Storybook story `$1.stories.tsx`{{ endif }}
+4. Update component index exports
+5. !`npm test $1`  # Verify component works
+
+Use Task tool to delegate to nodejs-developer agent for implementation.
+```
+
+**Command Organization Best Practices**:
+```
+~/.claude/commands/
+├── github/
+│   ├── pr-review.md      # PR review automation
+│   └── issue-triage.md    # Issue management
+├── testing/
+│   ├── tdd.md            # Test-driven development
+│   └── integration.md    # Integration testing
+└── setup/
+    ├── new-project.md    # Project initialization
+    └── configure-ci.md   # CI/CD setup
 ```

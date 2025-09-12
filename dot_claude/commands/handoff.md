@@ -99,6 +99,10 @@ format: podio              # podio, slack, email, markdown
 include_sensitive: false   # Include sensitive config info
 detail_level: standard     # minimal, standard, comprehensive
 template_style: professional # professional, technical, brief
+podio_workspace:          # Default workspace for Podio integration
+  org_label: fvh
+  space_label: iot-workspace
+  app_label: datadev-kanban
 ```
 
 ## Integration Points
