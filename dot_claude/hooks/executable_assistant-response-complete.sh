@@ -22,16 +22,16 @@ if [ ! -t 0 ]; then
     debug_log "Received input: ${HOOK_INPUT:0:200}..."
 fi
 
-# Extract transcript_path from JSON
+# Extract transcript_path from JSON (fail fast if jq is not available)
 TRANSCRIPT_PATH=""
 if [[ -n "$HOOK_INPUT" ]]; then
     if command -v jq >/dev/null 2>&1; then
         TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty' 2>/dev/null || echo "")
+        debug_log "Extracted transcript path: $TRANSCRIPT_PATH"
     else
-        # Fallback without jq
-        TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | grep -oP '"transcript_path"\s*:\s*"[^"]+' | cut -d'"' -f4 || echo "")
+        debug_log "jq not available - cannot parse JSON input safely"
+        # Fail fast instead of using potentially unsafe regex parsing
     fi
-    debug_log "Extracted transcript path: $TRANSCRIPT_PATH"
 fi
 
 # Get repository name for context

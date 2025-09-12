@@ -7,6 +7,7 @@ Provides a simple, reliable way to get meaningful information about what Claude 
 """
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -29,9 +30,10 @@ logger = logging.getLogger(__name__)
 class ContextExtractor:
     """Extract meaningful context from Claude Code transcript files."""
 
-    def extract_from_transcript(self, transcript_path: str, max_lines: int = 100) -> Dict[str, Any]:
+    def extract_from_transcript(self, transcript_path: str, max_messages: int = 20) -> Dict[str, Any]:
         """
-        Extract context from the last N lines of a transcript file.
+        Extract context from the last N messages of a transcript file.
+        Uses jq for efficient extraction when available, falls back to Python parsing.
 
         Returns a simplified context with:
         - files_modified: List of filenames that were changed
@@ -57,21 +59,20 @@ class ContextExtractor:
                 logger.warning(f"Transcript not found: {transcript_path}")
                 return context
 
-            # Read the last N lines
-            with open(transcript_file, 'r') as f:
-                lines = f.readlines()
-                recent_lines = lines[-max_lines:] if len(lines) > max_lines else lines
+            # Try to use jq for efficient extraction of last N messages
+            messages = self._extract_recent_messages_with_jq(transcript_path, max_messages)
+            
+            if not messages:
+                # Fallback to Python-based extraction
+                logger.debug("jq extraction failed, using Python fallback")
+                messages = self._extract_recent_messages_python(transcript_path, max_messages)
 
-            # Process each JSON line
-            for line in recent_lines:
-                if not line.strip():
-                    continue
-
+            # Process each message
+            for entry in messages:
                 try:
-                    entry = json.loads(line)
                     self._process_entry(entry, context)
-                except json.JSONDecodeError as e:
-                    logger.debug(f"Skipping non-JSON line: {e}")
+                except Exception as e:
+                    logger.debug(f"Error processing entry: {e}")
                     continue
 
             # Determine primary activity based on what we found
@@ -84,6 +85,61 @@ class ContextExtractor:
             context['errors'].append(str(e))
 
         return context
+
+    def _extract_recent_messages_with_jq(self, transcript_path: str, max_messages: int) -> List[Dict]:
+        """Use jq to efficiently extract the last N messages from transcript."""
+        import subprocess
+        
+        try:
+            # Use jq to get last N lines as JSON objects
+            cmd = [
+                'jq', '-s', f'.[max(0, length - {max_messages}):][]',
+                str(transcript_path)
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            
+            if result.returncode != 0:
+                logger.debug(f"jq failed: {result.stderr}")
+                return []
+            
+            # Parse the JSON objects
+            messages = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    try:
+                        messages.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+            
+            logger.debug(f"Extracted {len(messages)} messages using jq")
+            return messages
+            
+        except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
+            logger.debug(f"jq extraction failed: {e}")
+            return []
+
+    def _extract_recent_messages_python(self, transcript_path: str, max_lines: int) -> List[Dict]:
+        """Fallback Python-based extraction of recent messages."""
+        try:
+            with open(transcript_path, 'r') as f:
+                lines = f.readlines()
+                recent_lines = lines[-max_lines:] if len(lines) > max_lines else lines
+
+            messages = []
+            for line in recent_lines:
+                if not line.strip():
+                    continue
+                try:
+                    messages.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+            
+            logger.debug(f"Extracted {len(messages)} messages using Python fallback")
+            return messages
+            
+        except Exception as e:
+            logger.debug(f"Python extraction failed: {e}")
+            return []
 
     def _process_entry(self, entry: Dict, context: Dict) -> None:
         """Process a single transcript entry to extract relevant info."""
@@ -233,5 +289,4 @@ def main():
 
 
 if __name__ == '__main__':
-    import os
     main()
