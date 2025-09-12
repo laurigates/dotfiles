@@ -23,7 +23,7 @@ return {
         timeout = 3000,
       },
       quickfile = { enabled = true },
-      dashboard = { enabled = true },
+      -- dashboard = { enabled = true },
       statuscolumn = {
         enabled = true,
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
@@ -155,7 +155,7 @@ return {
       {
         "<leader>/",
         function()
-          Snacks.picker.grep()
+          Snacks.picker.grep({ hidden = true })
         end,
         desc = "Grep",
       },
@@ -184,14 +184,14 @@ return {
       {
         "<leader>fc",
         function()
-          Snacks.picker.files({ cwd = "~/.local/share/chezmoi" })
+          Snacks.picker.files({ cwd = "~/.local/share/chezmoi", hidden = true })
         end,
         desc = "Find Config File",
       },
       {
         "<leader>ff",
         function()
-          Snacks.picker.files()
+          Snacks.picker.files({ hidden = true })
         end,
         desc = "Find Files",
       },
@@ -205,7 +205,7 @@ return {
       {
         "<leader>fr",
         function()
-          Snacks.picker.recent()
+          Snacks.picker.recent({ hidden = true })
         end,
         desc = "Recent",
       },
