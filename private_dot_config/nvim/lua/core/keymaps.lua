@@ -54,6 +54,12 @@ map("t", "<Esc>", "<C-\\><C-n>") -- exit
 -- map('n', 'ga', '<Plug>(EasyAlign)')
 -- map('x', 'ga', '<Plug>(EasyAlign)')
 
+-- JSON to Lua conversion function is defined in core/functions.lua
+
+-- Map <leader>jl for "JSON to Lua"
+map('n', '<leader>jl', '<cmd>lua json_to_lua()<CR>', { desc = "Convert JSON to Lua using vim.json.decode()" })
+map('v', '<leader>jl', '<cmd>lua json_to_lua()<CR>', { desc = "Convert JSON to Lua using vim.json.decode()" })
+
 -- Surround like delete/change surrounding function calls
 -- map('n', 'dsf', 'ds)db', { noremap = false })
 -- map('n', 'csf', '[(cb')
