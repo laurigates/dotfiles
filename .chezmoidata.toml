@@ -1,27 +1,35 @@
 # Chezmoi data for package management
 [packages]
-  [packages.pipx]
-    # Python tools managed by pipx
+  [packages.uv_tools]
+    # Python tools managed by uv tool
     tools = [
+      "aider-install",
       "ansible",
       "argcomplete",
       "asciinema",
+      "chrome-devtools-mcp",
       "cookiecutter",
+      "devpi-server",
+      "esptool",
       "glances",
+      "huggingface-hub",
       "jinjanator",
+      "mlx-lm",
       "pdm",
       "pre-commit",
       "ranger-fm",
       "ruff",
-      "uv",
-      "vectorcode",
+      "tdd-guard",
+      "telegram-send",
+      "trafilatura",
+      "vectorcode[mcp,cli]",
       "yamllint"
     ]
 
   [packages.completion_tools]
     # Tools that provide shell completions
     [packages.completion_tools.zsh_completions]
-      pipx = "register-python-argcomplete pipx"
+      uv = "uv generate-shell-completion zsh"
       rustup = "rustup completions zsh"
       pip = "pip completion --zsh"
       podman = "podman completion -f zsh"
