@@ -113,21 +113,21 @@ else
     echo "⚠️  Neovim not found, skipping plugin updates"
 fi
 
-# pipx
-if command -v pipx >/dev/null 2>&1; then
-    echo "🐍 Installing and updating Python tools via pipx..."
-    {{- range .packages.pipx.tools }}
-    if ! pipx list --short | grep -q "^{{ . }} "; then
+# uv tools
+if command -v uv >/dev/null 2>&1; then
+    echo "🐍 Installing and updating Python tools via uv..."
+    {{- range .packages.uv_tools.tools }}
+    if ! uv tool list | grep -q "^{{ . }} "; then
         echo "📦 Installing {{ . }}..."
-        pipx install {{ . }}
+        uv tool install {{ . }}
     else
         echo "✅ {{ . }} already installed"
     fi
     {{- end }}
-    echo "⬆️  Upgrading all pipx packages..."
-pipx upgrade-all
+    echo "⬆️  Upgrading all uv tool packages..."
+    uv tool upgrade --all
 else
-    echo "⚠️  pipx not found, skipping Python package updates"
+    echo "⚠️  uv not found, skipping Python package updates"
 fi
 
 echo "✅ Update process completed successfully!"
@@ -242,12 +242,11 @@ fi
     description = "Update all AI tools"
     command = """
 #!/bin/sh
-pipx install "vectorcode[mcp,cli]"
+uv tool install 'vectorcode[mcp,cli]'
 npm i -g @anthropic-ai/claude-code
 npm install -g @google/gemini-cli
-pipx install git+https://github.com/arben-adm/mcp-sequential-thinking
-pipx inject sequential-thinking portalocker
-pipx install git+https://github.com/BeehiveInnovations/zen-mcp-server
+uv tool install git+https://github.com/arben-adm/mcp-sequential-thinking --with portalocker
+uv tool install git+https://github.com/BeehiveInnovations/zen-mcp-server
 go install github.com/github/github-mcp-server/cmd/github-mcp-server@latest
 claude mcp add --scope=user --transport=sse graphiti-memory -- http://localhost:8000/sse
 claude mcp add kicad -- ~/repos/kicad-mcp/.venv/bin/python ~/repos/kicad-mcp/main.py
