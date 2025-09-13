@@ -1,0 +1,53 @@
+#!/bin/bash
+# Update all packages and tools
+# Runs when .chezmoidata.toml or Brewfile changes
+# Hash: {{ include ".chezmoidata.toml" | sha256sum }}
+# Hash: {{ include "Brewfile" | sha256sum }}
+
+set -euo pipefail
+
+echo "🔄 Starting comprehensive update process..."
+
+# Brew
+{{- if eq .chezmoi.os "darwin" }}
+echo "📦 Updating Homebrew packages..."
+brew update && brew upgrade && brew cleanup
+{{- else }}
+echo "📦 Updating Homebrew packages..."
+/home/linuxbrew/.linuxbrew/bin/brew update && /home/linuxbrew/.linuxbrew/bin/brew upgrade && /home/linuxbrew/.linuxbrew/bin/brew cleanup
+{{- end }}
+
+# mise
+if command -v mise >/dev/null 2>&1; then
+    echo "🛠️  Updating mise and tool versions..."
+    mise upgrade
+else
+    echo "⚠️  mise not found, skipping tool updates"
+fi
+
+# Neovim
+if command -v nvim >/dev/null 2>&1; then
+    echo "⚙️  Updating Neovim plugins and LSP tools..."
+    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
+else
+    echo "⚠️  Neovim not found, skipping plugin updates"
+fi
+
+# pipx
+if command -v pipx >/dev/null 2>&1; then
+    echo "🐍 Installing and updating Python tools via pipx..."
+    {{- range .packages.pipx.tools }}
+    if ! pipx list --short | grep -q "^{{ . }} "; then
+        echo "📦 Installing {{ . }}..."
+        pipx install {{ . }}
+    else
+        echo "✅ {{ . }} already installed"
+    fi
+    {{- end }}
+    echo "⬆️  Upgrading all pipx packages..."
+    pipx upgrade-all
+else
+    echo "⚠️  pipx not found, skipping Python package updates"
+fi
+
+echo "✅ Update process completed successfully!"

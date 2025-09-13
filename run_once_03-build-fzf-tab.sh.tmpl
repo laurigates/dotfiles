@@ -1,0 +1,35 @@
+#!/bin/zsh
+# Build fzf-tab module when its source file changes (macOS only)
+
+{{- if eq .chezmoi.os "darwin" }}
+
+echo "Checking dependencies for fzf-tab build..."
+if ! command -v brew &> /dev/null; then
+  echo "Error: brew command not found. Cannot check dependencies."
+  exit 1
+fi
+if ! brew list groff &> /dev/null || ! brew list autoconf &> /dev/null; then
+  echo "Warning: groff or autoconf not installed via brew. Skipping fzf-tab build. Run 'brew install groff autoconf' or ensure they are in the Brewfile."
+  exit 0
+fi
+
+FZF_TAB_SOURCE="$HOME/.config/zsh/fzf-tab/fzf-tab.zsh"
+echo "Attempting to build fzf-tab module from $FZF_TAB_SOURCE..."
+
+if [ -f "$FZF_TAB_SOURCE" ]; then
+  echo "Sourcing $FZF_TAB_SOURCE and building module..."
+  unset ZDOTDIR
+  ( source "$FZF_TAB_SOURCE" && build-fzf-tab-module )
+  if [ $? -eq 0 ]; then
+    echo "fzf-tab module built successfully."
+  else
+    echo "Warning: Failed to build fzf-tab module."
+  fi
+else
+  echo "Error: fzf-tab source file not found at $FZF_TAB_SOURCE."
+  exit 1
+fi
+
+{{- else }}
+# This script only runs on macOS
+{{- end }}
