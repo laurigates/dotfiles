@@ -166,7 +166,7 @@ chezmoi diff ~/.claude/  # ✅
 ### Chezmoi Special Files
 - `.chezmoiremove` - List of files to remove from target
 - `.chezmoiignore` - Files to ignore (won't be managed)
-- `.chezmoitasks.toml` - Task definitions
+- `run_*` scripts - Automatic execution during `chezmoi apply`
 
 ### Configuration Files
 - `chezmoi.toml.tmpl` - Core chezmoi configuration template
