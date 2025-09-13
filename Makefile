@@ -242,7 +242,7 @@ help: ## Display this help message
 		/^##@/ { printf "\n$(YELLOW)%s$(RESET)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@echo ""
 	@echo "$(YELLOW)Integration Points:$(RESET)"
-	@echo "  • Chezmoi tasks defined in .chezmoitasks.toml"
+	@echo "  • Chezmoi scripts: run_* files for automatic execution"
 	@echo "  • Package management via Brewfile and mise"
 	@echo "  • Neovim configuration in private_dot_config/nvim/"
 	@echo "  • Shell configuration for Fish in private_dot_config/fish/"
