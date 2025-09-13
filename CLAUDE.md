@@ -173,7 +173,7 @@ chezmoi diff ~/.claude/  # ✅
 - `private_dot_config/nvim/` - Neovim setup with lazy.nvim
 - `private_dot_config/fish/` - Fish shell with cross-platform paths
 - `Brewfile` - Homebrew package definitions
-- `dot_default-*-packages` - Tool package lists (cargo, npm, pipx)
+- `dot_default-*-packages` - Tool package lists (cargo, npm, uv)
 
 ## Templates
 
