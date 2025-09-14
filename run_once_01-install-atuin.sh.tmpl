@@ -1,0 +1,48 @@
+#!/bin/bash
+# Install atuin shell history manager if not already installed
+# This script runs once and checks if atuin is available
+
+set -euo pipefail
+
+echo "Checking for atuin installation..."
+
+# Check if atuin is already installed
+if command -v atuin &> /dev/null; then
+    echo "✓ atuin is already installed (version: $(atuin --version))"
+    exit 0
+fi
+
+echo "atuin not found. Installing..."
+
+# Try to install via brew first (if available)
+{{- if eq .chezmoi.os "darwin" }}
+if command -v brew &> /dev/null; then
+    echo "Installing atuin via Homebrew..."
+    brew install atuin && echo "✓ atuin installed via Homebrew" && exit 0
+fi
+{{- else if eq .chezmoi.os "linux" }}
+if command -v /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
+    echo "Installing atuin via Homebrew..."
+    /home/linuxbrew/.linuxbrew/bin/brew install atuin && echo "✓ atuin installed via Homebrew" && exit 0
+fi
+{{- end }}
+
+# Fall back to the official installation script
+echo "Installing atuin via official installation script..."
+curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+
+# Verify installation
+if command -v atuin &> /dev/null; then
+    echo "✓ atuin successfully installed (version: $(atuin --version))"
+    
+    # Note about shell configuration
+    echo ""
+    echo "Note: Shell integration is already configured in:"
+    echo "  - Fish: ~/.config/fish/config.fish"
+    echo "  - Zsh: ~/.zshrc"
+    echo ""
+    echo "You may need to restart your shell or run 'source' on your shell config."
+else
+    echo "✗ Failed to install atuin"
+    exit 1
+fi
