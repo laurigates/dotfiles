@@ -44,6 +44,23 @@ if command -v uv >/dev/null 2>&1; then
         echo "✅ {{ . }} already installed"
     fi
     {{- end }}
+    
+    {{- if .packages.uv_tools.git_tools }}
+    echo "🔧 Installing Git-based tools..."
+    {{- range .packages.uv_tools.git_tools }}
+    if ! uv tool list | grep -q "^{{ .package }} "; then
+        echo "📦 Installing {{ .package }} from {{ .url }}..."
+        {{- if .with }}
+        uv tool install "{{ .url }}" --with {{ range $i, $dep := .with }}{{ if $i }},{{ end }}{{ $dep }}{{ end }}
+        {{- else }}
+        uv tool install "{{ .url }}"
+        {{- end }}
+    else
+        echo "✅ {{ .package }} already installed"
+    fi
+    {{- end }}
+    {{- end }}
+    
     echo "⬆️  Upgrading all uv tool packages..."
     uv tool upgrade --all
 else
