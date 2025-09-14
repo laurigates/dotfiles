@@ -1,12 +1,11 @@
 #!/bin/sh
 # Update all AI tools
 
-pipx install "vectorcode[mcp,cli]"
+uv tool install "vectorcode[mcp,cli]"
 npm i -g @anthropic-ai/claude-code
 npm install -g @google/gemini-cli
-pipx install git+https://github.com/arben-adm/mcp-sequential-thinking
-pipx inject sequential-thinking portalocker
-pipx install git+https://github.com/BeehiveInnovations/zen-mcp-server
+uv tool install "git+https://github.com/arben-adm/mcp-sequential-thinking" --with portalocker
+uv tool install "git+https://github.com/BeehiveInnovations/zen-mcp-server"
 go install github.com/github/github-mcp-server/cmd/github-mcp-server@latest
 claude mcp add --scope=user --transport=sse graphiti-memory -- http://localhost:8000/sse
 claude mcp add kicad -- ~/repos/kicad-mcp/.venv/bin/python ~/repos/kicad-mcp/main.py

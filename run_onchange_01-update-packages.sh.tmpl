@@ -33,21 +33,38 @@ else
     echo "⚠️  Neovim not found, skipping plugin updates"
 fi
 
-# pipx
-if command -v pipx >/dev/null 2>&1; then
-    echo "🐍 Installing and updating Python tools via pipx..."
-    {{- range .packages.pipx.tools }}
-    if ! pipx list --short | grep -q "^{{ . }} "; then
+# uv tools
+if command -v uv >/dev/null 2>&1; then
+    echo "🐍 Installing and updating Python tools via uv..."
+    {{- range .packages.uv_tools.tools }}
+    if ! uv tool list | grep -q "^{{ . }} "; then
         echo "📦 Installing {{ . }}..."
-        pipx install {{ . }}
+        uv tool install {{ . }}
     else
         echo "✅ {{ . }} already installed"
     fi
     {{- end }}
-    echo "⬆️  Upgrading all pipx packages..."
-    pipx upgrade-all
+    
+    {{- if .packages.uv_tools.git_tools }}
+    echo "🔧 Installing Git-based tools..."
+    {{- range .packages.uv_tools.git_tools }}
+    if ! uv tool list | grep -q "^{{ .package }} "; then
+        echo "📦 Installing {{ .package }} from {{ .url }}..."
+        {{- if .with }}
+        uv tool install "{{ .url }}" --with {{ range $i, $dep := .with }}{{ if $i }},{{ end }}{{ $dep }}{{ end }}
+        {{- else }}
+        uv tool install "{{ .url }}"
+        {{- end }}
+    else
+        echo "✅ {{ .package }} already installed"
+    fi
+    {{- end }}
+    {{- end }}
+    
+    echo "⬆️  Upgrading all uv tool packages..."
+    uv tool upgrade --all
 else
-    echo "⚠️  pipx not found, skipping Python package updates"
+    echo "⚠️  uv not found, skipping Python package updates"
 fi
 
 echo "✅ Update process completed successfully!"

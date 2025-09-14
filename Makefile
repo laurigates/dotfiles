@@ -139,11 +139,11 @@ update: ## Update all tools and packages
 	else \
 		echo "$(YELLOW)Warning: nvim not found$(RESET)"; \
 	fi
-	@echo "$(GREEN)Updating pipx packages...$(RESET)"
-	@if command -v pipx >/dev/null 2>&1; then \
-		pipx upgrade-all; \
+	@echo "$(GREEN)Updating uv tool packages...$(RESET)"
+	@if command -v uv >/dev/null 2>&1; then \
+		uv tool upgrade --all; \
 	else \
-		echo "$(YELLOW)Warning: pipx not found$(RESET)"; \
+		echo "$(YELLOW)Warning: uv not found$(RESET)"; \
 	fi
 	@echo "$(GREEN)Updating Claude CLI completion...$(RESET)"
 	@$(MAKE) update-claude-completion
