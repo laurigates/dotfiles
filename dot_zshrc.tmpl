@@ -361,26 +361,20 @@ eval "$(atuin init zsh)"
 # NOTE: This needs to be before compinit
 [ -d ~/.zfunc ] && fpath+=~/.zfunc
 
-# Load Homebrew specific completions (if available)
-# Needs to be before compinit if they add to fpath or define functions compinit should know
+# Load Homebrew path configurations (if available)
+# Path modifications should be done before compinit
 {{ if eq .chezmoi.os "darwin" }}
 if type /opt/homebrew/bin/brew &> /dev/null; then
-    # google-cloud-sdk path and completions
-    # Ensure these are sourced before compinit if they modify fpath or define completion functions
+    # google-cloud-sdk path (this modifies PATH, so keep it before compinit)
     [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ] && \
       source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
-      source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 fi
 {{ else if eq .chezmoi.os "linux" }}
 if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
-    # Add Linux paths for brew completions if needed
-    # Example:
+    # Add Linux paths for google-cloud-sdk if needed
     # [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ] && \
     #   source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    # [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
-    #   source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
-    : # Placeholder if no specific Linux brew completions needed here yet
+    : # Placeholder if no specific Linux brew paths needed here yet
 fi
 {{ end }}
 
@@ -395,6 +389,20 @@ autoload -Uz compinit && compinit
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
 
+# Load Google Cloud SDK completions (after compinit)
+{{ if eq .chezmoi.os "darwin" }}
+if type /opt/homebrew/bin/brew &> /dev/null; then
+    [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
+      source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
+{{ else if eq .chezmoi.os "linux" }}
+if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
+    # Load Linux google-cloud-sdk completions if needed
+    # [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
+    #   source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+    : # Placeholder if no specific Linux brew completions needed here yet
+fi
+{{ end }}
 
 # Load Homebrew bash completions (if available)
 # Requires bashcompinit to be loaded after compinit
