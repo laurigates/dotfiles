@@ -17,6 +17,21 @@ if ! command -v pipx &> /dev/null; then
     exit 0
 fi
 
+# Check if ~/.local/bin is in PATH
+if [[ ! ":$PATH:" == *":$HOME/.local/bin:"* ]]; then
+    echo "⚠️  Warning: ~/.local/bin is not in your PATH"
+    echo "   Tools installed by uv may not be accessible"
+    echo "   Add this to your shell configuration:"
+    echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
+    echo ""
+    read -p "Continue anyway? (y/n) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Migration cancelled"
+        exit 0
+    fi
+fi
+
 # Get list of installed pipx packages
 echo "📦 Getting list of installed pipx packages..."
 PIPX_PACKAGES=$(pipx list --short 2>/dev/null | awk '{print $1}' || true)
@@ -56,7 +71,8 @@ FAIL_COUNT=0
 FAILED_PACKAGES=""
 
 # Migrate each package
-echo "$PIPX_PACKAGES" | while IFS= read -r package; do
+# Use process substitution instead of pipe to avoid subshell
+while IFS= read -r package; do
     echo "📦 Migrating $package..."
 
     # Special handling for specific packages
@@ -112,7 +128,7 @@ echo "$PIPX_PACKAGES" | while IFS= read -r package; do
             fi
             ;;
     esac
-done
+done < <(echo "$PIPX_PACKAGES")
 
 echo ""
 echo "🎉 Migration Summary:"
@@ -133,5 +149,8 @@ echo "   1. Run 'uv tool list' to verify all tools are installed"
 echo "   2. Test that your tools work correctly"
 echo "   3. Once verified, you can uninstall pipx: brew uninstall pipx"
 echo "   4. Update your shell completions if needed"
+echo ""
+echo "ℹ️  Package list backup saved to: $BACKUP_FILE"
+echo "   You can use this to manually restore any packages if needed"
 echo ""
 echo "✅ Migration script completed!"
