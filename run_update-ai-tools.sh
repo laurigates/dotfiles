@@ -28,3 +28,4 @@ claude mcp add --scope=user lsp-json -- npx -y tritlo/lsp-mcp json ~/.local/shar
 claude mcp add --scope=user lsp-bash -- npx -y tritlo/lsp-mcp bash ~/.local/share/nvim/mason/bin/bash-language-server --stdio
 claude mcp add --scope=user lsp-helm -- npx -y tritlo/lsp-mcp helm ~/.local/share/nvim/mason/bin/helm_ls --stdio
 claude mcp add --scope=user --transport=http sentry https://mcp.sentry.dev/mcp
+claude mcp add --scope=user argocd-mcp -- npx -y argocd-mcp@latest stdio
