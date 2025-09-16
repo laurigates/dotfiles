@@ -1,8 +1,7 @@
 #!/bin/bash
 # Update all packages and tools
-# Runs when .chezmoidata.toml or Brewfile changes
+# Runs when .chezmoidata.toml changes (which now includes brew packages)
 # Hash: {{ include ".chezmoidata.toml" | sha256sum }}
-# Hash: {{ include "Brewfile" | sha256sum }}
 
 set -euo pipefail
 
@@ -44,13 +43,13 @@ if command -v uv >/dev/null 2>&1; then
         echo "✅ {{ . }} already installed"
     fi
     {{- end }}
-    
+
     {{- if .packages.uv_tools.git_tools }}
     echo "🔧 Installing Git-based tools..."
     {{- range .packages.uv_tools.git_tools }}
     if ! uv tool list | grep -q "^{{ .package }} "; then
         echo "📦 Installing {{ .package }} from {{ .url }}..."
-        {{- if .with }}
+        {{- if hasKey . "with" }}
         uv tool install "{{ .url }}" --with {{ range $i, $dep := .with }}{{ if $i }},{{ end }}{{ $dep }}{{ end }}
         {{- else }}
         uv tool install "{{ .url }}"
@@ -60,7 +59,7 @@ if command -v uv >/dev/null 2>&1; then
     fi
     {{- end }}
     {{- end }}
-    
+
     echo "⬆️  Upgrading all uv tool packages..."
     uv tool upgrade --all
 else

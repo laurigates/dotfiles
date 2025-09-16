@@ -1,0 +1,191 @@
+#!/bin/bash
+# Install brew packages from .chezmoidata.toml
+# This script runs once to install all brew packages
+
+set -euo pipefail
+
+echo "🍺 Starting Homebrew package installation..."
+
+# Determine brew command based on OS
+{{- if eq .chezmoi.os "darwin" }}
+BREW_CMD="brew"
+{{- else if eq .chezmoi.os "linux" }}
+BREW_CMD="/home/linuxbrew/.linuxbrew/bin/brew"
+{{- end }}
+
+# Check if brew is installed
+if ! command -v $BREW_CMD &> /dev/null; then
+    echo "❌ Homebrew is not installed. Please install it first."
+    {{- if eq .chezmoi.os "darwin" }}
+    echo "Visit: https://brew.sh for installation instructions"
+    {{- else }}
+    echo "Run: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+    {{- end }}
+    exit 1
+fi
+
+echo "📋 Updating Homebrew..."
+$BREW_CMD update
+
+# Install taps
+echo "🚰 Installing taps..."
+
+# Common taps
+{{- range .packages.brew.common_taps }}
+echo "  Installing tap: {{ . }}"
+$BREW_CMD tap {{ . }} 2>/dev/null || echo "    ⚠️  Tap {{ . }} already installed or failed"
+{{- end }}
+
+# OS-specific taps
+{{- if eq .chezmoi.os "darwin" }}
+{{- range .packages.brew.darwin_taps }}
+echo "  Installing tap: {{ . }}"
+$BREW_CMD tap {{ . }} 2>/dev/null || echo "    ⚠️  Tap {{ . }} already installed or failed"
+{{- end }}
+{{- else if eq .chezmoi.os "linux" }}
+{{- range .packages.brew.linux_taps }}
+echo "  Installing tap: {{ . }}"
+$BREW_CMD tap {{ . }} 2>/dev/null || echo "    ⚠️  Tap {{ . }} already installed or failed"
+{{- end }}
+{{- end }}
+
+# Install common formulae
+echo "📦 Installing common packages..."
+FAILED_PACKAGES=()
+
+{{- range .packages.brew.common }}
+if ! $BREW_CMD list --formula {{ . }} &>/dev/null; then
+    echo "  Installing: {{ . }}"
+    if ! $BREW_CMD install {{ . }}; then
+        echo "    ❌ Failed to install {{ . }}"
+        FAILED_PACKAGES+=("{{ . }}")
+    fi
+else
+    echo "  ✅ {{ . }} already installed"
+fi
+{{- end }}
+
+# Install OS-specific formulae
+{{- if eq .chezmoi.os "darwin" }}
+echo "🍎 Installing macOS-specific packages..."
+{{- range .packages.brew.darwin }}
+if ! $BREW_CMD list --formula {{ . }} &>/dev/null; then
+    echo "  Installing: {{ . }}"
+    if ! $BREW_CMD install {{ . }}; then
+        echo "    ❌ Failed to install {{ . }}"
+        FAILED_PACKAGES+=("{{ . }}")
+    fi
+else
+    echo "  ✅ {{ . }} already installed"
+fi
+{{- end }}
+{{- else if eq .chezmoi.os "linux" }}
+echo "🐧 Installing Linux-specific packages..."
+{{- range .packages.brew.linux }}
+if ! $BREW_CMD list --formula {{ . }} &>/dev/null; then
+    echo "  Installing: {{ . }}"
+    if ! $BREW_CMD install {{ . }}; then
+        echo "    ❌ Failed to install {{ . }}"
+        FAILED_PACKAGES+=("{{ . }}")
+    fi
+else
+    echo "  ✅ {{ . }} already installed"
+fi
+{{- end }}
+{{- end }}
+
+# Install services with restart flags
+{{- if .packages.brew.services }}
+echo "🔄 Installing services..."
+{{- range .packages.brew.services }}
+if ! $BREW_CMD list --formula {{ .name }} &>/dev/null; then
+    echo "  Installing service: {{ .name }}"
+    if ! $BREW_CMD install {{ .name }}; then
+        echo "    ❌ Failed to install {{ .name }}"
+        FAILED_PACKAGES+=("{{ .name }}")
+    else
+        {{- if eq .restart "changed" }}
+        echo "  Setting up service restart for {{ .name }}..."
+        $BREW_CMD services restart {{ .name }} 2>/dev/null || echo "    ⚠️  Service setup may require sudo"
+        {{- end }}
+    fi
+else
+    echo "  ✅ {{ .name }} already installed"
+fi
+{{- end }}
+{{- end }}
+
+# Install casks (macOS only)
+{{- if eq .chezmoi.os "darwin" }}
+echo "💻 Installing casks (macOS applications)..."
+{{- range .packages.brew.casks }}
+if ! $BREW_CMD list --cask {{ . }} &>/dev/null; then
+    echo "  Installing cask: {{ . }}"
+    if ! $BREW_CMD install --cask {{ . }}; then
+        echo "    ❌ Failed to install {{ . }}"
+        FAILED_PACKAGES+=("cask:{{ . }}")
+    fi
+else
+    echo "  ✅ {{ . }} already installed"
+fi
+{{- end }}
+
+# Install Mac App Store apps
+if command -v mas &>/dev/null; then
+    echo "🍏 Installing Mac App Store apps..."
+    {{- range .packages.brew.mas }}
+    if ! mas list | grep -q "^{{ .id }}"; then
+        echo "  Installing: {{ .name }} ({{ .id }})"
+        if ! mas install {{ .id }}; then
+            echo "    ❌ Failed to install {{ .name }}"
+            FAILED_PACKAGES+=("mas:{{ .name }}")
+        fi
+    else
+        echo "  ✅ {{ .name }} already installed"
+    fi
+    {{- end }}
+else
+    echo "⚠️  mas not installed, skipping Mac App Store apps"
+    echo "    Install with: brew install mas"
+fi
+{{- end }}
+
+# Install VS Code extensions (if VS Code is installed)
+if command -v code &>/dev/null; then
+    echo "🔌 Installing VS Code extensions..."
+    {{- range .packages.brew.vscode }}
+    if ! code --list-extensions | grep -qi "^{{ . }}$"; then
+        echo "  Installing extension: {{ . }}"
+        if ! code --install-extension {{ . }} --force; then
+            echo "    ❌ Failed to install {{ . }}"
+            FAILED_PACKAGES+=("vscode:{{ . }}")
+        fi
+    else
+        echo "  ✅ {{ . }} already installed"
+    fi
+    {{- end }}
+else
+    echo "⚠️  VS Code CLI not found, skipping extensions"
+fi
+
+# Clean up
+echo "🧹 Running brew cleanup..."
+$BREW_CMD cleanup
+
+# Report results
+echo ""
+echo "📊 Installation Summary:"
+if [ ${#FAILED_PACKAGES[@]} -eq 0 ]; then
+    echo "✅ All packages installed successfully!"
+else
+    echo "⚠️  The following packages failed to install:"
+    for pkg in "${FAILED_PACKAGES[@]}"; do
+        echo "  - $pkg"
+    done
+    echo ""
+    echo "You can try installing them manually with:"
+    echo "  brew install <package-name>"
+fi
+
+echo ""
+echo "✨ Homebrew package installation complete!"

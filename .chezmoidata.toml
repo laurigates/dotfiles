@@ -25,7 +25,7 @@
       "vectorcode[mcp,cli]",
       "yamllint"
     ]
-    
+
     # Git-based tools with special installation requirements
     git_tools = [
       { package = "sequential-thinking", url = "git+https://github.com/arben-adm/mcp-sequential-thinking", with = ["portalocker"] },
@@ -63,6 +63,189 @@
       skaffold = "skaffold completion zsh"
       kitty = "kitty +complete setup zsh"
       vectorcode = "vectorcode -s zsh"
+
+[packages.brew]
+  # Taps for both macOS and Linux
+  common_taps = [
+    "hashicorp/tap",
+    "knqyf263/pet",
+    "norwoodj/tap",
+    "oven-sh/bun"
+  ]
+
+  # macOS-specific taps
+  darwin_taps = [
+    "felixkratz/formulae",
+    "hudochenkov/sshpass",
+    "koekeishiya/formulae"
+  ]
+
+  # Linux-specific taps
+  linux_taps = [
+    "redpanda-data/tap"
+  ]
+
+  # Common formulae for both macOS and Linux
+  common = [
+    "arduino-cli",
+    "argocd",
+    "argocd-vault-plugin",
+    "atuin",
+    "autoconf",
+    "bat",
+    "binwalk",
+    "chezmoi",
+    "cmake",
+    "coreutils",
+    "curl",
+    "dbmate",
+    "dfu-util",
+    "fd",
+    "fish",
+    "fswatch",
+    "fzf",
+    "gh",
+    "git",
+    "git-delta",
+    "git-filter-repo",
+    "git-lfs",
+    "gnutls",
+    "gobuster",
+    "groff",
+    "helm",
+    "help2man",
+    "httpie",
+    "imagemagick",
+    "iperf3",
+    "jd",
+    "jq",
+    "k9s",
+    "kubernetes-cli",
+    "kubectx",
+    "lazygit",
+    "lsd",
+    "luarocks",
+    "maven",
+    "mermaid-cli",
+    "mise",
+    "mosquitto",
+    "netcat",
+    "ninja",
+    "nmap",
+    "nushell",
+    "ollama",
+    "pandoc",
+    "parallel",
+    "pipx",
+    "platformio",
+    "python@3.11",
+    "python@3.13",
+    "qemu",
+    "ranger",
+    "ripgrep",
+    "skaffold",
+    "so",
+    "starship",
+    "tcl-tk",
+    "tflint",
+    "tldr",
+    "trufflehog",
+    "uv",
+    "wireshark",
+    "zlib",
+    "zoxide",
+    "zsh-completions",
+    "hashicorp/tap/terraform",
+    "knqyf263/pet/pet",
+    "norwoodj/tap/helm-docs",
+    "oven-sh/bun/bun"
+  ]
+
+  # macOS-specific formulae
+  darwin = [
+    "lldpd",
+    "lsusb",
+    "mas",
+    "openssl@3",
+    "libgit2",
+    "gettext",
+    "unbound",
+    "postgresql@14",
+    "postgresql@16",
+    "felixkratz/formulae/sketchybar",
+    "hudochenkov/sshpass/sshpass",
+    "koekeishiya/formulae/skhd"
+  ]
+
+  # Linux-specific formulae (includes redpanda which doesn't work on macOS)
+  linux = [
+    "numpy",
+    "redpanda-data/tap/redpanda"
+  ]
+
+  # Services that need restart_service flag
+  services = [
+    { name = "lldpd", restart = "changed" }
+  ]
+
+  # Casks (macOS only)
+  casks = [
+    "android-platform-tools",
+    "arduino-ide",
+    "bluesnooze",
+    "font-hack-nerd-font",
+    "gcloud-cli",
+    "ghostty",
+    "keycastr",
+    "keyman",
+    "kicad",
+    "kitty",
+    "krita",
+    "mac-mouse-fix",
+    "mitmproxy",
+    "obsidian",
+    "openlens",
+    "orbstack",
+    "shortcat",
+    "spotify",
+    "telegram-desktop",
+    "visual-studio-code",
+    "vlc",
+    "xquartz"
+  ]
+
+  # Mac App Store apps (macOS only)
+  mas = [
+    { name = "GarageBand", id = 682658836 },
+    { name = "iMovie", id = 408981434 },
+    { name = "Keynote", id = 409183694 },
+    { name = "Numbers", id = 409203825 },
+    { name = "Pages", id = 409201541 },
+    { name = "WireGuard", id = 1451685025 },
+    { name = "Xcode", id = 497799835 }
+  ]
+
+  # VS Code extensions (cross-platform)
+  vscode = [
+    "asvetliakov.vscode-neovim",
+    "github.copilot",
+    "github.copilot-chat",
+    "google.geminicodeassist",
+    "googlecloudtools.cloudcode",
+    "hashicorp.terraform",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode.cmake-tools",
+    "ms-vscode.cpptools",
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.cpptools-themes",
+    "platformio.platformio-ide",
+    "redhat.vscode-yaml",
+    "twxs.cmake"
+  ]
 
 [platform]
   # Platform-specific settings will be populated by templates

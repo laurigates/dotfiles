@@ -57,16 +57,7 @@ defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to rea
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
 {{- end }}
 
-# Brew setup for both macOS and Linux
-echo "Setting up brew..."
-{{- if eq .chezmoi.os "darwin" }}
-brew bundle --file {{ .chezmoi.sourceDir }}/Brewfile || echo "Warning: brew bundle failed. Check Brewfile path and brew installation."
-brew cleanup
-brew doctor
-{{- else }}
-/home/linuxbrew/.linuxbrew/bin/brew bundle --file {{ .chezmoi.sourceDir }}/Brewfile || echo "Warning: brew bundle failed. Check Brewfile path and brew installation."
-/home/linuxbrew/.linuxbrew/bin/brew cleanup
-/home/linuxbrew/.linuxbrew/bin/brew doctor
-{{- end }}
+# Note: Brew package installation is now handled by run_once_02-install-brew-packages.sh.tmpl
+# This keeps the initial setup focused on core configuration only
 
 echo "Initial setup completed!"
