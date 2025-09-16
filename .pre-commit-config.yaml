@@ -34,4 +34,4 @@ repos:
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-        exclude: package.lock.json
+        exclude: (package\.lock\.json|lazy-lock\.json)
