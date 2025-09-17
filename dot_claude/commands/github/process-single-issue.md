@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(git branch:*), Bash(git status:*), Bash(git pull:*), Bash(git switch:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(npm test:*), Bash(pytest:*), Bash(go test:*)
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(npm test:*), Bash(pytest:*), Bash(go test:*), Bash(make test:*), mcp__github__get_issue, mcp__github__update_issue, mcp__github__create_pull_request, TodoWrite
 description: Process and fix a single GitHub issue with TDD workflow
+argument-hint: <issue-number>
 ---
 
 ## Context

@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(git branch:*), Bash(git status:*), Bash(git pull:*), Bash(git switch:*), Bash(git merge:*), Bash(git push:*)
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), mcp__github__list_issues, mcp__github__get_issue, mcp__github__update_issue, TodoWrite
 description: Process multiple GitHub issues in sequence
+argument-hint: [--filter <label>] [--limit <n>]
 ---
 
 ## Context

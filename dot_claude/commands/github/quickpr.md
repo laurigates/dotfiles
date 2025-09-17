@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git branch:*), Bash(git status:*), Bash(git diff:*), Bash(gh repo view:*), Bash(git switch:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(git log:*), Bash(git fetch:*), Bash(gh pr create:*)
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(gh pr create:*), mcp__github__create_pull_request, mcp__github__get_issue, TodoWrite
 argument-hint: [pr-title] [--base <branch>] [--draft] [--no-commit] [--issue <num>]
 description: Complete PR workflow from any state with smart automation
 ---
