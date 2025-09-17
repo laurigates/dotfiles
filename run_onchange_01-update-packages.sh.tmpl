@@ -38,7 +38,7 @@ if command -v uv >/dev/null 2>&1; then
     {{- range .packages.uv_tools.tools }}
     if ! uv tool list | grep -q "^{{ . }} "; then
         echo "📦 Installing {{ . }}..."
-        uv tool install {{ . }}
+        uv tool install {{ . }} --force
     else
         echo "✅ {{ . }} already installed"
     fi
@@ -50,9 +50,9 @@ if command -v uv >/dev/null 2>&1; then
     if ! uv tool list | grep -q "^{{ .package }} "; then
         echo "📦 Installing {{ .package }} from {{ .url }}..."
         {{- if hasKey . "with" }}
-        uv tool install "{{ .url }}" --with {{ range $i, $dep := .with }}{{ if $i }},{{ end }}{{ $dep }}{{ end }}
+        uv tool install "{{ .url }}" --force --with {{ range $i, $dep := .with }}{{ if $i }},{{ end }}{{ $dep }}{{ end }}
         {{- else }}
-        uv tool install "{{ .url }}"
+        uv tool install "{{ .url }}" --force
         {{- end }}
     else
         echo "✅ {{ .package }} already installed"

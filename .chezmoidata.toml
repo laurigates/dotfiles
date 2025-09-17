@@ -3,11 +3,9 @@
   [packages.uv_tools]
     # Python tools managed by uv tool
     tools = [
-      "aider-install",
       "ansible",
       "argcomplete",
       "asciinema",
-      "chrome-devtools-mcp",
       "cookiecutter",
       "devpi-server",
       "esptool",
@@ -19,7 +17,6 @@
       "pre-commit",
       "ranger-fm",
       "ruff",
-      "tdd-guard",
       "telegram-send",
       "trafilatura",
       "vectorcode[mcp,cli]",
@@ -28,7 +25,6 @@
 
     # Git-based tools with special installation requirements
     git_tools = [
-      { package = "sequential-thinking", url = "git+https://github.com/arben-adm/mcp-sequential-thinking", with = ["portalocker"] },
       { package = "zen-mcp-server", url = "git+https://github.com/BeehiveInnovations/zen-mcp-server" }
     ]
 
