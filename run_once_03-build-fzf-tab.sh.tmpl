@@ -14,7 +14,7 @@ if ! brew list groff &> /dev/null || ! brew list autoconf &> /dev/null; then
 fi
 
 FZF_TAB_SOURCE="$HOME/.config/zsh/fzf-tab/fzf-tab.zsh"
-echo "Attempting to build fzf-tab module from $FZF_TAB_SOURCE..."
+echo "Checking for fzf-tab source at $FZF_TAB_SOURCE..."
 
 if [ -f "$FZF_TAB_SOURCE" ]; then
   echo "Sourcing $FZF_TAB_SOURCE and building module..."
@@ -26,8 +26,10 @@ if [ -f "$FZF_TAB_SOURCE" ]; then
     echo "Warning: Failed to build fzf-tab module."
   fi
 else
-  echo "Error: fzf-tab source file not found at $FZF_TAB_SOURCE."
-  exit 1
+  echo "Warning: fzf-tab source file not found at $FZF_TAB_SOURCE."
+  echo "This is expected on first run. The external repository will be fetched by chezmoi."
+  echo "Run 'chezmoi apply' to fetch external repositories, then this script will run again."
+  exit 0
 fi
 
 {{- else }}
