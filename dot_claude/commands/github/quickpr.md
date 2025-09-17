@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(gh pr create:*), mcp__github__create_pull_request, mcp__github__get_issue, TodoWrite
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(gh pr create:*), Bash(gh repo view:*), mcp__github__create_pull_request, mcp__github__get_issue, TodoWrite
 argument-hint: [pr-title] [--base <branch>] [--draft] [--no-commit] [--issue <num>]
 description: Complete PR workflow from any state with smart automation
 ---
@@ -16,6 +16,7 @@ description: Complete PR workflow from any state with smart automation
 ## Parameters
 
 Parse these parameters from the command (all optional):
+
 - `$1`: PR title (if not provided, auto-generate from commits)
 - `--base <branch>`: PR base branch (default: main)
 - `--draft`: Create as draft PR
@@ -63,17 +64,29 @@ Output the executed commands as you work.
 Show progress messages for each major step.
 
 Example workflow (dirty state, no params):
+
 # Detecting uncommitted changes...
+
 git status --porcelain
+
 # Creating commits with smartcommit...
+
 [smartcommit commands]
+
 # Pushing branch...
+
 git push -u origin feat/new-feature-20250109
+
 # Creating PR...
+
 gh pr create --title "Add new feature" --body "..."
 
 Example workflow (clean state with --no-commit):
+
 # Branch already has commits, pushing...
+
 git push -u origin current-branch
+
 # Creating PR...
+
 gh pr create --title "Custom title" --body "..." --draft
