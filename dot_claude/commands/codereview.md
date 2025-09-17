@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(find:*), Bash(ls:*), Read, Write, Edit
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(find:*), Bash(ls:*), Bash(pytest:*), Bash(npm test:*), Grep, TodoWrite
 description: Perform comprehensive code review with automated fixes
 argument-hint: "[PATH]"
 ---

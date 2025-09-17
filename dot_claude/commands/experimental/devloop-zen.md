@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), mcp__zen-mcp-server__codereview, mcp__zen-mcp-server__planner, mcp__zen-mcp-server__precommit, mcp__github__list_issues, mcp__github__create_issue, mcp__github__create_pull_request, TodoWrite
+argument-hint: [--max-cycles <n>] [--model <model>]
+description: AI-powered development loop with Zen MCP integration
+---
+
 # devloop.md - Development Loop Instructions for Claude
 
 When the user types `/devloop`, follow these instructions to execute an automated development loop.

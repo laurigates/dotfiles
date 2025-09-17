@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Write, Edit, TodoWrite, mcp__podio-mcp__list_items, mcp__podio-mcp__create_item, mcp__podio-mcp__update_item, mcp__podio-mcp__get_item_details, mcp__github__list_issues, mcp__github__create_issue, mcp__github__update_issue, mcp__github__list_pull_requests, mcp__github__search_issues, mcp__graphiti-memory__add_memory
+argument-hint: [--full-sync|--selective|--status-only|--enhance]
+description: Bidirectional synchronization between GitHub and Podio
+---
+
 # Information Dissemination Command
 
 Cross-platform information synchronization between GitHub and Podio for consistent project tracking and task management.

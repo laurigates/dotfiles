@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(grep:*), Bash(find:*), Bash(npm:*), Bash(pip:*), Bash(uv:*), Bash(cargo:*), TodoWrite
+argument-hint: [--security-focus] [--12factor] [--full]
+description: Modernize applications to current standards and best practices
+---
+
 # modernize.md - Application Modernization Instructions for Claude
 
 When the user types `/modernize`, follow these instructions to systematically modernize applications to follow modern standards, 12-factor app principles, and security best practices.

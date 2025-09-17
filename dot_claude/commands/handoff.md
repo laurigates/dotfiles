@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Bash(git:*), mcp__github__get_pull_request, mcp__github__list_issues, TodoWrite
+argument-hint: [resource-name] [deployment-type]
+description: Generate deployment handoff documentation
+---
+
 # Deployment Handoff Command
 
 Generate professional handoff messages for deployed resources and services with all necessary information for developer handoff.

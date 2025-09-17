@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git branch:*), Bash(git switch:*), Bash(git fetch:*), Bash(git push:*)
+allowed-tools: Read, Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git branch:*), Bash(git switch:*), Bash(git fetch:*), Bash(git push:*), TodoWrite
 argument-hint: [branch-name] [--base <branch>] [--direct] [--push]
 description: Analyze changes and create logical commits with smart branch management
 ---
@@ -39,8 +39,8 @@ Parse these parameters from the command (all optional):
    - Run `git status` and `git diff` to understand all changes
    - Group related changes into logical commits
    - For each logical group:
-     - Output the exact git add commands for those files
-     - Output a git commit command with a conventional commit message
+     - Execute the git add commands for those files
+     - Execute the git commit command with a conventional commit message
 
 5. **Conventional commit format**:
    - feat: new feature
@@ -54,22 +54,7 @@ Parse these parameters from the command (all optional):
    - ci: CI/CD changes
 
 6. **Push if requested**:
-   - If --push flag: `git push -u origin <branch-name>`
+   - If --push flag: Execute `git push -u origin <branch-name>`
 
-Output ONLY the shell commands, no explanations or markdown formatting.
-Each command should be on its own line.
-
-Example output (with branch creation):
-git fetch origin
-git switch -c feat/user-auth-20250109 origin/main
-git add src/auth.js src/login.js
-git commit -m "feat: add user authentication module"
-git add README.md
-git commit -m "docs: update API documentation"
-git push -u origin feat/user-auth-20250109
-
-Example output (with --direct flag):
-git add file1.js file2.js
-git commit -m "fix: resolve login validation issue"
-git add README.md
-git commit -m "docs: update troubleshooting guide"
+## Execution
+Execute all git commands directly with the Bash tool. Show the user what's being done as you go.

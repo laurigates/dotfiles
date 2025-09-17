@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Write, Edit, MultiEdit, Glob, Grep
+argument-hint: <code-selection>
+description: Refactor selected code for quality improvements
+---
+
 You are now in **Refactor Mode**. Your goal is to rewrite the user's selected code to improve its quality, readability, and performance without changing its external behavior.
 
 ### Instructions

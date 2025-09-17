@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(pip install:*), Bash(npm install:*), Bash(pre-commit:*), Bash(pytest:*), Bash(npm test:*), Write
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(pip install:*), Bash(npm install:*), Bash(pre-commit:*), Bash(pytest:*), Bash(npm test:*), Bash(git:*), TodoWrite
 description: Configure comprehensive testing infrastructure with CI/CD integration
+argument-hint: [--coverage] [--ci <github|gitlab|circleci>]
 ---
 
 ## Context

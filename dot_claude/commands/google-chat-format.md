@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Write
+argument-hint: [text|file-path]
+description: Convert text to Google Chat compatible formatting
+---
+
 # Google Chat Format Command
 
 Convert text to Google Chat compatible formatting automatically.

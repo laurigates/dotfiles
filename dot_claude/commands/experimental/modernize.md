@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(uv:*), Bash(npm:*), Bash(bun:*), TodoWrite
+argument-hint: [--python] [--node] [--full]
+description: Experimental modernization with latest tooling
+---
+
 # modernize.md - Application Modernization Instructions for Claude
 
 When the user types `/modernize`, follow these instructions to systematically modernize applications to follow modern standards, 12-factor app principles, and security best practices.
