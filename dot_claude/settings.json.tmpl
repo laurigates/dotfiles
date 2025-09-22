@@ -1,5 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "MAX_THINKING_TOKENS": "31999",
+    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": 1
+  },
   "permissions": {
     "allow": [
       "Bash(find:*)",
@@ -38,16 +42,28 @@
     "UserPromptSubmit": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/user-prompt-submit.sh",
-            "timeout": 5000
-          },
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/obsidian-logger.sh",
-            "timeout": 3000
-          }
+{{- $hooks := list -}}
+{{- $enable_kitty := true -}}
+{{- $enable_sketchybar := true -}}
+{{- $enable_obsidian := true -}}
+{{- if hasKey . "claude_hooks" -}}
+{{-   $enable_kitty = .claude_hooks.enable_kitty_tabs -}}
+{{-   $enable_sketchybar = .claude_hooks.enable_sketchybar -}}
+{{-   $enable_obsidian = .claude_hooks.enable_obsidian_logging -}}
+{{- end -}}
+{{- if $enable_kitty }}
+{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/kitty-tab-processing.sh" "timeout" 5000) -}}
+{{- end }}
+{{- if $enable_sketchybar }}
+{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
+{{- end }}
+{{- if $enable_obsidian }}
+{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/obsidian-logger.sh" "timeout" 3000) -}}
+{{- end }}
+{{- range $i, $hook := $hooks }}
+{{-   if $i }},{{ end }}
+          {{ toJson $hook }}
+{{- end }}
         ]
       }
     ],
@@ -55,32 +71,69 @@
       {
         "matcher": "Task|Read|Grep|Search|TodoWrite|mcp__graphiti-memory__search.*|WebFetch|WebSearch|Glob|LS",
         "hooks": [
+{{- if or (not (hasKey . "claude_hooks")) (and (hasKey . "claude_hooks") .claude_hooks.enable_kitty_tabs) }}
           {
             "type": "command",
             "command": "~/.claude/hooks/assistant-response-start.sh",
             "timeout": 5000
           }
+{{- end }}
+        ]
+      },
+      {
+        "matcher": "mcp__github__create_pull_request",
+        "hooks": [
+{{- if or (not (hasKey . "claude_hooks")) (and (hasKey . "claude_hooks") .claude_hooks.enable_gh_context) }}
+          {
+            "type": "command",
+            "command": "gh repo view --json nameWithOwner --template 'github repository name with owner: {{ "{{" }}.nameWithOwner{{ "}}" }}'"
+          }
+{{- end }}
         ]
       },
       {
         "matcher": "Bash(git add*)",
         "hooks": [
+{{- if or (not (hasKey . "claude_hooks")) (and (hasKey . "claude_hooks") .claude_hooks.enable_pre_commit_formatting) }}
           {
             "type": "command",
             "command": "~/.claude/hooks/pre-commit-fix.sh",
             "timeout": 10000
           }
+{{- end }}
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/assistant-response-complete.sh",
-            "timeout": 5000
-          }
+{{- $stopHooks := list -}}
+{{- $enable_kitty := true -}}
+{{- $enable_sketchybar := true -}}
+{{- $enable_voice := true -}}
+{{- $enable_obsidian := true -}}
+{{- if hasKey . "claude_hooks" -}}
+{{-   $enable_kitty = .claude_hooks.enable_kitty_tabs -}}
+{{-   $enable_sketchybar = .claude_hooks.enable_sketchybar -}}
+{{-   $enable_voice = .claude_hooks.enable_voice_notifications -}}
+{{-   $enable_obsidian = .claude_hooks.enable_obsidian_logging -}}
+{{- end -}}
+{{- if $enable_kitty }}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/kitty-tab-ready.sh" "timeout" 5000) -}}
+{{- end }}
+{{- if $enable_sketchybar }}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
+{{- end }}
+{{- if $enable_voice }}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/voice-notify.sh" "timeout" 5000) -}}
+{{- end }}
+{{- if $enable_obsidian }}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/obsidian-log-complete.sh" "timeout" 5000) -}}
+{{- end }}
+{{- range $i, $hook := $stopHooks }}
+{{-   if $i }},{{ end }}
+          {{ toJson $hook }}
+{{- end }}
         ]
       }
     ]

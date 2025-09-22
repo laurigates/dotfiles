@@ -243,6 +243,21 @@
     "twxs.cmake"
   ]
 
+[claude_hooks]
+  # Terminal integration hooks
+  enable_kitty_tabs = true          # Update terminal tab titles with status
+  enable_sketchybar = false          # Update macOS status bar
+
+  # Logging and notification hooks
+  enable_obsidian_logging = false    # Log activities to Obsidian vault
+  enable_voice_notifications = false # Voice notifications for task completion
+
+  # Development tool hooks
+  enable_pre_commit_formatting = false # Run formatters on staged files
+
+  # GitHub integration hooks
+  enable_gh_context = false          # Provide GitHub context for PRs
+
 [platform]
   # Platform-specific settings will be populated by templates
   cpu_cores = 0
