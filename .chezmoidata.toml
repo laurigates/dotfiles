@@ -245,7 +245,7 @@
 
 [claude_hooks]
   # Terminal integration hooks
-  enable_kitty_tabs = true          # Update terminal tab titles with status
+  enable_kitty_tabs = false          # Update terminal tab titles with status
   enable_sketchybar = false          # Update macOS status bar
 
   # Logging and notification hooks

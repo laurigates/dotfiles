@@ -23,7 +23,7 @@ The dotfiles include comprehensive macOS settings automation that:
 ### 🎯 **Keyboard Shortcuts** (Primary Goal)
 - **Disables Mission Control space navigation** to free up Ctrl+Left/Right for terminal use
   - `Ctrl+Left Arrow` → Disabled (ID 79)
-  - `Ctrl+Right Arrow` → Disabled (ID 81)  
+  - `Ctrl+Right Arrow` → Disabled (ID 81)
   - `Ctrl+Shift+Left Arrow` → Disabled (ID 80)
   - `Ctrl+Shift+Right Arrow` → Disabled (ID 82)
 
@@ -32,7 +32,7 @@ The dotfiles include comprehensive macOS settings automation that:
 - Enable path bar and status bar
 - Set column view as default
 
-### 🚢 **Dock Configuration** 
+### 🚢 **Dock Configuration**
 - Auto-hide dock for more screen space
 - Minimize to application icons
 - Hide recent applications
@@ -125,7 +125,7 @@ chezmoi apply
 ## Security Considerations
 
 - ✅ **No sensitive data** stored in configuration
-- ✅ **Read-only operations** where possible  
+- ✅ **Read-only operations** where possible
 - ✅ **Error handling** for failed operations
 - ✅ **Version controlled** changes
 
@@ -148,7 +148,7 @@ defaults write com.apple.screencapture type png
 
 ### Adding Menu Bar Settings
 ```toml
-[menu_bar]  
+[menu_bar]
 show_battery_percentage = true
 hide_siri = true
 ```

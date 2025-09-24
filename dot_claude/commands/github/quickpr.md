@@ -1,11 +1,12 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(gh pr create:*), Bash(gh repo view:*), mcp__github__create_pull_request, mcp__github__get_issue, TodoWrite
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(gh pr create:*), Bash(gh repo view:*), Bash(pre-commit run:*), mcp__github__create_pull_request, mcp__github__get_issue, TodoWrite
 argument-hint: [pr-title] [--base <branch>] [--draft] [--no-commit] [--issue <num>]
 description: Complete PR workflow from any state with smart automation
 ---
 
 ## Context
 
+- Pre-commit checks: !`pre-commit run --all-files --show-diff-on-failure || true`
 - Repo: !`gh repo view --json nameWithOwner`
 - Current branch: !`git branch --show-current`
 - Git status: !`git status --short`

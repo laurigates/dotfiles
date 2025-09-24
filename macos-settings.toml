@@ -9,7 +9,7 @@ last_updated = "2024-08-30"
 [keyboard_shortcuts]
 # Mission Control space navigation shortcuts (disabled for terminal use)
 disable_ctrl_left_arrow = true      # ID 79: Ctrl+Left Arrow
-disable_ctrl_right_arrow = true     # ID 81: Ctrl+Right Arrow  
+disable_ctrl_right_arrow = true     # ID 81: Ctrl+Right Arrow
 disable_ctrl_shift_left = true      # ID 80: Ctrl+Shift+Left Arrow
 disable_ctrl_shift_right = true     # ID 82: Ctrl+Shift+Right Arrow
 

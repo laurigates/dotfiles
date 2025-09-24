@@ -61,6 +61,7 @@ alias gc='git commit -v'
 alias gl='git pull'
 alias gla='git pull --autostash'
 alias gp='git push'
+alias gpf='git push --force-with-lease'
 
 alias gb='git branch'
 alias gba='git branch -a'
@@ -68,8 +69,8 @@ alias gbd='git branch -d'
 alias gbD='git branch -D'
 
 alias gd='git diff'
-alias gdca='git diff --cached'
-alias gdcw='git diff --cached --word-diff'
+alias gds='git diff --staged'
+alias gdsw='git diff --staged --word-diff'
 
 alias gfap='git fetch --all --prune'
 

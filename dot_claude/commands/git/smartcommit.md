@@ -1,11 +1,12 @@
 ---
-allowed-tools: Read, Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git branch:*), Bash(git switch:*), Bash(git fetch:*), Bash(git push:*), TodoWrite
+allowed-tools: Read, Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git branch:*), Bash(git switch:*), Bash(git fetch:*), Bash(git push:*), Bash(pre-commit run:*), TodoWrite
 argument-hint: [branch-name] [--base <branch>] [--direct] [--push]
 description: Analyze changes and create logical commits with smart branch management
 ---
 
 ## Context
 
+- Pre-commit checks: !`pre-commit run --all-files --show-diff-on-failure || true`
 - Current branch: !`git branch --show-current`
 - Git status: !`git status --short`
 - Unstaged changes: !`git diff --stat`
@@ -15,6 +16,7 @@ description: Analyze changes and create logical commits with smart branch manage
 ## Parameters
 
 Parse these parameters from the command (all optional):
+
 - `$1`: Custom branch name (if not provided, auto-generate from first commit type)
 - `--base <branch>`: Base branch to create from (default: origin/main)
 - `--direct`: Commit directly to current branch (skip branch creation)
@@ -57,4 +59,5 @@ Parse these parameters from the command (all optional):
    - If --push flag: Execute `git push -u origin <branch-name>`
 
 ## Execution
+
 Execute all git commands directly with the Bash tool. Show the user what's being done as you go.
