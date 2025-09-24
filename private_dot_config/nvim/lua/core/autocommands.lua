@@ -100,8 +100,8 @@ Git diff:
 
     -- Execute claude command synchronously with proper quoting
     local escaped_prompt = vim.fn.shellescape(prompt)
-    local cmd = "claude --model sonnet " .. escaped_prompt
-    local result = vim.fn.system(cmd)
+    local gen_cmd = "claude --print --model Sonnet " .. escaped_prompt
+    local result = vim.fn.system(gen_cmd)
 
     if vim.v.shell_error == 0 and result ~= "" then
       -- Clean up the result and insert into buffer

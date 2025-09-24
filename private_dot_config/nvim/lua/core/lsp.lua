@@ -3,9 +3,9 @@
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 -- Check if blink.cmp is available and merge capabilities
-local ok, blink = pcall(require, 'blink.cmp')
+local ok, blink = pcall(require, "blink.cmp")
 if ok then
-  capabilities = vim.tbl_deep_extend('force', capabilities, blink.get_lsp_capabilities())
+  capabilities = vim.tbl_deep_extend("force", capabilities, blink.get_lsp_capabilities())
 end
 
 -- Add onTypeFormatting capability for blink.cmp compatibility
@@ -39,7 +39,7 @@ vim.lsp.config("terraformls", {
 vim.lsp.config("jsonls", {
   settings = {
     json = {
-      schemas = require('schemastore').json.schemas(),
+      schemas = require("schemastore").json.schemas(),
       validate = { enable = true },
     },
   },

@@ -29,7 +29,7 @@ return {
                 title = false,
                 filter = { range = true },
                 format = "{kind_icon}{symbol.name:Normal}",
-                -- The following line need to be set only if the `trouble` setup function 
+                -- The following line need to be set only if the `trouble` setup function
                 -- is not yet called, so that statusline works properly before trouble is opened
                 hl_group = "lualine_c_normal",
               })
