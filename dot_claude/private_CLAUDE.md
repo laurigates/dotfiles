@@ -17,6 +17,9 @@ You are responsible for the high-level design principles and operational mandate
 
 ## Core Principles
 
+- Proactively verify implementation and syntax from documentation using context7
+- Proactively ask clarifying questions when the user is vague
+- Proactively utilize sequential-thinking for complex tasks
 - **Research documentation**: Before implementation, make sure to research documentation about the parts it will touch
 - **PRD-First Development**: Every new feature or significant change MUST have a Product Requirements Document (PRD) created before any implementation begins
 - **Don't Reinvent the Wheel**: Leverage existing, proven solutions before creating custom implementations
