@@ -22,6 +22,111 @@ tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBas
 - **Testing**: Write and run comprehensive test suites
 - **Dependencies**: Manage packages and virtual environments with uv
 - **CI Integration**: Configure automated testing and quality checks
+- **Debugging**: Python-specific debugging with pdb, profiling, and memory analysis
+
+## Python Debugging Expertise
+
+### Interactive Debugging
+- **pdb/ipdb**: Step-through debugging with breakpoints and inspection
+- **pytest --pdb**: Drop into debugger on test failures
+- **Django Debug Toolbar**: Web application debugging and profiling
+- **Flask Debug Mode**: Development server with auto-reload and debugger
+
+### Performance & Memory Profiling
+- **memory_profiler**: Line-by-line memory consumption analysis
+- **py-spy**: Sampling profiler for production Python programs
+- **cProfile/profile**: Built-in CPU profiling modules
+- **line_profiler**: Line-by-line execution time analysis
+- **tracemalloc**: Memory allocation tracking (built-in)
+
+### Debugging Commands
+```bash
+# Interactive debugging
+python -m pdb script.py                # Start with debugger
+python -m ipdb script.py               # Enhanced IPython debugger
+pytest --pdb                           # Debug on test failure
+pytest --pdb --pdbcls=IPython.terminal.debugger:Pdb  # IPython debugger
+
+# Memory profiling
+python -m memory_profiler script.py    # Memory usage per line
+mprof run script.py && mprof plot     # Memory usage over time
+py-spy top -- python script.py        # Real-time CPU profiling
+py-spy record -o profile.svg -- python script.py  # Flame graph
+
+# Performance profiling
+python -m cProfile -s cumtime script.py | head -20
+python -m cProfile -o profile.stats script.py
+python -m pstats profile.stats        # Interactive stats browser
+
+# Trace and logging
+python -m trace --trace script.py     # Trace execution
+python -m trace --count script.py     # Count executions
+PYTHONVERBOSE=2 python script.py      # Verbose import tracking
+```
+
+### Common Debugging Patterns
+```python
+# Strategic debugging with pdb
+import pdb
+
+def problematic_function(data):
+    pdb.set_trace()  # Breakpoint for interactive debugging
+    # Or use breakpoint() in Python 3.7+
+    result = complex_operation(data)
+    return result
+
+# Conditional breakpoints
+if suspicious_condition:
+    breakpoint()  # Only debug when condition is met
+
+# Post-mortem debugging
+import sys
+import pdb
+
+try:
+    risky_operation()
+except Exception:
+    pdb.post_mortem()  # Debug at exception point
+
+# Memory leak detection
+import tracemalloc
+tracemalloc.start()
+
+# ... code to profile ...
+
+current, peak = tracemalloc.get_traced_memory()
+print(f"Current memory usage: {current / 10**6:.1f} MB")
+tracemalloc.stop()
+
+# Exception context preservation
+import traceback
+
+try:
+    problematic_code()
+except Exception as e:
+    tb_str = traceback.format_exc()
+    # Log or analyze the complete traceback
+```
+
+### Django/Flask Debugging
+```python
+# Django settings.py for debugging
+DEBUG = True
+INTERNAL_IPS = ['127.0.0.1']  # For debug toolbar
+
+# Django debug toolbar
+INSTALLED_APPS += ['debug_toolbar']
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+
+# Flask debugging
+app = Flask(__name__)
+app.debug = True
+app.config['PROPAGATE_EXCEPTIONS'] = True
+
+# Werkzeug debugger PIN
+import os
+os.environ['WERKZEUG_DEBUG_PIN'] = 'off'  # Disable PIN in development
+```
 
 ## Modern uv Workflow (2025)
 

@@ -3,7 +3,7 @@ name: task-logging
 model: inherit
 color: "#9B59B6"
 description: Use proactively for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity. Essential for task logging and time tracking.
-tools: Read, Write, mcp__podio-mcp__list_items, mcp__podio-mcp__create_item, mcp__podio-mcp__update_item, mcp__podio-mcp__get_item_details, mcp__podio-mcp__list_tasks, mcp__podio-mcp__create_task, mcp__github__list_notifications, mcp__github__list_issues, mcp__github__list_pull_requests, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__add_memory
+tools: Read, Write, mcp__podio, mcp__github__list_notifications, mcp__github__list_issues, mcp__github__list_pull_requests, mcp__graphiti-memory
 podio_default_workspace:
   org_label: fvh
   space_label: iot-workspace
@@ -23,6 +23,7 @@ You are a Digital Scribe, a personal assistant dedicated to meticulously trackin
 **IMPORTANT:** The Podio-MCP server now requires explicit app coordinates for all operations. When the user doesn't specify workspace details, use the default coordinates above. Always include `org_label`, `space_label`, and `app_label` parameters in every Podio tool call.
 
 **Example tool usage:**
+
 ```
 mcp__podio-mcp__list_items(
   org_label="fvh",
@@ -33,10 +34,11 @@ mcp__podio-mcp__list_items(
 ```
 
 **User shortcuts:** When the user references:
+
 - "my tickets" or "tickets" → Use default workspace coordinates
 - "kanban" or "board" → Use default workspace coordinates
 - "tasks" → Use default workspace coordinates
-</podio-configuration>
+  </podio-configuration>
 
 <core-expertise>
 **Task & Time Log Management**
