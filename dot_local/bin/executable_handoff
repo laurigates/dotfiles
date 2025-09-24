@@ -95,7 +95,7 @@ get_repo_info() {
     local repo_url=""
     local branch=""
     local commit=""
-    
+
     if git rev-parse --git-dir > /dev/null 2>&1; then
         repo_url=$(git config --get remote.origin.url 2>/dev/null || echo "Not available")
         branch=$(git branch --show-current 2>/dev/null || echo "Not available")
@@ -105,7 +105,7 @@ get_repo_info() {
         branch="N/A"
         commit="N/A"
     fi
-    
+
     echo "$repo_url|$branch|$commit"
 }
 
@@ -136,18 +136,18 @@ generate_handoff_message() {
     local environment="$3"
     local format="$4"
     local detail_level="$5"
-    
+
     local repo_info
     local repo_url branch commit
     repo_info=$(get_repo_info)
     IFS='|' read -r repo_url branch commit <<< "$repo_info"
-    
+
     local timestamp
     timestamp=$(get_timestamp)
-    
+
     local deployer
     deployer=$(get_deployer)
-    
+
     case $format in
         podio|markdown)
             generate_podio_format "$service_name" "$deployment_type" "$environment" "$detail_level" \
@@ -172,7 +172,7 @@ generate_handoff_message() {
 generate_podio_format() {
     local service_name="$1" deployment_type="$2" environment="$3" detail_level="$4"
     local repo_url="$5" branch="$6" commit="$7" timestamp="$8" deployer="$9"
-    
+
     cat << EOF
 ## 🚀 Deployment Handoff: $service_name
 
@@ -261,12 +261,12 @@ EOF
 generate_slack_format() {
     local service_name="$1" deployment_type="$2" environment="$3" detail_level="$4"
     local repo_url="$5" branch="$6" commit="$7" timestamp="$8" deployer="$9"
-    
+
     cat << EOF
 🚀 *Deployment Handoff: $service_name*
 
 *Service:* $service_name
-*Type:* $deployment_type  
+*Type:* $deployment_type
 *Environment:* $environment
 *Deployed By:* $deployer
 *Date:* $timestamp
@@ -284,7 +284,7 @@ generate_slack_format() {
 
 ✅ *Handoff Checklist*
 □ Review service functionality
-□ Access all URLs and interfaces  
+□ Access all URLs and interfaces
 □ Verify monitoring setup
 □ Test basic functionality
 
@@ -299,7 +299,7 @@ EOF
 generate_email_format() {
     local service_name="$1" deployment_type="$2" environment="$3" detail_level="$4"
     local repo_url="$5" branch="$6" commit="$7" timestamp="$8" deployer="$9"
-    
+
     cat << EOF
 Subject: Deployment Handoff - $service_name ($environment)
 
@@ -321,7 +321,7 @@ REPOSITORY INFORMATION:
 
 ACCESS INFORMATION:
 - Service URL: [To be provided]
-- Admin Dashboard: [If applicable] 
+- Admin Dashboard: [If applicable]
 - API Documentation: [If applicable]
 - Health Check Endpoint: [To be configured]
 
@@ -350,9 +350,9 @@ main() {
     echo -e "${BLUE}Format: $FORMAT${NC}"
     echo -e "${BLUE}Detail Level: $DETAIL_LEVEL${NC}"
     echo ""
-    
+
     generate_handoff_message "$SERVICE_NAME" "$DEPLOYMENT_TYPE" "$ENVIRONMENT" "$FORMAT" "$DETAIL_LEVEL"
-    
+
     echo ""
     echo -e "${GREEN}✅ Handoff message generated successfully!${NC}"
     echo -e "${YELLOW}💡 Copy the message above to your Podio ticket or communication platform.${NC}"

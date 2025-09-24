@@ -18,12 +18,12 @@ echo "⌨️  Configuring keyboard shortcuts..."
 # Disable Mission Control shortcuts that interfere with development tools
 echo "  Disabling Mission Control space navigation shortcuts..."
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Left shortcut"
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Left shortcut"  
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Left shortcut"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Right shortcut"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Right shortcut"
 
 # =============================================================================
-# FINDER SETTINGS  
+# FINDER SETTINGS
 # =============================================================================
 
 echo "📁 Configuring Finder..."
@@ -40,7 +40,7 @@ defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 echo "  Showing path bar..."
 defaults write com.apple.finder ShowPathbar -bool true
 
-# Show status bar  
+# Show status bar
 echo "  Showing status bar..."
 defaults write com.apple.finder ShowStatusBar -bool true
 
