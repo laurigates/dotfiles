@@ -61,7 +61,7 @@ class ContextExtractor:
 
             # Try to use jq for efficient extraction of last N messages
             messages = self._extract_recent_messages_with_jq(transcript_path, max_messages)
-            
+
             if not messages:
                 # Fallback to Python-based extraction
                 logger.debug("jq extraction failed, using Python fallback")
@@ -89,7 +89,7 @@ class ContextExtractor:
     def _extract_recent_messages_with_jq(self, transcript_path: str, max_messages: int) -> List[Dict]:
         """Use jq to efficiently extract the last N messages from transcript."""
         import subprocess
-        
+
         try:
             # Use jq to get last N lines as JSON objects
             cmd = [
@@ -97,11 +97,11 @@ class ContextExtractor:
                 str(transcript_path)
             ]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-            
+
             if result.returncode != 0:
                 logger.debug(f"jq failed: {result.stderr}")
                 return []
-            
+
             # Parse the JSON objects
             messages = []
             for line in result.stdout.strip().split('\n'):
@@ -110,10 +110,10 @@ class ContextExtractor:
                         messages.append(json.loads(line))
                     except json.JSONDecodeError:
                         continue
-            
+
             logger.debug(f"Extracted {len(messages)} messages using jq")
             return messages
-            
+
         except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
             logger.debug(f"jq extraction failed: {e}")
             return []
@@ -133,10 +133,10 @@ class ContextExtractor:
                     messages.append(json.loads(line))
                 except json.JSONDecodeError:
                     continue
-            
+
             logger.debug(f"Extracted {len(messages)} messages using Python fallback")
             return messages
-            
+
         except Exception as e:
             logger.debug(f"Python extraction failed: {e}")
             return []
