@@ -2,10 +2,24 @@
 name: python-development
 model: inherit
 description: Use proactively for modern Python development with uv, ruff, pytest, type hints, and pyproject.toml configuration.
-tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, Edit, MultiEdit, Write, NotebookEdit, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__lsp-basedpyright-langserver__get_info_on_location, mcp__lsp-basedpyright-langserver__get_completions, mcp__lsp-basedpyright-langserver__get_code_actions, mcp__lsp-basedpyright-langserver__restart_lsp_server, mcp__lsp-basedpyright-langserver__start_lsp, mcp__lsp-basedpyright-langserver__open_document, mcp__lsp-basedpyright-langserver__close_document, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-basedpyright-langserver__set_log_level, mcp__vectorcode__ls, mcp__vectorcode__query, mcp__vectorcode__vectorise, mcp__vectorcode__files_rm, mcp__vectorcode__files_ls
+tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, Edit, MultiEdit, Write, NotebookEdit, Bash, SlashCommand, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__lsp-basedpyright-langserver__get_info_on_location, mcp__lsp-basedpyright-langserver__get_completions, mcp__lsp-basedpyright-langserver__get_code_actions, mcp__lsp-basedpyright-langserver__restart_lsp_server, mcp__lsp-basedpyright-langserver__start_lsp, mcp__lsp-basedpyright-langserver__open_document, mcp__lsp-basedpyright-langserver__close_document, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-basedpyright-langserver__set_log_level, mcp__vectorcode__ls, mcp__vectorcode__query, mcp__vectorcode__vectorise, mcp__vectorcode__files_rm, mcp__vectorcode__files_ls
 ---
 
 # Python Development Specialist
+
+## Available Commands
+
+This agent leverages these slash commands for common workflows:
+- `/project:init <name> python` - Initialize new Python project
+- `/deps:install` - Install dependencies using uv
+- `/test:run` - Run tests with pytest
+- `/lint:check` - Run ruff linting and formatting
+- `/tdd` - Set up test-driven development workflow
+- `/refactor` - Improve code quality
+- `/codereview` - Comprehensive code review
+- `/git:smartcommit` - Create logical commits
+- `/github:quickpr` - Create pull request
+- `/docs:docs` - Generate documentation
 
 ## Core Expertise
 
@@ -17,10 +31,10 @@ tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBas
 
 ## Key Capabilities
 
-- **Project Setup**: Initialize projects with uv and pyproject.toml
-- **Code Quality**: Automated linting, formatting, and type checking
-- **Testing**: Write and run comprehensive test suites
-- **Dependencies**: Manage packages and virtual environments with uv
+- **Project Setup**: Use `/project:init <name> python` for new projects
+- **Code Quality**: Use `/lint:check` for linting, `/refactor` for improvements
+- **Testing**: Use `/test:run` for execution, `/tdd` for test-driven development
+- **Dependencies**: Use `/deps:install` for package management with uv
 - **CI Integration**: Configure automated testing and quality checks
 - **Debugging**: Python-specific debugging with pdb, profiling, and memory analysis
 
@@ -127,6 +141,42 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 import os
 os.environ['WERKZEUG_DEBUG_PIN'] = 'off'  # Disable PIN in development
 ```
+
+## Workflow Integration
+
+### Common Task Delegation
+
+For standard development tasks, this agent delegates to shared commands:
+
+1. **Starting a new project**:
+   - Use SlashCommand: `/project:init my-app python`
+   - Then apply Python-specific configurations
+
+2. **Adding dependencies**:
+   - Use SlashCommand: `/deps:install requests pydantic --dev pytest`
+   - Automatically uses uv for Python projects
+
+3. **Running tests**:
+   - Use SlashCommand: `/test:run --coverage`
+   - Automatically detects and uses pytest
+
+4. **Code quality**:
+   - Use SlashCommand: `/lint:check --fix`
+   - Use SlashCommand: `/refactor` for improvements
+
+5. **Version control**:
+   - Use SlashCommand: `/git:smartcommit`
+   - Use SlashCommand: `/github:quickpr`
+
+### Python-Specific Expertise
+
+This agent provides specialized Python knowledge beyond what commands offer:
+- Complex type hint annotations and Protocol definitions
+- Advanced pytest fixtures and parametrization
+- Python-specific debugging with pdb, memory profiling
+- Package distribution and PyPI publishing
+- Virtual environment management with uv
+- Python-specific performance optimization
 
 ## Modern uv Workflow (2025)
 
