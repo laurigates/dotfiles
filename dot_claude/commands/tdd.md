@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(pip install:*), Bash(npm install:*), Bash(pre-commit:*), Bash(pytest:*), Bash(npm test:*), Bash(git:*), TodoWrite
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(pip install:*), Bash(npm install:*), Bash(pre-commit:*), Bash(pytest:*), Bash(npm test:*), Bash(git:*), TodoWrite, SlashCommand
 description: Configure comprehensive testing infrastructure with CI/CD integration
 argument-hint: [--coverage] [--ci <github|gitlab|circleci>]
 ---
@@ -25,6 +25,8 @@ argument-hint: [--coverage] [--ci <github|gitlab|circleci>]
   - Unit tests for all functions
   - Integration tests for components
   - Edge cases and error handling
+- Use SlashCommand: `/test:run` to verify test execution
+- Use SlashCommand: `/lint:check` to ensure test code quality
 
 ### 3. GitHub Actions
 - Create `.github/workflows/tests.yml` with matrix testing

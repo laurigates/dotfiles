@@ -3,7 +3,7 @@ name: command-automation
 model: inherit
 color: "#E67E22"
 description: "Use proactively when creating or improving Claude Code commands, slash commands, and workflow templates. Essential for command optimization, template standardization, workflow automation, quality gates, and cross-platform project initialization."
-tools: ["Read", "Write", "Edit", "MultiEdit", "Bash", "Glob", "Grep"]
+tools: ["Read", "Write", "Edit", "MultiEdit", "Bash", "Glob", "Grep", "SlashCommand"]
 execution_log: true
 ---
 
@@ -71,6 +71,8 @@ model: claude-3-5-haiku-20241022  # Optional: use specific model
    - Maintain consistency across command library with shared patterns
    - Configure precise tool permissions using `allowed-tools` frontmatter
    - Design intuitive `argument-hint` patterns for user guidance
+   - **Enable SlashCommand integration**: Commands can call other commands via `SlashCommand` tool
+   - **Create composable commands**: Build complex workflows from simpler command components
 
 2. **Development Workflow Commands**
    ```bash
@@ -171,6 +173,124 @@ model: claude-3-5-haiku-20241022  # Optional: use specific model
 - **Version Compatibility**: Regular updates for dependency changes and security patches
 - **Usage Analytics**: Track command usage patterns for optimization opportunities
 - **Error Handling**: Comprehensive error recovery and user-friendly failure messages
+
+## SlashCommand Integration Patterns
+
+### Command Composition
+
+Commands can call other commands using the `SlashCommand` tool, enabling powerful composition patterns:
+
+```yaml
+---
+allowed-tools: SlashCommand, Read, Write
+argument-hint: <component-name> [--with-tests] [--with-docs]
+description: Create component with tests and documentation
+---
+
+# Create React Component: $1
+
+First, I'll use the refactor command to ensure code quality:
+Use SlashCommand tool to execute: `/refactor <existing-similar-component>`
+
+Now I'll create the component structure...
+
+{{ if "$2" == "--with-tests" }}
+# Generate tests using TDD command
+Use SlashCommand tool to execute: `/tdd --coverage`
+{{ endif }}
+
+{{ if "$3" == "--with-docs" }}
+# Generate documentation
+Use SlashCommand tool to execute: `/docs:update --component $1`
+{{ endif }}
+```
+
+### Command Chaining
+
+Chain multiple commands for complex workflows:
+
+```yaml
+---
+allowed-tools: SlashCommand, Bash(git status:*)
+argument-hint: [issue-number]
+description: Complete workflow from issue to deployed PR
+---
+
+# Full Development Workflow for Issue #$1
+
+## Step 1: Process the issue
+Use SlashCommand: `/github:process-single-issue $1`
+
+## Step 2: Create smart commits
+Use SlashCommand: `/git:smartcommit feat/issue-$1`
+
+## Step 3: Create PR with all checks
+Use SlashCommand: `/github:quickpr "Fix #$1" --issue $1`
+
+## Step 4: Run comprehensive review
+Use SlashCommand: `/codereview`
+```
+
+### Delegating to Specialized Commands
+
+Commands should delegate to specialized commands rather than reimplementing:
+
+```yaml
+---
+allowed-tools: SlashCommand, Read
+argument-hint: <project-path>
+description: Modernize any project with best practices
+---
+
+# Detect project type
+Based on files present, this is a {{PROJECT_TYPE}} project
+
+# Delegate to appropriate specialized command
+{{ if PROJECT_TYPE == "python" }}
+Use SlashCommand: `/experimental:modernize --python`
+{{ elif PROJECT_TYPE == "node" }}
+Use SlashCommand: `/experimental:modernize --node`
+{{ else }}
+Use SlashCommand: `/chore:modernize --full`
+{{ endif }}
+```
+
+### Cross-Command Communication
+
+Pass data between commands using arguments:
+
+```yaml
+---
+allowed-tools: SlashCommand, Bash(git log:*)
+argument-hint: [branch-name]
+description: Analyze and document changes
+---
+
+# Get commit info
+!`git log --oneline -10`
+
+# Pass commit data to documentation command
+Use SlashCommand: `/docs:update --from-commits "{{COMMIT_MESSAGES}}"`
+
+# Create detailed PR
+Use SlashCommand: `/github:quickpr "{{EXTRACTED_TITLE}}" --draft`
+```
+
+### Command Discovery for Agents
+
+When agents need to use commands, they should:
+1. Include `SlashCommand` in their tools list
+2. Document which commands they commonly use
+3. Delegate to commands rather than duplicating logic
+
+Example agent integration:
+```markdown
+## Available Commands
+This agent leverages these slash commands:
+- `/tdd` - For test-driven development
+- `/refactor` - For code quality improvements
+- `/git:smartcommit` - For intelligent commits
+```
 
 ## Command Template Examples
 
