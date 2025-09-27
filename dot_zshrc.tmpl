@@ -143,13 +143,17 @@ WORDCHARS="${WORDCHARS//[\/]}"
 # Prepend homebrew to path
 # Avoid using brew shellenv for setup, because brew completions are messed up
 # Handle macos and linux paths for homebrew
+
+# Cache brew prefix to avoid multiple calls (improves shell startup performance)
 {{ if eq .chezmoi.os "darwin" }}
 if type /opt/homebrew/bin/brew &> /dev/null; then
   path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+  export HOMEBREW_PREFIX="/opt/homebrew"
 fi
 {{ else if eq .chezmoi.os "linux" }}
 if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
   path=("/home/linuxbrew/.linuxbrew/bin" "/home/linuxbrew/.linuxbrew/sbin" $path)
+  export HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
 fi
 {{ end }}
 
@@ -360,28 +364,13 @@ eval "$(atuin init zsh)"
 # NOTE: This needs to be before compinit
 [ -d ~/.zfunc ] && fpath+=~/.zfunc
 
-# Load Homebrew specific completions (if available)
-# Needs to be before compinit if they add to fpath or define functions compinit should know
-{{ if eq .chezmoi.os "darwin" }}
-if type /opt/homebrew/bin/brew &> /dev/null; then
-    # google-cloud-sdk path and completions
-    # Ensure these are sourced before compinit if they modify fpath or define completion functions
-    [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ] && \
-      source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
-      source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+# Load Homebrew path configurations (if available)
+# Path modifications should be done before compinit
+if [ -n "$HOMEBREW_PREFIX" ]; then
+    # google-cloud-sdk path (this modifies PATH, so keep it before compinit)
+    [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" ] && \
+      source "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" 2>/dev/null
 fi
-{{ else if eq .chezmoi.os "linux" }}
-if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
-    # Add Linux paths for brew completions if needed
-    # Example:
-    # [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ] && \
-    #   source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    # [ -f "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc" ] && \
-    #   source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
-    : # Placeholder if no specific Linux brew completions needed here yet
-fi
-{{ end }}
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
@@ -390,21 +379,28 @@ fi
 autoload -Uz compinit && compinit
 
 # Load completions that must run *after* compinit
+# Note: Completion definitions must be loaded AFTER compinit to ensure
+# they are properly registered with the zsh completion system
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
 
+# Load Google Cloud SDK completions (after compinit)
+if [ -n "$HOMEBREW_PREFIX" ]; then
+    [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" ] && \
+      source "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" 2>/dev/null
+fi
 
 # Load Homebrew bash completions (if available)
 # Requires bashcompinit to be loaded after compinit
-if type brew &> /dev/null; then
+if [ -n "$HOMEBREW_PREFIX" ]; then
     # Enable loading bash completions
     autoload -U +X bashcompinit && bashcompinit
 
     # Load specific bash completions provided by brew packages
     # Example: Terraform completions
-    if [ -x "$(brew --prefix)/bin/terraform" ]; then
-      complete -o nospace -C "$(brew --prefix)/bin/terraform" terraform
+    if [ -x "$HOMEBREW_PREFIX/bin/terraform" ]; then
+      complete -o nospace -C "$HOMEBREW_PREFIX/bin/terraform" terraform
     fi
     # Add other bash completions here if needed
 fi
