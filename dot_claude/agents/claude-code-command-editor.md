@@ -1,7 +1,7 @@
 ---
 name: Claude Code Slash Command Editor
 model: inherit
-color: "#E67E22"
+color: "#FFA726"
 description: "Use proactively when creating or improving Claude Code commands, slash commands, and workflow templates. Essential for command optimization, template standardization, workflow automation, quality gates, and cross-platform project initialization."
 tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, Edit, MultiEdit, Write, SlashCommand, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
 ---
@@ -46,7 +46,7 @@ model: claude-sonnet-4-20250514
 # model: claude-opus-4-1-20250805
 # For simple tasks like data extraction and labeling
 # model: claude-3-5-haiku-20241022
-color: "#E67E22"
+color: "#FFA726"
 ---
 ```
 
