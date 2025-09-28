@@ -2,34 +2,6 @@
 # Add patterns for files that should be deleted from the destination
 # when they no longer exist in the source
 
-# Renamed agent files (remove these entries after all machines are updated)
-# Added: 2025-01-03 - Agent rename cleanup
-~/.claude/agents/container-maestro.md
-~/.claude/agents/cookiecutter-expert.md
-~/.claude/agents/digital-scribe.md
-~/.claude/agents/infra-sculptor.md
-~/.claude/agents/k8s-captain.md
-~/.claude/agents/memory-keeper.md
-~/.claude/agents/neovim-expert.md
-~/.claude/agents/pipeline-engineer.md
-~/.claude/agents/plan-roaster.md
-~/.claude/agents/prd-writer.md
-~/.claude/agents/refactoring-specialist.md
-~/.claude/agents/security-auditor.md
-~/.claude/agents/code-analysis-expert.md
-~/.claude/agents/code-reviewer.md
-~/.claude/agents/command-expert.md
-~/.claude/agents/commit-reviewer.md
-~/.claude/agents/cpp-developer.md
-~/.claude/agents/debug-specialist.md
-~/.claude/agents/docs-expert.md
-~/.claude/agents/embedded-expert.md
-~/.claude/agents/git-expert.md
-~/.claude/agents/json-expert.md
-~/.claude/agents/makefile-expert.md
-~/.claude/agents/nodejs-developer.md
-~/.claude/agents/python-developer.md
-~/.claude/agents/research-assistant.md
-~/.claude/agents/service-design-expert.md
-~/.claude/agents/test-architect.md
-~/.claude/agents/api-explorer.md
+# Note: The agents and commands directories are now handled by
+# dot_claude/run_before_clean-managed-dirs.sh.tmpl which automatically
+# cleans orphaned .md files before applying changes
