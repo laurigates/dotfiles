@@ -300,3 +300,6 @@ alias tf='terraform'
 alias dcls='docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'
 alias dls='docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"'
 alias dlogin='echo "$CR_PAT" | docker login ghcr.io -u laurigates --password-stdin'
+
+### Named directories
+hash -d r='/Users/lgates/repos'
