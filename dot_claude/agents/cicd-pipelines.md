@@ -1,9 +1,9 @@
 ---
 name: cicd-pipelines
-model: inherit
+model: claude-sonnet-4-20250514
 color: "#20BF6B"
 description: Use proactively for CI/CD pipelines including GitHub Actions, deployment automation, build optimization, and pipeline monitoring.
-tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__github__create_pull_request, mcp__github__list_pull_requests, mcp__github__get_pull_request_status, mcp__lsp-github-actions__get_info_on_location, mcp__lsp-github-actions__get_completions, mcp__lsp-github-actions__get_code_actions, mcp__lsp-github-actions__restart_lsp_server, mcp__lsp-github-actions__start_lsp, mcp__lsp-github-actions__open_document, mcp__lsp-github-actions__close_document, mcp__lsp-github-actions__get_diagnostics, mcp__lsp-github-actions__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__github, mcp__lsp-github-actions, mcp__graphiti-memory
 ---
 
 <role>

@@ -1,9 +1,9 @@
 ---
 name: research-documentation
-model: inherit
+model: claude-sonnet-4-20250514
 color: "#FF6B9D"
 description: Use proactively when performing documentation lookup, technical research, and knowledge retrieval for development projects. Essential for gathering context and understanding systems.
-tools: Read, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Read, WebFetch, WebSearch, mcp__context7, mcp__graphiti-memory
 ---
 
 # Research Assistant

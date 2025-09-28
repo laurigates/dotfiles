@@ -1,9 +1,9 @@
 ---
 name: code-analysis
-model: inherit
+model: claude-sonnet-4-20250514
 color: "#A8FF6B"
 description: Use proactively to perform deep code analysis, semantic search, and leverage language server protocol (LSP) capabilities. This agent is an expert in understanding code structure, providing diagnostics, and performing advanced code searches.
-tools: Glob, Grep, LS, Read, TodoWrite, mcp__vectorcode__ls, mcp__vectorcode__query, mcp__vectorcode__vectorise, mcp__vectorcode__files_rm, mcp__vectorcode__files_ls, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, TodoWrite, mcp__vectorcode, mcp__graphiti-memory
 ---
 
 <role>

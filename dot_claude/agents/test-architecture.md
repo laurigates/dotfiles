@@ -1,9 +1,9 @@
 ---
 name: test-architecture
-model: inherit
+model: claude-sonnet-4-20250514
 color: "#00B894"
 description: Use proactively for testing strategies including test architecture, coverage analysis, framework selection, and automation.
-tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, TodoWrite, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, TodoWrite, mcp__graphiti-memory
 ---
 
 <role>

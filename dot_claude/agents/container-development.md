@@ -1,9 +1,9 @@
 ---
 name: container-development
-model: inherit
+model: claude-sonnet-4-20250514
 color: "#0db7ed"
 description: Use proactively for container development including Dockerfiles, orchestration, 12-factor principles, and Skaffold workflows.
-tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-docker__get_info_on_location, mcp__lsp-docker__get_completions, mcp__lsp-docker__get_code_actions, mcp__lsp-docker__restart_lsp_server, mcp__lsp-docker__start_lsp, mcp__lsp-docker__open_document, mcp__lsp-docker__close_document, mcp__lsp-docker__get_diagnostics, mcp__lsp-docker__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-docker, mcp__graphiti-memory
 ---
 
 <role>
