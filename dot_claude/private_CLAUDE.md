@@ -25,3 +25,7 @@ You are responsible for the high-level design principles and operational mandate
 - **Don't Reinvent the Wheel**: Leverage existing, proven solutions before creating custom implementations
 - **Test-Driven Development (TDD)**: Make sure strict RED, GREEN, REFACTOR workflow is followed to ensure robust and maintainable code
 - **Commit early and often**: Make sure commits are made often. It's important to keep track of small changes during work using git version control.
+
+## Tools
+
+- Always use the Context7 tool to access up-to-date documentation for dependencies

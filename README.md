@@ -28,6 +28,30 @@ This setup uses [mise-en-place](https://mise.jdx.dev/) (formerly `rtx`) to manag
 - After cloning or updating the dotfiles, run `mise install` in your shell to install the specified tool versions.
 - `mise` automatically activates the correct tool versions when you enter a directory containing a `mise.toml` or `.tool-versions` file.
 
+## AI Tools & MCP Configuration
+
+AI tools and MCP (Model Context Protocol) servers are configured through the `.chezmoidata.toml` file and automatically installed via the `update-ai-tools.sh` script.
+
+### MCP Server Configuration
+
+MCP servers for Claude Code are dynamically configured from `.chezmoidata.toml`. To manage servers:
+
+- **Enable/disable servers**: Set `enabled = true/false` in the `[mcp_servers]` section
+- **Add new servers**: Create a new `[mcp_servers.name]` section with required fields
+- **Configure options**: `scope`, `command`, `args`, and optional `transport`
+
+Example configuration:
+```toml
+[mcp_servers.my-server]
+  enabled = true
+  scope = "user"
+  command = "npx"
+  args = ["-y", "my-mcp-package"]
+  transport = "stdio"  # optional
+```
+
+Run `./update-ai-tools.sh` or `chezmoi apply update-ai-tools.sh` to apply MCP server changes.
+
 ## Further Documentation
 
 ## Components Overview
