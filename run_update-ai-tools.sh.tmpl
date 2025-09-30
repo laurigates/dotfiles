@@ -1,0 +1,39 @@
+#!/bin/sh
+# Update all AI tools
+#
+# This script dynamically configures MCP servers based on .chezmoidata.toml
+#
+# Configuration options in .chezmoidata.toml [mcp_servers] section:
+# - enabled: boolean - whether to include this server (true/false)
+# - scope: string - MCP scope ("user" or "global")
+# - command: string - the command to run
+# - args: array - command arguments
+# - transport: string - optional transport type ("http", "sse", "stdio")
+#
+# Example server configuration:
+#   [mcp_servers.my-server]
+#     enabled = true
+#     scope = "user"
+#     command = "npx"
+#     args = ["-y", "my-mcp-package"]
+#     transport = "stdio"  # optional
+
+bun install -g @anthropic-ai/claude-code
+bun install -g @google/gemini-cli
+
+# Remove and re-add enabled MCP servers from .chezmoidata.toml configuration
+{{- range $name, $config := .mcp_servers }}
+{{- if $config.enabled }}
+# Remove {{ $name }} to ensure clean update
+claude mcp remove --scope={{ $config.scope }} {{ $name }} || true
+{{- if hasKey $config "transport" }}
+{{- if eq $config.transport "http" }}
+claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} {{ $config.command }}
+{{- else }}
+claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }}
+{{- end }}
+{{- else }}
+claude mcp add --scope={{ $config.scope }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }}
+{{- end }}
+{{- end }}
+{{- end }}
