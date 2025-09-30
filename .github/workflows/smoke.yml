@@ -20,7 +20,7 @@ jobs:
           python-version: '3.x'
 
       - name: Setup Homebrew (Linux)
-        uses: Homebrew/actions/setup-homebrew@v1
+        uses: Homebrew/actions/setup-homebrew@master
 
       - name: Install Dependencies
         run: |
@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Homebrew (Linux)
-        uses: Homebrew/actions/setup-homebrew@v1
+        uses: Homebrew/actions/setup-homebrew@master
 
       - name: Cache Homebrew
         uses: actions/cache@v4
