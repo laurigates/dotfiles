@@ -1,9 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "env": {
-    "MAX_THINKING_TOKENS": "31999",
-    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": 1
-  },
+  "env": {},
   "permissions": {
     "allow": [
       "Bash(find:*)",
@@ -14,7 +11,8 @@
       "mcp__context7",
       "mcp__sequential-thinking",
       "mcp__graphiti-memory",
-      "mcp__zen-mcp-server"
+      "mcp__zen-mcp-server",
+      "mcp__vectorcode"
     ],
     "deny": [
       "Bash(git add .)",
@@ -43,17 +41,12 @@
       {
         "hooks": [
 {{- $hooks := list -}}
-{{- $enable_kitty := true -}}
 {{- $enable_sketchybar := true -}}
 {{- $enable_obsidian := true -}}
 {{- if hasKey . "claude_hooks" -}}
-{{-   $enable_kitty = .claude_hooks.enable_kitty_tabs -}}
 {{-   $enable_sketchybar = .claude_hooks.enable_sketchybar -}}
 {{-   $enable_obsidian = .claude_hooks.enable_obsidian_logging -}}
 {{- end -}}
-{{- if $enable_kitty }}
-{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/kitty-tab-processing.sh" "timeout" 5000) -}}
-{{- end }}
 {{- if $enable_sketchybar }}
 {{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
 {{- end }}
@@ -70,15 +63,7 @@
     "PreToolUse": [
       {
         "matcher": "Task|Read|Grep|Search|TodoWrite|mcp__graphiti-memory__search.*|WebFetch|WebSearch|Glob|LS",
-        "hooks": [
-{{- if or (not (hasKey . "claude_hooks")) (and (hasKey . "claude_hooks") .claude_hooks.enable_kitty_tabs) }}
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/assistant-response-start.sh",
-            "timeout": 5000
-          }
-{{- end }}
-        ]
+        "hooks": []
       },
       {
         "matcher": "mcp__github__create_pull_request",
@@ -108,19 +93,14 @@
       {
         "hooks": [
 {{- $stopHooks := list -}}
-{{- $enable_kitty := true -}}
 {{- $enable_sketchybar := true -}}
 {{- $enable_voice := true -}}
 {{- $enable_obsidian := true -}}
 {{- if hasKey . "claude_hooks" -}}
-{{-   $enable_kitty = .claude_hooks.enable_kitty_tabs -}}
 {{-   $enable_sketchybar = .claude_hooks.enable_sketchybar -}}
 {{-   $enable_voice = .claude_hooks.enable_voice_notifications -}}
 {{-   $enable_obsidian = .claude_hooks.enable_obsidian_logging -}}
 {{- end -}}
-{{- if $enable_kitty }}
-{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/kitty-tab-ready.sh" "timeout" 5000) -}}
-{{- end }}
 {{- if $enable_sketchybar }}
 {{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
 {{- end }}

@@ -5,3 +5,10 @@
 # Note: The agents and commands directories are now handled by
 # dot_claude/run_before_clean-managed-dirs.sh.tmpl which automatically
 # cleans orphaned .md files before applying changes
+
+# Kitty integration removal - 2025-09-30
+~/.claude/hooks/kitty-tab-ready.sh
+~/.claude/hooks/kitty-tab-processing.sh
+~/.claude/setup_kitty_integration.sh
+~/.claude/KITTY_INTEGRATION.md
+/tmp/claude_status_hub.log
