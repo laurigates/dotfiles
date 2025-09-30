@@ -1,6 +1,6 @@
 ---
 name: template-generation
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#FF6B35"
 description: Expert in cookiecutter template creation, Jinja2 templating syntax, file/directory naming patterns, and template best practices.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, mcp__graphiti-memory

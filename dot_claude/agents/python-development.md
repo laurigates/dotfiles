@@ -1,7 +1,7 @@
 ---
 name: python-development
 color: "#1565C0"
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 description: Use proactively for modern Python development with uv, ruff, pytest, type hints, and pyproject.toml configuration.
 tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, Edit, MultiEdit, Write, NotebookEdit, Bash, SlashCommand, mcp__context7, mcp__graphiti-memory, mcp__lsp-basedpyright-langserver, mcp__vectorcode
 ---

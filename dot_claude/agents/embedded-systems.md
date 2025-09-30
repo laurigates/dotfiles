@@ -1,6 +1,6 @@
 ---
 name: embedded-systems
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#2ECC71"
 description: Use proactively for embedded systems including ESP32/ESP-IDF, STM32, real-time systems, and hardware abstraction.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, mcp__lsp-clangd, mcp__graphiti-memory

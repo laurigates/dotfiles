@@ -1,6 +1,6 @@
 ---
 name: code-refactoring
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#FD79A8"
 description: Use proactively for code refactoring including quality improvement, SOLID principles, design patterns, and behavior-preserving improvements. Automatically identifies and fixes code smells.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, TodoWrite, mcp__vectorcode, mcp__graphiti-memory

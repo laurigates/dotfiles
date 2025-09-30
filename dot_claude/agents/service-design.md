@@ -1,6 +1,6 @@
 ---
 name: service-design
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#E91E63"
 description: Use proactively for service design including UX architecture, service blueprints, interaction design, accessibility, and user journey mapping.
 tools: Read, Write, MultiEdit, TodoWrite, mcp__graphiti-memory

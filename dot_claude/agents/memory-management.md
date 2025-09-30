@@ -1,7 +1,7 @@
 ---
 name: memory-management
 color: "#FFB74D"
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 description: Use proactively for knowledge graph management, pattern recognition, decision history capture, and institutional knowledge preservation.
 tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, ListMcpResourcesTool, ReadMcpResourceTool, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__delete_entity_edge, mcp__graphiti-memory__delete_episode, mcp__graphiti-memory__get_entity_edge, mcp__graphiti-memory__get_episodes, mcp__graphiti-memory__clear_graph
 ---

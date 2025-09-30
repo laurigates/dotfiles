@@ -1,6 +1,6 @@
 ---
 name: task-logging
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#9B59B6"
 description: Use proactively for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity. Essential for task logging and time tracking.
 tools: Read, Write, mcp__podio, mcp__github, mcp__graphiti-memory

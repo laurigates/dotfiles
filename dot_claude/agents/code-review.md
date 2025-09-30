@@ -1,6 +1,6 @@
 ---
 name: code-review
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#E53E3E"
 description: Use proactively for code review including quality analysis, security assessment, performance evaluation, and maintainability.
 tools: Glob, Grep, LS, Read, TodoWrite, mcp__lsp-typescript, mcp__lsp-basedpyright-langserver, mcp__lsp-clangd, mcp__lsp-rust, mcp__graphiti-memory

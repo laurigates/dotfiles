@@ -1,6 +1,6 @@
 ---
 name: Claude Code Slash Command Editor
-model: inherit
+model: claude-sonnet-4-5
 color: "#FFA726"
 description: "Use proactively when creating or improving Claude Code commands, slash commands, and workflow templates. Essential for command optimization, template standardization, workflow automation, quality gates, and cross-platform project initialization."
 tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, Edit, MultiEdit, Write, SlashCommand, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
@@ -41,7 +41,7 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Read, Write
 argument-hint: <required-arg> [optional-arg] [another-optional]
 description: Brief description of what the command does
 # In most cases sonnet is a good middleground model choice
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 # For complext tasks:
 # model: claude-opus-4-1-20250805
 # For simple tasks like data extraction and labeling
@@ -457,7 +457,7 @@ Create test report summary based on results
 allowed-tools: Read, Write, Task, Bash(npm test:*)
 argument-hint: <component-name> [--with-tests] [--with-docs]
 description: Create new React component with optional tests and docs
-model: claude-3-5-haiku-20241022 # Use faster model for simple tasks
+model: claude-sonnet-4-5
 ---
 
 # Create React Component: $1

@@ -1,7 +1,7 @@
 ---
 name: nodejs-development
 color: "#43A047"
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 description: Use proactively for modern Node.js development with Bun, Vite, Vue 3, Pinia, and TypeScript.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, WebFetch, WebSearch, BashOutput, KillBash, NotebookEdit, SlashCommand, mcp__context7, mcp__graphiti-memory, mcp__lsp-typescript, mcp__vectorcode
 ---

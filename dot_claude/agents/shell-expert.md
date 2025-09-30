@@ -1,6 +1,6 @@
 ---
 name: shell-expert
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#2ECC40"
 description: Use proactively for shell scripting, command-line tools, automation, and cross-platform scripting best practices.
 tools: Bash, BashOutput, KillBash, Grep, Glob, LS, Read, Write, Edit, MultiEdit, TodoWrite, mcp__lsp-bash, mcp__graphiti-memory

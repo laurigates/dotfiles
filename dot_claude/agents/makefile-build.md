@@ -1,6 +1,6 @@
 ---
 name: makefile-build
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#8E44AD"
 description: Use proactively for Makefile development including user-friendly build systems, hierarchical targets, and maintainable automation.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, mcp__lsp-bash, mcp__graphiti-memory

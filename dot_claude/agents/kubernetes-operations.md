@@ -1,6 +1,6 @@
 ---
 name: kubernetes-operations
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#326CE5"
 description: Use proactively for all Kubernetes-related tasks, including deployment, management, and troubleshooting of containerized applications. Essential for K8s operations and cluster management.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, WebFetch, SlashCommand, mcp__lsp-helm, mcp__lsp-yaml, mcp__graphiti-memory

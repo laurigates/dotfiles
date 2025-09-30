@@ -1,6 +1,6 @@
 ---
 name: container-development
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#0db7ed"
 description: Use proactively for container development including Dockerfiles, orchestration, 12-factor principles, and Skaffold workflows.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-docker, mcp__graphiti-memory

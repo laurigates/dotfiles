@@ -1,6 +1,6 @@
 ---
 name: cpp-development
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#00599C"
 description: Expert in modern C/C++ development with CMake, Conan, Clang tools, and cross-platform best practices.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-clangd, mcp__context7, mcp__graphiti-memory

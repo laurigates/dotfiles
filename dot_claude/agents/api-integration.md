@@ -3,7 +3,7 @@ name: api-integration
 color: "#FF4785"
 description: Use proactively when exploring and integrating with REST APIs, especially when documentation is limited or unavailable. Automatically discovers endpoints, infers schemas, and generates client code.
 tools: Read, Bash, WebFetch, TodoWrite, mcp__context7, mcp__graphiti-memory
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 ---
 
 # API Explorer

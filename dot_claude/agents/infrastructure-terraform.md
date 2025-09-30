@@ -1,6 +1,6 @@
 ---
 name: infrastructure-terraform
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#623CE4"
 description: Use proactively for all Infrastructure as Code (IaC) tasks using Terraform. Essential for managing cloud and on-prem resources with precision. Automatically handles Terraform workflows.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__lsp-terraform, mcp__graphiti-memory

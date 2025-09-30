@@ -1,6 +1,6 @@
 ---
 name: cicd-pipelines
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#20BF6B"
 description: Use proactively for CI/CD pipelines including GitHub Actions, deployment automation, build optimization, and pipeline monitoring.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, mcp__github, mcp__lsp-github-actions, mcp__graphiti-memory

@@ -1,6 +1,6 @@
 ---
 name: commit-review
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#FFCA28"
 description: Use proactively for commit analysis including code quality, security vulnerabilities, consistency, and best practices review.
 tools: Glob, Grep, LS, Read, Bash, mcp__github, mcp__graphiti-memory

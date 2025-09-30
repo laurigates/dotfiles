@@ -1,6 +1,6 @@
 ---
 name: neovim-configuration
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#6C5CE7"
 description: Use proactively for Neovim configuration including Lua scripting, plugin management, LSP setup, and AI integration.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, mcp__lsp-lua, mcp__graphiti-memory

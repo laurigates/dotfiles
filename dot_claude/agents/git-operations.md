@@ -1,6 +1,6 @@
 ---
 name: git-operations
-model: inherit
+model: claude-sonnet-4-5
 color: "#4ECDC4"
 description: Use proactively for all Git and GitHub operations, including workflows, branch management, conflict resolution, repository management, and PRs.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Bash, BashOutput, TodoWrite, mcp__github, mcp__graphiti-memory

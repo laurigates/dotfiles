@@ -1,7 +1,7 @@
 ---
 name: json-processing
 color: "#4DB6AC"
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 description: JSON processing, validation, schema management, and large file handling with LSP integration.
 tools: Write, Edit, MultiEdit, Grep, Glob, LS, Read, WebFetch, TodoWrite, WebSearch, mcp__lsp-jsonls, mcp__graphiti-memory
 ---

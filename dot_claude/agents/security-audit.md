@@ -1,6 +1,6 @@
 ---
 name: security-audit
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#E17055"
 description: Use proactively for security analysis including vulnerability scanning, dependency audits, secret detection, compliance validation, and threat modeling.
 tools: Glob, Grep, LS, Read, Bash, TodoWrite, WebSearch, mcp__lsp-typescript, mcp__lsp-basedpyright-langserver, mcp__lsp-clangd, mcp__lsp-rust, mcp__lsp-terraform, mcp__lsp-docker, mcp__lsp-yaml, mcp__graphiti-memory

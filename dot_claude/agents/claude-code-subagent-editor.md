@@ -3,7 +3,7 @@ name: Claude Code Subagent editor
 color: "#E1FE22"
 description: Use proactively when creating, editing, or improving subagent definitions. This agent ensures proper YAML frontmatter, effective descriptions with trigger phrases, memory integration, and well-structured subagent capabilities.
 tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, Edit, MultiEdit, Write, SlashCommand, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 ---
 
 # Agent Expert

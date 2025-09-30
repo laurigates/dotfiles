@@ -1,6 +1,6 @@
 ---
 name: rust-development
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 color: "#CE422B"
 description: Use proactively for modern Rust development with cargo, rustc, clippy, rustfmt, async programming, and memory-safe systems programming.
 tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, WebFetch, WebSearch, BashOutput, KillBash, mcp__lsp-rust-analyzer, mcp__context7, mcp__graphiti-memory, mcp__vectorcode
