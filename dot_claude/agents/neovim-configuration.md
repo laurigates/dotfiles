@@ -1,9 +1,9 @@
 ---
 name: neovim-configuration
-model: inherit
+model: claude-sonnet-4-5
 color: "#6C5CE7"
 description: Use proactively for Neovim configuration including Lua scripting, plugin management, LSP setup, and AI integration.
-tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, mcp__lsp-lua__get_info_on_location, mcp__lsp-lua__get_completions, mcp__lsp-lua__get_code_actions, mcp__lsp-lua__restart_lsp_server, mcp__lsp-lua__start_lsp, mcp__lsp-lua__open_document, mcp__lsp-lua__close_document, mcp__lsp-lua__get_diagnostics, mcp__lsp-lua__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, mcp__lsp-lua, mcp__graphiti-memory
 ---
 
 <role>

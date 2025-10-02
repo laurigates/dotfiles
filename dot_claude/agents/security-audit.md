@@ -1,9 +1,9 @@
 ---
 name: security-audit
-model: inherit
+model: claude-sonnet-4-5
 color: "#E17055"
 description: Use proactively for security analysis including vulnerability scanning, dependency audits, secret detection, compliance validation, and threat modeling.
-tools: Glob, Grep, LS, Read, Bash, TodoWrite, WebSearch, mcp__lsp-typescript__get_diagnostics, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-clangd__get_diagnostics, mcp__lsp-rust__get_diagnostics, mcp__lsp-terraform__get_diagnostics, mcp__lsp-docker__get_diagnostics, mcp__lsp-yaml__get_diagnostics, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Bash, TodoWrite, WebSearch, mcp__lsp-typescript, mcp__lsp-basedpyright-langserver, mcp__lsp-clangd, mcp__lsp-rust, mcp__lsp-terraform, mcp__lsp-docker, mcp__lsp-yaml, mcp__graphiti-memory
 ---
 
 <role>

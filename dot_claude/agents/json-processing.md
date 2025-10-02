@@ -1,8 +1,9 @@
 ---
 name: json-processing
-model: inherit
+color: "#4DB6AC"
+model: claude-sonnet-4-5
 description: JSON processing, validation, schema management, and large file handling with LSP integration.
-tools: Write, Edit, MultiEdit, Grep, Glob, LS, Read, WebFetch, TodoWrite, WebSearch, mcp__lsp-jsonls__get_info_on_location, mcp__lsp-jsonls__get_completions, mcp__lsp-jsonls__get_code_actions, mcp__lsp-jsonls__restart_lsp_server, mcp__lsp-jsonls__start_lsp, mcp__lsp-jsonls__open_document, mcp__lsp-jsonls__close_document, mcp__lsp-jsonls__get_diagnostics, mcp__lsp-jsonls__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Write, Edit, MultiEdit, Grep, Glob, LS, Read, WebFetch, TodoWrite, WebSearch, mcp__lsp-jsonls, mcp__graphiti-memory
 ---
 
 # JSON Processing Expert

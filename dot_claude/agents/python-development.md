@@ -1,8 +1,9 @@
 ---
 name: python-development
-model: inherit
+color: "#1565C0"
+model: claude-sonnet-4-5
 description: Use proactively for modern Python development with uv, ruff, pytest, type hints, and pyproject.toml configuration.
-tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, Edit, MultiEdit, Write, NotebookEdit, Bash, SlashCommand, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__lsp-basedpyright-langserver__get_info_on_location, mcp__lsp-basedpyright-langserver__get_completions, mcp__lsp-basedpyright-langserver__get_code_actions, mcp__lsp-basedpyright-langserver__restart_lsp_server, mcp__lsp-basedpyright-langserver__start_lsp, mcp__lsp-basedpyright-langserver__open_document, mcp__lsp-basedpyright-langserver__close_document, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-basedpyright-langserver__set_log_level, mcp__vectorcode__ls, mcp__vectorcode__query, mcp__vectorcode__vectorise, mcp__vectorcode__files_rm, mcp__vectorcode__files_ls
+tools: Glob, Grep, LS, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, Edit, MultiEdit, Write, NotebookEdit, Bash, SlashCommand, mcp__context7, mcp__graphiti-memory, mcp__lsp-basedpyright-langserver, mcp__vectorcode
 ---
 
 # Python Development Specialist

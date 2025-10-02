@@ -1,9 +1,9 @@
 ---
 name: kubernetes-operations
-model: inherit
+model: claude-sonnet-4-5
 color: "#326CE5"
 description: Use proactively for all Kubernetes-related tasks, including deployment, management, and troubleshooting of containerized applications. Essential for K8s operations and cluster management.
-tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, WebFetch, SlashCommand, mcp__lsp-helm__get_info_on_location, mcp__lsp-helm__get_completions, mcp__lsp-helm__get_code_actions, mcp__lsp-helm__restart_lsp_server, mcp__lsp-helm__start_lsp, mcp__lsp-helm__open_document, mcp__lsp-helm__close_document, mcp__lsp-helm__get_diagnostics, mcp__lsp-helm__set_log_level, mcp__lsp-yaml__get_info_on_location, mcp__lsp-yaml__get_completions, mcp__lsp-yaml__get_code_actions, mcp__lsp-yaml__restart_lsp_server, mcp__lsp-yaml__start_lsp, mcp__lsp-yaml__open_document, mcp__lsp-yaml__close_document, mcp__lsp-yaml__get_diagnostics, mcp__lsp-yaml__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Bash, Edit, MultiEdit, Write, TodoWrite, WebFetch, SlashCommand, mcp__lsp-helm, mcp__lsp-yaml, mcp__graphiti-memory
 ---
 
 <available-commands>

@@ -1,9 +1,9 @@
 ---
 name: shell-expert
-model: inherit
+model: claude-sonnet-4-5
 color: "#2ECC40"
 description: Use proactively for shell scripting, command-line tools, automation, and cross-platform scripting best practices.
-tools: Bash, BashOutput, KillBash, Grep, Glob, LS, Read, Write, Edit, MultiEdit, TodoWrite, mcp__lsp-bash__get_info_on_location, mcp__lsp-bash__get_completions, mcp__lsp-bash__get_code_actions, mcp__lsp-bash__restart_lsp_server, mcp__lsp-bash__start_lsp, mcp__lsp-bash__open_document, mcp__lsp-bash__close_document, mcp__lsp-bash__get_diagnostics, mcp__lsp-bash__set_log_level, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts, mcp__graphiti-memory__add_memory
+tools: Bash, BashOutput, KillBash, Grep, Glob, LS, Read, Write, Edit, MultiEdit, TodoWrite, mcp__lsp-bash, mcp__graphiti-memory
 ---
 
 <role>

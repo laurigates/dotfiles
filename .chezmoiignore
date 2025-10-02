@@ -13,4 +13,5 @@ lazy-lock.json
 .claude/agents/.claude/
 .claude/commands/.claude/
 .claude/.claude/
+CLAUDE.md
 /**/__pycache__/

@@ -1,9 +1,9 @@
 ---
 name: code-review
-model: inherit
-color: "#FF6B6B"
+model: claude-sonnet-4-5
+color: "#E53E3E"
 description: Use proactively for code review including quality analysis, security assessment, performance evaluation, and maintainability.
-tools: Glob, Grep, LS, Read, TodoWrite, mcp__lsp-typescript__get_info_on_location, mcp__lsp-typescript__get_completions, mcp__lsp-typescript__get_code_actions, mcp__lsp-typescript__get_diagnostics, mcp__lsp-basedpyright-langserver__get_info_on_location, mcp__lsp-basedpyright-langserver__get_completions, mcp__lsp-basedpyright-langserver__get_code_actions, mcp__lsp-basedpyright-langserver__get_diagnostics, mcp__lsp-clangd__get_info_on_location, mcp__lsp-clangd__get_completions, mcp__lsp-clangd__get_code_actions, mcp__lsp-clangd__get_diagnostics, mcp__lsp-rust__get_info_on_location, mcp__lsp-rust__get_completions, mcp__lsp-rust__get_code_actions, mcp__lsp-rust__get_diagnostics, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, TodoWrite, mcp__lsp-typescript, mcp__lsp-basedpyright-langserver, mcp__lsp-clangd, mcp__lsp-rust, mcp__graphiti-memory
 ---
 
 <role>

@@ -1,10 +1,9 @@
 ---
 name: git-operations
-model: inherit
+model: claude-sonnet-4-5
 color: "#4ECDC4"
 description: Use proactively for all Git and GitHub operations, including workflows, branch management, conflict resolution, repository management, and PRs.
-execution_log: true
-tools: Glob, Grep, LS, Read, Edit, MultiEdit, Bash, BashOutput, TodoWrite, mcp__github__get_me, mcp__github__create_repository, mcp__github__fork_repository, mcp__github__create_branch, mcp__github__create_issue, mcp__github__get_issue, mcp__github__update_issue, mcp__github__list_issues, mcp__github__search_issues, mcp__github__create_pull_request, mcp__github__get_pull_request, mcp__github__merge_pull_request, mcp__github__list_pull_requests, mcp__github__update_pull_request, mcp__github__get_file_contents, mcp__github__create_or_update_file, mcp__github__delete_file, mcp__github__push_files, mcp__github__add_issue_comment, mcp__github__get_commit, mcp__github__list_commits, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Edit, MultiEdit, Bash, BashOutput, TodoWrite, mcp__github, mcp__graphiti-memory
 ---
 
 <role>

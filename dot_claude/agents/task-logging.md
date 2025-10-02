@@ -1,9 +1,9 @@
 ---
 name: task-logging
-model: inherit
+model: claude-sonnet-4-5
 color: "#9B59B6"
 description: Use proactively for managing Podio Kanban tickets, updating Obsidian notes for timesheet purposes, and summarizing GitHub activity. Essential for task logging and time tracking.
-tools: Read, Write, mcp__podio, mcp__github__list_notifications, mcp__github__list_issues, mcp__github__list_pull_requests, mcp__graphiti-memory
+tools: Read, Write, mcp__podio, mcp__github, mcp__graphiti-memory
 podio_default_workspace:
   org_label: fvh
   space_label: iot-workspace

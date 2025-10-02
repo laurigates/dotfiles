@@ -1,9 +1,9 @@
 ---
 name: code-refactoring
-model: inherit
+model: claude-sonnet-4-5
 color: "#FD79A8"
 description: Use proactively for code refactoring including quality improvement, SOLID principles, design patterns, and behavior-preserving improvements. Automatically identifies and fixes code smells.
-tools: Glob, Grep, LS, Read, Edit, MultiEdit, TodoWrite, mcp__vectorcode__ls, mcp__vectorcode__query, mcp__vectorcode__vectorise, mcp__vectorcode__files_rm, mcp__vectorcode__files_ls, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+tools: Glob, Grep, LS, Read, Edit, MultiEdit, TodoWrite, mcp__vectorcode, mcp__graphiti-memory
 ---
 
 # Refactoring Specialist
