@@ -59,6 +59,7 @@
       skaffold = "skaffold completion zsh"
       kitty = "kitty +complete setup zsh"
       vectorcode = "vectorcode -s zsh"
+      bun = "bun completions"
 
 [packages.brew]
   # Taps for both macOS and Linux
