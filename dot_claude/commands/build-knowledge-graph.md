@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Glob, Task, TodoWrite, mcp__graphiti-memory__add_memory, mcp__graphiti-memory__search_memory_nodes, mcp__graphiti-memory__search_memory_facts
+argument-hint: [vault-directory]
+description: Build comprehensive knowledge graph from Obsidian vault documentation
+---
+
 # Build Knowledge Graph
 
 Build a comprehensive knowledge graph from technical documentation files in an Obsidian vault's z/ directory.

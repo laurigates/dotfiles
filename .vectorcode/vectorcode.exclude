@@ -1,0 +1,177 @@
+# VectorCode exclude patterns for dotfiles repository
+# These patterns define what files to exclude from vectorization
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Build artifacts and caches
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+*.dylib
+*.dll
+*.class
+*.o
+*.a
+*.lib
+*.exe
+*.out
+build/
+dist/
+target/
+*.egg-info/
+.eggs/
+
+# Package manager files and locks
+node_modules/
+bower_components/
+vendor/
+Gemfile.lock
+Cargo.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+poetry.lock
+lazy-lock.json
+*.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.pid
+*.seed
+*.pid.lock
+.tmp/
+tmp/
+temp/
+
+# Test coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+
+# Compiled documentation
+*.pdf
+docs/_build/
+site/
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tgz
+*.7z
+*.rar
+*.iso
+*.dmg
+
+# Media files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.ico
+*.webp
+*.mp3
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mkv
+*.wav
+*.flac
+
+# Binary files
+*.bin
+*.dat
+*.pack
+
+# Secrets and sensitive files
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+.env
+.env.*
+secrets/
+credentials/
+*.secret
+
+# System files
+$RECYCLE.BIN/
+System Volume Information/
+
+# VectorCode's own files
+.vectorcode/
+!.vectorcode/config.json
+!.vectorcode/vectorcode.include
+!.vectorcode/vectorcode.exclude
+
+# Large data files
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.h5
+*.hdf5
+
+# Backups
+*.backup
+*.old
+backup/
+backups/
+
+# Chezmoi state (but not the config)
+.chezmoi.*.json
+.chezmoi.*.yaml
+!chezmoi.toml.tmpl
+
+# Other dotfiles tool states
+.stow-local-ignore

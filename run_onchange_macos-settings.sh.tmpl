@@ -1,0 +1,133 @@
+#!/bin/bash
+# Comprehensive macOS Settings Automation
+# This script runs when macOS settings need to be updated
+# Template hash: {{ include "macos-settings.toml" | sha256sum }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+
+echo "🍎 Configuring macOS settings..."
+
+# =============================================================================
+# KEYBOARD SHORTCUTS
+# =============================================================================
+
+echo "⌨️  Configuring keyboard shortcuts..."
+
+# Disable Mission Control shortcuts that interfere with development tools
+echo "  Disabling Mission Control space navigation shortcuts..."
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Left shortcut"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Left shortcut"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Right shortcut"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Right shortcut"
+
+# =============================================================================
+# FINDER SETTINGS
+# =============================================================================
+
+echo "📁 Configuring Finder..."
+
+# Show hidden files by default
+echo "  Enabling hidden file visibility..."
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Show file extensions
+echo "  Showing file extensions..."
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show path bar
+echo "  Showing path bar..."
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Show status bar
+echo "  Showing status bar..."
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Use column view by default
+echo "  Setting default view to columns..."
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+
+# =============================================================================
+# DOCK SETTINGS
+# =============================================================================
+
+echo "🚢 Configuring Dock..."
+
+# Auto-hide the dock
+echo "  Enabling dock auto-hide..."
+defaults write com.apple.dock autohide -bool true
+
+# Minimize windows into their application icon
+echo "  Setting minimize effect..."
+defaults write com.apple.dock minimize-to-application -bool true
+
+# Don't show recent applications in dock
+echo "  Hiding recent applications..."
+defaults write com.apple.dock show-recents -bool false
+
+# =============================================================================
+# TERMINAL/DEVELOPMENT SETTINGS
+# =============================================================================
+
+echo "💻 Configuring development environment..."
+
+# Disable press-and-hold for keys in favor of key repeat
+echo "  Disabling press-and-hold for faster key repeat..."
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Set fast key repeat rate
+echo "  Setting fast key repeat..."
+defaults write NSGlobalDomain KeyRepeat -int 1
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# =============================================================================
+# SECURITY & PRIVACY
+# =============================================================================
+
+echo "🔒 Configuring security settings..."
+
+# Require password immediately after sleep/screensaver
+echo "  Setting password requirement..."
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# =============================================================================
+# TRACKPAD SETTINGS
+# =============================================================================
+
+echo "🖱️  Configuring trackpad..."
+
+# Enable tap to click
+echo "  Enabling tap to click..."
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+
+# Enable three finger drag
+echo "  Enabling three finger drag..."
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+
+# =============================================================================
+# APPLY CHANGES
+# =============================================================================
+
+echo "🔄 Applying settings changes..."
+
+# Apply keyboard shortcut changes
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "  ⚠️  Failed to activate keyboard shortcut settings"
+
+# Restart affected applications
+echo "🔄 Restarting affected applications..."
+killall Finder 2>/dev/null || echo "  ⚠️  Finder not running"
+killall Dock 2>/dev/null || echo "  ⚠️  Dock not running"
+killall SystemUIServer 2>/dev/null || echo "  ⚠️  SystemUIServer not running"
+
+echo "✅ macOS settings configuration completed!"
+echo "📝 Note: Some settings may require a logout/login or restart to take full effect."
+
+{{- else }}
+
+echo "ℹ️  Skipping macOS settings - not running on macOS"
+
+{{- end }}

@@ -1,77 +1,25 @@
-# Process Single GitHub Issue
+---
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(npm test:*), Bash(pytest:*), Bash(go test:*), Bash(make test:*), mcp__github__get_issue, mcp__github__update_issue, mcp__github__create_pull_request, TodoWrite
+description: Process and fix a single GitHub issue with TDD workflow
+argument-hint: <issue-number>
+---
 
-Process and fix a single GitHub issue with comprehensive workflow.
+## Context
 
-## Usage
-```bash
-claude chat --file ~/.claude/commands/github/process-single-issue.md [ISSUE_NUMBER]
-```
+- Repo: !`gh repo view --json nameWithOwner`
+- Current branch: !`git branch --show-current`
+- Clean working tree: !`git status --porcelain | wc -l`
+- Open PRs: !`gh pr list --state open --json number,title`
+- Issue details: !`gh issue view $1 --json title,body,state,assignees`
 
-## Arguments
-- `ISSUE_NUMBER`: The issue number to process (e.g., 42)
+## Your task
 
-## Workflow
-
-1. **Pre-flight Check**
-   - Use GitHub MCP to check for unmerged pull requests
-   - If unmerged PRs exist, prompt user to handle them first
-   - Ensure working directory is clean
-
-2. **Branch Setup**
-   ```bash
-   git switch main && git pull
-   git switch -c fix-issue-${ISSUE_NUMBER}
-   ```
-
-3. **Issue Analysis**
-   - Fetch issue details using GitHub MCP: `mcp__github__get_issue`
-   - Analyze issue description and requirements
-   - Use zen-mcp-server to understand root cause with Gemini Pro
-
-4. **Planning**
-   - Use planner tool to generate detailed implementation plan
-   - Break down into manageable subtasks
-   - Identify test requirements
-
-5. **Test-Driven Development**
-   - Write tests that reproduce the issue (RED phase)
-   - Verify tests fail as expected
-   - Document expected behavior
-
-6. **Implementation**
-   - Implement fixes following the plan
-   - Ensure tests pass (GREEN phase)
-   - Refactor if needed (REFACTOR phase)
-
-7. **Validation**
-   - Run precommit checks using codereview continuation
-   - Verify all tests pass
-   - Check for regressions
-
-8. **Commit**
-   ```bash
-   git add -A
-   git commit -m "fix: <description>
-
-   Fixes #${ISSUE_NUMBER}"
-   ```
-
-9. **Pull Request**
-   - Push branch: `git push -u origin fix-issue-${ISSUE_NUMBER}`
-   - Create PR using GitHub MCP with issue reference
-   - Link PR to issue for automatic closure
-
-10. **Cleanup**
-    - Switch back to main: `git switch main`
-    - Optional: Delete local branch after PR merge
-
-## Error Handling
-- If tests don't pass, iterate on implementation
-- If PR checks fail, fix issues before merge
-- Keep issue updated with progress comments
-
-## Success Criteria
-- Issue is fully resolved
-- Tests cover the fix
-- PR passes all checks
-- Code follows project conventions
+- Ensure working directory is clean (commit or stash if needed)
+- Switch to main and pull latest: `git switch main && git pull`
+- Create issue branch: `git switch -c fix-issue-$1`
+- Analyze issue #$1 requirements
+- Write failing tests first (RED phase)
+- Implement fix until tests pass (GREEN phase)
+- Refactor if needed (REFACTOR phase)
+- Commit with message referencing issue: `Fixes #$1`
+- Push branch and create PR linked to issue

@@ -1,0 +1,30 @@
+#!/bin/bash
+# Generate ZSH completions for various CLI tools
+# Runs when .chezmoidata.toml changes
+# Hash: {{ include ".chezmoidata.toml" | sha256sum }}
+
+set -euo pipefail
+
+COMP_DIR="$HOME/.zfunc"
+mkdir -p "${COMP_DIR}"
+
+echo "🔧 Generating ZSH completions in ${COMP_DIR}..."
+generated=0
+skipped=0
+
+{{- range $tool, $cmd := .packages.completion_tools.zsh_completions }}
+if command -v {{ $tool }} >/dev/null 2>&1; then
+    echo "📝 Generating completion for {{ $tool }}..."
+    {{ $cmd }} > "${COMP_DIR}/_{{ $tool }}" 2>/dev/null || echo "⚠️  Failed to generate {{ $tool }} completion"
+    if [[ -f "${COMP_DIR}/_{{ $tool }}" ]]; then
+        ((generated++))
+    fi
+else
+    echo "⏭️  {{ $tool }} not found, skipping completion"
+    ((skipped++))
+fi
+{{- end }}
+
+echo "✅ ZSH completions generation completed!"
+echo "📊 Generated: ${generated}, Skipped: ${skipped}"
+echo "📁 Completions saved in: ${COMP_DIR}"

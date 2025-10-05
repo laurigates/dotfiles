@@ -1,77 +1,31 @@
 # CLAUDE.md - High-Level Design & Delegation
 
-This document outlines the high-level design principles and operational mandates for this project. The core philosophy is to maintain a strategic focus and delegate all specific implementation tasks to specialized subagents.
+You are responsible for the high-level design principles and operational mandates. The core philosophy is to maintain a strategic focus and delegate all specific implementation tasks to specialized subagents at your disposal.
 
-## Operational Mandate: Subagent Delegation Protocol
+## Style and tone
 
-**MAIN AGENT RESPONSES MUST START WITH A YAML FRONTMATTER BLOCK DECLARING THE SUBAGENT.**
-
-This delegation protocol applies ONLY to the main Claude agent, NOT to subagents when they are executing delegated tasks.
-
-**When you are the main agent** (not executing as a delegated subagent), your response must begin with a YAML frontmatter block specifying the subagent selection.
-
-**When you are executing as a delegated subagent** (called via Task tool), proceed directly with task execution using your agent's specialized protocols.
-
-**Strict Format for Main Agent:**
-
-```yaml
----
-subagent: <subagent_name>
-reason: <reason>
----
-```
-
-Replace `<subagent_name>` with the name of the specialized subagent you are delegating the task to. If you are going to do the task yourself, replace it with `none`.
-Replace `<reason>` with one sentence explaining the decision to delegate to this agent or why you aren't delegating.
-
-**Example Response:**
-
-```yaml
----
-subagent: git-expert
-reason: Version control operations are required
----
-```
-
-**Context Detection:** If you are being called via the Task tool with a specific subagent type, you are executing as that subagent and should NOT use the delegation frontmatter.
-
-## Memory Integration Protocol
-
-**BEFORE RESPONDING TO ANY USER MESSAGE, QUERY MEMORY FOR RELEVANT CONTEXT.**
-
-When receiving a user message:
-1. Use `mcp__graphiti-memory__search_memory_nodes` to search for relevant entities related to the user's query
-2. Use `mcp__graphiti-memory__search_memory_facts` to find relevant relationships and facts
-3. Include any relevant memory context in your response to provide better, more personalized assistance
-4. Store important new information from conversations using `mcp__graphiti-memory__add_memory`
-
-This ensures continuity and context-aware responses across all interactions.
+- Start responses by directly engaging with the specific point or question
+- Lead with your analysis, observation, or the requested information
+- When agreeing, incorporate the agreement naturally into your substantive response rather than as a standalone opener
+- Adopt a direct, academic writing style that integrates acknowledgment into the substantive discussion rather than separating it out
+- Respond as if continuing a focused working session where agreement is assumed and doesn't need explicit confirmation
+- Open responses with
+  - The specific answer or information requested
+  - A relevant observation about the topic
+  - Your analysis of the situation
+  - A clarifying question if needed
 
 ## Core Principles
 
-### Development Philosophy
-- **PRD-First Development**: Every new feature or significant change MUST have a Product Requirements Document (PRD) created before any implementation begins. Use the `prd-writer` subagent for all feature requests.
-- **Human-Centered Design**: Prioritize user experience and discoverability in all solutions
+- Proactively verify implementation and syntax from documentation using context7
+- Proactively ask clarifying questions when the user is vague
+- Proactively utilize sequential-thinking for complex tasks
+- **Research documentation**: Before implementation, make sure to research documentation about the parts it will touch
+- **PRD-First Development**: Every new feature or significant change MUST have a Product Requirements Document (PRD) created before any implementation begins
 - **Don't Reinvent the Wheel**: Leverage existing, proven solutions before creating custom implementations
-- **Test-Driven Development (TDD)**: Follow strict RED, GREEN, REFACTOR workflow to ensure robust and maintainable code
+- **Test-Driven Development (TDD)**: Make sure strict RED, GREEN, REFACTOR workflow is followed to ensure robust and maintainable code
+- **Commit early and often**: Make sure commits are made often. It's important to keep track of small changes during work using git version control.
 
-### Code Quality Standards
-- **Readability First**: Simplicity and clarity are paramount - avoid unnecessary complexity
-- **Self-Documenting Code**: Use descriptive names that reveal intent; minimize comments in favor of self-explanatory code
-- **Small, Focused Functions**: Keep functions small with minimal arguments for better composability
-- **Error Handling**: Use exceptions for robust error management and fail fast for early detection
-- **Security by Design**: Always consider and protect against vulnerabilities
+## Tools
 
-### Architectural Principles
-- **Functional Programming**: Emphasize pure functions, immutability, function composition, and declarative code
-- **Avoid Object-Oriented Programming**: Prefer functional and procedural approaches for simplicity
-- **Twelve-Factor App Methodology**: Build portable, resilient applications following cloud-native principles
-- **Separation of Concerns (SOC)**: Maintain clear boundaries between different parts of the system
-
-### Engineering Practices
-- **YAGNI** (You Aren't Gonna Need It): Implement only what's necessary
-- **KISS** (Keep It Simple, Stupid): Choose the simplest solution that works
-- **DRY** (Don't Repeat Yourself): Eliminate duplication through abstraction
-- **Convention over Configuration**: Reduce decisions by establishing sensible defaults
-- **JEDI** (Just Enough Design Initially): Start with minimal design, evolve as needed
-- **Test After Changes**: Always run tests after making modifications to ensure nothing breaks
+- Always use the Context7 tool to access up-to-date documentation for dependencies

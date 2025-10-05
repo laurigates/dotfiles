@@ -1,0 +1,20 @@
+{
+  "embedding_params": {
+    "backend": "torch",
+    "device": "mps"
+  },
+  "chunk_filters": {
+    "markdown": ["^#{1,6}\\s*$", "^\\s*[-*]\\s*$"],
+    "shell": ["^\\s*#[^!].*$", "^\\s*$"],
+    "python": ["^\\s*#.*$", "^\\s*$"],
+    "lua": ["^\\s*--.*$", "^\\s*$"],
+    "*": ["^[^a-zA-Z0-9]+$"]
+  },
+  "reranker_params": {
+    "enabled": false
+  },
+  "hnsw": {
+    "hnsw:M": 32,
+    "hnsw:construction_ef": 100
+  }
+}

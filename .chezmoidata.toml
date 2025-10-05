@@ -1,27 +1,37 @@
 # Chezmoi data for package management
 [packages]
-  [packages.pipx]
-    # Python tools managed by pipx
+  [packages.uv_tools]
+    # Python tools managed by uv tool
     tools = [
       "ansible",
       "argcomplete",
       "asciinema",
       "cookiecutter",
+      "devpi-server",
+      "esptool",
       "glances",
+      "huggingface-hub",
       "jinjanator",
+      "mlx-lm",
       "pdm",
       "pre-commit",
       "ranger-fm",
       "ruff",
-      "uv",
-      "vectorcode",
+      "telegram-send",
+      "trafilatura",
+      "vectorcode[mcp,cli]",
       "yamllint"
+    ]
+
+    # Git-based tools with special installation requirements
+    git_tools = [
+      { package = "zen-mcp-server", url = "git+https://github.com/BeehiveInnovations/zen-mcp-server" }
     ]
 
   [packages.completion_tools]
     # Tools that provide shell completions
     [packages.completion_tools.zsh_completions]
-      pipx = "register-python-argcomplete pipx"
+      uv = "uv generate-shell-completion zsh"
       rustup = "rustup completions zsh"
       pip = "pip completion --zsh"
       podman = "podman completion -f zsh"
@@ -48,6 +58,345 @@
       orb = "orb completion zsh"
       skaffold = "skaffold completion zsh"
       kitty = "kitty +complete setup zsh"
+      vectorcode = "vectorcode -s zsh"
+      bun = "bun completions"
+
+[packages.brew]
+  # Taps for both macOS and Linux
+  common_taps = [
+    "hashicorp/tap",
+    "knqyf263/pet",
+    "norwoodj/tap",
+    "oven-sh/bun"
+  ]
+
+  # macOS-specific taps
+  darwin_taps = [
+    "felixkratz/formulae",
+    "hudochenkov/sshpass",
+    "koekeishiya/formulae"
+  ]
+
+  # Linux-specific taps
+  linux_taps = [
+    "redpanda-data/tap"
+  ]
+
+  # Common formulae for both macOS and Linux
+  common = [
+    "arduino-cli",
+    "argocd",
+    "argocd-vault-plugin",
+    "atuin",
+    "autoconf",
+    "bat",
+    "binwalk",
+    "chezmoi",
+    "cmake",
+    "coreutils",
+    "curl",
+    "dbmate",
+    "dfu-util",
+    "fd",
+    "fish",
+    "fswatch",
+    "fzf",
+    "gh",
+    "git",
+    "git-delta",
+    "git-filter-repo",
+    "git-lfs",
+    "gnutls",
+    "gobuster",
+    "groff",
+    "helm",
+    "help2man",
+    "httpie",
+    "imagemagick",
+    "iperf3",
+    "jd",
+    "jq",
+    "k9s",
+    "kubernetes-cli",
+    "kubectx",
+    "lazygit",
+    "lsd",
+    "luarocks",
+    "maven",
+    "mermaid-cli",
+    "mise",
+    "mosquitto",
+    "netcat",
+    "ninja",
+    "nmap",
+    "nushell",
+    "ollama",
+    "pandoc",
+    "parallel",
+    "pipx",
+    "platformio",
+    "python@3.11",
+    "python@3.13",
+    "qemu",
+    "ranger",
+    "ripgrep",
+    "skaffold",
+    "so",
+    "starship",
+    "tcl-tk",
+    "tflint",
+    "tldr",
+    "trufflehog",
+    "uv",
+    "wireshark",
+    "zlib",
+    "zoxide",
+    "zsh-completions",
+    "hashicorp/tap/terraform",
+    "knqyf263/pet/pet",
+    "norwoodj/tap/helm-docs",
+    "oven-sh/bun/bun"
+  ]
+
+  # macOS-specific formulae
+  darwin = [
+    "lldpd",
+    "lsusb",
+    "mas",
+    "openssl@3",
+    "libgit2",
+    "gettext",
+    "unbound",
+    "postgresql@14",
+    "postgresql@16",
+    "felixkratz/formulae/sketchybar",
+    "hudochenkov/sshpass/sshpass",
+    "koekeishiya/formulae/skhd"
+  ]
+
+  # Linux-specific formulae (includes redpanda which doesn't work on macOS)
+  linux = [
+    "numpy",
+    "redpanda-data/tap/redpanda"
+  ]
+
+  # Services that need restart_service flag
+  services = [
+    { name = "lldpd", restart = "changed" }
+  ]
+
+  # Casks (macOS only)
+  casks = [
+    "android-platform-tools",
+    "arduino-ide",
+    "bluesnooze",
+    "font-hack-nerd-font",
+    "gcloud-cli",
+    "ghostty",
+    "keycastr",
+    "keyman",
+    "kicad",
+    "kitty",
+    "krita",
+    "mac-mouse-fix",
+    "mitmproxy",
+    "obsidian",
+    "openlens",
+    "orbstack",
+    "shortcat",
+    "spotify",
+    "telegram-desktop",
+    "visual-studio-code",
+    "vlc",
+    "xquartz"
+  ]
+
+  # Mac App Store apps (macOS only)
+  mas = [
+    { name = "GarageBand", id = 682658836 },
+    { name = "iMovie", id = 408981434 },
+    { name = "Keynote", id = 409183694 },
+    { name = "Numbers", id = 409203825 },
+    { name = "Pages", id = 409201541 },
+    { name = "WireGuard", id = 1451685025 },
+    { name = "Xcode", id = 497799835 }
+  ]
+
+  # VS Code extensions (cross-platform)
+  vscode = [
+    "asvetliakov.vscode-neovim",
+    "github.copilot",
+    "github.copilot-chat",
+    "google.geminicodeassist",
+    "googlecloudtools.cloudcode",
+    "hashicorp.terraform",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode.cmake-tools",
+    "ms-vscode.cpptools",
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.cpptools-themes",
+    "platformio.platformio-ide",
+    "redhat.vscode-yaml",
+    "twxs.cmake"
+  ]
+
+[claude_hooks]
+  # Terminal integration hooks
+  enable_kitty_tabs = false          # Update terminal tab titles with status
+  enable_sketchybar = false          # Update macOS status bar
+
+  # Logging and notification hooks
+  enable_obsidian_logging = false    # Log activities to Obsidian vault
+  enable_voice_notifications = false # Voice notifications for task completion
+
+  # Development tool hooks
+  enable_pre_commit_formatting = false # Run formatters on staged files
+
+  # GitHub integration hooks
+  enable_gh_context = false          # Provide GitHub context for PRs
+
+[mcp_servers]
+  # MCP server configurations for Claude Code
+  # Each server has configuration details and an enabled flag
+
+  [mcp_servers.graphiti-memory]
+    enabled = true
+    scope = "user"
+    transport = "sse"
+    command = "http://localhost:8000/sse"
+    args = []
+
+  [mcp_servers.vectorcode]
+    enabled = true
+    scope = "user"
+    command = "vectorcode-mcp-server"
+    args = []
+
+  [mcp_servers.zen-mcp-server]
+    enabled = true
+    scope = "user"
+    command = "uvx"
+    args = ["--from", "git+https://github.com/BeehiveInnovations/zen-mcp-server.git", "zen-mcp-server"]
+
+  [mcp_servers.playwright]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "@playwright/mcp@latest"]
+
+  [mcp_servers.context7]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "@upstash/context7-mcp"]
+
+  [mcp_servers.github]
+    enabled = true
+    scope = "user"
+    command = "go"
+    args = ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"]
+
+  [mcp_servers.lsp-typescript]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "typescript", "~/.local/share/nvim/mason/bin/typescript-language-server", "--stdio"]
+
+  [mcp_servers.lsp-clangd]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "clangd", "~/.local/share/nvim/mason/bin/clangd", "--stdio"]
+
+  [mcp_servers.lsp-basedpyright-langserver]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "basedpyright-langserver", "~/.local/share/nvim/mason/bin/basedpyright-langserver", "--stdio"]
+
+  [mcp_servers.podio-mcp]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["https://github.com/ForumViriumHelsinki/podio-mcp"]
+
+  [mcp_servers.lsp-github-actions]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "github-actions", "~/.local/share/nvim/mason/bin/gh-actions-language-server", "--stdio"]
+
+  [mcp_servers.lsp-terraform]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "terraform", "~/.local/share/nvim/mason/bin/terraform-ls", "--stdio"]
+
+  [mcp_servers.lsp-rust]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "rust", "~/.local/share/nvim/mason/bin/rust-analyzer", "--stdio"]
+
+  [mcp_servers.lsp-lua]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "lua", "~/.local/share/nvim/mason/bin/lua-language-server", "--stdio"]
+
+  [mcp_servers.lsp-yaml]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "yaml", "~/.local/share/nvim/mason/bin/yaml-language-server", "--stdio"]
+
+  [mcp_servers.lsp-docker]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "dockerfile", "~/.local/share/nvim/mason/bin/docker-langserver", "--stdio"]
+
+  [mcp_servers.lsp-json]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "json", "~/.local/share/nvim/mason/bin/vscode-json-language-server", "--stdio"]
+
+  [mcp_servers.lsp-bash]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "bash", "~/.local/share/nvim/mason/bin/bash-language-server", "--stdio"]
+
+  [mcp_servers.lsp-helm]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "tritlo/lsp-mcp", "helm", "~/.local/share/nvim/mason/bin/helm_ls", "--stdio"]
+
+  [mcp_servers.sentry]
+    enabled = true
+    scope = "user"
+    transport = "http"
+    command = "https://mcp.sentry.dev/mcp"
+    args = []
+
+  [mcp_servers.argocd-mcp]
+    enabled = true
+    scope = "user"
+    command = "bunx"
+    args = ["-y", "argocd-mcp@latest", "stdio"]
+
+  # Disabled servers
+  [mcp_servers.kicad]
+    enabled = false
+    scope = "user"
+    command = "~/repos/kicad-mcp/.venv/bin/python"
+    args = ["~/repos/kicad-mcp/main.py"]
 
 [platform]
   # Platform-specific settings will be populated by templates

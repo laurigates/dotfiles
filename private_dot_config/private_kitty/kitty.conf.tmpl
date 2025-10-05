@@ -895,6 +895,18 @@ map kitty_mod+delete clear_terminal reset active
 
 #: # endregion
 
+#: Kitty Scrollback Integration # region
+
+# Browse scrollback buffer in nvim
+map kitty_mod+h launch --type=overlay --stdin-source=@screen_scrollback nvim -c "lua require('kitty-scrollback').setup()" -
+# Browse last command output in nvim
+map kitty_mod+g launch --type=overlay --stdin-source=@last_cmd_output nvim -c "lua require('kitty-scrollback').setup()" -
+
+# Optional: Browse scrollback in a new window
+# map f1 launch --type=window --stdin-source=@screen_scrollback nvim -c "lua require('kitty-scrollback').setup()" -
+
+#: # endregion
+
 #: Claude Code Integration # region
 
 # Show Claude Code status overlay

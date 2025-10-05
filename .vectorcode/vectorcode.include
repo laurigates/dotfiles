@@ -1,0 +1,79 @@
+# VectorCode include patterns for dotfiles repository
+# These patterns define what files to include when running vectorcode vectorise without explicit paths
+
+# Shell configurations and scripts
+*.sh
+*.zsh
+*.bash
+*.fish
+aliases.zsh
+
+# Neovim and editor configs
+*.lua
+*.vim
+
+# Python scripts and tools
+*.py
+
+# Documentation
+*.md
+README*
+CHANGELOG*
+LICENSE*
+
+# Configuration files
+*.toml
+*.yaml
+*.yml
+*.json
+*.json5
+*.jsonc
+
+# Template files (chezmoi)
+*.tmpl
+
+# Package lists and dependencies
+Brewfile
+dot_default-*-packages
+requirements.txt
+package.json
+Cargo.toml
+pyproject.toml
+
+# Git hooks and automation
+.git-hooks/*
+pre-commit-config.yaml
+
+# Makefiles and build scripts
+Makefile
+makefile
+*.mk
+
+# Docker and container configs
+Dockerfile*
+docker-compose*.yml
+*.dockerfile
+
+# GitHub Actions
+.github/workflows/*.yml
+.github/workflows/*.yaml
+
+# All Claude-specific files
+dot_claude/**
+
+# Scripts directory
+scripts/**
+
+# Configuration directories
+private_dot_config/**
+dot_config/**
+
+# Run scripts (chezmoi)
+run_*.sh
+run_*.tmpl
+
+# Completions
+completions/**
+
+# Utility scripts
+dot_local/bin/*

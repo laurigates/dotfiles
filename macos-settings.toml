@@ -1,0 +1,67 @@
+# macOS Settings Configuration
+# This file tracks macOS settings and triggers the run_onchange script when modified
+# Add new settings categories or options here to trigger automatic reconfiguration
+
+[version]
+config_version = "1.0.0"
+last_updated = "2024-08-30"
+
+[keyboard_shortcuts]
+# Mission Control space navigation shortcuts (disabled for terminal use)
+disable_ctrl_left_arrow = true      # ID 79: Ctrl+Left Arrow
+disable_ctrl_right_arrow = true     # ID 81: Ctrl+Right Arrow
+disable_ctrl_shift_left = true      # ID 80: Ctrl+Shift+Left Arrow
+disable_ctrl_shift_right = true     # ID 82: Ctrl+Shift+Right Arrow
+
+[finder]
+show_hidden_files = true
+show_file_extensions = true
+show_path_bar = true
+show_status_bar = true
+default_view = "column"             # Options: icon, list, column, gallery
+
+[dock]
+autohide = true
+minimize_to_application = true
+show_recent_applications = false
+
+[development]
+disable_press_and_hold = true       # Enable key repeat instead of accents
+key_repeat_rate = 1                 # Fast key repeat (1-2 recommended)
+initial_key_repeat = 10             # Delay before repeat starts
+
+[security]
+require_password_immediately = true
+screensaver_password_delay = 0      # Seconds (0 = immediate)
+
+[trackpad]
+tap_to_click = true
+three_finger_drag = true
+
+# =============================================================================
+# FUTURE SETTINGS EXAMPLES (commented out)
+# =============================================================================
+
+# [menu_bar]
+# # Show battery percentage
+# show_battery_percentage = true
+# # Hide Siri from menu bar
+# hide_siri = true
+
+# [screenshots]
+# # Change default screenshot location
+# location = "~/Desktop/Screenshots"
+# # Change default screenshot format
+# format = "png"                    # Options: png, jpg, gif, pdf
+
+# [energy_saver]
+# # Never sleep when plugged in
+# prevent_sleep_on_power = true
+# # Display sleep time (minutes)
+# display_sleep_time = 10
+
+# [text_input]
+# # Disable automatic spelling correction
+# disable_auto_correct = false
+# # Disable smart quotes and dashes
+# disable_smart_punctuation = false

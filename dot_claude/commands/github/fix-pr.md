@@ -1,118 +1,59 @@
-Comprehensive Plan: Fix PR Test Failures and Issues
+---
+allowed-tools: Bash(git branch:*), Bash(git status:*), Bash(git diff:*), Bash(gh repo view:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(git log:*), Bash(pytest:*), Bash(npm test:*), Bash(make test:*)
+argument-hint: [pr-number] [--auto-fix] [--push]
+description: Analyze and fix failing PR checks
+---
 
-Overview
+## Context
 
-This plan systematically addresses test failures and CI issues using proven
-Zen MCP tools to achieve a completely green CI pipeline and pristine PR merge.
+- Get repo name with owner: !`gh repo view --json nameWithOwner`
+- Current git status: !`git status`
+- Current git diff (staged and unstaged changes): !`git diff HEAD`
+- Current branch: !`git branch --show-current`
+- Recent commits: !`git log --oneline -10`
 
-Current Status Assessment
+## Parameters
 
-First, assess the current state of the PR:
-- Run test suite to identify failing tests
-- Check CI pipeline status and error patterns
-- Analyze code coverage if applicable
-- Review any linting or build failures
+Parse these parameters from the command (all optional):
+- `$1`: PR number (if not provided, detect from current branch)
+- `--auto-fix`: Automatically apply fixes for common issues
+- `--push`: Push fixes to the branch after committing
 
-Execution Strategy
+## Your task
 
-Phase A: Comprehensive Analysis
+1. **Parse parameters** from the command arguments
 
-Step 1: ThinkDeep Investigation
-├── Analyze all test failures and CI issues
-├── Focus on workflow breakpoints and error patterns
-├── Identify failure patterns and common root causes
-└── Use high thinking mode for complex debugging
+2. **Determine PR number**:
+   - If $1 is provided: use PR #$1
+   - Otherwise: detect from current branch with `gh pr view --json number --jq .number`
 
-Step 2: Documentation Research
-├── Use Context7 to research relevant framework/tool requirements
-├── Understand proper project structure and dependencies
-├── Research best practices for the identified issues
-└── Validate workflow assumptions against documentation
+3. **Analyze PR check failures**:
+   - Execute: `gh pr checks <pr-number> --watch` to see all checks
+   - Identify failing checks and their error messages
+   - Create a todo list to track each failing check
 
-Phase B: Root Cause Categorization
+4. **For each failing check**:
+   - Research the specific error messages and patterns
+   - Run tests locally to reproduce the issue:
+     - For Python: `pytest` or `python -m pytest`
+     - For Node.js: `npm test` or `npm run test`
+     - For Make-based: `make test`
+   - Determine if it's a CI-specific issue or code problem
 
-Step 3: Failure Pattern Analysis
-├── Group failures by likely causes:
-│ ├── API/Dependency Issues (version compatibility, missing deps)
-│ ├── Workflow/Integration Problems (pipeline breaks, process issues)
-│ ├── Environment Issues (security, permissions, configuration)
-│ ├── Performance/Timing Issues (timeouts, race conditions)
-│ └── Logic/Implementation Problems (business logic errors)
-├── Prioritize fixes by impact (common causes first)
-└── Plan incremental validation strategy
+5. **Fix issues** (if --auto-fix):
+   - Linting errors: Run appropriate linters/formatters
+   - Type errors: Fix type annotations or implementations
+   - Test failures: Fix failing tests or implementation bugs
+   - Import errors: Fix missing dependencies or imports
 
-Phase C: Systematic Fix Implementation
+6. **Commit and push** (if --push):
+   - Stage fixed files with `git add`
+   - Commit with descriptive message: `git commit -m "fix: resolve PR check failures"`
+   - Push changes: `git push`
 
-Step 4: Apply Targeted Fixes
-├── Address common root causes first
-├── Apply category-specific fixes:
-│ ├── Dependency and compatibility updates
-│ ├── Workflow and integration corrections
-│ ├── Environment and configuration improvements
-│ └── Performance and timing optimizations
-└── Validate each fix incrementally
+7. **Verify fixes**:
+   - Re-run `gh pr checks <pr-number> --watch` to monitor progress
+   - Report status of each check
 
-Step 5: Comprehensive Validation
-├── Run test suite after each change
-├── Ensure no regression in existing passing tests
-├── Monitor any coverage or quality metrics
-└── Final comprehensive validation before merge
-
-Tools and Methods
-
-Primary Tools
-
-- ThinkDeep: Systematic debugging and root cause analysis
-- Context7: Framework/library documentation research and validation
-- GitHub MCP: CI logs and workflow status monitoring
-- Incremental Testing: Prevent regression and validate fixes
-
-Validation Approach
-
-- Incremental: Test each fix immediately after application
-- Comprehensive: Full test suite validation at completion
-- Quality Monitoring: Track progress toward project quality targets
-- Regression Prevention: Validate existing tests remain passing
-
-Success Criteria
-
-Primary Goals
-
-- All failing tests pass consistently
-- CI pipeline completely green (no failures/warnings/errors)
-- No regression in existing passing tests
-
-Secondary Goals
-
-- Maintain or improve code quality metrics
-- Tests complete within reasonable time limits
-- Updated PR ready for pristine merge
-
-Risk Mitigation
-
-Strategies
-
-- Incremental Validation: Prevents cascade failures
-- Systematic Approach: Uses proven Zen MCP methodology
-- Documentation Research: Ensures best practices and accuracy
-- Rollback Plan: Ability to revert if fixes cause regression
-
-Monitoring Points
-
-- After each ThinkDeep analysis - assess pattern clarity
-- After Context7 research - validate framework understanding
-- After each fix - run incremental tests
-- After all fixes - comprehensive validation
-
-Expected Deliverables
-
-1. All failing tests passing
-2. CI checks completely green
-3. Maintained or improved code quality metrics
-4. Updated PR ready for pristine merge
-5. Documentation of fixes applied
-
-This plan provides a systematic approach for fixing PR issues using proven
-Zen MCP tools. The structured use of ThinkDeep, Context7, and GitHub MCP tools
-ensures thorough analysis and targeted fixes for achieving a pristine PR merge
-regardless of the project type or technology stack.
+## Execution
+Execute all commands directly with the Bash tool. Use TodoWrite to track failing checks and their resolution. Show the user progress as you work through each issue.

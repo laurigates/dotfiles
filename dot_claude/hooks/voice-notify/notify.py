@@ -8,13 +8,13 @@ voices and dynamic speech styles.
 """
 
 import json
+import logging
 import os
+import subprocess
 import sys
 import tempfile
-import subprocess
 from pathlib import Path
-from typing import Dict, Optional, Tuple
-import logging
+from typing import Dict, Optional
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -49,6 +49,7 @@ class VoiceNotifier:
         """Load voice configuration from JSON file."""
         default_config = {
             "enabled": True,
+            "model": "tts",  # "native-audio" or "tts" (native-audio not available yet)
             "default_voice": "Zephyr",
             "default_style": "cheerful",
             "language": "en-GB",  # Default language, can be overridden
@@ -61,6 +62,18 @@ class VoiceNotifier:
                 "waiting": "patiently",
                 "tool_use": "professionally",
                 "neutral": "calmly"
+            },
+            "language_names": {
+                "en-GB": "British English",
+                "en-US": "American English",
+                "fi-FI": "Finnish",
+                "fr-FR": "French",
+                "de-DE": "German",
+                "es-ES": "Spanish",
+                "it-IT": "Italian",
+                "ja-JP": "Japanese",
+                "ko-KR": "Korean",
+                "zh-CN": "Mandarin Chinese"
             }
         }
 
@@ -90,9 +103,9 @@ class VoiceNotifier:
 
     def init_gemini_client(self) -> None:
         """Initialize Gemini API client."""
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            logger.warning("GOOGLE_API_KEY not found. Voice notifications will use macOS 'say' fallback.")
+            logger.warning("GEMINI_API_KEY not found. Voice notifications will use macOS 'say' fallback.")
             self.gemini_client = None
             return
 
@@ -176,28 +189,44 @@ class VoiceNotifier:
         return "neutral"
 
     def generate_speech_gemini(self, text: str, voice_name: str, style: str, language: str = "en-GB") -> Optional[bytes]:
-        """Generate speech using Gemini API with language support."""
+        """Generate speech using Gemini API with native audio dialog model."""
         if not self.gemini_client:
             return None
 
-        try:
-            logger.debug(f"Generating speech with voice={voice_name}, language={language}")
+        # Check which model to use
+        model_type = self.config.get("model", "native-audio")
 
-            # Just use the text directly - no style instructions that could be spoken
-            # The voice emotion will come through naturally from the text content
+        if model_type == "tts":
+            # Use the original TTS model directly
+            return self._generate_speech_gemini_tts(text, voice_name, style, language)
+
+        # Use the native audio dialog model
+        try:
+            logger.debug(f"Generating speech with native audio model, language={language}, style={style}")
+
+            # Map our style to appropriate system instruction
+            style_instructions = {
+                "success": "Respond in a cheerful, celebratory tone.",
+                "error": "Respond with concern and helpfulness.",
+                "waiting": "Respond patiently and reassuringly.",
+                "tool_use": "Respond professionally and efficiently.",
+                "neutral": "Respond in a calm, friendly manner."
+            }
+
+            style_instruction = style_instructions.get(style, "Respond in a friendly, natural tone.")
+
+            # Get full language name for better instruction
+            language_name = self.config.get("language_names", {}).get(language, language)
+
+            # Use the new native audio dialog model
+            # The native audio model requires just the text and system instruction
             response = self.gemini_client.models.generate_content(
-                model="gemini-2.5-flash-preview-tts",
-                contents=text,
+                model="gemini-2.5-flash-preview-native-audio-dialog",
+                contents=text,  # Pass text directly
                 config=types.GenerateContentConfig(
                     response_modalities=["AUDIO"],
-                    speech_config=types.SpeechConfig(
-                        language_code=language,  # Language goes here in SpeechConfig
-                        voice_config=types.VoiceConfig(
-                            prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                                voice_name=voice_name  # Only voice name in PrebuiltVoiceConfig
-                            )
-                        )
-                    ),
+                    system_instruction=f"You are a helpful assistant. {style_instruction} Please speak naturally in {language_name}.",
+                    # Native audio dialog doesn't use speech_config
                 )
             )
 
@@ -219,6 +248,53 @@ class VoiceNotifier:
 
         except Exception as e:
             logger.error(f"Gemini TTS generation failed: {e}")
+            # If the native audio model fails, try falling back to the TTS model
+            try:
+                logger.info("Attempting fallback to TTS model...")
+                return self._generate_speech_gemini_tts(text, voice_name, style, language)
+            except Exception as fallback_e:
+                logger.error(f"TTS fallback also failed: {fallback_e}")
+                return None
+
+    def _generate_speech_gemini_tts(self, text: str, voice_name: str, style: str, language: str = "en-GB") -> Optional[bytes]:
+        """Fallback method using the original TTS model."""
+        if not self.gemini_client:
+            return None
+
+        try:
+            logger.debug(f"Using TTS fallback with voice={voice_name}, language={language}")
+
+            response = self.gemini_client.models.generate_content(
+                model="gemini-2.5-flash-preview-tts",
+                contents=text,
+                config=types.GenerateContentConfig(
+                    response_modalities=["AUDIO"],
+                    speech_config=types.SpeechConfig(
+                        language_code=language,
+                        voice_config=types.VoiceConfig(
+                            prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                                voice_name=voice_name
+                            )
+                        )
+                    ),
+                )
+            )
+
+            # Extract audio data
+            if response and response.candidates:
+                candidate = response.candidates[0]
+                if candidate.content and candidate.content.parts:
+                    for part in candidate.content.parts:
+                        if part.inline_data and part.inline_data.mime_type:
+                            if part.inline_data.mime_type.startswith('audio/'):
+                                audio_data = part.inline_data.data
+                                logger.debug(f"Found TTS audio data: {len(audio_data)} bytes")
+                                return audio_data
+
+            return None
+
+        except Exception as e:
+            logger.error(f"TTS model failed: {e}")
             return None
 
     def get_cache_key(self, text: str, voice: str, style: str, language: str = "en-GB") -> str:

@@ -1,3 +1,16 @@
+alias ccc='claude --continue'
+
+# Smartcommit variations
+alias csc='claude --print /git:smartcommit'          # Default: new branch, print mode
+alias csci='claude /git:smartcommit'                 # Default: new branch, interactive
+alias cscd='claude /git:smartcommit --direct'        # Direct to current branch
+alias cscp='claude /git:smartcommit --push'          # With auto-push
+
+# QuickPR variations
+alias cpr='claude /github:quickpr'                   # Full PR workflow
+alias cprd='claude /github:quickpr --draft'          # Create draft PR
+alias cpri='claude /github:quickpr --issue'          # Link to issue
+
 alias chap='chezmoi apply'
 alias ccd='chezmoi cd'
 # use nvim if it exists
@@ -48,6 +61,7 @@ alias gc='git commit -v'
 alias gl='git pull'
 alias gla='git pull --autostash'
 alias gp='git push'
+alias gpf='git push --force-with-lease'
 
 alias gb='git branch'
 alias gba='git branch -a'
@@ -55,8 +69,8 @@ alias gbd='git branch -d'
 alias gbD='git branch -D'
 
 alias gd='git diff'
-alias gdca='git diff --cached'
-alias gdcw='git diff --cached --word-diff'
+alias gds='git diff --staged'
+alias gdsw='git diff --staged --word-diff'
 
 alias gfap='git fetch --all --prune'
 
@@ -82,6 +96,15 @@ alias grbm='git rebase main'
 alias gst='git status'
 
 alias gsw='git switch'
+
+# Git worktree aliases
+alias gwa='git worktree add'
+alias gwl='git worktree list'
+alias gwr='git worktree remove'
+alias gwp='git worktree prune'
+alias gwm='git worktree move'
+alias gwlock='git worktree lock'
+alias gwunlock='git worktree unlock'
 
 ### kubectl aliases
 # Mostly cherry-picked from the oh-my-zsh kubectl plugin:
@@ -277,3 +300,6 @@ alias tf='terraform'
 alias dcls='docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'
 alias dls='docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"'
 alias dlogin='echo "$CR_PAT" | docker login ghcr.io -u laurigates --password-stdin'
+
+### Named directories
+hash -d r='/Users/lgates/repos'

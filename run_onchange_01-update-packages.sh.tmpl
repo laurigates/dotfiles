@@ -1,0 +1,69 @@
+#!/bin/bash
+# Update all packages and tools
+# Runs when .chezmoidata.toml changes (which now includes brew packages)
+# Hash: {{ include ".chezmoidata.toml" | sha256sum }}
+
+set -euo pipefail
+
+echo "🔄 Starting comprehensive update process..."
+
+# Brew
+{{- if eq .chezmoi.os "darwin" }}
+echo "📦 Updating Homebrew packages..."
+brew update && brew upgrade && brew cleanup
+{{- else }}
+echo "📦 Updating Homebrew packages..."
+/home/linuxbrew/.linuxbrew/bin/brew update && /home/linuxbrew/.linuxbrew/bin/brew upgrade && /home/linuxbrew/.linuxbrew/bin/brew cleanup
+{{- end }}
+
+# mise
+if command -v mise >/dev/null 2>&1; then
+    echo "🛠️  Updating mise and tool versions..."
+    mise upgrade
+else
+    echo "⚠️  mise not found, skipping tool updates"
+fi
+
+# Neovim
+if command -v nvim >/dev/null 2>&1; then
+    echo "⚙️  Updating Neovim plugins and LSP tools..."
+    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
+else
+    echo "⚠️  Neovim not found, skipping plugin updates"
+fi
+
+# uv tools
+if command -v uv >/dev/null 2>&1; then
+    echo "🐍 Installing and updating Python tools via uv..."
+    {{- range .packages.uv_tools.tools }}
+    if ! uv tool list | grep -q "^{{ . }} "; then
+        echo "📦 Installing {{ . }}..."
+        uv tool install {{ . }} --force
+    else
+        echo "✅ {{ . }} already installed"
+    fi
+    {{- end }}
+
+    {{- if .packages.uv_tools.git_tools }}
+    echo "🔧 Installing Git-based tools..."
+    {{- range .packages.uv_tools.git_tools }}
+    if ! uv tool list | grep -q "^{{ .package }} "; then
+        echo "📦 Installing {{ .package }} from {{ .url }}..."
+        {{- if hasKey . "with" }}
+        uv tool install "{{ .url }}" --force --with {{ range $i, $dep := .with }}{{ if $i }},{{ end }}{{ $dep }}{{ end }}
+        {{- else }}
+        uv tool install "{{ .url }}" --force
+        {{- end }}
+    else
+        echo "✅ {{ .package }} already installed"
+    fi
+    {{- end }}
+    {{- end }}
+
+    echo "⬆️  Upgrading all uv tool packages..."
+    uv tool upgrade --all
+else
+    echo "⚠️  uv not found, skipping Python package updates"
+fi
+
+echo "✅ Update process completed successfully!"

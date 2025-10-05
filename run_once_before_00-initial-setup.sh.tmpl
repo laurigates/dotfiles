@@ -1,0 +1,63 @@
+#!/bin/bash
+# Initial system setup - runs once before applying dotfiles
+# This script configures git, installs pre-commit hooks, sets up neovim, and initializes brew
+
+set -euo pipefail
+
+echo "Starting initial setup..."
+
+# Configure git
+echo "Configuring git..."
+git config --global pull.rebase true
+git config --global init.defaultBranch main
+git config --global filter.lfs.clean 'git-lfs clean -- %f'
+git config --global filter.lfs.smudge 'git-lfs smudge -- %f'
+git config --global filter.lfs.process 'git-lfs filter-process'
+git config --global filter.lfs.required true
+git config --global rebase.autoStash true
+git config --global rebase.autosquash true
+git config --global core.pager delta
+git config --global interactive.diffFilter 'delta --color-only'
+git config --global delta.navigate true
+git config --global delta.light false
+git config --global merge.conflictstyle diff3
+git config --global merge.ff only
+git config --global diff.colorMoved zebra
+git config --global diff.algorithm histogram
+git config --global rerere.enabled true
+git config --global rerere.autoupdate true
+git config --global push.default current
+git config --global push.autoSetupRemote true
+git config --global color.ui auto
+git config --global log.date iso
+git config --global help.autocorrect 20
+
+# Install pre-commit hooks
+echo "Installing pre-commit hooks..."
+(cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+
+# Install neovim plugins
+echo "Installing neovim plugins..."
+nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
+
+{{- if eq .chezmoi.os "darwin" }}
+echo "Running macOS specific setup..."
+
+# Hush login
+echo "Disabling 'last login' prompt..."
+touch ~/.hushlogin
+
+# Keyboard shortcuts
+echo "Configuring macOS keyboard shortcuts..."
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "Failed to disable shortcut 79"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "Failed to disable shortcut 80"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "Failed to disable shortcut 81"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "Failed to disable shortcut 82"
+defaults read com.apple.symbolichotkeys.plist > /dev/null || echo "Failed to read symbolichotkeys"
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || echo "Failed to activate settings"
+{{- end }}
+
+# Note: Brew package installation is now handled by run_once_02-install-brew-packages.sh.tmpl
+# This keeps the initial setup focused on core configuration only
+
+echo "Initial setup completed!"

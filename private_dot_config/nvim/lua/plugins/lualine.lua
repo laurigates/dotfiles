@@ -22,6 +22,23 @@ return {
         },
         lualine_x = {
           {
+            function()
+              return require("trouble").statusline({
+                mode = "lsp_document_symbols",
+                groups = {},
+                title = false,
+                filter = { range = true },
+                format = "{kind_icon}{symbol.name:Normal}",
+                -- The following line need to be set only if the `trouble` setup function
+                -- is not yet called, so that statusline works properly before trouble is opened
+                hl_group = "lualine_c_normal",
+              })
+            end,
+            cond = function()
+              return package.loaded["trouble"] and require("trouble").is_open()
+            end,
+          },
+          {
             require("lazy.status").updates,
             cond = require("lazy.status").has_updates,
             color = { fg = "#ff9e64" },

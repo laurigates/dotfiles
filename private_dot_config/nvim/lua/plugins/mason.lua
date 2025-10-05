@@ -10,7 +10,18 @@ return {
   },
   {
     "williamboman/mason.nvim",
-    opts = {},
+    opts = {
+      -- Ensure compilers can be found
+      PATH = "prepend",
+      -- Try to use system compilers first
+      registries = {
+        "github:mason-org/mason-registry",
+      },
+      providers = {
+        "mason.providers.registry-api",
+        "mason.providers.client",
+      },
+    },
     event = "VeryLazy",
   },
   {
@@ -29,6 +40,7 @@ return {
         },
         opts = { lsp = { auto_attach = true } },
       },
+      "b0o/schemastore.nvim",
     },
     -- your lsp config or other stuff
   },
