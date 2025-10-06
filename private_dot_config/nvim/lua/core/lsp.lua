@@ -23,11 +23,7 @@ vim.lsp.config("*", {
 -- Enable LSP on-type formatting
 vim.lsp.on_type_formatting.enable()
 
--- require("mason").setup()
--- require("mason-lspconfig").setup({
---   -- ensure_installed = { "rust_analyzer", "lua_ls", "jsonls" }
--- })
-
+-- Server-specific configurations
 vim.lsp.config("terraformls", {
   settings = {
     ["terraform"] = {
@@ -44,5 +40,10 @@ vim.lsp.config("jsonls", {
     },
   },
 })
+
+-- Enable configured LSP servers
+-- Note: Servers must be installed via Mason (:Mason) before they can be enabled
+vim.lsp.enable("terraformls")
+vim.lsp.enable("jsonls")
 
 vim.keymap.set({ "n", "x" }, "<leader>a", '<cmd>lua require("fastaction").code_action()<CR>', { buffer = bufnr })
