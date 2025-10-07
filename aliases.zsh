@@ -32,7 +32,7 @@ alias reload="exec zsh"
 # Configure these aliases unless in Claude code
 # Otherwise it will be confused when the standard command is different from the norm
 [ ! $CLAUDECODE ] && type bat >/dev/null 2>&1 \
-  && alias cat="bat"
+  && alias cat="bat --paging=never"
 
 # fzf preview
 alias preview="fzf --preview 'bat --color \"always\" {}'"
