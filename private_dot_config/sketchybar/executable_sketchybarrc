@@ -67,7 +67,7 @@ sketchybar --add item chevron left \
            --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched \
            --add item k8s left \
-           --set k8s script="$PLUGIN_DIR/k8s.sh"
+           --set k8s script="$PLUGIN_DIR/k8s.sh" update_freq=30
 
 ##### Adding Right Items #####
 # In the same way as the left items we can add items to the right side.
