@@ -25,23 +25,16 @@ return {
     event = "VeryLazy",
   },
   {
-    "williamboman/mason-lspconfig.nvim",
-    opts = {},
+    "SmiteshP/nvim-navbuddy",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "MunifTanjim/nui.nvim",
+    },
+    opts = { lsp = { auto_attach = true } },
     event = "VeryLazy",
   },
   {
-    "neovim/nvim-lspconfig",
-    dependencies = {
-      {
-        "SmiteshP/nvim-navbuddy",
-        dependencies = {
-          "SmiteshP/nvim-navic",
-          "MunifTanjim/nui.nvim",
-        },
-        opts = { lsp = { auto_attach = true } },
-      },
-      "b0o/schemastore.nvim",
-    },
-    -- your lsp config or other stuff
+    "b0o/schemastore.nvim",
+    event = "VeryLazy",
   },
 }
