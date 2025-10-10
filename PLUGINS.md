@@ -82,6 +82,21 @@ If you're contributing to this dotfiles repository:
 3. **Version bumps**: Update `plugins/dotfiles-toolkit/.claude-plugin/plugin.json` when making significant changes
 4. **Marketplace**: Update `.claude-plugin/marketplace.json` when adding new plugins
 
+### Setting Up CI for Plugin Symlinks
+
+To ensure the plugin symlinks work in CI, add this step to your GitHub Actions workflows after checkout:
+
+```yaml
+- name: Setup Claude Code Plugin Symlinks
+  run: |
+    cd plugins/dotfiles-toolkit
+    ln -sf ../../dot_claude/agents agents
+    ln -sf ../../dot_claude/commands commands
+    echo "✓ Plugin symlinks created"
+```
+
+**Note**: Add this to `.github/workflows/smoke.yml` in both the `lint` and `build` jobs after the checkout step.
+
 ## Local Development
 
 If you've cloned this repository and want to use the plugin locally:
