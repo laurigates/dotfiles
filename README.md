@@ -28,6 +28,24 @@ This setup uses [mise-en-place](https://mise.jdx.dev/) (formerly `rtx`) to manag
 - After cloning or updating the dotfiles, run `mise install` in your shell to install the specified tool versions.
 - `mise` automatically activates the correct tool versions when you enter a directory containing a `mise.toml` or `.tool-versions` file.
 
+## Claude Code Plugins 🔌
+
+This repository now includes **Claude Code plugins** for easy installation and management of AI agents and slash commands!
+
+### Quick Start
+
+```bash
+# Add this repository as a plugin marketplace
+/plugin marketplace add laurigates/dotfiles
+
+# Install the dotfiles toolkit plugin
+/plugin install dotfiles-toolkit
+```
+
+**What you get**: 30+ specialized agents and 20+ slash commands for development, infrastructure, documentation, and more.
+
+📖 **Full guide**: See [PLUGINS.md](./PLUGINS.md) for complete documentation.
+
 ## AI Tools & MCP Configuration
 
 AI tools and MCP (Model Context Protocol) servers are configured through the `.chezmoidata.toml` file and automatically installed via the `update-ai-tools.sh` script.
