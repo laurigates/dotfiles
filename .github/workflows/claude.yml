@@ -1,84 +1,53 @@
-name: Claude Code
+name: Claude Code Review
 
 on:
-  issue_comment:
-    types: [created]
-  pull_request_review_comment:
-    types: [created]
-  issues:
-    types: [opened, assigned, labeled]
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
 
 jobs:
-  claude:
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+  claude-review:
+    # Optional: Filter by PR author
+    # if: |
+    #   github.event.pull_request.user.login == 'external-contributor' ||
+    #   github.event.pull_request.user.login == 'new-developer' ||
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Upgraded from read to allow commits
-      pull-requests: write # Upgraded to allow PR creation and updates
-      issues: write # Upgraded to allow issue updates
+      contents: read
+      pull-requests: read
+      issues: read
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full history for better context
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
 
-      - name: Setup Node.js for MCP servers
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - name: Setup Bun for context7
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Run Claude Code with MCP Integration
-        id: claude
+      - name: Run Claude Code Review
+        id: claude-review
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          
-          # Enhanced permissions for CI integration
-          additional_permissions: |
-            actions: read
+          prompt: |
+            Please review this pull request and provide feedback on:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - Performance considerations
+            - Security concerns
+            - Test coverage
 
-          # MCP server configuration - Context7 for documentation
-          mcp_servers: |
-            {
-              "context7": {
-                "command": "bunx",
-                "args": ["-y", "@upstash/context7-mcp"]
-              }
-            }
+            Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
 
-          # Enhanced Claude arguments for workflow integration
-          claude_args: |
-            --model claude-sonnet-4-5-20250929
-            --allowed-tools "mcp__context7*"
-            --allowed-tools "Bash(gh pr:*)"
-            --allowed-tools "Bash(gh issue:*)"
-            --allowed-tools "Bash(gh workflow:*)"
-            --allowed-tools "WebFetch"
-            --max-turns 100
+            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
 
-      - name: Archive workflow artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: claude-workflow-artifacts
-          path: |
-            .claude/tasks/*.md
-            .claude/tasks/*.json
-            .claude/docs/*.md
-            .claude/status/*.md
-          retention-days: 30
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'

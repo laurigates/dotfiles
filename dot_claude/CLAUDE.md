@@ -26,6 +26,11 @@ You are responsible for the high-level design principles and operational mandate
 - **Test-Driven Development (TDD)**: Make sure strict RED, GREEN, REFACTOR workflow is followed to ensure robust and maintainable code
 - **Commit early and often**: Make sure commits are made often. It's important to keep track of small changes during work using git version control.
 
-## Tools
+## Workflow
 
-- Always use the Context7 tool to access up-to-date documentation for dependencies
+- Research relevant documentation using context7 and web search
+- Development cycle
+  - Write a test
+  - Implement
+  - Run tests
+- Branch, commit, push, pull request
