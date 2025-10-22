@@ -1,0 +1,9 @@
+{
+  "name": "dotfiles-toolkit",
+  "version": "1.0.0",
+  "description": "Comprehensive development toolkit with specialized agents for chezmoi, git operations, code review, documentation, container development, infrastructure, and more",
+  "author": {
+    "name": "Lauri Gates",
+    "email": "laurigates@users.noreply.github.com"
+  }
+}

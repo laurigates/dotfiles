@@ -1,0 +1,24 @@
+# Ensure LF endings on checkout for all text files
+* text=auto eol=lf
+
+# Shell scripts must be executable
+*.sh text eol=lf
+plugins/dotfiles-toolkit/validate-plugin.sh text eol=lf
+
+# Explicit text files
+*.md text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.lua text eol=lf
+*.fish text eol=lf
+*.tmpl text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
