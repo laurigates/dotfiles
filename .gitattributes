@@ -1,6 +1,5 @@
 # Mark shell scripts as executable
 *.sh text eol=lf
-plugins/dotfiles-toolkit/setup-symlinks.sh eol=lf
 
 # Ensure consistent line endings
 *.md text eol=lf

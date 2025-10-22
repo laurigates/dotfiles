@@ -91,7 +91,6 @@ No additional setup is required - the files are stored directly in the plugin st
 - `/github/process-issues` - Batch process GitHub issues
 - `/github/process-single-issue` - Process single issue
 - `/github/fix-pr` - Fix pull request issues
-- `/github/quickpr` - Quick PR creation
 
 #### Code Quality
 - `/codereview` - Comprehensive code review

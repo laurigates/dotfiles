@@ -31,14 +31,14 @@ Comprehensive development toolkit with 30+ specialized agents and 20+ commands.
 
 ### Local Development
 
-For local development or if you've cloned this repository:
+For local development or if you've cloned this repository, the plugin files are stored directly in the plugin structure. No additional setup is required - simply use the plugin via the marketplace system:
 
 ```bash
-# Navigate to the plugin directory
-cd plugins/dotfiles-toolkit
+# Add your local repo as a marketplace
+/plugin marketplace add file:///path/to/your/dotfiles
 
-# Run the setup script to create symlinks
-./setup-symlinks.sh
+# Install the plugin
+/plugin install dotfiles-toolkit
 ```
 
 ## Plugin Structure
@@ -51,7 +51,6 @@ plugin-name/
 │   └── plugin.json          # Plugin metadata
 ├── agents/                   # Specialized agents (optional)
 ├── commands/                 # Slash commands (optional)
-├── setup-symlinks.sh         # Setup script for local dev
 └── README.md                 # Plugin documentation
 ```
 

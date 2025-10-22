@@ -73,6 +73,44 @@ The plugin structure is designed to work seamlessly with this chezmoi-managed do
 - **Advanced features**: Plugin contains agents and commands
 - **Clear separation**: Base configuration vs. advanced toolkit features
 
+### Chezmoi Workflow
+
+When using this repository with chezmoi:
+
+1. **Initial Setup**: Apply your dotfiles to deploy the base configuration
+   ```bash
+   chezmoi apply
+   ```
+   This will deploy:
+   - `~/.claude/` (from `dot_claude/`) - Base settings, hooks, workflows
+   - `~/plugins/dotfiles-toolkit/` (from `plugins/dotfiles-toolkit/`) - Plugin files
+
+2. **Install the Plugin**: After applying dotfiles, install the plugin via the marketplace
+   ```bash
+   /plugin marketplace add laurigates/dotfiles
+   /plugin install dotfiles-toolkit
+   ```
+
+3. **Making Changes**:
+   - **Base config changes**: Edit files in `dot_claude/`, then run `chezmoi apply`
+   - **Plugin changes**: Edit files in `plugins/dotfiles-toolkit/`, then run `chezmoi apply`
+   - **View changes before applying**: Use `chezmoi diff` to preview changes
+   - **Dry run**: Use `chezmoi apply --dry-run` to see what would be applied
+
+4. **Plugin Updates**: When you update the plugin files in this repository
+   ```bash
+   # Apply chezmoi changes to update plugin files on disk
+   chezmoi apply
+
+   # Claude Code will automatically detect plugin changes
+   # Or manually reload with: /plugin update
+   ```
+
+**Note**: The plugin files are stored in your dotfiles repository and deployed via chezmoi. This means:
+- Plugin is version-controlled with your dotfiles
+- Changes are tracked via git and managed via chezmoi
+- No need for separate plugin update mechanisms - just `chezmoi apply`
+
 ## For Contributors
 
 If you're contributing to this dotfiles repository:
@@ -81,6 +119,47 @@ If you're contributing to this dotfiles repository:
 2. **Plugin features**: Edit agents and commands in `plugins/dotfiles-toolkit/`
 3. **Version bumps**: Update `plugins/dotfiles-toolkit/.claude-plugin/plugin.json` when making significant changes
 4. **Marketplace**: Update `.claude-plugin/marketplace.json` when adding new plugins
+5. **Document changes**: Update `plugins/dotfiles-toolkit/CHANGELOG.md` with your changes
+
+### Plugin Validation
+
+Before committing plugin changes, validate the plugin structure:
+
+1. **JSON Validation**: Ensure JSON files are well-formed
+   ```bash
+   # Validate plugin.json
+   jq empty plugins/dotfiles-toolkit/.claude-plugin/plugin.json
+
+   # Validate marketplace.json
+   jq empty .claude-plugin/marketplace.json
+   ```
+
+2. **File Existence**: Verify all documented agents and commands exist
+   ```bash
+   # Count agents
+   ls plugins/dotfiles-toolkit/agents/*.md | wc -l
+
+   # Count commands
+   find plugins/dotfiles-toolkit/commands -name "*.md" | wc -l
+   ```
+
+3. **Documentation Sync**: Ensure README lists match actual files
+   - Check that all commands listed in `plugins/dotfiles-toolkit/README.md` exist
+   - Verify agent descriptions are accurate
+   - Update command/agent counts if changed
+
+4. **Chezmoi Compatibility**: Test that files deploy correctly
+   ```bash
+   chezmoi diff
+   chezmoi apply --dry-run
+   ```
+
+5. **Line Endings**: Verify consistent line endings (handled by `.gitattributes`)
+   ```bash
+   git ls-files --eol
+   ```
+
+**Note**: Automated validation will be added in a future update. For now, manual validation is recommended before merging changes.
 
 ### File Organization
 
