@@ -17,6 +17,8 @@ vim.lsp.config("*", {
     if client.server_capabilities.documentSymbolProvider then
       require("nvim-navic").attach(client, bufnr)
     end
+    -- Set up fastaction keymap for this buffer
+    vim.keymap.set({ "n", "x" }, "<leader>a", '<cmd>lua require("fastaction").code_action()<CR>', { buffer = bufnr })
   end,
 })
 
@@ -32,10 +34,12 @@ vim.lsp.config("terraformls", {
   },
 })
 
+-- Configure jsonls with schemastore if available
+local schemastore_ok, schemastore = pcall(require, "schemastore")
 vim.lsp.config("jsonls", {
   settings = {
     json = {
-      schemas = require("schemastore").json.schemas(),
+      schemas = schemastore_ok and schemastore.json.schemas() or {},
       validate = { enable = true },
     },
   },
@@ -45,5 +49,3 @@ vim.lsp.config("jsonls", {
 -- Note: Servers must be installed via Mason (:Mason) before they can be enabled
 vim.lsp.enable("terraformls")
 vim.lsp.enable("jsonls")
-
-vim.keymap.set({ "n", "x" }, "<leader>a", '<cmd>lua require("fastaction").code_action()<CR>', { buffer = bufnr })
