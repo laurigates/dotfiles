@@ -13,8 +13,9 @@ return {
     opts = {
       keymap = {
         preset = 'default',
-        ['<Tab>'] = { 'select_next', 'fallback' },
-        ['<S-Tab>'] = { 'select_prev', 'fallback' },
+        -- Tab/S-Tab: Navigate snippets first, then completion menu, then fallback to tabout/indent
+        ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
+        ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
       },
       completion = {
         menu = {
