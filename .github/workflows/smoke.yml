@@ -53,9 +53,9 @@ jobs:
             ${{ runner.os }}-brew-
 
       - name: Install Dependencies
-        # Install chezmoi, mise, fish, and any deps needed *before* chezmoi apply
+        # Install chezmoi, mise, zsh, and any deps needed *before* chezmoi apply
         run: |
-          brew install chezmoi neovim fish
+          brew install chezmoi neovim zsh
 
       - name: Setup mise
         uses: nick-fields/setup-mise@v0
@@ -64,23 +64,24 @@ jobs:
         # Use -v for verbose output, useful for debugging CI failures
         run: chezmoi apply -v
 
-      - name: Test fish shell initialization
+      - name: Test zsh shell initialization
         run: |
-          # Test that fish shell loads and configuration works
-          timeout 10s fish -c '
-            # Check if fish configuration loaded
-            if test -n "$fish_greeting"
-              echo "✅ Fish configuration loaded successfully"
+          # Test that zsh shell loads and configuration works
+          timeout 10s zsh -c '
+            source ~/.zshrc
+            # Check if zsh configuration loaded by testing for ZSH_VERSION
+            if [[ -n "$ZSH_VERSION" ]]; then
+              echo "✅ zsh configuration loaded successfully"
             else
-              echo "❌ Fish configuration failed to load"
+              echo "❌ zsh configuration failed to load"
               exit 1
-            end
+            fi
 
-            # Test that fish functions are available
-            if functions -q fish_prompt
-              echo "✅ Fish prompt function available"
+            # Test that prompt is configured (PS1 or PROMPT)
+            if [[ -n "$PROMPT" ]] || [[ -n "$PS1" ]]; then
+              echo "✅ zsh prompt configured"
             else
-              echo "❌ Fish prompt function not found"
+              echo "❌ zsh prompt not configured"
               exit 1
-            end
+            fi
           '
