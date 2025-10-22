@@ -1,6 +1,6 @@
 # Dotfiles Toolkit Plugin
 
-Comprehensive development toolkit with 30+ specialized agents and 20+ commands for dotfiles management, development workflows, and cross-platform configuration.
+Comprehensive development toolkit with 14 specialized agents and 20+ commands for code quality, infrastructure operations, and development workflows.
 
 ## Installation
 
@@ -28,53 +28,33 @@ No additional setup is required - the files are stored directly in the plugin st
 
 ## What's Included
 
-### Specialized Agents (30+)
+### Specialized Agents (14)
 
-#### Dotfiles & Configuration
-- **chezmoi-expert** - Comprehensive chezmoi guidance and best practices
-- **neovim-configuration** - Neovim setup and plugin configuration
+These agents handle complex multi-step workflows that require explicit delegation:
 
-#### Development Workflows
-- **code-review** - Thorough code review with best practices
-- **code-analysis** - Deep code analysis and insights
-- **code-refactoring** - Safe refactoring strategies
-- **test-architecture** - Test design and TDD guidance
-
-#### Language-Specific
-- **python-development** - Python development best practices
-- **nodejs-development** - Node.js and JavaScript development
-- **rust-development** - Rust development and patterns
-- **cpp-development** - C++ development and modern practices
-- **shell-expert** - Shell scripting expertise
+#### Code Quality & Analysis
+- **code-review** - Comprehensive code review with quality, security, and performance analysis
+- **code-analysis** - Deep code analysis and architectural insights
+- **code-refactoring** - Safe refactoring strategies with testing
+- **commit-review** - Commit message quality review
+- **security-audit** - Security analysis and vulnerability assessment
 
 #### Infrastructure & Operations
-- **container-development** - Docker and containerization
-- **kubernetes-operations** - K8s operations and management
-- **infrastructure-terraform** - Terraform and IaC
-- **cicd-pipelines** - CI/CD pipeline design
+- **cicd-pipelines** - CI/CD pipeline design and configuration
+- **git-operations** - Complex Git workflows and repository management
+- **system-debugging** - System-level debugging and troubleshooting
 
-#### Git & Documentation
-- **git-operations** - Git workflows and operations
-- **commit-review** - Commit message quality review
-- **documentation** - Technical documentation writing
-- **requirements-documentation** - Requirements and specifications
+#### Documentation & Architecture
+- **documentation** - Technical documentation generation
+- **requirements-documentation** - Requirements and specifications writing
+- **research-documentation** - Research documentation and knowledge capture
+- **service-design** - Service architecture design and patterns
+- **test-architecture** - Test structure design and TDD guidance
 
-#### System & Architecture
-- **system-debugging** - System-level debugging
-- **service-design** - Service architecture design
-- **api-integration** - API design and integration
-- **memory-management** - Memory optimization
-- **security-audit** - Security analysis and hardening
+#### Integration & Development
+- **api-integration** - API design, integration, and best practices
 
-#### Utilities
-- **json-processing** - JSON data manipulation
-- **task-logging** - Task tracking and logging
-- **plan-critique** - Plan review and improvement
-- **template-generation** - Template creation
-
-#### Claude Code Tools
-- **claude-code-command-editor** - Edit slash commands
-- **claude-code-subagent-editor** - Edit subagent definitions
+**Note:** Domain expertise (language-specific development, tooling) has been moved to Skills (`.claude/skills/`) for automatic discovery. Skills include: Shell Expert, Neovim Configuration, Python, Rust, Node.js, C++, Container Development, Kubernetes, Terraform, and Embedded Systems.
 
 ### Commands (20+)
 
