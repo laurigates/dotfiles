@@ -35,8 +35,7 @@ return {
       -- Setup that works well with 'mini.completion' and 'mini.pairs':
       local map_multistep = require("mini.keymap").map_multistep
 
-      map_multistep("i", "<Tab>", { "pmenu_next" })
-      map_multistep("i", "<S-Tab>", { "pmenu_prev" })
+      -- Tab/S-Tab are handled by blink.cmp for completion navigation
       map_multistep("i", "<CR>", { "pmenu_accept", "minipairs_cr" })
       map_multistep("i", "<BS>", { "minipairs_bs" })
 
