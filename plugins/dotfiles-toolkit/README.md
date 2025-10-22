@@ -20,16 +20,11 @@ Then install the plugin:
 
 ### Option 2: Local Development
 
-If you're working on this dotfiles repository locally:
+If you're working on this dotfiles repository locally, the plugin contains all agents and commands directly in:
+- `plugins/dotfiles-toolkit/agents/` - All specialized agents
+- `plugins/dotfiles-toolkit/commands/` - All slash commands
 
-1. Run the setup script to create symlinks:
-   ```bash
-   ./plugins/dotfiles-toolkit/setup-symlinks.sh
-   ```
-
-2. The plugin structure uses symlinks to the main `dot_claude/` directories:
-   - `agents/` → `../../dot_claude/agents/`
-   - `commands/` → `../../dot_claude/commands/`
+No additional setup is required - the files are stored directly in the plugin structure.
 
 ## What's Included
 

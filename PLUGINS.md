@@ -69,49 +69,35 @@ The `dotfiles-toolkit` plugin provides:
 The plugin structure is designed to work seamlessly with this chezmoi-managed dotfiles repository:
 
 - **Plugin source**: `plugins/dotfiles-toolkit/` (in this repo)
-- **Agents/Commands**: Symlinked to `dot_claude/` directories
-- **No duplication**: Single source of truth for all configurations
-- **Easy updates**: Edit in `dot_claude/`, changes reflect in plugin
+- **Base config**: `dot_claude/` contains core settings, hooks, and workflows
+- **Advanced features**: Plugin contains agents and commands
+- **Clear separation**: Base configuration vs. advanced toolkit features
 
 ## For Contributors
 
 If you're contributing to this dotfiles repository:
 
-1. **Edit files** in `dot_claude/agents/` and `dot_claude/commands/` as usual
-2. **Symlinks** in `plugins/dotfiles-toolkit/` automatically reflect changes
+1. **Base configuration**: Edit files in `dot_claude/` for core settings, hooks, and workflows
+2. **Plugin features**: Edit agents and commands in `plugins/dotfiles-toolkit/`
 3. **Version bumps**: Update `plugins/dotfiles-toolkit/.claude-plugin/plugin.json` when making significant changes
 4. **Marketplace**: Update `.claude-plugin/marketplace.json` when adding new plugins
 
-### Setting Up CI for Plugin Symlinks
+### File Organization
 
-To ensure the plugin symlinks work in CI, add this step to your GitHub Actions workflows after checkout:
-
-```yaml
-- name: Setup Claude Code Plugin Symlinks
-  run: |
-    cd plugins/dotfiles-toolkit
-    ln -sf ../../dot_claude/agents agents
-    ln -sf ../../dot_claude/commands commands
-    echo "✓ Plugin symlinks created"
-```
-
-**Note**: Add this to `.github/workflows/smoke.yml` in both the `lint` and `build` jobs after the checkout step.
+- `dot_claude/` - Base Claude Code configuration (settings, hooks, workflows)
+- `plugins/dotfiles-toolkit/agents/` - Specialized agents
+- `plugins/dotfiles-toolkit/commands/` - Slash commands
 
 ## Local Development
 
 If you've cloned this repository and want to use the plugin locally:
 
 ```bash
-# Create the symlinks
-cd plugins/dotfiles-toolkit
-./setup-symlinks.sh
-```
-
-Then point Claude Code to your local repository:
-
-```bash
 # Add your local repo as a marketplace
 /plugin marketplace add file:///path/to/your/dotfiles
+
+# Install the plugin
+/plugin install dotfiles-toolkit
 ```
 
 ## More Information
