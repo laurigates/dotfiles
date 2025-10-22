@@ -48,6 +48,19 @@ Automatically provides:
 
 **When Claude uses this:** When working with shell scripts, command-line tools, automation tasks, or system administration.
 
+### GitHub Actions Expert
+**Location:** `github-actions-expert/`
+**Purpose:** Claude Code GitHub Actions workflow design and automation
+
+Automatically assists with:
+- GitHub Actions workflow design for Claude Code integration
+- MCP server configuration and permissions
+- Tool access control and security boundaries
+- Authentication methods (Anthropic API, AWS Bedrock, Vertex AI)
+- Automation patterns for PR reviews, issue triage, and CI auto-fix
+
+**When Claude uses this:** When creating or modifying GitHub Actions workflows, configuring CI/CD pipelines, or setting up Claude Code automation.
+
 ### Neovim Configuration
 **Location:** `neovim-configuration/`
 **Purpose:** Modern Neovim setup with Lua and LSP

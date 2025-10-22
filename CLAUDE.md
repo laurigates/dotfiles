@@ -16,6 +16,7 @@ This repository includes **Skills** - automatically discovered capabilities that
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
 - **Dotfiles Management** - Tool integration (mise, Fish, Neovim, Homebrew) and environment setup
 - **Shell Expert** - Shell scripting, CLI tools, automation, and cross-platform scripting
+- **GitHub Actions Expert** - Claude Code GitHub Actions workflows, MCP servers, and CI/CD automation
 - **Neovim Configuration** - Lua configuration, plugin management, LSP setup, and AI integration
 - **Python Development** - Modern Python with uv, ruff, pytest, and type hints
 - **Rust Development** - Memory-safe systems programming with cargo and modern tooling
