@@ -11,13 +11,12 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Target locations**: `~/.*` (never edit directly)
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
-### Important: Use the Chezmoi Expert Agent
-For detailed chezmoi guidance, templates, workflows, and troubleshooting, use the **chezmoi-expert** agent (available via the dotfiles-toolkit plugin). This agent provides comprehensive documentation for:
-- File management and naming conventions
-- Template syntax and cross-platform configurations
-- Managing orphaned files and `.chezmoiremove`
-- Advanced workflows and best practices
-- Troubleshooting common issues
+### Claude Code Skills
+This repository includes **Skills** - automatically discovered capabilities that Claude uses based on context:
+- **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
+- **Dotfiles Management** - Tool integration (mise, Fish, Neovim, Homebrew) and environment setup
+
+Skills are located in `.claude/skills/` and are automatically loaded by Claude when relevant. See `.claude/skills/README.md` for details.
 
 ## Linting Commands
 
@@ -48,7 +47,7 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 
 - Templates for platform-specific configurations
 - CPU and architecture detection
-- See the **chezmoi-expert** agent for template syntax and examples
+- The **Chezmoi Expert** and **Dotfiles Management** Skills provide automatic guidance for template syntax and cross-platform patterns
 
 ## Tools
 
