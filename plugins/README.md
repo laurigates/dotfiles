@@ -15,18 +15,20 @@ Plugins are **installable packages** that can contain multiple agents, commands,
 
 ### Dotfiles Toolkit
 **Location:** `dotfiles-toolkit/`
-**Purpose:** Comprehensive development toolkit with 30+ specialized agents and 20+ commands
+**Purpose:** Comprehensive development toolkit with 14 specialized agents and 20+ commands
 
-**Categories:** Development, Dotfiles Management, Infrastructure
+**Categories:** Code Quality, Infrastructure Operations, Development Workflows
 
 **Key Features:**
-- **Dotfiles Management:** Chezmoi expert guidance and configuration management
-- **Multi-Language Development:** Python, Rust, C++, Node.js, Shell scripting
-- **Infrastructure & Operations:** Docker, Kubernetes, Terraform, CI/CD pipelines
-- **Code Quality:** Review, refactoring, testing, and documentation tools
-- **Git Workflows:** Smart commits, repository maintenance, PR management
+- **Code Quality & Analysis:** Comprehensive code review, refactoring, and security audits
+- **Infrastructure & Operations:** CI/CD pipelines, Git workflows, system debugging
+- **Documentation & Architecture:** Technical docs, requirements, service design
+- **Development Workflows:** Test architecture, API integration, commit review
+- **20+ Commands:** Ready-to-use workflows for common tasks
 
-**When to use this plugin:** Development workflows, dotfiles management, infrastructure operations, code quality improvements, or cross-platform configuration.
+**When to use this plugin:** Code quality improvements, infrastructure operations, complex Git workflows, or development automation tasks.
+
+**Note:** Domain expertise (language-specific development, tooling) is now provided via Skills in `.claude/skills/` for automatic discovery.
 
 ## Installation
 

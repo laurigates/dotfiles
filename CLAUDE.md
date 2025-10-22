@@ -15,11 +15,21 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 This repository includes **Skills** - automatically discovered capabilities that Claude uses based on context:
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
 - **Dotfiles Management** - Tool integration (mise, Fish, Neovim, Homebrew) and environment setup
+- **Shell Expert** - Shell scripting, CLI tools, automation, and cross-platform scripting
+- **Neovim Configuration** - Lua configuration, plugin management, LSP setup, and AI integration
+- **Python Development** - Modern Python with uv, ruff, pytest, and type hints
+- **Rust Development** - Memory-safe systems programming with cargo and modern tooling
+- **Node.js Development** - JavaScript/TypeScript with Bun, Vite, Vue 3, and Pinia
+- **C++ Development** - Modern C++20/23 with CMake, Conan, and Clang tools
+- **Container Development** - Docker, multi-stage builds, and 12-factor apps
+- **Kubernetes Operations** - K8s cluster management and debugging
+- **Infrastructure Terraform** - Infrastructure as Code with HCL and state management
+- **Embedded Systems** - ESP32/ESP-IDF, STM32, FreeRTOS, and real-time systems
 
 Skills are located in `.claude/skills/` and are automatically loaded by Claude when relevant. See `.claude/skills/README.md` for details.
 
 This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
-- **Dotfiles Toolkit** - 30+ specialized agents and 20+ commands for development workflows, infrastructure operations, and code quality
+- **Dotfiles Toolkit** - 14 specialized agents and 20+ commands for development workflows, code quality, and infrastructure operations
 
 Plugins are located in `plugins/` and can be installed via the marketplace system. See `plugins/README.md` for details.
 
