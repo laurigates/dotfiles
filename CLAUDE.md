@@ -11,12 +11,17 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Target locations**: `~/.*` (never edit directly)
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
-### Claude Code Skills
+### Claude Code Skills & Plugins
 This repository includes **Skills** - automatically discovered capabilities that Claude uses based on context:
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
 - **Dotfiles Management** - Tool integration (mise, Fish, Neovim, Homebrew) and environment setup
 
 Skills are located in `.claude/skills/` and are automatically loaded by Claude when relevant. See `.claude/skills/README.md` for details.
+
+This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
+- **Dotfiles Toolkit** - 30+ specialized agents and 20+ commands for development workflows, infrastructure operations, and code quality
+
+Plugins are located in `plugins/` and can be installed via the marketplace system. See `plugins/README.md` for details.
 
 ## Linting Commands
 
