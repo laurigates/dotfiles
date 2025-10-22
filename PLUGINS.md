@@ -159,7 +159,12 @@ Before committing plugin changes, validate the plugin structure:
    git ls-files --eol
    ```
 
-**Note**: Automated validation will be added in a future update. For now, manual validation is recommended before merging changes.
+**Automated Validation**: Run the validation script to check all aspects:
+```bash
+./plugins/dotfiles-toolkit/validate-plugin.sh
+```
+
+This script validates JSON files, directory structure, file counts, and version consistency.
 
 ### File Organization
 

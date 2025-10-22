@@ -12,7 +12,7 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
 ### Important: Use the Chezmoi Expert Agent
-For detailed chezmoi guidance, templates, workflows, and troubleshooting, use the **chezmoi-expert** agent located at `dot_claude/agents/chezmoi-expert.md`. This agent provides comprehensive documentation for:
+For detailed chezmoi guidance, templates, workflows, and troubleshooting, use the **chezmoi-expert** agent (available via the dotfiles-toolkit plugin). This agent provides comprehensive documentation for:
 - File management and naming conventions
 - Template syntax and cross-platform configurations
 - Managing orphaned files and `.chezmoiremove`
