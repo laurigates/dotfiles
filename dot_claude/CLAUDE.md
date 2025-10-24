@@ -34,3 +34,8 @@ You are responsible for the high-level design principles and operational mandate
   - Implement
   - Run tests
 - Branch, commit, push, pull request
+  - Always pull before creating a branch
+  - Always create a branch before staging files
+  - Always run `detect-secrets scan --baseline .secrets.baseline` before pre-commit checks
+  - Always run pre-commit checks before staging files
+  - Always stage files explicitly
