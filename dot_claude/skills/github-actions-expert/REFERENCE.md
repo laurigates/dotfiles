@@ -359,7 +359,7 @@ jobs:
 # WRONG - Never do this!
 - uses: anthropics/claude-code-action@v1
   with:
-    anthropic_api_key: "sk-ant-api03-..."
+    anthropic_api_key: "sk-ant-api03-..."  # pragma: allowlist secret
 
 # CORRECT - Always use secrets
 - uses: anthropics/claude-code-action@v1

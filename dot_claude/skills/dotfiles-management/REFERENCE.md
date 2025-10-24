@@ -252,8 +252,8 @@ pytest
 External file approach:
 ```bash
 # ~/.api_tokens (not in repo)
-export GITHUB_TOKEN="ghp_xxxxx"
-export OPENAI_API_KEY="sk-xxxxx"
+export GITHUB_TOKEN="ghp_xxxxx"  # pragma: allowlist secret
+export OPENAI_API_KEY="sk-xxxxx"  # pragma: allowlist secret
 ```
 
 Referenced in templates:
