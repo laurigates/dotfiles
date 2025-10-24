@@ -12,10 +12,10 @@ return {
     ---@type blink.cmp.Config
     opts = {
       keymap = {
-        preset = 'default',
+        preset = "default",
         -- Tab/S-Tab: Navigate snippets first, then completion menu, then fallback to tabout/indent
-        ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
-        ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+        ["<Tab>"] = { "snippet_forward", "select_next", "fallback" },
+        ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
       },
       completion = {
         menu = {
