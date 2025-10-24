@@ -1,0 +1,38 @@
+#!/bin/sh
+# Cleanup MCP servers - removes and re-adds all enabled servers
+#
+# WARNING: This script will disrupt active Claude sessions!
+# Only run this when:
+# - You need to clean up disabled servers
+# - You need to fix broken MCP configurations
+# - No Claude Code sessions are running
+#
+# Configuration is read from .chezmoidata.toml [mcp_servers] section.
+
+set -e
+
+echo "⚠️  WARNING: This will disconnect all active MCP servers!"
+echo "Make sure no Claude Code sessions are running."
+echo ""
+printf "Continue? (y/N) "
+read -r reply
+if [ "$reply" != "y" ] && [ "$reply" != "Y" ]; then
+    echo "Cleanup cancelled."
+    exit 0
+fi
+
+echo "🧹 Cleaning up MCP servers..."
+
+# Remove all enabled MCP servers
+{{- range $name, $config := .mcp_servers }}
+{{- if $config.enabled }}
+echo "Removing {{ $name }}..."
+claude mcp remove --scope={{ $config.scope }} {{ $name }} || true
+{{- end }}
+{{- end }}
+
+echo ""
+echo "✅ Cleanup complete. Run update-ai-tools.sh to re-add servers."
+echo ""
+echo "To re-add servers now:"
+echo "  ./update-ai-tools.sh"

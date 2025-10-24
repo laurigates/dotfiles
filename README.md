@@ -68,7 +68,17 @@ Example configuration:
   transport = "stdio"  # optional
 ```
 
-Run `./update-ai-tools.sh` or `chezmoi apply update-ai-tools.sh` to apply MCP server changes.
+**Adding/updating servers** (safe during active Claude sessions):
+```bash
+./update-ai-tools.sh  # or: chezmoi apply update-ai-tools.sh
+```
+
+**Cleaning up disabled servers** (WARNING: disrupts active Claude sessions):
+```bash
+./cleanup-mcp-servers.sh  # Run only when no Claude sessions are active
+```
+
+> **Note**: `update-ai-tools.sh` only adds new servers without removing existing ones, making it safe to run during active Claude sessions. Use `cleanup-mcp-servers.sh` only when you need to remove disabled servers and no Claude Code sessions are running.
 
 ## Further Documentation
 

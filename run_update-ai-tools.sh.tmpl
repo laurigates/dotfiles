@@ -2,6 +2,9 @@
 # Update all AI tools
 #
 # This script dynamically configures MCP servers based on .chezmoidata.toml
+# It only adds new/missing servers to avoid disrupting active Claude sessions.
+#
+# For cleanup of disabled servers, use cleanup-mcp-servers.sh instead.
 #
 # Configuration options in .chezmoidata.toml [mcp_servers] section:
 # - enabled: boolean - whether to include this server (true/false)
@@ -21,19 +24,20 @@
 bun install -g @anthropic-ai/claude-code
 bun install -g @google/gemini-cli
 
-# Remove and re-add enabled MCP servers from .chezmoidata.toml configuration
+# Add enabled MCP servers from .chezmoidata.toml configuration
+# Note: This only adds new servers, existing ones are left unchanged
+# to avoid disrupting active Claude sessions
 {{- range $name, $config := .mcp_servers }}
 {{- if $config.enabled }}
-# Remove {{ $name }} to ensure clean update
-claude mcp remove --scope={{ $config.scope }} {{ $name }} || true
+# Add {{ $name }} if not already configured
 {{- if hasKey $config "transport" }}
 {{- if eq $config.transport "http" }}
-claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} {{ $config.command }}
+claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} {{ $config.command }} 2>/dev/null || echo "{{ $name }} already configured (skipped)"
 {{- else }}
-claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }}
+claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }} 2>/dev/null || echo "{{ $name }} already configured (skipped)"
 {{- end }}
 {{- else }}
-claude mcp add --scope={{ $config.scope }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }}
+claude mcp add --scope={{ $config.scope }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }} 2>/dev/null || echo "{{ $name }} already configured (skipped)"
 {{- end }}
 {{- end }}
 {{- end }}
