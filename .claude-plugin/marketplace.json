@@ -1,11 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/claude-plugin-marketplace.json",
-  "name": "Lauri's Dotfiles Toolkit",
+  "owner": "laurigates",
+  "name": "laurigates-plugins",
   "version": "1.0.0",
   "description": "Comprehensive development toolkit with specialized agents for dotfiles management, development workflows, and cross-platform configuration",
   "plugins": [
     {
-      "name": "dotfiles-toolkit",
+      "name": "claude-toolkit",
       "description": "Complete toolkit with 30+ specialized agents for chezmoi, git operations, code review, documentation, container development, infrastructure, and more",
       "version": "1.0.0",
       "author": {
