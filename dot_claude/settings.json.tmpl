@@ -125,12 +125,14 @@
   "extraKnownMarketplaces": {
     "dotfiles": {
       "source": {
-        "source": "github",
-        "repo": "laurigates/dotfiles"
+        "source": "directory",
+        "path": "{{ .chezmoi.sourceDir }}/plugins"
       }
     }
   },
-  "enabledPlugins": [
-    "dotfiles-toolkit"
-  ]
+  "enabledPlugins": {
+    "dotfiles-core@dotfiles": true,
+    "dotfiles-experimental@dotfiles": true,
+    "dotfiles-fvh@dotfiles": true
+  }
 }
