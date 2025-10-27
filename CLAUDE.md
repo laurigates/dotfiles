@@ -12,16 +12,28 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
 ### Claude Code Skills & Plugins
-This repository includes **Skills** - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (17 total) - automatically discovered capabilities that Claude uses based on context:
+
+**Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
-- **Dotfiles Management** - Tool integration (mise, Fish, Neovim, Homebrew) and environment setup
 - **Shell Expert** - Shell scripting, CLI tools, automation, and cross-platform scripting
-- **GitHub Actions Expert** - Claude Code GitHub Actions workflows, MCP servers, and CI/CD automation
+- **fd File Finding** - Fast file search with smart defaults and gitignore awareness
+- **rg Code Search** - Blazingly fast code search with ripgrep and regex patterns
+- **Git Workflow** - Preferred git patterns including branching, commits, and validation
+
+**GitHub Actions Integration:**
+- **Claude Code GitHub Workflows** - Workflow design, PR reviews, issue triage, and CI auto-fix
+- **GitHub Actions MCP Configuration** - MCP server setup, tool permissions, and multi-server coordination
+- **GitHub Actions Auth & Security** - Authentication methods, secrets management, and security best practices
+
+**Editor & Languages:**
 - **Neovim Configuration** - Lua configuration, plugin management, LSP setup, and AI integration
 - **Python Development** - Modern Python with uv, ruff, pytest, and type hints
 - **Rust Development** - Memory-safe systems programming with cargo and modern tooling
 - **Node.js Development** - JavaScript/TypeScript with Bun, Vite, Vue 3, and Pinia
 - **C++ Development** - Modern C++20/23 with CMake, Conan, and Clang tools
+
+**Infrastructure & DevOps:**
 - **Container Development** - Docker, multi-stage builds, and 12-factor apps
 - **Kubernetes Operations** - K8s cluster management and debugging
 - **Infrastructure Terraform** - Infrastructure as Code with HCL and state management
@@ -63,7 +75,7 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 
 - Templates for platform-specific configurations
 - CPU and architecture detection
-- The **Chezmoi Expert** and **Dotfiles Management** Skills provide automatic guidance for template syntax and cross-platform patterns
+- The **Chezmoi Expert** Skill provides automatic guidance for template syntax and cross-platform patterns
 
 ## Tools
 
