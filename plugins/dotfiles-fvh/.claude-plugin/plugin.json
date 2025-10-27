@@ -1,0 +1,9 @@
+{
+  "name": "dotfiles-fvh",
+  "version": "2.0.0",
+  "description": "FVH-specific workflows: Podio integration, work handoffs, and knowledge graph tools",
+  "author": {
+    "name": "Lauri Gates",
+    "email": "laurigates@users.noreply.github.com"
+  }
+}

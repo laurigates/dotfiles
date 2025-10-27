@@ -1,0 +1,24 @@
+{
+  "name": "dotfiles",
+  "owner": {
+    "name": "laurigates"
+  },
+  "description": "Local marketplace for dotfiles Claude Code plugins",
+  "plugins": [
+    {
+      "name": "dotfiles-core",
+      "source": "./dotfiles-core",
+      "description": "Core development toolkit: git workflows, code review, testing, documentation, and CI/CD essentials"
+    },
+    {
+      "name": "dotfiles-experimental",
+      "source": "./dotfiles-experimental",
+      "description": "Experimental features: devloop automation, zen MCP integrations, and modernization tools"
+    },
+    {
+      "name": "dotfiles-fvh",
+      "source": "./dotfiles-fvh",
+      "description": "FVH-specific workflows: Podio integration, work handoffs, and knowledge graph tools"
+    }
+  ]
+}

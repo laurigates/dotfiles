@@ -1,0 +1,9 @@
+{
+  "name": "dotfiles-experimental",
+  "version": "2.0.0",
+  "description": "Experimental features: devloop automation, zen MCP integrations, and modernization tools",
+  "author": {
+    "name": "Lauri Gates",
+    "email": "laurigates@users.noreply.github.com"
+  }
+}
