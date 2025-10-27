@@ -48,10 +48,10 @@
 {{-   $enable_obsidian = .claude_hooks.enable_obsidian_logging -}}
 {{- end -}}
 {{- if $enable_sketchybar }}
-{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
+{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.local/share/claude/plugins/dotfiles-ui-hooks/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
 {{- end }}
 {{- if $enable_obsidian }}
-{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.claude/hooks/obsidian-logger.sh" "timeout" 3000) -}}
+{{-   $hooks = append $hooks (dict "type" "command" "command" "~/.local/share/claude/plugins/dotfiles-ui-hooks/hooks/obsidian-logger.sh" "timeout" 3000) -}}
 {{- end }}
 {{- range $i, $hook := $hooks }}
 {{-   if $i }},{{ end }}
@@ -82,7 +82,7 @@
 {{- if or (not (hasKey . "claude_hooks")) (and (hasKey . "claude_hooks") .claude_hooks.enable_pre_commit_formatting) }}
           {
             "type": "command",
-            "command": "~/.claude/hooks/pre-commit-fix.sh",
+            "command": "~/.local/share/claude/plugins/dotfiles-ui-hooks/hooks/pre-commit-fix.sh",
             "timeout": 10000
           }
 {{- end }}
@@ -102,13 +102,13 @@
 {{-   $enable_obsidian = .claude_hooks.enable_obsidian_logging -}}
 {{- end -}}
 {{- if $enable_sketchybar }}
-{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.local/share/claude/plugins/dotfiles-ui-hooks/hooks/sketchybar-trigger.sh" "timeout" 3000) -}}
 {{- end }}
 {{- if $enable_voice }}
-{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/voice-notify.sh" "timeout" 5000) -}}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.local/share/claude/plugins/dotfiles-ui-hooks/hooks/voice-notify.sh" "timeout" 5000) -}}
 {{- end }}
 {{- if $enable_obsidian }}
-{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.claude/hooks/obsidian-log-complete.sh" "timeout" 5000) -}}
+{{-   $stopHooks = append $stopHooks (dict "type" "command" "command" "~/.local/share/claude/plugins/dotfiles-ui-hooks/hooks/obsidian-log-complete.sh" "timeout" 5000) -}}
 {{- end }}
 {{- range $i, $hook := $stopHooks }}
 {{-   if $i }},{{ end }}
@@ -120,7 +120,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
+    "command": "bash ~/.local/share/claude/plugins/dotfiles-ui-hooks/scripts/statusline-command.sh"
   },
   "extraKnownMarketplaces": {
     "dotfiles": {
@@ -132,6 +132,8 @@
   },
   "enabledPlugins": {
     "dotfiles-core@dotfiles": true,
+    "dotfiles-utils@dotfiles": true,
+    "dotfiles-ui-hooks@dotfiles": true,
     "dotfiles-experimental@dotfiles": true,
     "dotfiles-fvh@dotfiles": true
   }
