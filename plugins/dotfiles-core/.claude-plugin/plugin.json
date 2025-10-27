@@ -1,9 +1,30 @@
 {
   "name": "dotfiles-core",
-  "version": "2.0.0",
-  "description": "Core development toolkit: git workflows, code review, testing, documentation, and CI/CD essentials",
+  "version": "3.0.0",
+  "description": "Core development toolkit: 17 skills, 14 agents, and 20+ commands for comprehensive development workflows",
   "author": {
     "name": "Lauri Gates",
     "email": "laurigates@users.noreply.github.com"
+  },
+  "components": {
+    "skills": [
+      "chezmoi-expert",
+      "shell-expert",
+      "fd-file-finding",
+      "rg-code-search",
+      "git-workflow",
+      "claude-code-github-workflows",
+      "github-actions-mcp-config",
+      "github-actions-auth-security",
+      "neovim-configuration",
+      "python-development",
+      "rust-development",
+      "nodejs-development",
+      "cpp-development",
+      "container-development",
+      "kubernetes-operations",
+      "infrastructure-terraform",
+      "embedded-systems"
+    ]
   }
 }

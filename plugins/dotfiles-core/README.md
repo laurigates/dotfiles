@@ -1,6 +1,6 @@
-# Dotfiles Toolkit Plugin
+# Dotfiles Core Plugin
 
-Comprehensive development toolkit with 14 specialized agents and 20+ commands for code quality, infrastructure operations, and development workflows.
+Comprehensive development toolkit with 17 skills, 14 specialized agents, and 20+ commands for code quality, infrastructure operations, and development workflows.
 
 ## Installation
 
@@ -20,13 +20,47 @@ Then install the plugin:
 
 ### Option 2: Local Development
 
-If you're working on this dotfiles repository locally, the plugin contains all agents and commands directly in:
-- `plugins/dotfiles-toolkit/agents/` - All specialized agents
-- `plugins/dotfiles-toolkit/commands/` - All slash commands
+If you're working on this dotfiles repository locally, the plugin contains all components directly in:
+- `plugins/dotfiles-core/skills/` - All 17 skills
+- `plugins/dotfiles-core/agents/` - All 14 specialized agents
+- `plugins/dotfiles-core/commands/` - All 20+ slash commands
 
 No additional setup is required - the files are stored directly in the plugin structure.
 
 ## What's Included
+
+### Skills (17)
+
+Skills are automatically discovered by Claude based on context - no explicit invocation needed:
+
+#### Core Development Tools (5)
+- **chezmoi-expert** - Comprehensive chezmoi dotfiles management
+- **shell-expert** - Shell scripting, CLI tools, and automation
+- **fd-file-finding** - Fast file search with smart defaults
+- **rg-code-search** - Blazingly fast code search with ripgrep
+- **git-workflow** - Preferred git patterns and best practices
+
+#### GitHub Actions Integration (3)
+- **claude-code-github-workflows** - Workflow design and automation
+- **github-actions-mcp-config** - MCP server configuration
+- **github-actions-auth-security** - Authentication and security
+
+#### Editor Configuration (1)
+- **neovim-configuration** - Modern Neovim setup with Lua and LSP
+
+#### Language-Specific Development (4)
+- **python-development** - Modern Python with uv, ruff, pytest
+- **rust-development** - Memory-safe systems programming
+- **nodejs-development** - JavaScript/TypeScript with Bun, Vite, Vue 3
+- **cpp-development** - Modern C++20/23 with CMake, Conan
+
+#### Infrastructure and DevOps (3)
+- **container-development** - Docker and containerization
+- **kubernetes-operations** - K8s cluster management
+- **infrastructure-terraform** - Infrastructure as Code
+
+#### Specialized Domains (1)
+- **embedded-systems** - ESP32/ESP-IDF, STM32, FreeRTOS
 
 ### Specialized Agents (14)
 
@@ -53,8 +87,6 @@ These agents handle complex multi-step workflows that require explicit delegatio
 
 #### Integration & Development
 - **api-integration** - API design, integration, and best practices
-
-**Note:** Domain expertise (language-specific development, tooling) has been moved to Skills (`.claude/skills/`) for automatic discovery. Skills include: Shell Expert, Neovim Configuration, Python, Rust, Node.js, C++, Container Development, Kubernetes, Terraform, and Embedded Systems.
 
 ### Commands (20+)
 
