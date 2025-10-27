@@ -80,6 +80,61 @@ Example configuration:
 
 > **Note**: `update-ai-tools.sh` only adds new servers without removing existing ones, making it safe to run during active Claude sessions. Use `cleanup-mcp-servers.sh` only when you need to remove disabled servers and no Claude Code sessions are running.
 
+## Claude Code Configuration
+
+### Plugins
+
+The repository provides three Claude Code plugins via a local marketplace for instant development feedback:
+
+```bash
+# Plugins auto-load from: ~/.local/share/chezmoi/plugins/
+# Check available plugins:
+/plugin list
+```
+
+**Available plugins:**
+- **dotfiles-core**: Essential development workflows (git, code review, testing, docs, CI/CD)
+- **dotfiles-experimental**: Testing new automation features (devloop, modernization) - can disable if unstable
+- **dotfiles-fvh**: Work-specific Podio integrations - disable for personal projects
+
+**Enable/Disable in settings:**
+```json
+"enabledPlugins": {
+  "dotfiles-core@dotfiles": true,
+  "dotfiles-experimental@dotfiles": true,  // Set to false to disable
+  "dotfiles-fvh@dotfiles": false           // Disabled for personal use
+}
+```
+
+**Development workflow:**
+```bash
+# Edit plugin files directly in source directory
+vim ~/.local/share/chezmoi/plugins/dotfiles-core/commands/git/smartcommit.md
+
+# Changes are immediate - no reinstall needed!
+/git:smartcommit  # Uses updated version
+
+# Only apply when settings change
+chezmoi apply -v
+```
+
+Full guide: See [dot_claude/docs/plugins-setup.md](./dot_claude/docs/plugins-setup.md)
+
+### Skills
+
+14 auto-discovered skills provide contextual guidance:
+- **Development**: python-development, rust-development, nodejs-development, cpp-development, embedded-systems
+- **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform
+- **Tools**: chezmoi-expert, dotfiles-management, neovim-configuration, github-actions-expert, shell-expert
+
+Skills activate automatically based on your work context. See [dot_claude/skills/README.md](./dot_claude/skills/README.md)
+
+### Configuration Files
+
+- [dot_claude/docs/claude-config.md](./dot_claude/docs/claude-config.md) - Settings.json explained
+- [dot_claude/docs/hooks-guide.md](./dot_claude/docs/hooks-guide.md) - Hook system reference
+- [dot_claude/settings.json.tmpl](./dot_claude/settings.json.tmpl) - Main configuration template
+
 ## Further Documentation
 
 ## Components Overview
