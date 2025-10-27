@@ -1,0 +1,97 @@
+{
+  "enabled": true,
+  "default_voice": "Zephyr",
+  "default_style": "cheerful",
+  "volume": 0.7,
+  "use_cache": true,
+  "projects": {
+    "chezmoi": {
+      "voice": "Kore",
+      "style": "professional",
+      "description": "Firm, authoritative voice for system configurations"
+    },
+    "infrastructure.wiki": {
+      "voice": "Zephyr",
+      "style": "professional",
+      "description": "Clear, informative voice for documentation"
+    },
+    "claude_dnd_test": {
+      "voice": "Puck",
+      "style": "upbeat",
+      "description": "Energetic voice for creative gaming projects"
+    },
+    "personal": {
+      "voice": "Puck",
+      "style": "casual",
+      "description": "Friendly voice for personal projects"
+    }
+  },
+  "message_styles": {
+    "success": "cheerfully",
+    "error": "with concern",
+    "waiting": "patiently",
+    "tool_use": "professionally",
+    "neutral": "calmly",
+    "casual": "in a relaxed manner",
+    "professional": "in a business-like tone",
+    "upbeat": "with enthusiasm"
+  },
+  "event_context": {
+    "enabled": true,
+    "use_casual_summaries": true,
+    "summary_style": "casual",
+    "verbosity": "brief",
+    "include_details": {
+      "files_modified": true,
+      "commands_run": false,
+      "test_results": true,
+      "error_count": true
+    }
+  },
+  "summary_preferences": {
+    "max_length": 20,
+    "tone": "friendly",
+    "personalization": true,
+    "add_greeting": "sometimes",
+    "style_by_event": {
+      "success": "excited",
+      "error": "supportive",
+      "test_success": "celebratory",
+      "test_failure": "encouraging",
+      "git_operation": "matter-of-fact",
+      "bug_fix": "proud",
+      "creation": "enthusiastic"
+    }
+  },
+  "voice_descriptions": {
+    "Zephyr": "Bright, clear voice - good for informational content",
+    "Puck": "Upbeat, energetic voice - perfect for creative projects",
+    "Kore": "Firm, professional voice - ideal for serious work",
+    "Aoede": "Smooth, melodic voice - great for presentations",
+    "Charon": "Deep, authoritative voice - suitable for important announcements"
+  },
+  "notification_templates": {
+    "completion": [
+      "Task completed successfully!",
+      "All done with that request!",
+      "I've finished working on your request.",
+      "Ready for your next task!"
+    ],
+    "error": [
+      "I encountered an issue that needs your attention.",
+      "There's a problem I need help resolving.",
+      "Something went wrong - please check the output."
+    ],
+    "waiting": [
+      "I'm ready for your next request.",
+      "Waiting for your input.",
+      "Ready when you are!"
+    ]
+  },
+  "quiet_hours": {
+    "enabled": false,
+    "start_time": "22:00",
+    "end_time": "08:00",
+    "quiet_volume": 0.3
+  }
+}
