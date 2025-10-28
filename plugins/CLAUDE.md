@@ -58,9 +58,6 @@ Located at `.claude-plugin/plugin.json` in each plugin directory.
   "repository": "https://github.com/user/repo",
   "license": "MIT",
   "keywords": ["tag1", "tag2"],
-  "dependencies": {
-    "other-plugin@marketplace": "^1.0.0"
-  },
   "commands": "./custom-commands",
   "agents": "./custom-agents",
   "hooks": "./custom-hooks/hooks.json",
@@ -69,10 +66,9 @@ Located at `.claude-plugin/plugin.json` in each plugin directory.
 ```
 
 **Important Notes:**
-- ⚠️ **DO NOT** include a `components` field - it's not part of the schema and causes validation errors
+- ⚠️ **DO NOT** include `components` or `dependencies` fields - they're not part of the schema and cause validation errors
 - Skills are auto-discovered from `skills/` and don't require manifest declaration
 - Custom paths must be relative and start with `./`
-- Dependencies reference other plugins: `"plugin-name@marketplace-name": "version"`
 
 ### marketplace.json (Marketplace Registry)
 
@@ -135,7 +131,7 @@ Located at `.claude-plugin/marketplace.json` in the `plugins/` root.
 - Obsidian workspace logging
 - SketchyBar status updates
 
-**Dependencies:** Requires `dotfiles-utils@dotfiles ^1.0.0`
+**Note:** Uses shared utilities from dotfiles-utils plugin
 
 ### dotfiles-experimental
 **Version:** 2.0.0
@@ -214,11 +210,10 @@ Located at `.claude-plugin/marketplace.json` in the `plugins/` root.
 
 Before committing plugin changes:
 
-- [ ] `plugin.json` uses valid schema (no `components` field)
+- [ ] `plugin.json` uses valid schema (no `components` or `dependencies` fields)
 - [ ] Plugin is registered in `marketplace.json`
 - [ ] All three `name` fields match (directory, plugin.json, marketplace.json)
 - [ ] Version follows semantic versioning (X.Y.Z)
-- [ ] Dependencies are correctly declared with marketplace suffix
 - [ ] README.md documents all commands and agents
 - [ ] Skills have proper `SKILL.md` files
 - [ ] Commands use correct markdown format
@@ -274,17 +269,20 @@ grep -r "components" plugins/*/.claude-plugin/plugin.json  # Should be empty
 - Increment PATCH for bug fixes
 - Update plugin.json version on every change
 
-### Dependencies
+### Code Reuse
 - Minimize dependencies between plugins
-- Use `dotfiles-utils` for shared code
-- Declare dependencies explicitly in plugin.json
-- Test dependency resolution after changes
+- Use `dotfiles-utils` for shared code and utilities
+- Document relationships between plugins in README files
 
 ## Common Issues & Solutions
 
 ### "Unrecognized key 'components' in object"
 **Cause:** Invalid field in plugin.json
 **Solution:** Remove the `components` field - skills/agents/commands are auto-discovered
+
+### "Unrecognized key 'dependencies' in object"
+**Cause:** Invalid field in plugin.json
+**Solution:** Remove the `dependencies` field - plugin dependencies are not currently supported in the schema
 
 ### "Plugin not found in marketplace"
 **Cause:** Plugin not registered in marketplace.json

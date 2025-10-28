@@ -5,8 +5,5 @@
   "author": {
     "name": "Lauri Gates",
     "email": "laurigates@users.noreply.github.com"
-  },
-  "dependencies": {
-    "dotfiles-utils@dotfiles": "^1.0.0"
   }
 }
