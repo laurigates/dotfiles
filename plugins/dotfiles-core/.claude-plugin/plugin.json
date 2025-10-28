@@ -5,26 +5,5 @@
   "author": {
     "name": "Lauri Gates",
     "email": "laurigates@users.noreply.github.com"
-  },
-  "components": {
-    "skills": [
-      "chezmoi-expert",
-      "shell-expert",
-      "fd-file-finding",
-      "rg-code-search",
-      "git-workflow",
-      "claude-code-github-workflows",
-      "github-actions-mcp-config",
-      "github-actions-auth-security",
-      "neovim-configuration",
-      "python-development",
-      "rust-development",
-      "nodejs-development",
-      "cpp-development",
-      "container-development",
-      "kubernetes-operations",
-      "infrastructure-terraform",
-      "embedded-systems"
-    ]
   }
 }
