@@ -17,13 +17,38 @@
     "deny": [
       "Bash(git add .)",
       "Bash(git add -A)",
-      "Bash(git add --all)"
+      "Bash(git add --all)",
+      "Edit(**/CHANGELOG.md)",
+      "Write(**/CHANGELOG.md)",
+      "MultiEdit(**/CHANGELOG.md)"
     ],
     "ask": [],
     "additionalDirectories": [
       "~/Documents/FVH Vault",
       "~/repos/infrastructure.wiki"
     ]
+  },
+  "mcpServers": {
+    "context7": {
+      "command": "bunx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "github": {
+      "command": "go",
+      "args": [
+        "run",
+        "github.com/github/github-mcp-server/cmd/github-mcp-server@latest",
+        "stdio"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "playwright": {
+      "command": "bunx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
   },
 {{- $settingsFile := joinPath .chezmoi.homeDir ".claude" "settings.json" }}
 {{- if stat $settingsFile }}

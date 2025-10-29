@@ -12,14 +12,17 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
 ### Claude Code Skills & Plugins
-This repository includes **Skills** (17 total) - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (18 total) - automatically discovered capabilities that Claude uses based on context:
 
 **Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
 - **Shell Expert** - Shell scripting, CLI tools, automation, and cross-platform scripting
 - **fd File Finding** - Fast file search with smart defaults and gitignore awareness
 - **rg Code Search** - Blazingly fast code search with ripgrep and regex patterns
+
+**Version Control & Release:**
 - **Git Workflow** - Preferred git patterns including branching, commits, and validation
+- **Release-Please Protection** - Prevents manual edits to automated release files (CHANGELOG.md, version fields)
 
 **GitHub Actions Integration:**
 - **Claude Code GitHub Workflows** - Workflow design, PR reviews, issue triage, and CI auto-fix
@@ -39,7 +42,7 @@ This repository includes **Skills** (17 total) - automatically discovered capabi
 - **Infrastructure Terraform** - Infrastructure as Code with HCL and state management
 - **Embedded Systems** - ESP32/ESP-IDF, STM32, FreeRTOS, and real-time systems
 
-Skills are located in `.claude/skills/` and are automatically loaded by Claude when relevant. See `.claude/skills/README.md` for details.
+Skills are located in `dot_claude/skills/` (becomes `~/.claude/skills/` after chezmoi apply) and are automatically loaded by Claude when relevant.
 
 This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
 - **Dotfiles Toolkit** - 14 specialized agents and 20+ commands for development workflows, code quality, and infrastructure operations
@@ -116,3 +119,115 @@ Multi-platform testing (Ubuntu/macOS) with linting → build stages in `.github/
 - **detect-secrets** pre-commit hook prevents accidental secret commits
 - **TruffleHog** scans for leaked credentials in git history
 - Both tools run automatically on commit via pre-commit hooks
+
+## Release-Please Automation
+
+**CRITICAL RULE:** Never manually edit files managed by release-please automation.
+
+### Protected Files
+
+The following files are **automatically managed** by release-please and **must never be manually edited**:
+
+#### Hard Protection (Permission System Blocks)
+- `plugins/**/CHANGELOG.md` - Auto-generated from conventional commits
+- **Any** `CHANGELOG.md` file across all projects
+
+These files are **blocked** via Claude Code's permission system (`~/.claude/settings.json`). Attempts to edit them will fail with a clear explanation.
+
+#### Soft Protection (Skill Detection & Warning)
+- `plugins/**/.claude-plugin/plugin.json` - Version field only
+- `.claude-plugin/marketplace.json` - Version references
+- `package.json` - Version field in Node.js projects
+- `pyproject.toml` - Version field in Python projects
+- `Cargo.toml` - Version field in Rust projects
+
+The **release-please-protection skill** (`dot_claude/skills/release-please-protection/`) detects edits to version fields and provides warnings with proper workflow guidance.
+
+### Why This Matters
+
+Manual edits to these files cause:
+- 💥 **Merge conflicts** with automated release PRs
+- 🔢 **Version inconsistencies** across packages
+- 📝 **Duplicate or lost** CHANGELOG entries
+- 🚫 **Broken release workflows** requiring manual intervention
+
+### Proper Workflow
+
+Instead of manually editing version or changelog files:
+
+1. **Use conventional commit messages:**
+   ```bash
+   # For new features (minor version bump)
+   git commit -m "feat(auth): add OAuth2 support
+
+   Implements OAuth2 authentication with PKCE.
+   Includes refresh token rotation.
+
+   Refs: #42"
+
+   # For bug fixes (patch version bump)
+   git commit -m "fix(api): handle timeout edge case
+
+   Fixes race condition in token refresh.
+
+   Fixes: #123"
+
+   # For breaking changes (major version bump)
+   git commit -m "feat(api)!: redesign authentication
+
+   BREAKING CHANGE: Auth endpoint now requires OAuth2.
+   Migration guide: docs/migration/v2.md"
+   ```
+
+2. **Release-please automatically:**
+   - Analyzes conventional commits
+   - Determines semantic version bump
+   - Updates CHANGELOG.md with grouped entries
+   - Updates version fields in all manifests
+   - Creates a release PR for review
+
+3. **Review and merge the release PR:**
+   - Verify version bump is correct
+   - Check CHANGELOG entries are accurate
+   - Merge to trigger tagged release
+
+### Conventional Commit Types
+
+- `feat:` → Minor version bump (new features)
+- `fix:` → Patch version bump (bug fixes)
+- `feat!:` or `BREAKING CHANGE:` → Major version bump
+- `chore:`, `docs:`, `style:`, `refactor:` → No version bump
+
+### Emergency Override Procedure
+
+If you **absolutely must** manually edit protected files:
+
+```bash
+# 1. Temporarily disable protection
+vim ~/.claude/settings.json
+# Comment out CHANGELOG.md deny rules in permissions.deny
+
+# 2. Make your edits
+
+# 3. Re-enable protection
+# Uncomment the deny rules
+
+# 4. Sync with chezmoi if needed
+chezmoi apply
+```
+
+**Use this only for emergencies** - the automation exists to prevent errors.
+
+### Skill Integration
+
+The **release-please-protection skill** automatically:
+- Blocks CHANGELOG.md edits via permission system
+- Detects version field modifications before they happen
+- Suggests proper conventional commit messages
+- Provides workflow guidance and templates
+- Explains conflicts when automation fails
+
+See `dot_claude/skills/release-please-protection/` for full documentation:
+- `SKILL.md` - Skill behavior and response templates
+- `patterns.md` - Protected file patterns reference
+- `workflow.md` - Complete release-please workflow guide
