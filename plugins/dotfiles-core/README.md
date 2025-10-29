@@ -133,6 +133,19 @@ These agents handle complex multi-step workflows that require explicit delegatio
 - `/disseminate` - Share knowledge
 - `/google-chat-format` - Format for Google Chat
 
+## MCP Server Integration
+
+This plugin bundles the **zen-mcp-server** which provides backend capabilities for several agents:
+
+- **code-review** - Powered by zen's `codereview` tool
+- **system-debugging** - Powered by zen's `debug` tool
+- **commit-review** - Powered by zen's `precommit` tool
+- **security-audit** - Powered by zen's `secaudit` tool
+
+The MCP server is **automatically installed and configured** when you enable this plugin - no manual setup required!
+
+**Configuration Location:** `.mcp.json` in the plugin root
+
 ## Features
 
 - **Cross-Platform Support** - Works on macOS, Linux, and Windows
@@ -140,6 +153,7 @@ These agents handle complex multi-step workflows that require explicit delegatio
 - **Specialized Agents** - Task-specific agents for focused assistance
 - **Comprehensive Commands** - Ready-to-use slash commands for common tasks
 - **Best Practices** - Incorporates development best practices and patterns
+- **Bundled MCP Server** - zen-mcp-server included for enhanced functionality
 
 ## Usage
 

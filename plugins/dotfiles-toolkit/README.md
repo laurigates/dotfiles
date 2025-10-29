@@ -101,6 +101,21 @@ These agents handle complex multi-step workflows that require explicit delegatio
 - `/disseminate` - Share knowledge
 - `/google-chat-format` - Format for Google Chat
 
+## MCP Server Integration
+
+This plugin bundles the **vectorcode** MCP server for advanced code search and analysis capabilities.
+
+**Configuration:** See `.mcp.json` in the plugin root
+
+The MCP server is automatically configured when you enable this plugin. It provides:
+- Semantic code search across your codebase
+- Code structure analysis
+- Symbol and reference tracking
+- Intelligent code navigation
+
+**Configuration Location:** `.mcp.json` in the plugin root
+**Index Location:** `~/.vectorcode` (configurable via `VECTORCODE_INDEX_PATH`)
+
 ## Features
 
 - **Cross-Platform Support** - Works on macOS, Linux, and Windows
