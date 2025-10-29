@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vectorcode": {
+      "command": "uvx",
+      "args": ["vectorcode-mcp"],
+      "env": {
+        "VECTORCODE_INDEX_PATH": "${HOME}/.vectorcode"
+      }
+    }
+  }
+}
