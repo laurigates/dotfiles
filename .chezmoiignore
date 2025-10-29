@@ -16,3 +16,4 @@ lazy-lock.json
 CLAUDE.md
 /**/__pycache__/
 plugins/
+.mcp.json
