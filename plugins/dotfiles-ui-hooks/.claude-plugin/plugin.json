@@ -1,9 +1,0 @@
-{
-  "name": "dotfiles-ui-hooks",
-  "version": "1.0.0",
-  "description": "Voice notifications, Obsidian logging, SketchyBar integration, and status overlay for Claude Code",
-  "author": {
-    "name": "Lauri Gates",
-    "email": "laurigates@users.noreply.github.com"
-  }
-}

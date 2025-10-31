@@ -1,9 +1,0 @@
-{
-  "name": "dotfiles-utils",
-  "version": "1.0.0",
-  "description": "Shared utilities for Claude Code session management, parsing, and workflow automation",
-  "author": {
-    "name": "Lauri Gates",
-    "email": "laurigates@users.noreply.github.com"
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "name": "dotfiles-core",
-  "version": "3.0.0",
-  "description": "Core development toolkit: 17 skills, 14 agents, and 20+ commands for comprehensive development workflows",
-  "author": {
-    "name": "Lauri Gates",
-    "email": "laurigates@users.noreply.github.com"
-  }
-}

@@ -1,0 +1,17 @@
+# Runtime state - never commit
+history.jsonl
+debug/
+file-history/
+session-env/
+shell-snapshots/
+todos/
+projects/
+statsig/
+status/
+plugins/
+
+# Settings with runtime modifications
+settings.json
+
+# Keep only the template in git
+!settings.json.tmpl
