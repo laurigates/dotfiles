@@ -301,83 +301,11 @@
     command = "go"
     args = ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"]
 
-  [mcp_servers.lsp-typescript]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "typescript", "~/.local/share/nvim/mason/bin/typescript-language-server", "--stdio"]
-
-  [mcp_servers.lsp-clangd]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "clangd", "~/.local/share/nvim/mason/bin/clangd", "--stdio"]
-
-  [mcp_servers.lsp-basedpyright-langserver]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "basedpyright-langserver", "~/.local/share/nvim/mason/bin/basedpyright-langserver", "--stdio"]
-
   [mcp_servers.podio-mcp]
     enabled = true
     scope = "user"
     command = "bunx"
     args = ["https://github.com/ForumViriumHelsinki/podio-mcp"]
-
-  [mcp_servers.lsp-github-actions]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "github-actions", "~/.local/share/nvim/mason/bin/gh-actions-language-server", "--stdio"]
-
-  [mcp_servers.lsp-terraform]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "terraform", "~/.local/share/nvim/mason/bin/terraform-ls", "--stdio"]
-
-  [mcp_servers.lsp-rust]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "rust", "~/.local/share/nvim/mason/bin/rust-analyzer", "--stdio"]
-
-  [mcp_servers.lsp-lua]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "lua", "~/.local/share/nvim/mason/bin/lua-language-server", "--stdio"]
-
-  [mcp_servers.lsp-yaml]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "yaml", "~/.local/share/nvim/mason/bin/yaml-language-server", "--stdio"]
-
-  [mcp_servers.lsp-docker]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "dockerfile", "~/.local/share/nvim/mason/bin/docker-langserver", "--stdio"]
-
-  [mcp_servers.lsp-json]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "json", "~/.local/share/nvim/mason/bin/vscode-json-language-server", "--stdio"]
-
-  [mcp_servers.lsp-bash]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "bash", "~/.local/share/nvim/mason/bin/bash-language-server", "--stdio"]
-
-  [mcp_servers.lsp-helm]
-    enabled = true
-    scope = "user"
-    command = "bunx"
-    args = ["-y", "tritlo/lsp-mcp", "helm", "~/.local/share/nvim/mason/bin/helm_ls", "--stdio"]
 
   [mcp_servers.sentry]
     enabled = true
@@ -391,13 +319,6 @@
     scope = "user"
     command = "bunx"
     args = ["-y", "argocd-mcp@latest", "stdio"]
-
-  # Disabled servers
-  [mcp_servers.kicad]
-    enabled = false
-    scope = "user"
-    command = "~/repos/kicad-mcp/.venv/bin/python"
-    args = ["~/repos/kicad-mcp/main.py"]
 
 [platform]
   # Platform-specific settings will be populated by templates
