@@ -29,7 +29,10 @@ Modules in `lua/core/` are loaded explicitly in this order (from init.lua):
 
 Key plugin categories:
 - **Completion**: blink.cmp with LSP integration
-- **LSP/Formatting**: Mason for LSP management, conform.nvim for formatting, nvim-lint for linting
+- **LSP/Formatting**: Mason for LSP server installation, conform.nvim for formatting, nvim-lint for linting
+  - Uses native Neovim 0.11 LSP APIs (no nvim-lspconfig needed)
+  - navic/navbuddy for code navigation and breadcrumbs
+  - schemastore for JSON schema validation
 - **Navigation**: fzf-lua, oil.nvim, aerial.nvim
 - **Git**: gitsigns, git fugitive integration
 - **UI**: tokyonight theme, lualine statusline, noice.nvim
@@ -75,12 +78,53 @@ Key plugin categories:
 
 ### LSP Configuration
 
-The LSP setup uses Neovim's built-in `vim.lsp.config()` with capabilities automatically extended for blink.cmp completion. Language servers are installed via Mason and configured in `lua/core/lsp.lua`.
+The LSP setup uses Neovim 0.11's native `vim.lsp.config()` and `vim.lsp.enable()` APIs with capabilities automatically extended for blink.cmp completion. Language servers are installed via Mason and configured in `lua/core/lsp.lua`.
+
+**Important**: This configuration does NOT use nvim-lspconfig or mason-lspconfig plugins. It uses Neovim's built-in LSP configuration system introduced in 0.11.
+
+#### Requirements
+- **Neovim 0.11+** is required for native LSP configuration APIs
+
+#### Adding a New LSP Server
+
+To add a new LSP server:
+1. Install it via Mason (`:Mason`)
+2. Add configuration in `lua/core/lsp.lua` using `vim.lsp.config("server_name", { ... })`
+3. Enable it with `vim.lsp.enable("server_name")`
 
 Configured LSPs include:
 - terraformls - Terraform with experimental features
 - jsonls - JSON with SchemaStore integration
-- Multiple others via Mason integration
+- Additional servers can be added following the pattern above
+- See commented examples in `lua/core/lsp.lua` for more server configurations
+
+#### Troubleshooting LSP Issues
+
+**LSP server not starting:**
+1. Check if the server is installed: `:Mason`
+2. Verify it's enabled in `lua/core/lsp.lua` with `vim.lsp.enable("server_name")`
+3. Check LSP status: `:LspInfo`
+4. Restart LSP: `:LspRestart`
+
+**Completion not working:**
+1. Verify blink.cmp is loaded: `:Lazy`
+2. Check capabilities are properly extended in `lua/core/lsp.lua`
+3. Ensure the LSP server supports completion
+
+**Code actions not appearing:**
+1. Verify fastaction plugin is loaded: `:Lazy`
+2. Check if LSP server supports code actions: `:LspInfo`
+3. Try the keymap: `<leader>a` in normal or visual mode
+
+**Navic breadcrumbs missing:**
+1. Verify nvim-navic is loaded: `:Lazy`
+2. Check if LSP server supports document symbols: `:LspInfo`
+3. Ensure the file type is recognized: `:set filetype?`
+
+**General debugging:**
+1. Check for errors: `:checkhealth`
+2. Review LSP logs: `:LspLog`
+3. Verify plugin health: `:Lazy health`
 
 ### Formatting & Linting
 
