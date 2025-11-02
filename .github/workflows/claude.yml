@@ -55,6 +55,16 @@ jobs:
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Install pre-commit dependencies
+        run: |
+          brew install chezmoi
+
       - name: Run Claude Code with MCP Integration
         id: claude
         uses: anthropics/claude-code-action@v1
