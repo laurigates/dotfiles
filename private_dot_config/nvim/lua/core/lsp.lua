@@ -14,11 +14,18 @@ capabilities.textDocument.onTypeFormatting = { dynamicRegistration = false }
 vim.lsp.config("*", {
   capabilities = capabilities,
   on_attach = function(client, bufnr)
+    -- Attach nvim-navic if available and client supports document symbols
     if client.server_capabilities.documentSymbolProvider then
-      require("nvim-navic").attach(client, bufnr)
+      local navic_ok, navic = pcall(require, "nvim-navic")
+      if navic_ok then
+        navic.attach(client, bufnr)
+      end
     end
-    -- Set up fastaction keymap for this buffer
-    vim.keymap.set({ "n", "x" }, "<leader>a", '<cmd>lua require("fastaction").code_action()<CR>', { buffer = bufnr })
+    -- Set up fastaction keymap for this buffer if available
+    local fastaction_ok, _ = pcall(require, "fastaction")
+    if fastaction_ok then
+      vim.keymap.set({ "n", "x" }, "<leader>a", '<cmd>lua require("fastaction").code_action()<CR>', { buffer = bufnr })
+    end
   end,
 })
 
@@ -49,3 +56,35 @@ vim.lsp.config("jsonls", {
 -- Note: Servers must be installed via Mason (:Mason) before they can be enabled
 vim.lsp.enable("terraformls")
 vim.lsp.enable("jsonls")
+
+-- Additional LSP server examples (uncomment and configure as needed):
+--
+-- Lua Language Server
+-- vim.lsp.config("lua_ls", {
+--   settings = {
+--     Lua = {
+--       runtime = { version = "LuaJIT" },
+--       diagnostics = { globals = { "vim" } },
+--       workspace = { library = vim.api.nvim_get_runtime_file("", true), checkThirdParty = false },
+--       telemetry = { enable = false },
+--     },
+--   },
+-- })
+-- vim.lsp.enable("lua_ls")
+--
+-- Rust Analyzer (Note: This repository uses rustaceanvim for rust-analyzer)
+-- vim.lsp.enable("rust_analyzer")
+--
+-- Python LSP (pyright)
+-- vim.lsp.enable("pyright")
+--
+-- TypeScript/JavaScript LSP
+-- vim.lsp.enable("ts_ls")
+--
+-- Go LSP
+-- vim.lsp.enable("gopls")
+--
+-- YAML LSP
+-- vim.lsp.enable("yamlls")
+--
+-- For more LSP servers, see: https://github.com/neovim/neovim/blob/master/runtime/lua/vim/lsp/configs.lua
