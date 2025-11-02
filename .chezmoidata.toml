@@ -87,6 +87,7 @@
     "arduino-cli",
     "argocd",
     "argocd-vault-plugin",
+    "ast-grep",
     "atuin",
     "autoconf",
     "bat",
