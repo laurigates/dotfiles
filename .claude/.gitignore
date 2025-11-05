@@ -9,9 +9,3 @@ projects/
 statsig/
 status/
 plugins/
-
-# Settings with runtime modifications
-settings.json
-
-# Keep only the template in git
-!settings.json.tmpl
