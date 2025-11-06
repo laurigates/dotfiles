@@ -7,7 +7,6 @@ description: Complete workflow from changes to PR - analyze changes, create logi
 ## Context
 
 - Pre-commit checks: !`pre-commit run --all-files --show-diff-on-failure || true`
-- Repo: !`gh repo view --json nameWithOwner`
 - Current branch: !`git branch --show-current`
 - Git status: !`git status --short`
 - Unstaged changes: !`git diff --stat`
@@ -28,6 +27,7 @@ Parse these parameters from the command (all optional):
 - `--draft`: Create as draft PR (requires --pr)
 - `--issue <num>`: Link to specific issue number (requires --pr)
 - `--no-commit`: Skip commit creation (assume commits already exist)
+- `--no-split`: Force single-PR mode even with multiple logical groups (disables auto-splitting)
 
 ## Your task
 
@@ -40,34 +40,107 @@ Parse these parameters from the command (all optional):
 
 3. **Branch creation** (unless --direct):
    - Fetch latest from origin: `git fetch origin`
-   - Create branch from base: `git switch -c <branch-name> <base-branch>`
-   - If no branch name provided, generate from first commit:
-     - Format: `{type}/{brief-description}-{YYYYMMDD}`
-     - Examples: `feat/auth-module-20250109`, `fix/login-validation-20250109`
+   - If no branch name provided, delay branch naming until after change analysis
+   - If branch name provided, create immediately: `git switch -c <branch-name> <base-branch>`
 
-4. **Analyze and commit changes** (unless --no-commit):
+4. **Analyze changes and detect split requirement** (when --pr is present and --no-split not set):
    - Run `git status` and `git diff` to understand all changes
-   - Group related changes into logical commits
-   - For each logical group:
-     - Execute the git add commands for those files
-     - Execute the git commit command with a conventional commit message
+   - Classify files into logical groups:
+     - **Linter/formatting group** (if present):
+       - Files with only whitespace/formatting changes
+       - Lock files (package-lock.json, Cargo.lock, yarn.lock, etc.)
+       - Auto-generated files from linters (.eslintrc changes, prettier config)
+     - **Feature/fix groups** (by area):
+       - Group by top-level directory/module
+       - Within directory, group by commit type
+       - Keep related files together (implementation + tests + docs)
+   - **Auto-split logic**:
+     - If 2+ distinct logical groups detected → proceed to step 4a (multi-PR flow)
+     - If single group or --no-split flag → proceed to step 4b (single-PR flow)
+     - Log decision: "Creating {n} separate PRs for {n} logical groups" or "Single PR for unified changes"
 
-5. **Conventional commit format**:
+4a. **Multi-PR flow** (automatic when 2+ groups detected):
+
+- Create snapshot: `git stash push -u -m "smartcommit-multi-pr-$(date +%s)"`
+- **For each logical group** (in order: linter first, then features):
+  a. Generate branch name: `{type}/{description}-{YYYYMMDD}`
+  - Linter group: `chore/linter-fixes-{YYYYMMDD}`
+  - Other groups: `{type}/{area}-{YYYYMMDD}`
+    b. Create branch: `git switch -c <branch-name> <base-branch>`
+    c. Restore only group files: `git checkout stash@{0} -- <file1> <file2> ...`
+    d. Stage files: `git add <files>`
+    e. Create conventional commit for this group
+    f. Push: `git push -u origin <branch-name>`
+    g. Create PR with focused title and body for this specific change group
+    h. Return to base: `git switch <base-branch>`
+- **After all PRs created**:
+  - Verify all files captured: `git stash show --name-only stash@{0}` and cross-check with created branches
+  - Drop stash only if 100% of files accounted for: `git stash drop stash@{0}`
+  - If any file unaccounted for: ERROR and preserve stash
+  - Output summary: "Created {n} PRs: [URLs]"
+- Skip steps 5-7 (already handled per-branch in this flow)
+
+4b. **Single-PR flow** (existing behavior, unless --no-commit):
+
+- Group related changes into logical commits within single branch
+- For each logical group:
+  - Execute the git add commands for those files
+  - Execute the git commit command with a conventional commit message
+- Continue to steps 5-7
+
+5. **Grouping examples** (for multi-PR flow):
+
+   **Example 1: Mixed changes requiring split**
+
+   ```
+   Changes detected:
+   - src/auth/login.ts (authentication logic)
+   - src/auth/oauth.ts (authentication logic)
+   - tests/auth.test.ts (authentication tests)
+   - docs/api.md (documentation)
+   - README.md (documentation)
+   - .eslintrc (linter config)
+   - src/**/*.ts (whitespace fixes only)
+
+   Groups created:
+   1. chore/linter-fixes-20250104
+      - .eslintrc + src/**/*.ts (formatting)
+   2. feat/authentication-20250104
+      - src/auth/* + tests/auth.test.ts
+   3. docs/api-documentation-20250104
+      - docs/api.md + README.md
+
+   Result: 3 separate branches with 3 focused PRs
+   ```
+
+   **Example 2: Single focus (no split)**
+
+   ```
+   Changes detected:
+   - src/auth/login.ts
+   - src/auth/oauth.ts
+   - tests/auth.test.ts
+
+   Groups: Single logical group
+   Result: 1 branch with 1 PR (existing behavior)
+   ```
+
+6. **Conventional commit format**:
    - feat: new feature
    - fix: bug fix
    - docs: documentation changes
    - style: formatting, missing semicolons, etc
    - refactor: code restructuring without changing behavior
    - test: adding or updating tests
-   - chore: maintenance tasks, dependency updates
+   - chore: maintenance tasks, dependency updates (includes linter fixes)
    - perf: performance improvements
    - ci: CI/CD changes
 
-6. **Push if requested**:
+7. **Push if requested** (single-PR flow only; multi-PR handles in step 4a):
    - If --push OR --pr flag: Execute `git push -u origin <branch-name>`
    - Handle both new branches and existing branches with new commits
 
-7. **Create PR if requested** (only if --pr):
+8. **Create PR if requested** (single-PR flow only; multi-PR handles in step 4a):
    - Generate PR title:
      - Use provided title if given as $1
      - Otherwise, derive from commit messages
@@ -80,7 +153,9 @@ Parse these parameters from the command (all optional):
      - Set base branch from --base parameter
      - Example: `gh pr create --title "..." --body "..." --base main`
 
-8. **Output PR URL** if created
+9. **Output summary**:
+   - Single-PR: Output the PR URL if created
+   - Multi-PR: Output all PR URLs created
 
 ## Execution
 

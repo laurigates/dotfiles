@@ -6,9 +6,15 @@ description: Universal test runner that automatically detects and runs the appro
 
 ## Context
 
-- Project type: !`if [ -f package.json ]; then echo "node"; elif [ -f pyproject.toml ] || [ -f setup.py ]; then echo "python"; elif [ -f Cargo.toml ]; then echo "rust"; elif [ -f go.mod ]; then echo "go"; else echo "unknown"; fi`
-- Test framework: !`if [ -f pytest.ini ] || grep -q pytest pyproject.toml 2>/dev/null; then echo "pytest"; elif [ -f package.json ] && grep -q vitest package.json; then echo "vitest"; elif [ -f package.json ] && grep -q jest package.json; then echo "jest"; elif [ -f package.json ] && grep -q mocha package.json; then echo "mocha"; elif [ -f Cargo.toml ]; then echo "cargo"; elif [ -f go.mod ]; then echo "go"; else echo "none"; fi`
-- Coverage tool: !`if command -v coverage >/dev/null 2>&1; then echo "coverage"; elif [ -f package.json ] && grep -q nyc package.json; then echo "nyc"; else echo "none"; fi`
+**First, detect the project type and test framework:**
+
+Use Read and Glob tools to check for configuration files:
+- Node.js: Check for `package.json`, then inspect for test frameworks (vitest, jest, mocha)
+- Python: Check for `pyproject.toml`, `pytest.ini`, or `setup.py`
+- Rust: Check for `Cargo.toml`
+- Go: Check for `go.mod`
+
+**Determine the appropriate test command based on what you find.**
 
 ## Parameters
 
