@@ -108,26 +108,30 @@ The repository provides three Claude Code plugins via a local marketplace for in
 
 **Development workflow:**
 ```bash
-# Edit plugin files directly in source directory
+# Edit plugin/skill files directly in source directory
+vim ~/.local/share/chezmoi/.claude/skills/python-development/SKILL.md
 vim ~/.local/share/chezmoi/plugins/dotfiles-core/commands/git/smartcommit.md
 
-# Changes are immediate - no reinstall needed!
-/git:smartcommit  # Uses updated version
-
-# Only apply when settings change
-chezmoi apply -v
+# Changes are IMMEDIATE via symlink - no chezmoi apply needed!
+# The .claude directory is symlinked: ~/.claude → ~/.local/share/chezmoi/.claude
 ```
 
-Full guide: See [dot_claude/docs/plugins-setup.md](./dot_claude/docs/plugins-setup.md)
+**Why no `chezmoi apply` needed?**
+The `symlink_dot_claude.tmpl` file creates a symlink from `~/.claude` to the source directory, so all changes to skills, commands, and `.claude` configuration are instantly available. Only run `chezmoi apply` for other dotfiles (configs, scripts, etc.).
+
+Full guide: See [.claude/docs/plugins-setup.md](./.claude/docs/plugins-setup.md)
 
 ### Skills
 
-14 auto-discovered skills provide contextual guidance:
-- **Development**: python-development, rust-development, nodejs-development, cpp-development, embedded-systems
-- **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform
-- **Tools**: chezmoi-expert, dotfiles-management, neovim-configuration, github-actions-expert, shell-expert
+32 auto-discovered skills provide contextual guidance:
+- **Core Tools**: chezmoi-expert, shell-expert, fd-file-finding, rg-code-search, jq-json-processing, yq-yaml-processing, ast-grep-search, vectorcode-search
+- **Version Control**: git-branch-pr-workflow, git-commit-workflow, git-security-checks, git-repo-detection, release-please-protection
+- **GitHub Actions**: claude-code-github-workflows, github-actions-mcp-config, github-actions-auth-security, github-actions-inspection
+- **Languages**: python-development, rust-development, nodejs-development, cpp-development, neovim-configuration
+- **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform, embedded-systems
+- **Agent/Memory**: agent-coordination-patterns, agent-file-coordination, multi-agent-workflows, graphiti-episode-storage, graphiti-learning-workflows, graphiti-memory-retrieval
 
-Skills activate automatically based on your work context. See [dot_claude/skills/README.md](./dot_claude/skills/README.md)
+Skills activate automatically based on your work context. See [.claude/skills/CLAUDE.md](./.claude/skills/CLAUDE.md)
 
 ### Configuration Files
 

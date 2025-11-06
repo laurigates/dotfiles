@@ -13,22 +13,30 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **21 specialized skills** organized by domain:
+This repository contains **32 specialized skills** organized by domain:
 
-### Core Development Tools (4 skills)
+### Core Development Tools (8 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
 - **shell-expert** - Shell scripting, CLI tools, automation, cross-platform scripting
 - **fd-file-finding** - Fast file search with smart defaults and gitignore awareness
 - **rg-code-search** - Blazingly fast code search with ripgrep and regex patterns
+- **jq-json-processing** - JSON querying, filtering, and transformation with jq command-line tool
+- **yq-yaml-processing** - YAML querying, filtering, and transformation with yq (v4+) command-line tool
+- **ast-grep-search** - AST-based code search for structural pattern matching
+- **vectorcode-search** - Semantic code search using embeddings for concept-based discovery
 
-### Version Control & Release (2 skills)
-- **git-workflow** - Preferred git patterns (branching, commits, pre-commit validation, PRs)
+### Version Control & Release (5 skills)
+- **git-branch-pr-workflow** - Branch management, pull request workflows, and GitHub integration
+- **git-commit-workflow** - Commit message conventions, staging, and commit best practices
+- **git-security-checks** - Pre-commit security validation and secret detection
+- **git-repo-detection** - Extract GitHub repository owner/name from git remotes
 - **release-please-protection** - Prevents manual edits to automated release files
 
-### GitHub Actions Integration (3 skills)
+### GitHub Actions Integration (4 skills)
 - **claude-code-github-workflows** - Workflow design, PR reviews, issue triage, CI auto-fix
 - **github-actions-mcp-config** - MCP server setup, tool permissions, multi-server coordination
 - **github-actions-auth-security** - Authentication methods, secrets management, security best practices
+- **github-actions-inspection** - Inspect workflow runs, analyze logs, debug CI/CD failures
 
 ### Programming Languages (4 skills)
 - **python-development** - Modern Python with uv, ruff, pytest, type hints
@@ -97,7 +105,7 @@ Skills are discovered from three sources (in precedence order):
 2. **Personal Skills**: `~/.claude/skills/` (individual workflows)
 3. **Plugin Skills**: Bundled with installed plugins
 
-After `chezmoi apply`, project skills from `.claude/skills/` become available at `~/.claude/skills/`.
+**Symlink Setup**: The `.claude` directory is symlinked (`~/.claude` → `~/.local/share/chezmoi/.claude`), so changes to project skills in the source directory are **immediately available** to Claude Code without running `chezmoi apply`.
 
 ## Creating New Skills
 
@@ -232,15 +240,15 @@ To add a new skill to this repository:
 
 1. Create a directory in `.claude/skills/skill-name/`
 2. Add `SKILL.md` with proper YAML frontmatter
-3. Test activation with relevant queries
+3. Test activation with relevant queries (changes are immediately available via symlink)
 4. Update this `CLAUDE.md` with the new skill
 5. Update repository `CLAUDE.md` skill count if needed
 6. Commit and push to share with the team
 
-Skills in `.claude/skills/` are automatically distributed to all team members who pull the repository.
+Skills in `.claude/skills/` are automatically distributed to all team members who pull the repository. The symlink setup means **no `chezmoi apply` is needed** - new skills are immediately available for testing.
 
 ---
 
-**Last updated**: 2025-10-31
-**Total skills**: 21
+**Last updated**: 2025-11-02
+**Total skills**: 32
 **Skill version format**: YAML frontmatter in SKILL.md
