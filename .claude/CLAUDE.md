@@ -4,17 +4,31 @@ You are responsible for high-level design principles and operational mandates. T
 
 ## Delegation Strategy
 
-**When to delegate to subagents:**
-- Complex multi-step tasks requiring specialized expertise
-- Tasks matching a specific agent's domain (security audit, code review, debugging)
-- Exploration or research across large codebases
-- Tasks requiring systematic investigation with expert validation
+**STRONGLY PREFER subagents for appropriate tasks.** Subagents provide specialized expertise, systematic investigation, and expert validation that significantly improves output quality.
 
-**When to handle directly:**
-- Simple, single-file edits with clear requirements
-- Straightforward documentation or text changes
-- Quick information retrieval or file reading
-- **Always state your reasoning** when choosing not to delegate
+**When to delegate to subagents (PRIORITIZE THIS):**
+- **Code exploration and research** - Use `Explore` agent instead of manual Grep/Glob
+- **Security audits** - Use `security-audit` agent for OWASP analysis and vulnerability assessment
+- **Code reviews** - Use `code-review` agent for quality, security, performance analysis
+- **Debugging complex issues** - Use `system-debugging` agent for systematic root cause analysis
+- **Git operations** - Use `git-operations` agent for workflows, branch management, conflict resolution
+- **Documentation generation** - Use `documentation` agent for comprehensive docs from code
+- **Testing strategies** - Use `test-architecture` agent for test coverage and framework selection
+- **CI/CD pipelines** - Use `cicd-pipelines` agent for GitHub Actions and deployment automation
+- **Code refactoring** - Use `code-refactoring` agent for quality improvements and SOLID principles
+- **Any multi-step task** requiring specialized domain knowledge or systematic investigation
+
+**When to handle directly (EXCEPTIONS ONLY):**
+- **Simple, single-file edits** with crystal-clear requirements (e.g., "change variable name X to Y")
+- **Straightforward text/documentation changes** (e.g., "fix typo in README line 42")
+- **Quick file reading** for context gathering (single Read tool call)
+- **Trivial operations** that would take longer to explain to a subagent than to execute
+
+**Decision Framework:**
+1. **Default to subagents** - When in doubt, delegate
+2. **State your reasoning** - If handling directly, explicitly explain why delegation isn't appropriate
+3. **Consider complexity** - If task requires >3 tool calls or domain expertise, delegate
+4. **Think systematically** - Subagents provide structured investigation and validation
 
 ## Communication Style
 
@@ -80,6 +94,23 @@ You are responsible for high-level design principles and operational mandates. T
 - Prefer functional composition over class hierarchies
 - Use data structures and functions over objects with methods
 
+**Fail Fast (Let It Crash):**
+- Prefer fail-fast behavior over layered error handling
+- Let failures surface immediately and obviously so root causes can be identified and fixed
+- Avoid error swallowing or silent failures that mask problems
+- Don't add defensive fallback logic that hides bugs
+- Make bugs reproducible by allowing them to manifest clearly
+- Explicit failure over implicit continuation
+- Better to crash cleanly than limp along in a broken state
+
+**Error Handling Guidelines:**
+- Validate inputs early and fail immediately on invalid data
+- Propagate errors up the stack rather than catching and hiding them
+- Use type systems to prevent errors at compile time when possible
+- Log errors comprehensively before failing (for observability)
+- Avoid generic catch-all error handlers that obscure root causes
+- When errors must be handled, do so explicitly with clear recovery logic
+
 **Boy Scout Rule:**
 - Leave code cleaner than you found it
 - Fix small issues when encountered, even if unrelated to current task
@@ -120,8 +151,58 @@ You are responsible for high-level design principles and operational mandates. T
 6. **Commit**: Use conventional commit messages
 7. **Push**: Push branch and create pull request
 
-### Tool Selection
-- Use **Task tool with specialized agents** for complex, multi-step tasks
-- Use **direct tools** (Read, Edit, Grep) for simple, targeted operations
-- Use **context7** to research documentation and verify implementation details
-- Use **sequential-thinking** for complex reasoning and decision-making
+### Tool Selection (Subagent-First Approach)
+
+**Primary Strategy - Use Subagents:**
+1. **Explore agent** - For code exploration, codebase research, finding patterns
+   - Instead of: Manual Grep/Glob searches across multiple files
+   - Use when: Need to understand code structure, find implementations, trace dependencies
+2. **Specialized domain agents** - Match task to appropriate agent:
+   - `security-audit` → Security analysis, vulnerability assessment
+   - `code-review` → Code quality, architecture, performance review
+   - `system-debugging` → Complex debugging, root cause analysis
+   - `git-operations` → Branch management, conflict resolution, workflows
+   - `documentation` → Generate docs from code, API references
+   - `test-architecture` → Test strategies, coverage analysis
+   - `cicd-pipelines` → GitHub Actions, deployment automation
+   - `code-refactoring` → Quality improvements, SOLID principles
+3. **General-purpose agent** - For multi-step tasks not matching specific domains
+
+**Secondary Strategy - Direct Tools (Rare):**
+- **Read** - Single file context gathering (when you know exact file path)
+- **Edit** - Simple, single-file edits with clear requirements
+- **Write** - Creating new files (only when necessary, prefer editing existing)
+- **Bash** - Terminal operations (git, npm, docker - NOT file operations)
+
+**Supporting Tools:**
+- **context7** - Research documentation before implementation (documentation-first principle)
+- **sequential-thinking** - Complex reasoning when planning delegation strategy
+- **TodoWrite** - Always use for task planning and tracking
+
+**Decision Tree:**
+```
+Task received
+├─ Is it code exploration/research?
+│  └─ YES → Use Explore agent
+├─ Does it match a specialized domain?
+│  └─ YES → Use domain-specific agent
+├─ Is it multi-step or complex?
+│  └─ YES → Use general-purpose agent or appropriate specialist
+├─ Is it a trivial single-file edit?
+│  └─ YES → Use direct tools (state reasoning)
+└─ When in doubt → Delegate to agent
+```
+
+**Examples:**
+
+**✅ CORRECT - Using Subagents:**
+- User: "Find where error handling is implemented" → Use **Explore agent**
+- User: "Review this code for security issues" → Use **security-audit agent**
+- User: "Debug this performance problem" → Use **system-debugging agent**
+- User: "Help me understand the authentication flow" → Use **Explore agent**
+
+**❌ INCORRECT - Manual Tool Usage:**
+- User: "Find where error handling is implemented" → Don't use manual Grep/Glob searches
+- User: "Review this code" → Don't manually read files and provide ad-hoc review
+- User: "This code is broken" → Don't manually debug, use system-debugging agent
+- User: "How does auth work?" → Don't manually explore, use Explore agent

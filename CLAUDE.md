@@ -11,23 +11,41 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Target locations**: `~/.*` (never edit directly)
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
+### Claude Code Directory (Symlinked)
+
+**Important**: The `.claude` directory is **symlinked** via `symlink_dot_claude.tmpl`:
+- **Source**: `~/.local/share/chezmoi/.claude/`
+- **Target**: `~/.claude` → symlink to source
+- **Effect**: Changes to source `.claude` directory are **immediately available** to Claude Code
+- **No `chezmoi apply` needed** for skills, commands, or `.claude` configuration changes
+
+This setup enables rapid skill development and testing without the apply step. Other dotfiles (configs, scripts) still require `chezmoi apply`.
+
 ### Claude Code Skills & Plugins
-This repository includes **Skills** (18 total) - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (32 total) - automatically discovered capabilities that Claude uses based on context:
 
 **Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
 - **Shell Expert** - Shell scripting, CLI tools, automation, and cross-platform scripting
 - **fd File Finding** - Fast file search with smart defaults and gitignore awareness
 - **rg Code Search** - Blazingly fast code search with ripgrep and regex patterns
+- **jq JSON Processing** - JSON querying, filtering, and transformation with jq command-line tool
+- **yq YAML Processing** - YAML querying, filtering, and transformation with yq (v4+) command-line tool
+- **AST Grep Search** - AST-based code search for structural pattern matching
+- **VectorCode Search** - Semantic code search using embeddings for concept-based discovery
 
 **Version Control & Release:**
-- **Git Workflow** - Preferred git patterns including branching, commits, and validation
+- **Git Branch PR Workflow** - Branch management, pull request workflows, and GitHub integration
+- **Git Commit Workflow** - Commit message conventions, staging, and commit best practices
+- **Git Security Checks** - Pre-commit security validation and secret detection
+- **Git Repo Detection** - Extract GitHub repository owner/name from git remotes
 - **Release-Please Protection** - Prevents manual edits to automated release files (CHANGELOG.md, version fields)
 
 **GitHub Actions Integration:**
 - **Claude Code GitHub Workflows** - Workflow design, PR reviews, issue triage, and CI auto-fix
 - **GitHub Actions MCP Configuration** - MCP server setup, tool permissions, and multi-server coordination
 - **GitHub Actions Auth & Security** - Authentication methods, secrets management, and security best practices
+- **GitHub Actions Inspection** - Inspect workflow runs, analyze logs, debug CI/CD failures
 
 **Editor & Languages:**
 - **Neovim Configuration** - Lua configuration, plugin management, LSP setup, and AI integration
@@ -42,7 +60,7 @@ This repository includes **Skills** (18 total) - automatically discovered capabi
 - **Infrastructure Terraform** - Infrastructure as Code with HCL and state management
 - **Embedded Systems** - ESP32/ESP-IDF, STM32, FreeRTOS, and real-time systems
 
-Skills are located in `dot_claude/skills/` (becomes `~/.claude/skills/` after chezmoi apply) and are automatically loaded by Claude when relevant.
+Skills are located in `.claude/skills/` (symlinked to `~/.claude/skills/`) and are **immediately available** to Claude Code without running `chezmoi apply`.
 
 This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
 - **Dotfiles Toolkit** - 14 specialized agents and 20+ commands for development workflows, code quality, and infrastructure operations
