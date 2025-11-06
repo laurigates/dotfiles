@@ -12,14 +12,14 @@ local function get_selected_text()
   local mode = vim.fn.mode()
   local json_text
 
-  if mode == 'v' or mode == 'V' or mode == '\22' then -- visual modes
+  if mode == "v" or mode == "V" or mode == "\22" then -- visual modes
     -- Get visually selected text
     local start_pos = vim.fn.getpos("'<")
     local end_pos = vim.fn.getpos("'>")
 
     -- Use vim.fn.getregion for accurate visual selection (Neovim 0.10+)
     -- Safer version check to prevent errors
-    if vim.fn.has('nvim-0.10') == 1 and type(vim.fn.getregion) == 'function' then
+    if vim.fn.has("nvim-0.10") == 1 and type(vim.fn.getregion) == "function" then
       local region = vim.fn.getregion(start_pos, end_pos, { type = mode })
       json_text = table.concat(region, "\n")
     else
@@ -29,12 +29,12 @@ local function get_selected_text()
       if #lines == 1 then
         -- Single line selection
         local start_col = start_pos[3]
-        local end_col = mode == 'v' and end_pos[3] or #lines[1]
+        local end_col = mode == "v" and end_pos[3] or #lines[1]
         json_text = string.sub(lines[1], start_col, end_col)
       else
         -- Multi-line selection
         lines[1] = string.sub(lines[1], start_pos[3])
-        if mode == 'v' then
+        if mode == "v" then
           lines[#lines] = string.sub(lines[#lines], 1, end_pos[3])
         end
         json_text = table.concat(lines, "\n")
@@ -42,7 +42,7 @@ local function get_selected_text()
     end
   else
     -- Normal mode: get current line
-    json_text = vim.fn.getline('.')
+    json_text = vim.fn.getline(".")
   end
 
   return json_text
@@ -97,7 +97,7 @@ local function serialize_lua_object(obj, indent)
     table.insert(result, spacing .. "}")
     return table.concat(result)
   elseif type(obj) == "string" then
-    return string.format('%q', obj)
+    return string.format("%q", obj)
   else
     return tostring(obj)
   end
@@ -107,17 +107,17 @@ end
 -- @param lua_str string The Lua code string to insert
 -- @param mode string The current Vim mode
 local function replace_buffer_content(lua_str, mode)
-  if mode == 'v' or mode == 'V' or mode == '\22' then -- visual modes
+  if mode == "v" or mode == "V" or mode == "\22" then -- visual modes
     -- Replace selected text safely
-    vim.cmd('normal! d')
+    vim.cmd("normal! d")
 
     -- Split multiline strings and use line mode for proper insertion
-    local lines = vim.split(lua_str, '\n', { plain = true })
-    vim.api.nvim_put(lines, 'l', true, true)
+    local lines = vim.split(lua_str, "\n", { plain = true })
+    vim.api.nvim_put(lines, "l", true, true)
   else
     -- Replace current line - handle multiline output
-    local lines = vim.split(lua_str, '\n', { plain = true })
-    local current_line = vim.fn.line('.')
+    local lines = vim.split(lua_str, "\n", { plain = true })
+    local current_line = vim.fn.line(".")
 
     -- Replace current line with first line
     vim.fn.setline(current_line, lines[1])
@@ -141,8 +141,8 @@ local function json_to_lua()
   local json_text = get_selected_text()
 
   -- Input validation: check for empty or whitespace-only content
-  if not json_text or json_text:match('^%s*$') then
-    vim.notify('No JSON content to convert', vim.log.levels.WARN)
+  if not json_text or json_text:match("^%s*$") then
+    vim.notify("No JSON content to convert", vim.log.levels.WARN)
     return
   end
 

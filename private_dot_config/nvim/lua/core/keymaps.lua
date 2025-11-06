@@ -57,8 +57,8 @@ map("t", "<Esc>", "<C-\\><C-n>") -- exit
 -- JSON to Lua conversion function is defined in core/functions.lua
 
 -- Map <leader>jl for "JSON to Lua"
-map('n', '<leader>jl', '<cmd>lua json_to_lua()<CR>', { desc = "Convert JSON to Lua using vim.json.decode()" })
-map('v', '<leader>jl', '<cmd>lua json_to_lua()<CR>', { desc = "Convert JSON to Lua using vim.json.decode()" })
+map("n", "<leader>jl", "<cmd>lua json_to_lua()<CR>", { desc = "Convert JSON to Lua using vim.json.decode()" })
+map("v", "<leader>jl", "<cmd>lua json_to_lua()<CR>", { desc = "Convert JSON to Lua using vim.json.decode()" })
 
 -- Surround like delete/change surrounding function calls
 -- map('n', 'dsf', 'ds)db', { noremap = false })
