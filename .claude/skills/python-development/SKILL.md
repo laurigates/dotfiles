@@ -1,153 +1,359 @@
 ---
 name: Python Development
-description: Modern Python development with uv package manager, ruff linting, pytest testing, type hints, and pyproject.toml configuration. Automatically assists with Python projects, debugging, performance profiling, and best practices.
+description: Core Python development concepts, idioms, best practices, and language features. Use for Python language fundamentals, design patterns, and Pythonic code. For tools, see specialized skills (uv-*, python-testing, python-code-quality, python-packaging).
 allowed-tools: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, Edit, Write, NotebookEdit, Bash
 ---
 
 # Python Development
 
-Expert knowledge for modern Python development with focus on fast tooling, type safety, and comprehensive testing.
+Core Python language concepts, idioms, and best practices.
 
 ## Core Expertise
 
-- **uv**: Fast package management and Python environment handling (10-100x faster than pip)
-- **ruff**: Ultra-fast linting and code formatting (replaces black, isort, flake8)
-- **pytest**: Comprehensive testing with fixtures, parametrization, and coverage
-- **Type Hints**: Static type checking with mypy/pyright integration
-- **pyproject.toml**: Modern Python project configuration with dependency groups
+- **Python Language**: Modern Python 3.10+ features and idioms
+- **Best Practices**: Pythonic code, design patterns, SOLID principles
+- **Debugging**: Interactive debugging and profiling techniques
+- **Performance**: Optimization strategies and profiling
+- **Async Programming**: async/await patterns and asyncio
 
-## Key Capabilities
+## Modern Python Features (3.10+)
 
-- **Project Setup**: Modern project structure with uv and pyproject.toml
-- **Code Quality**: Linting with ruff, formatting, type checking
-- **Testing**: Unit tests, integration tests, parametrization, coverage tracking
-- **Dependencies**: Package management with uv, dependency groups for dev/docs/security
-- **CI Integration**: Automated testing and quality checks
-- **Debugging**: Python-specific debugging with pdb, profiling, and memory analysis
+### Type Hints
 
-## Python Debugging Expertise
+```python
+# Modern syntax (Python 3.10+)
+def process_items(
+    items: list[str],                    # Not List[str]
+    mapping: dict[str, int],             # Not Dict[str, int]
+    optional: str | None = None,         # Not Optional[str]
+) -> tuple[bool, str]:                   # Not Tuple[bool, str]
+    """Process items with modern type hints."""
+    return True, "success"
 
-**Interactive Debugging**
-- **pdb/ipdb**: Step-through debugging with breakpoints and inspection
-- **pytest --pdb**: Drop into debugger on test failures
-- **Django Debug Toolbar**: Web application debugging and profiling
-- **Flask Debug Mode**: Development server with auto-reload and debugger
+# Type aliases
+type UserId = int
+type UserDict = dict[str, str | int]
 
-**Performance & Memory Profiling**
-- **memory_profiler**: Line-by-line memory consumption analysis
-- **py-spy**: Sampling profiler for production Python programs
-- **cProfile/profile**: Built-in CPU profiling modules
-- **line_profiler**: Line-by-line execution time analysis
-- **tracemalloc**: Memory allocation tracking (built-in)
+def get_user(user_id: UserId) -> UserDict:
+    return {"id": user_id, "name": "Alice"}
+```
 
-**Debugging Commands**
+### Pattern Matching (3.10+)
+
+```python
+def handle_command(command: dict) -> str:
+    match command:
+        case {"action": "create", "item": item}:
+            return f"Creating {item}"
+        case {"action": "delete", "item": item}:
+            return f"Deleting {item}"
+        case {"action": "list"}:
+            return "Listing items"
+        case _:
+            return "Unknown command"
+```
+
+### Structural Pattern Matching
+
+```python
+def process_response(response):
+    match response:
+        case {"status": 200, "data": data}:
+            return process_success(data)
+        case {"status": 404}:
+            raise NotFoundError()
+        case {"status": code} if code >= 500:
+            raise ServerError(code)
+```
+
+## Python Idioms
+
+### Context Managers
+
+```python
+# File handling
+with open("file.txt") as f:
+    content = f.read()
+
+# Custom context manager
+from contextlib import contextmanager
+
+@contextmanager
+def database_connection():
+    conn = create_connection()
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+with database_connection() as conn:
+    conn.execute("SELECT * FROM users")
+```
+
+### List Comprehensions
+
+```python
+# List comprehension
+squares = [x**2 for x in range(10)]
+
+# Dict comprehension
+word_lengths = {word: len(word) for word in ["hello", "world"]}
+
+# Set comprehension
+unique_lengths = {len(word) for word in ["hello", "world", "hi"]}
+
+# Generator expression
+sum_of_squares = sum(x**2 for x in range(1000000))  # Memory efficient
+```
+
+### Iterators and Generators
+
+```python
+def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+# Use generator
+fib = fibonacci()
+first_ten = [next(fib) for _ in range(10)]
+
+# Generator expression
+even_squares = (x**2 for x in range(10) if x % 2 == 0)
+```
+
+## Debugging
+
+### Interactive Debugging
+
+```python
+import pdb
+
+def problematic_function():
+    value = calculate()
+    pdb.set_trace()  # Debugger breakpoint
+    return process(value)
+```
+
 ```bash
-# Interactive debugging
-python -m pdb script.py                # Start with debugger
-pytest --pdb                           # Debug on test failure
+# Debug on error
+python -m pdb script.py
+
+# pytest with debugger
+uv run pytest --pdb                     # Drop into pdb on failure
+uv run pytest --pdb --pdbcls=IPython.terminal.debugger:TerminalPdb
+```
+
+### Performance Profiling
+
+```bash
+# CPU profiling
+python -m cProfile -s cumtime script.py | head -20
+
+# Line-by-line profiling
+pip install line-profiler
+kernprof -l -v script.py
 
 # Memory profiling
-python -m memory_profiler script.py    # Memory usage per line
-py-spy top -- python script.py        # Real-time CPU profiling
+pip install memory-profiler
+python -m memory_profiler script.py
 
-# Performance profiling
-python -m cProfile -s cumtime script.py | head -20
-python -m trace --trace script.py     # Trace execution
+# Real-time profiling
+pip install py-spy
+py-spy top -- python script.py
 ```
 
-## Modern uv Workflow
+### Built-in Debugging Tools
 
-**Project Initialization**
-```bash
-# Create new project with modern structure
-uv init my-project --package          # Creates src/ layout project
-cd my-project
+```python
+# Trace execution
+import sys
 
-# Create venv and install
-uv venv
-uv sync                               # Install from uv.lock
+def trace_calls(frame, event, arg):
+    if event == 'call':
+        print(f"Calling {frame.f_code.co_name}")
+    return trace_calls
 
-# Add dependencies
-uv add requests pydantic              # Runtime dependencies
-uv add --dev pytest ruff mypy        # Development dependencies
-uv add --group docs sphinx            # Dependency groups
+sys.settrace(trace_calls)
+
+# Memory tracking
+import tracemalloc
+
+tracemalloc.start()
+# ... code to profile
+snapshot = tracemalloc.take_snapshot()
+top_stats = snapshot.statistics('lineno')
+for stat in top_stats[:10]:
+    print(stat)
 ```
 
-**Dependency Management**
-```bash
-# Add with version constraints
-uv add "fastapi>=0.100.0,<1.0.0"
-uv add "sqlalchemy[postgresql]"
+## Async Programming
 
-# Update and sync
-uv lock --upgrade                     # Update lockfile
-uv sync --frozen                      # Install exact versions
+### Basic async/await
 
-# Run application
-uv run app.py
+```python
+import asyncio
+
+async def fetch_data(url: str) -> dict:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        return response.json()
+
+async def main():
+    result = await fetch_data("https://api.example.com")
+    print(result)
+
+asyncio.run(main())
 ```
 
-## Essential Commands
+### Concurrent Tasks
 
-```bash
-# Code quality
-uv run ruff check --fix .               # Lint and auto-fix
-uv run ruff format .                    # Format code
-uv run mypy .                           # Type checking
+```python
+async def process_multiple():
+    # Run concurrently
+    results = await asyncio.gather(
+        fetch_data("url1"),
+        fetch_data("url2"),
+        fetch_data("url3"),
+    )
+    return results
 
-# Testing
-uv run pytest                          # Run tests
-uv run pytest --cov                    # With coverage
-uv run pytest -v --tb=short           # Verbose output
+# With timeout
+async def with_timeout():
+    try:
+        result = await asyncio.wait_for(fetch_data("url"), timeout=5.0)
+    except asyncio.TimeoutError:
+        print("Request timed out")
+```
 
-# Building and publishing
-uv build                               # Build package
-uv publish --token $PYPI_TOKEN        # Publish to PyPI
+## Design Patterns
+
+### Dependency Injection
+
+```python
+from typing import Protocol
+
+class Database(Protocol):
+    def query(self, sql: str) -> list: ...
+
+def get_users(db: Database) -> list:
+    return db.query("SELECT * FROM users")
+```
+
+### Factory Pattern
+
+```python
+def create_handler(handler_type: str):
+    match handler_type:
+        case "json":
+            return JSONHandler()
+        case "xml":
+            return XMLHandler()
+        case _:
+            raise ValueError(f"Unknown handler: {handler_type}")
+```
+
+### Decorator Pattern
+
+```python
+from functools import wraps
+import time
+
+def timer(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} took {end - start:.2f}s")
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    time.sleep(1)
 ```
 
 ## Best Practices
 
-**Project Structure (src layout)**
+### SOLID Principles
+
+**Single Responsibility:**
+```python
+# Bad: Class does too much
+class User:
+    def save(self): pass
+    def send_email(self): pass
+    def generate_report(self): pass
+
+# Good: Separate concerns
+class User:
+    def save(self): pass
+
+class EmailService:
+    def send_email(self, user): pass
+
+class ReportGenerator:
+    def generate(self, user): pass
+```
+
+### Fail Fast
+
+```python
+def process_data(data: dict) -> str:
+    # Validate early
+    if not data:
+        raise ValueError("Data cannot be empty")
+    if "required_field" not in data:
+        raise KeyError("Missing required field")
+
+    # Process with confidence
+    return data["required_field"].upper()
+```
+
+### Functional Approach
+
+```python
+# Prefer immutable transformations
+def process_items(items: list[int]) -> list[int]:
+    return [item * 2 for item in items]  # New list
+
+# Over mutations
+def process_items_bad(items: list[int]) -> None:
+    for i in range(len(items)):
+        items[i] *= 2  # Mutates input
+```
+
+## Project Structure (src layout)
+
 ```
 my-project/
 ├── pyproject.toml
-├── uv.lock
 ├── README.md
 ├── src/
-│   └── my_awesome_project/
+│   └── my_project/
 │       ├── __init__.py
-│       ├── main.py
-│       └── utils.py
+│       ├── core.py
+│       ├── utils.py
+│       └── models.py
 └── tests/
-    ├── test_main.py
+    ├── conftest.py
+    ├── test_core.py
     └── test_utils.py
 ```
 
-**Type Hints (Python 3.10+)**
-```python
-def process_data(
-    items: list[str],                    # Use list[T] not List[T]
-    config: dict[str, int],              # Use dict[K, V]
-    optional_param: str | None = None,   # Use | not Union
-) -> tuple[bool, str]:
-    """Process data with modern type hints."""
-    return True, "success"
-```
+## See Also
 
-**Testing with pytest**
-```python
-import pytest
+- **uv-project-management** - Project setup and dependency management
+- **python-testing** - Testing with pytest
+- **python-code-quality** - Linting and type checking with ruff/mypy
+- **python-packaging** - Building and publishing packages
+- **uv-python-versions** - Managing Python interpreters
 
-@pytest.fixture
-def sample_data():
-    return {"key": "value"}
+## References
 
-@pytest.mark.parametrize("input,expected", [
-    ("hello", "HELLO"),
-    ("world", "WORLD"),
-])
-def test_uppercase(input: str, expected: str) -> None:
-    assert input.upper() == expected
-```
-
-For detailed pyproject.toml configuration, advanced debugging patterns, CI/CD integration, and troubleshooting, see REFERENCE.md.
+- Python docs: https://docs.python.org/3/
+- Type hints: https://docs.python.org/3/library/typing.html
+- Async: https://docs.python.org/3/library/asyncio.html
+- Detailed guide: See REFERENCE.md
