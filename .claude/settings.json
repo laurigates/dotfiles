@@ -58,7 +58,7 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
-  "alwaysThinkingEnabled": true,
+  "alwaysThinkingEnabled": false,
   "mcpServers": {
     "context7": {
       "command": "bunx",
