@@ -67,7 +67,6 @@ return {
   --     --Config goes here
   --   },
   -- }
-  "stevearc/vim-arduino",
   -- {
   --   "nvimtools/none-ls.nvim",
   --   dependencies = {

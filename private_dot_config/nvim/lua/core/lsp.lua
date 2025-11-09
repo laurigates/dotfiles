@@ -52,10 +52,25 @@ vim.lsp.config("jsonls", {
   },
 })
 
+-- Configure Arduino Language Server
+-- Requires: arduino-cli and arduino-language-server installed via Mason
+vim.lsp.config("arduino_language_server", {
+  cmd = {
+    "arduino-language-server",
+    "-cli-config", vim.fn.expand("~/.arduino15/arduino-cli.yaml"),
+    "-fqbn", "arduino:avr:uno", -- Default FQBN, can be overridden per project
+    "-cli", "arduino-cli",
+    "-clangd", "clangd",
+  },
+  filetypes = { "arduino", "ino" },
+  root_markers = { "*.ino" },
+})
+
 -- Enable configured LSP servers
 -- Note: Servers must be installed via Mason (:Mason) before they can be enabled
 vim.lsp.enable("terraformls")
 vim.lsp.enable("jsonls")
+vim.lsp.enable("arduino_language_server")
 
 -- Additional LSP server examples (uncomment and configure as needed):
 --
