@@ -11,3 +11,6 @@ FILE_COPY_SUMMARY.md
 
 # Claude Local settings
 settings.local.json
+
+.claude/.credentials.json
+.claude/.update.lock
