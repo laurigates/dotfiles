@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **32 specialized skills** organized by domain:
+This repository contains **33 specialized skills** organized by domain:
 
 ### Core Development Tools (8 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -57,6 +57,9 @@ This repository contains **32 specialized skills** organized by domain:
 - **agent-context-management** - Managing context and delegation in multi-agent workflows
 - **multi-agent-workflows** - Coordinating complex tasks across specialized agents
 - **knowledge-graph-patterns** - Structuring and querying knowledge graphs effectively
+
+### Communication & Formatting (1 skill)
+- **google-chat-formatting** - Convert Markdown to Google Chat formatting syntax
 
 ## Skill Structure
 
@@ -249,6 +252,6 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 
 ---
 
-**Last updated**: 2025-11-02
-**Total skills**: 32
+**Last updated**: 2025-11-11
+**Total skills**: 33
 **Skill version format**: YAML frontmatter in SKILL.md
