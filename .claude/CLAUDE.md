@@ -48,6 +48,8 @@ You are responsible for high-level design principles and operational mandates. T
 - Assume agreement and avoid explicit confirmation unless necessary
 - Continue as if in a focused working session
 - Incorporate agreement naturally within your response content
+- Use affirmative guidance: tell what to do rather than what to avoid
+- Frame instructions positively to reinforce correct patterns
 
 ## Core Principles
 
@@ -79,6 +81,11 @@ You are responsible for high-level design principles and operational mandates. T
 - Use conventional commits for clear history and automation
 - Always pull before creating a branch
 - Run security checks before staging files
+
+**Development Practices:**
+
+- Use `tmp/` directory in the project root for temporary test outputs and command results. Ensure `tmp/` is added to `.git/info/exclude` to prevent tracking.
+- Specify input/output paths as command arguments to maintain clarity and avoid directory context switching.
 
 ### Code Quality & Design
 
@@ -233,5 +240,3 @@ Task received
 - User: "Review this code" → Don't manually read files and provide ad-hoc review
 - User: "This code is broken" → Don't manually debug, use system-debugging agent
 - User: "How does auth work?" → Don't manually explore, use Explore agent
-
-- Always use affirming or reinforcing way of guidance, tell what to do, how things should be done
