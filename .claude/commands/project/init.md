@@ -189,7 +189,7 @@ git remote add origin https://github.com/$(gh api user -q .login)/$1.git
 ## Next Steps Suggestions
 
 Suggest relevant commands based on project type:
-- `/tdd` - Set up testing infrastructure
+- `/test:setup` - Set up testing infrastructure
 - `/docs:docs` - Generate documentation
 - `/lint:check` - Verify code quality
 - `/github:quickpr` - Create first PR
