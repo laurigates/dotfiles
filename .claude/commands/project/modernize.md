@@ -1,12 +1,12 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(uv:*), Bash(npm:*), Bash(bun:*), TodoWrite
-argument-hint: [--python] [--node] [--full]
-description: Experimental modernization with latest tooling
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(grep:*), Bash(find:*), Bash(npm:*), Bash(pip:*), Bash(uv:*), Bash(cargo:*), TodoWrite
+argument-hint: [--security-focus] [--12factor] [--full]
+description: Modernize applications to current standards and best practices
 ---
 
 # modernize.md - Application Modernization Instructions for Claude
 
-When the user types `/modernize`, follow these instructions to systematically modernize applications to follow modern standards, 12-factor app principles, and security best practices.
+When the user types `/project:modernize`, follow these instructions to systematically modernize applications to follow modern standards, 12-factor app principles, and security best practices.
 
 ## Overview
 
@@ -1069,12 +1069,12 @@ Create a comprehensive report of changes made:
 
 Handle these command variations:
 
-- `/modernize` - Full modernization process
-- `/modernize --phase 3` - Run specific phase only
-- `/modernize --dry-run` - Show what would be changed without making changes
-- `/modernize --security-only` - Focus only on security fixes
-- `/modernize --audit-only` - Generate compliance report without changes
-- `/modernize --interactive` - Prompt for confirmation before major changes
+- `/project:modernize` - Full modernization process
+- `/project:modernize --phase 3` - Run specific phase only
+- `/project:modernize --dry-run` - Show what would be changed without making changes
+- `/project:modernize --security-only` - Focus only on security fixes
+- `/project:modernize --audit-only` - Generate compliance report without changes
+- `/project:modernize --interactive` - Prompt for confirmation before major changes
 
 ## Error Handling
 
@@ -1107,7 +1107,7 @@ Handle these command variations:
 After completion, provide:
 
 ```
-✅ /modernize completed successfully!
+✅ /project:modernize completed successfully!
 
 📊 Summary:
 - Technology Stack: {detected stack}

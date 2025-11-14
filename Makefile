@@ -148,6 +148,11 @@ update: ## Update all tools and packages
 	@echo "$(GREEN)Updating Claude CLI completion...$(RESET)"
 	@$(MAKE) update-claude-completion
 
+bump: ## Bump all tools to latest versions across all package managers
+	@echo "$(BLUE)🚀 Bumping all tools to latest versions...$(RESET)"
+	@BUMP=1 chezmoi apply
+	@echo "$(GREEN)✅ Bump complete!$(RESET)"
+
 update-claude-completion: ## Update Claude CLI zsh completion
 	@echo "$(BLUE)Updating Claude CLI completion...$(RESET)"
 	@if [ -x "./scripts/generate-claude-completion-simple.sh" ]; then \

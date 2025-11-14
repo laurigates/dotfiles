@@ -10,16 +10,36 @@ echo "🔄 Starting comprehensive update process..."
 # Brew
 {{- if eq .chezmoi.os "darwin" }}
 echo "📦 Updating Homebrew packages..."
-brew update && brew upgrade && brew cleanup
+if [ "${BUMP:-}" = "1" ]; then
+    echo "🚀 Full upgrade including casks..."
+    brew update && brew upgrade && brew upgrade --cask && brew cleanup
+else
+    brew update && brew upgrade && brew cleanup
+fi
 {{- else }}
 echo "📦 Updating Homebrew packages..."
-/home/linuxbrew/.linuxbrew/bin/brew update && /home/linuxbrew/.linuxbrew/bin/brew upgrade && /home/linuxbrew/.linuxbrew/bin/brew cleanup
+if [ "${BUMP:-}" = "1" ]; then
+    echo "🚀 Full upgrade including casks..."
+    /home/linuxbrew/.linuxbrew/bin/brew update && /home/linuxbrew/.linuxbrew/bin/brew upgrade && /home/linuxbrew/.linuxbrew/bin/brew upgrade --cask && /home/linuxbrew/.linuxbrew/bin/brew cleanup
+else
+    /home/linuxbrew/.linuxbrew/bin/brew update && /home/linuxbrew/.linuxbrew/bin/brew upgrade && /home/linuxbrew/.linuxbrew/bin/brew cleanup
+fi
 {{- end }}
 
 # mise
 if command -v mise >/dev/null 2>&1; then
     echo "🛠️  Updating mise and tool versions..."
-    mise upgrade
+    if [ "${BUMP:-}" = "1" ]; then
+        echo "🚀 Bumping to latest versions and updating global config..."
+        mise upgrade --bump
+        echo "📝 Updating global mise config with new versions..."
+        # Update global config to reflect new versions
+        mise list --current | while read -r tool version; do
+            [ -n "$tool" ] && [ -n "$version" ] && mise use --global "${tool}@${version}"
+        done
+    else
+        mise upgrade
+    fi
 else
     echo "⚠️  mise not found, skipping tool updates"
 fi
@@ -60,7 +80,11 @@ if command -v uv >/dev/null 2>&1; then
     {{- end }}
     {{- end }}
 
-    echo "⬆️  Upgrading all uv tool packages..."
+    if [ "${BUMP:-}" = "1" ]; then
+        echo "🚀 Upgrading all uv tool packages to latest versions..."
+    else
+        echo "⬆️  Upgrading all uv tool packages..."
+    fi
     uv tool upgrade --all
 else
     echo "⚠️  uv not found, skipping Python package updates"

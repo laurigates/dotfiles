@@ -1,14 +1,16 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(pytest:*), Bash(npm test:*), Bash(cargo test:*), Bash(go test:*), mcp__github__list_issues, mcp__github__create_issue, mcp__github__create_pull_request, mcp__github__get_issue, TodoWrite
-argument-hint: [--max-cycles <n>] [--focus <bug|feature|test>]
-description: Automated development loop with issue creation and TDD
+allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), mcp__zen-mcp-server__codereview, mcp__zen-mcp-server__planner, mcp__zen-mcp-server__precommit, mcp__github__list_issues, mcp__github__create_issue, mcp__github__create_pull_request, TodoWrite
+argument-hint: [--max-cycles <n>] [--model <model>]
+description: AI-powered development loop with Zen MCP integration
 ---
 
 # devloop.md - Development Loop Instructions for Claude
 
-When the user types `/devloop`, follow these instructions to execute an automated development loop.
+When the user types `/workflow:dev`, follow these instructions to execute an automated development loop.
 
 ## Overview
+
+Use zen to perform a codereview using gemini pro and use planner to generate a detailed plan, implement the fixes and do a final precommit check by continuing from the previous codereview. Check GitHub issues using the GitHub MCP and consider them during planning.
 
 Execute a continuous development cycle that:
 
@@ -156,12 +158,12 @@ git push origin fix/issue-{number}-{brief-description}
 
 Handle these command variations:
 
-- `/devloop` - Run continuous loop until stopped
-- `/devloop --max-cycles 3` - Limit to 3 issue resolution cycles
-- `/devloop --focus bug` - Only work on issues labeled "bug"
-- `/devloop --quick-wins` - Only pick issues estimated < 30 minutes
-- `/devloop --test-only` - Only create issues for test failures, don't implement
-- `/devloop --dry-run` - Explain what would be done without making changes
+- `/workflow:dev` - Run continuous loop until stopped
+- `/workflow:dev --max-cycles 3` - Limit to 3 issue resolution cycles
+- `/workflow:dev --focus bug` - Only work on issues labeled "bug"
+- `/workflow:dev --quick-wins` - Only pick issues estimated < 30 minutes
+- `/workflow:dev --test-only` - Only create issues for test failures, don't implement
+- `/workflow:dev --dry-run` - Explain what would be done without making changes
 
 ## Error Handling
 

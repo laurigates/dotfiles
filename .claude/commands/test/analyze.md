@@ -5,7 +5,7 @@ Analyzes test results from any testing framework, uses Zen planner to create a s
 ## Usage
 
 ```bash
-/test-analysis <results-path> [--type <test-type>] [--focus <area>]
+/test:analyze <results-path> [--type <test-type>] [--focus <area>]
 ```
 
 ## Parameters
@@ -28,16 +28,16 @@ Analyzes test results from any testing framework, uses Zen planner to create a s
 
 ```bash
 # Analyze Playwright accessibility test results
-/test-analysis ./test-results/ --type accessibility
+/test:analyze ./test-results/ --type accessibility
 
 # Analyze unit test failures with focus on auth
-/test-analysis ./coverage/junit.xml --type unit --focus authentication
+/test:analyze ./coverage/junit.xml --type unit --focus authentication
 
 # Auto-detect test type and analyze all issues
-/test-analysis ./test-output/
+/test:analyze ./test-output/
 
 # Analyze security scan results
-/test-analysis ./security-report.json --type security
+/test:analyze ./security-report.json --type security
 ```
 
 ## Command Flow
@@ -125,7 +125,7 @@ The command produces:
 ## Related Commands
 
 - `/test:run` - Run tests with framework detection
-- `/codereview` - Manual code review for test files
+- `/code:review` - Manual code review for test files
 - `/docs:update` - Update test documentation
 - `/git:smartcommit` - Commit fixes with conventional messages
 
