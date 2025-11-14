@@ -1,15 +1,56 @@
-[edit]
-command="nvim"
+{{- $cpuCores := 1 }}
+{{- $cpuThreads := 1 }}
+{{- if eq .chezmoi.os "darwin" }}
+{{-   $cpuCores = (output "sysctl" "-n" "hw.physicalcpu_max") | trim | atoi }}
+{{-   $cpuThreads = (output "sysctl" "-n" "hw.logicalcpu_max") | trim | atoi }}
+{{- else if eq .chezmoi.os "linux" }}
+{{-   $cpuCores = (output "sh" "-c" "lscpu --online --parse | grep --invert-match '^#' | sort --field-separator=',' --key='2,4' --unique | wc --lines") | trim | atoi }}
+{{-   $cpuThreads = (output "sh" "-c" "lscpu --online --parse | grep --invert-match '^#' | wc --lines") | trim | atoi }}
+{{- else if eq .chezmoi.os "windows" }}
+{{-   $cpuCores = (output "powershell.exe" "-NoProfile" "-NonInteractive" "-Command" "(Get-CimInstance -ClassName 'Win32_Processor').NumberOfCores") | trim | atoi }}
+{{-   $cpuThreads = (output "powershell.exe" "-NoProfile" "-NonInteractive" "-Command" "(Get-CimInstance -ClassName 'Win32_Processor').NumberOfLogicalProcessors") | trim | atoi }}
+{{- end }}
 
-[data.cpu]
-cores = 14
-threads = 14
+# Chezmoi configuration with dynamic CPU detection
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
+[edit]
+command = "nvim"
+
+[data]
+    # Platform and hardware detection
+    [data.cpu]
+        cores = {{ $cpuCores }}
+        threads = {{ $cpuThreads }}
+
+    # Package management settings
+    [data.packages]
+        # Enable parallel installations where supported
+        parallel_jobs = {{ $cpuThreads }}
+
+        # Homebrew settings
+        [data.packages.homebrew]
+        {{- if eq .chezmoi.os "darwin" }}
+            prefix = "/opt/homebrew"
+        {{- else if eq .chezmoi.os "linux" }}
+            prefix = "/home/linuxbrew/.linuxbrew"
+        {{- end }}
 
 [merge]
-command = "nvim"
-args = [
-  "-d",
-{{ printf "%q" "{{ .Destination }}" }},
-{{ printf "%q" "{{ .Source }}" }},
-{{ printf "%q" "{{ .Target }}" }},
-]
+    command = "nvim"
+    args = [
+        "-d",
+        {{ printf "%q" "{{ .Destination }}" }},
+        {{ printf "%q" "{{ .Source }}" }},
+        {{ printf "%q" "{{ .Target }}" }},
+    ]
+
+[scriptEnv]
+    # Environment variables for scripts
+    HOMEBREW_NO_AUTO_UPDATE = "1"
+    HOMEBREW_NO_ANALYTICS = "1"
+    MISE_EXPERIMENTAL = "1"
+
+    # Parallel build settings
+    MAKEFLAGS = "-j{{ $cpuThreads }}"
+    NPM_CONFIG_JOBS = "{{ $cpuThreads }}"
