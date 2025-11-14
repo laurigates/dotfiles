@@ -85,7 +85,7 @@ You are responsible for high-level design principles and operational mandates. T
 **Development Practices:**
 
 - Use `tmp/` directory in the project root for temporary test outputs and command results. Ensure `tmp/` is added to `.git/info/exclude` to prevent tracking.
-- Specify input/output paths as command arguments to maintain clarity and avoid directory context switching.
+- Prefer to stay in the repository root directory, specify paths as command arguments to maintain clarity and avoid directory context switching.
 
 ### Code Quality & Design
 

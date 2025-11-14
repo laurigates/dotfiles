@@ -110,7 +110,7 @@ The repository provides three Claude Code plugins via a local marketplace for in
 ```bash
 # Edit plugin/skill files directly in source directory
 vim ~/.local/share/chezmoi/.claude/skills/python-development/SKILL.md
-vim ~/.local/share/chezmoi/plugins/dotfiles-core/commands/git/smartcommit.md
+vim ~/.local/share/chezmoi/plugins/dotfiles-core/commands/git/git:commit.md
 
 # Changes are IMMEDIATE via symlink - no chezmoi apply needed!
 # The .claude directory is symlinked: ~/.claude → ~/.local/share/chezmoi/.claude
