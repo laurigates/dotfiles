@@ -1,490 +1,405 @@
+---
+name: Git Security Checks
+description: Pre-commit security validation and secret detection. Automatically runs detect-secrets scan and audit workflow, validates secrets baseline, and integrates with pre-commit hooks to prevent credential leaks.
+allowed-tools: Bash, Read
+---
+
 # Git Security Checks
 
-## Description
+Expert guidance for pre-commit security validation and secret detection using detect-secrets and pre-commit hooks.
 
-Security validation and pre-commit checks for safe commits. Ensures no secrets, API keys, or sensitive data are committed through detect-secrets scanning and pre-commit hooks.
+## Core Expertise
 
-## When to Use
+- **detect-secrets**: Scan for hardcoded secrets and credentials
+- **Pre-commit Hooks**: Automated security validation before commits
+- **Secrets Baseline**: Manage false positives and legitimate secrets
+- **Security-First Workflow**: Prevent credential leaks before they happen
 
-Automatically apply this skill when:
-- Before every commit
-- Setting up new projects
-- During security audits
-- Configuring pre-commit hooks
-- Reviewing repository security
+## detect-secrets Workflow
 
-## Core Principles
+### Initial Setup
 
-**Security First**:
-- Scan for secrets before EVERY commit
-- Run pre-commit hooks automatically
-- Never commit sensitive data
-- Use environment variables for secrets
-- Properly configure `.gitignore`
-
-## Pre-Commit Validation Workflow
-
-**Complete Pre-Commit Checklist**:
 ```bash
-# 1. Secret scanning (ALWAYS first)
-detect-secrets scan --baseline .secrets.baseline
+# Install detect-secrets
+pip install detect-secrets
 
-# 2. Pre-commit hooks
-pre-commit run --all-files
+# Create initial baseline
+detect-secrets scan > .secrets.baseline
 
-# 3. Language-specific checks
-# Python
-ruff check --fix .
-ruff format .
-pytest
-
-# Rust
-cargo fmt
-cargo clippy
-cargo test
-
-# JavaScript/TypeScript
-npm run lint:fix
-npm run format
-npm test
-
-# 4. Review changes
-git diff --cached
-
-# 5. Commit only after all checks pass
-git commit -m "type: description"
+# Audit baseline for false positives
+detect-secrets audit .secrets.baseline
 ```
 
-## Secret Scanning with detect-secrets
+### Pre-commit Scan Workflow
 
-### Basic Usage
+Run detect-secrets before every commit:
 
 ```bash
-# Scan for new secrets (run before EVERY commit)
+# Scan for new secrets (using existing baseline)
 detect-secrets scan --baseline .secrets.baseline
 
-# Review flagged items
+# If new secrets detected, audit them
 detect-secrets audit .secrets.baseline
 
-# Update baseline after review
-detect-secrets scan --baseline .secrets.baseline --update
+# Stage the updated baseline
+git add .secrets.baseline
 ```
 
-### What detect-secrets Finds
+### Audit Process
 
-Scans for:
-- API keys and tokens
-- Private keys and certificates
-- Passwords and credentials
-- AWS/GCP/Azure secrets
-- Database connection strings
-- JWT tokens
-- OAuth tokens
+When new secrets are detected:
 
-### Handling Detected Secrets
-
-**If secrets are found**:
 ```bash
-# 1. Review the finding
+# Run audit to review flagged items
 detect-secrets audit .secrets.baseline
 
-# 2. If true positive (real secret):
-#    - Remove from code
-#    - Add to environment variables
-#    - Update code to use env vars
-#    - Never commit the secret
+# For each detected secret:
+# - Press 'y' if it's a real secret (DON'T COMMIT)
+# - Press 'n' if it's a false positive (safe to commit)
+# - Press 's' to skip for now
 
-# 3. If false positive (not a secret):
-#    - Mark as allowed in audit
-#    - Update baseline
+# After audit, re-scan to update baseline
+detect-secrets scan --baseline .secrets.baseline
 ```
 
-### Setting Up detect-secrets
+### Complete Pre-commit Security Flow
 
 ```bash
-# Initialize baseline
+# 1. Scan for secrets with baseline
 detect-secrets scan --baseline .secrets.baseline
 
-# Add to pre-commit hooks
-# .pre-commit-config.yaml
+# 2. If baseline updated, audit new findings
+detect-secrets audit .secrets.baseline
+
+# 3. Stage the updated baseline
+git add .secrets.baseline
+
+# 4. Run all pre-commit hooks
+pre-commit run --all-files --show-diff-on-failure
+
+# 5. Stage your actual changes
+git add src/file.ts
+
+# 6. Show what's staged
+git status
+git diff --cached --stat
+
+# 7. Commit if everything passes
+git commit -m "feat(auth): add authentication module"
+```
+
+## Pre-commit Hook Integration
+
+### .pre-commit-config.yaml
+
+Example configuration with detect-secrets:
+
+```yaml
 repos:
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
+        exclude: package-lock.json
 ```
 
-## Pre-Commit Hooks
-
-### Running Pre-Commit Checks
+### Running Pre-commit Hooks
 
 ```bash
+# Run all hooks on all files
+pre-commit run --all-files
+
+# Run all hooks on staged files only
+pre-commit run
+
+# Run specific hook
+pre-commit run detect-secrets
+
+# Show diff on failure for debugging
+pre-commit run --all-files --show-diff-on-failure
+
+# Install hooks to run automatically on commit
+pre-commit install
+```
+
+## Common Secret Patterns
+
+detect-secrets scans for:
+
+- **API Keys**: AWS, GitHub, Stripe, etc.
+- **Authentication Tokens**: JWT, OAuth tokens, session tokens
+- **Passwords**: Hardcoded passwords in config files
+- **Private Keys**: RSA, SSH, PGP private keys
+- **Database Credentials**: Connection strings with passwords
+- **Generic Secrets**: High-entropy strings that look like secrets
+
+### Examples of What Gets Detected
+
+```bash
+# ❌ DETECTED: Hardcoded API key
+API_KEY = "sk_live_abc123def456ghi789"
+
+# ❌ DETECTED: AWS credentials
+aws_access_key_id = AKIAIOSFODNN7EXAMPLE
+
+# ❌ DETECTED: Database password
+DB_URL = "postgresql://user:Pa$$w0rd@localhost/db"
+
+# ❌ DETECTED: Private key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+```
+
+## Managing False Positives
+
+### Excluding Files
+
+In `.secrets.baseline`:
+
+```bash
+# Exclude specific files from scanning
+detect-secrets scan --exclude-files 'package-lock\.json' > .secrets.baseline
+detect-secrets scan --exclude-files '.*\.lock$' > .secrets.baseline
+detect-secrets scan --exclude-files 'test/.*\.py' > .secrets.baseline
+```
+
+### Inline Ignore Comments
+
+```python
+# In code, mark false positives
+api_key = "test-key-1234"  # pragma: allowlist secret
+
+# Or use detect-secrets specific pragma
+password = "fake-password"  # pragma: allowlist nextline secret
+```
+
+### Baseline Management
+
+```bash
+# Update baseline to include current state
+detect-secrets scan --baseline .secrets.baseline --update
+
+# Re-audit all secrets in baseline
+detect-secrets audit .secrets.baseline
+
+# Show secrets in baseline
+cat .secrets.baseline | jq '.results'
+```
+
+## Security Best Practices
+
+### Never Commit Secrets
+
+- **Use environment variables**: Store secrets in .env files (gitignored)
+- **Use secret managers**: AWS Secrets Manager, HashiCorp Vault, etc.
+- **Use CI/CD secrets**: GitHub Secrets, GitLab CI/CD variables
+- **Rotate leaked secrets**: If accidentally committed, rotate immediately
+
+### Secrets File Management
+
+```bash
+# Example .gitignore for secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+config/secrets.yml
+.api_tokens
+```
+
+### Handling Legitimate Secrets in Repo
+
+For test fixtures or examples:
+
+```bash
+# 1. Use obviously fake values
+API_KEY = "fake-key-for-testing-only"
+
+# 2. Use placeholders
+API_KEY = "<your-api-key-here>"
+
+# 3. Mark in baseline as false positive
+detect-secrets audit .secrets.baseline  # mark as 'n'
+```
+
+## Emergency: Secret Leaked to Git History
+
+If a secret is committed and pushed:
+
+### Immediate Actions
+
+```bash
+# 1. ROTATE THE SECRET IMMEDIATELY
+# - Change passwords, revoke API keys, regenerate tokens
+# - Do this BEFORE cleaning git history
+
+# 2. Remove from current commit (if just committed)
+git reset --soft HEAD~1
+# Remove secret from files
+git add .
+git commit -m "fix(security): remove leaked credentials"
+
+# 3. Force push (if not shared widely)
+git push --force-with-lease origin branch-name
+```
+
+### Full History Cleanup
+
+```bash
+# Use git-filter-repo to remove from all history
+pip install git-filter-repo
+
+# Remove specific file from all history
+git filter-repo --path path/to/secret/file --invert-paths
+
+# Remove specific string from all files
+git filter-repo --replace-text <(echo "SECRET_KEY=abc123==>SECRET_KEY=REDACTED")
+```
+
+### Prevention
+
+```bash
+# Always run security checks before committing
+pre-commit run detect-secrets
+
+# Check what's being committed
+git diff --cached
+
+# Use .gitignore for sensitive files
+echo ".env" >> .gitignore
+echo ".api_tokens" >> .gitignore
+```
+
+## Workflow Integration
+
+### Daily Development Flow
+
+```bash
+# Before staging any files
+detect-secrets scan --baseline .secrets.baseline
+pre-commit run --all-files
+
+# If secrets detected
+detect-secrets audit .secrets.baseline
+# Review and mark false positives
+
+# Stage changes
+git add .secrets.baseline  # If updated
+git add src/feature.ts
+
+# Final check before commit
+git diff --cached  # Review changes
+detect-secrets scan --baseline .secrets.baseline  # One more scan
+
+# Commit
+git commit -m "feat(feature): add new capability"
+```
+
+### CI/CD Integration
+
+```yaml
+# Example GitHub Actions workflow
+name: Security Checks
+
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+      - name: Scan for secrets
+        run: detect-secrets scan --baseline .secrets.baseline --fail-on-unaudited
+```
+
+## Troubleshooting
+
+### Baseline Out of Sync
+
+```bash
+# Re-generate baseline from scratch
+detect-secrets scan > .secrets.baseline.new
+detect-secrets audit .secrets.baseline.new
+mv .secrets.baseline.new .secrets.baseline
+```
+
+### Too Many False Positives
+
+```bash
+# Exclude file patterns
+detect-secrets scan --exclude-files 'test/.*' > .secrets.baseline
+
+# Reduce sensitivity (use cautiously)
+detect-secrets scan --base64-limit 4.5 > .secrets.baseline
+```
+
+### Pre-commit Hook Failing
+
+```bash
+# Run pre-commit in verbose mode
+pre-commit run detect-secrets --verbose
+
+# Check baseline file exists
+ls -la .secrets.baseline
+
+# Update pre-commit hooks
+pre-commit autoupdate
+```
+
+### Secret Detected But File Not Changed
+
+```bash
+# Baseline may be stale
+detect-secrets scan --baseline .secrets.baseline --update
+
+# Audit to clear false positives
+detect-secrets audit .secrets.baseline
+```
+
+## Tools Reference
+
+### detect-secrets Commands
+
+```bash
+# Scan for secrets
+detect-secrets scan
+
+# Scan with baseline
+detect-secrets scan --baseline .secrets.baseline
+
+# Audit baseline
+detect-secrets audit .secrets.baseline
+
+# Update baseline
+detect-secrets scan --baseline .secrets.baseline --update
+
+# Exclude files
+detect-secrets scan --exclude-files 'pattern'
+
+# Custom plugins
+detect-secrets scan --list-all-plugins
+```
+
+### pre-commit Commands
+
+```bash
+# Install hooks
+pre-commit install
+
 # Run all hooks
 pre-commit run --all-files
 
 # Run specific hook
 pre-commit run detect-secrets
-pre-commit run trailing-whitespace
 
-# Run on staged files only
-pre-commit run
+# Update hook versions
+pre-commit autoupdate
+
+# Uninstall hooks
+pre-commit uninstall
 ```
-
-### Common Pre-Commit Hooks
-
-```yaml
-# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: check-merge-conflict
-
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
-    hooks:
-      - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
-```
-
-### Installing Pre-Commit
-
-```bash
-# Install pre-commit
-pip install pre-commit
-# or
-brew install pre-commit
-
-# Install hooks in repository
-pre-commit install
-
-# Now hooks run automatically on git commit
-```
-
-## Security Checklist
-
-**Before Every Commit**:
-- [ ] Run `detect-secrets scan --baseline .secrets.baseline`
-- [ ] No API keys, passwords, or tokens in code
-- [ ] No `.env` files with real secrets
-- [ ] No private keys or certificates
-- [ ] Environment variables used for sensitive data
-- [ ] `.gitignore` properly configured
-- [ ] Pre-commit hooks passed
-
-## Language-Specific Security Checks
-
-### Python
-
-```bash
-# Security linting
-bandit -r src/                    # Security issues
-safety check                      # Vulnerable dependencies
-
-# Code quality
-ruff check --fix .
-ruff format .
-
-# Type checking
-mypy src/
-```
-
-### JavaScript/TypeScript
-
-```bash
-# Security audit
-npm audit                         # Vulnerable dependencies
-npm audit fix                     # Auto-fix vulnerabilities
-
-# Linting
-npm run lint:fix
-eslint --fix .
-
-# Type checking
-tsc --noEmit
-```
-
-### Rust
-
-```bash
-# Security audit
-cargo audit                       # Vulnerable dependencies
-
-# Linting and formatting
-cargo fmt
-cargo clippy -- -D warnings
-```
-
-## Handling Committed Secrets
-
-**If you accidentally commit a secret**:
-
-### Remove from Latest Commit (Not Pushed)
-
-```bash
-# Remove file from commit
-git reset HEAD^ path/to/secret-file
-git commit --amend --no-edit
-
-# Or completely redo commit
-git reset --soft HEAD^
-# Remove secret, stage clean files
-git commit -m "original message"
-```
-
-### Remove from Git History (Already Pushed)
-
-```bash
-# WARNING: This rewrites history
-# Coordinate with team before running
-
-# Using git-filter-repo (recommended)
-git filter-repo --path path/to/secret-file --invert-paths
-
-# Or using BFG Repo-Cleaner
-bfg --delete-files secret-file.env
-
-# Force push (dangerous, coordinate with team)
-git push --force-with-lease
-```
-
-### Rotate Compromised Secrets
-
-**If secret was pushed**:
-1. **Immediately rotate** the compromised secret
-2. Remove from git history
-3. Update all environments with new secret
-4. Verify old secret is revoked
-5. Document incident
-
-## Scan Git History for Secrets
-
-```bash
-# Scan entire git history
-trufflehog git file://. --only-verified
-
-# Scan specific branch
-trufflehog git file://. --branch main
-
-# Scan since specific commit
-trufflehog git file://. --since-commit <commit-sha>
-```
-
-## Environment Variables for Secrets
-
-### Using .env Files Safely
-
-```bash
-# .gitignore (ALWAYS ignore .env files)
-.env
-.env.local
-.env.*.local
-*.key
-*.pem
-credentials.json
-
-# .env.example (commit this - no real secrets)
-API_KEY=your_api_key_here
-DATABASE_URL=postgresql://user:password@localhost/db
-```
-
-### Loading Environment Variables
-
-**Python**:
-```python
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-api_key = os.getenv('API_KEY')
-```
-
-**JavaScript**:
-```javascript
-require('dotenv').config();
-const apiKey = process.env.API_KEY;
-```
-
-**Rust**:
-```rust
-use std::env;
-use dotenv::dotenv;
-
-dotenv().ok();
-let api_key = env::var("API_KEY").expect("API_KEY not set");
-```
-
-## .gitignore Configuration
-
-**Essential entries**:
-```gitignore
-# Secrets and credentials
-.env
-.env.*
-!.env.example
-*.key
-*.pem
-*.p12
-credentials.json
-secrets.yaml
-
-# API tokens
-.api_tokens
-.tokens
-
-# Cloud provider credentials
-.aws/credentials
-.gcp/credentials.json
-.azure/credentials
-
-# SSH keys
-id_rsa
-id_ed25519
-*.ppk
-```
-
-## Best Practices
-
-1. **Always scan before commit** - Make it muscle memory
-2. **Use pre-commit hooks** - Automate security checks
-3. **Rotate immediately if leaked** - Assume compromised
-4. **Use environment variables** - Never hardcode secrets
-5. **Review .gitignore** - Ensure all secret patterns covered
-6. **Educate team** - Everyone must follow security practices
-7. **Audit regularly** - Run trufflehog on entire history periodically
-
-## Common Pitfalls
-
-- ❌ Skipping secret scan "just this once"
-- ❌ Committing `.env` files with real secrets
-- ❌ Hardcoding API keys "temporarily"
-- ❌ Not rotating leaked secrets immediately
-- ❌ Ignoring pre-commit hook failures
-- ❌ Committing cloud provider credentials
-- ❌ Using weak `.gitignore` patterns
-
-## Examples
-
-### Example 1: Proper Pre-Commit Workflow
-
-```bash
-# Make changes
-# Edit files...
-
-# 1. Scan for secrets (FIRST)
-detect-secrets scan --baseline .secrets.baseline
-# ✅ No new secrets found
-
-# 2. Run pre-commit hooks
-pre-commit run --all-files
-# ✅ All hooks passed
-
-# 3. Run tests
-pytest
-# ✅ All tests passed
-
-# 4. Review and stage
-git add src/api.py tests/test_api.py
-git diff --cached
-
-# 5. Commit
-git commit -m "feat: add API endpoint"
-```
-
-### Example 2: Handling Found Secret
-
-```bash
-# Attempt to commit
-git add src/config.py
-
-# Scan for secrets
-detect-secrets scan --baseline .secrets.baseline
-# ❌ Found: API_KEY = "sk_live_abc123..."
-
-# Fix: Remove hardcoded secret
-# Edit src/config.py:
-# - API_KEY = "sk_live_abc123..."
-# + API_KEY = os.getenv("API_KEY")
-
-# Add to .env (NOT committed)
-echo 'API_KEY=sk_live_abc123...' >> .env
-
-# Ensure .env is ignored
-echo '.env' >> .gitignore
-
-# Re-scan
-detect-secrets scan --baseline .secrets.baseline
-# ✅ No secrets found
-
-# Commit clean code
-git add src/config.py .gitignore
-git commit -m "refactor: use environment variables for API key"
-```
-
-### Example 3: Setting Up New Project
-
-```bash
-# 1. Initialize detect-secrets
-detect-secrets scan --baseline .secrets.baseline
-
-# 2. Create .gitignore
-cat > .gitignore <<EOF
-.env
-.env.*
-!.env.example
-*.key
-*.pem
-credentials.json
-EOF
-
-# 3. Create .env.example
-cat > .env.example <<EOF
-API_KEY=your_api_key_here
-DATABASE_URL=postgresql://user:password@localhost/db
-EOF
-
-# 4. Install pre-commit
-pre-commit install
-
-# 5. Commit setup
-git add .secrets.baseline .gitignore .env.example .pre-commit-config.yaml
-git commit -m "chore: set up security scanning and pre-commit hooks"
-```
-
-## Integration with Other Skills
-
-- **git-commit-workflow**: Run security checks as part of commit workflow
-- **git-branch-pr-workflow**: Ensure security checks pass before PR creation
-- **release-please-protection**: Security scanning prevents secret leaks in releases
-
-## Quick Reference
-
-```bash
-# Essential security workflow
-detect-secrets scan --baseline .secrets.baseline  # ALWAYS FIRST
-pre-commit run --all-files                         # Run hooks
-# Run tests                                         # Language-specific
-git add files                                      # Stage explicitly
-git commit -m "message"                            # Commit
-
-# Setup commands
-pre-commit install                                 # Install hooks
-detect-secrets scan --baseline .secrets.baseline   # Initialize
-
-# Audit commands
-detect-secrets audit .secrets.baseline             # Review findings
-trufflehog git file://. --only-verified           # Scan history
-```
-
-## References
-
-- Related Skills: `git-commit-workflow`, `git-branch-pr-workflow`
-- detect-secrets: https://github.com/Yelp/detect-secrets
-- pre-commit: https://pre-commit.com/
-- trufflehog: https://github.com/trufflesecurity/trufflehog
-- Replaces: `git-workflow` (security sections)

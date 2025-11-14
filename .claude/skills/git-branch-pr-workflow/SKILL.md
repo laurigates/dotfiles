@@ -1,462 +1,317 @@
-# Git Branch and PR Workflow
+---
+name: Git Branch PR Workflow
+description: Branch management, pull request workflows, and GitHub integration. Modern Git commands (switch, restore), branch naming conventions, linear history with rebase, trunk-based development, and GitHub MCP tools for PRs.
+allowed-tools: Bash, Read, mcp__github__create_pull_request, mcp__github__list_pull_requests, mcp__github__update_pull_request
+---
 
-## Description
+# Git Branch PR Workflow
 
-Branch management, pull request creation, and collaboration workflows. Covers branch naming conventions, PR preparation, conflict resolution, and branch cleanup.
+Expert guidance for branch management, pull request workflows, and GitHub integration using modern Git commands and linear history practices.
 
-## When to Use
+## Core Expertise
 
-Automatically apply this skill when:
-- Creating feature branches
-- Preparing pull requests
-- Managing branches
-- Resolving conflicts
-- Reviewing PR readiness
-- Cleaning up merged branches
+- **Modern Git Commands**: Use `git switch` and `git restore` instead of checkout
+- **Branch Naming**: Structured conventions (feat/, fix/, chore/, hotfix/)
+- **Linear History**: Rebase-first workflow, squash merging, clean history
+- **Trunk-Based Development**: Short-lived feature branches with frequent integration
+- **GitHub MCP Integration**: Use mcp__github__* tools instead of gh CLI
 
-## Core Principles
+## Modern Git Commands (2025)
 
-**Branch-Based Development**:
-- Never commit directly to main
-- Create feature branches for all work
-- Use descriptive branch names
-- Keep branches up-to-date with main
-- Clean up after merging
+### Switch vs Checkout
 
-## Standard Workflow Sequence
-
-### 1. Start New Work
+Modern Git uses specialized commands instead of multi-purpose `git checkout`:
 
 ```bash
-# Always start with fresh main branch
-git checkout main
-git pull origin main
+# Branch switching - NEW WAY (Git 2.23+)
+git switch feature-branch          # vs git checkout feature-branch
+git switch -c new-feature          # vs git checkout -b new-feature
+git switch -                       # vs git checkout -
 
-# Create feature branch
-git checkout -b feature/descriptive-name
-# or
-git checkout -b fix/bug-description
+# Creating branches with tracking
+git switch -c feature --track origin/feature
+git switch -C force-recreate-branch
 ```
 
-**Branch Naming Conventions**:
-- `feature/` - New functionality
+### Restore vs Reset/Checkout
+
+File restoration is now handled by `git restore`:
+
+```bash
+# Unstaging files - NEW WAY
+git restore --staged file.txt      # vs git reset HEAD file.txt
+git restore --staged .             # vs git reset HEAD .
+
+# Discarding changes - NEW WAY
+git restore file.txt               # vs git checkout -- file.txt
+git restore .                      # vs git checkout -- .
+
+# Restore from specific commit
+git restore --source=HEAD~2 file.txt    # vs git checkout HEAD~2 -- file.txt
+git restore --source=main --staged .    # vs git reset main .
+```
+
+### Command Migration Guide
+
+| Legacy Command                | Modern Alternative                 | Purpose             |
+| ----------------------------- | ---------------------------------- | ------------------- |
+| `git checkout branch`         | `git switch branch`                | Switch branches     |
+| `git checkout -b new`         | `git switch -c new`                | Create & switch     |
+| `git checkout -- file`        | `git restore file`                 | Discard changes     |
+| `git reset HEAD file`         | `git restore --staged file`        | Unstage file        |
+| `git checkout HEAD~1 -- file` | `git restore --source=HEAD~1 file` | Restore from commit |
+
+## Branch Naming Conventions
+
+### Structured Branch Names
+
+```bash
+# Feature development
+git switch -c feat/payment-integration
+git switch -c feat/user-dashboard
+git switch -c feat/api-v2
+
+# Bug fixes
+git switch -c fix/login-validation
+git switch -c fix/memory-leak-auth
+git switch -c fix/broken-tests
+
+# Maintenance and refactoring
+git switch -c chore/update-dependencies
+git switch -c chore/cleanup-tests
+git switch -c refactor/auth-service
+
+# Hotfixes (for production)
+git switch -c hotfix/security-patch
+git switch -c hotfix/critical-bug-fix
+```
+
+### Branch Naming Format
+
+`{type}/{description}-{YYYYMMDD}` (date optional but recommended for clarity)
+
+**Types:**
+- `feat/` - New features
 - `fix/` - Bug fixes
-- `refactor/` - Code refactoring
-- `docs/` - Documentation updates
-- `test/` - Test additions or improvements
-- `chore/` - Maintenance tasks
+- `chore/` - Maintenance, dependencies, linter fixes
+- `docs/` - Documentation changes
+- `refactor/` - Code restructuring
+- `hotfix/` - Emergency production fixes
 
-**Examples**:
-```bash
-git checkout -b feature/user-authentication
-git checkout -b fix/connection-pool-timeout
-git checkout -b refactor/extract-validation
-git checkout -b docs/api-documentation
-git checkout -b test/add-integration-tests
-git checkout -b chore/update-dependencies
-```
+## Linear History Workflow
 
-## Pull Request Preparation
+### Trunk-Based Development
 
-### Before Creating PR
+Short-lived feature branches with frequent integration:
 
 ```bash
-# 1. Ensure branch is up-to-date
-git checkout main
+# Feature branch lifecycle (max 2 days)
+git switch main
 git pull origin main
-git checkout feature/branch-name
-git rebase main             # or merge main
+git switch -c feat/user-auth
 
-# 2. Run full test suite
-npm test                    # or pytest, cargo test, etc.
-
-# 3. Check for untracked files
-git status
-
-# 4. Review all commits
-git log main..HEAD --oneline
-
-# 5. Push to remote
-git push origin feature/branch-name
-# or first-time push
-git push -u origin feature/branch-name
-```
-
-### PR Best Practices
-
-```bash
-# Create PR with gh CLI
-gh pr create \
-  --title "feat: add authentication system" \
-  --body "$(cat <<'EOF'
-## Summary
-- Implemented JWT-based authentication
-- Added password hashing and validation
-- Created auth middleware
-
-## Test Plan
-- [x] Unit tests for auth functions
-- [x] Integration tests for endpoints
-- [x] Manual testing of login flow
-
-## Breaking Changes
-None
-
-Fixes #123
-EOF
-)"
-```
-
-**PR Template Structure**:
-```markdown
-## Summary
-- Bullet points of what changed
-- What problem this solves
-- How it solves it
-
-## Test Plan
-- [x] Unit tests added/updated
-- [x] Integration tests pass
-- [x] Manual testing completed
-
-## Breaking Changes
-List any breaking changes or "None"
-
-## Related Issues
-Fixes #123
-Relates to #456
-```
-
-## Branch Management
-
-### List Branches
-
-```bash
-# Local branches
-git branch
-
-# Remote branches
-git branch -r
-
-# All branches
-git branch -a
-
-# Branches with last commit
-git branch -v
-```
-
-### Delete Branches
-
-```bash
-# Delete merged branch (safe)
-git branch -d feature/done
-
-# Force delete unmerged branch
-git branch -D feature/bad
-
-# Delete remote branch
-git push origin --delete feature/done
-```
-
-### Clean Up Branches
-
-```bash
-# Remove local references to deleted remote branches
-git fetch --prune
-git remote prune origin
-
-# List merged branches (candidates for deletion)
-git branch --merged main
-
-# Delete all merged branches except main
-git branch --merged main | grep -v "main" | xargs git branch -d
-```
-
-## Conflict Resolution
-
-### During Rebase or Merge
-
-```bash
-# See conflicting files
-git status
-
-# Edit files to resolve conflicts
-# Look for <<<<<<< ======= >>>>>>>
-
-# After resolving
-git add resolved-file.py
-git rebase --continue       # or git merge --continue
-
-# Abort if needed
-git rebase --abort          # or git merge --abort
-```
-
-### Conflict Markers
-
-```python
-<<<<<<< HEAD
-# Your current branch changes
-def authenticate(user):
-    return validate_jwt(user.token)
-=======
-# Incoming changes from main
-def authenticate(user):
-    return validate_oauth(user.credentials)
->>>>>>> main
-```
-
-**Resolve by choosing or combining**:
-```python
-# Resolved: Keep both approaches
-def authenticate(user):
-    if user.token:
-        return validate_jwt(user.token)
-    return validate_oauth(user.credentials)
-```
-
-## Keeping Branch Up-to-Date
-
-### Rebase Strategy (Preferred)
-
-```bash
-# Update main
-git checkout main
-git pull origin main
-
-# Rebase your branch
-git checkout feature/branch-name
+# Daily rebase to stay current
+git switch main && git pull
+git switch feat/user-auth
 git rebase main
 
-# Resolve conflicts if any
-# Then force push (if already pushed)
-git push --force-with-lease
+# Interactive cleanup before PR
+git rebase -i main
+# Squash, fixup, reword commits for clean history
+
+# Push and create PR
+git push -u origin feat/user-auth
 ```
 
-**Advantages**:
-- Clean linear history
-- No merge commits
-- Easier to review
+### Squash Merge Strategy
 
-### Merge Strategy
+Maintain linear main branch history:
 
 ```bash
-# Update main
-git checkout main
-git pull origin main
+# Manual squash merge
+git switch main
+git merge --squash feat/user-auth
+git commit -m "feat: add user authentication system
 
-# Merge into your branch
-git checkout feature/branch-name
-git merge main
+- Implement JWT token validation
+- Add login/logout endpoints
+- Create user session management
 
-# Resolve conflicts if any
-# Then push
-git push
+Closes #123"
 ```
 
-**Advantages**:
-- Preserves exact history
-- No force push needed
-- Safer for collaboration
+### Interactive Rebase Workflow
 
-## Recovery and Troubleshooting
-
-### Find Lost Commits
+Clean up commits before sharing:
 
 ```bash
-# View reference log
-git reflog
+# Rebase last 3 commits
+git rebase -i HEAD~3
 
-# Recover specific commit
-git cherry-pick <commit>
+# Common rebase commands:
+# pick   = use commit as-is
+# squash = combine with previous commit
+# fixup  = squash without editing message
+# reword = change commit message
+# drop   = remove commit entirely
 
-# Restore deleted branch
-git reflog                  # Find branch tip commit
-git checkout -b recovered-branch <commit>
+# Example rebase todo list:
+pick a1b2c3d feat: add login form
+fixup d4e5f6g fix typo in login form
+squash g7h8i9j add form validation
+reword j1k2l3m implement JWT tokens
 ```
 
-### Undo Changes
+## GitHub MCP Integration
 
-```bash
-# Undo last commit (keep changes)
-git reset --soft HEAD^
+Use GitHub MCP tools for all GitHub operations:
 
-# Undo last commit (discard changes)
-git reset --hard HEAD^
+```python
+# Get repository information
+mcp__github__get_me()  # Get authenticated user info
 
-# Undo local changes to file
-git checkout -- file.py
-git restore file.py         # Modern syntax
-```
+# List and create PRs
+mcp__github__list_pull_requests(owner="owner", repo="repo")
+mcp__github__create_pull_request(
+  owner="owner",
+  repo="repo",
+  title="feat: add authentication",
+  head="feat/auth",
+  base="main",
+  body="## Summary\n- JWT authentication\n- OAuth support\n\nCloses #123"
+)
 
-## Working with Remote
+# Update PRs
+mcp__github__update_pull_request(
+  owner="owner",
+  repo="repo",
+  pullNumber=42,
+  title="Updated title",
+  state="open"
+)
 
-### Push Strategies
-
-```bash
-# First push (set upstream)
-git push -u origin feature/branch-name
-
-# Regular push
-git push
-
-# Force push (after rebase, use with caution)
-git push --force-with-lease  # Safer than --force
-```
-
-### Pull Strategies
-
-```bash
-# Pull with rebase
-git pull --rebase
-
-# Pull with merge
-git pull
-
-# Fetch without merging
-git fetch origin
-git diff main origin/main
+# List and create issues
+mcp__github__list_issues(owner="owner", repo="repo")
 ```
 
 ## Best Practices
 
-1. **Always branch from updated main** - Avoid stale starting points
-2. **Use descriptive branch names** - Clear purpose from name
-3. **Keep branches focused** - One feature/fix per branch
-4. **Update regularly** - Rebase or merge main frequently
-5. **Test before PR** - All tests must pass
-6. **Review your own diff** - Catch issues before others see
-7. **Clean up after merge** - Delete merged branches promptly
-8. **Use force-with-lease** - Safer than force push
-
-## Common Pitfalls
-
-- ❌ Committing directly to main
-- ❌ Vague branch names like "updates" or "fixes"
-- ❌ Long-lived branches that drift from main
-- ❌ Not testing before creating PR
-- ❌ Using `--force` instead of `--force-with-lease`
-- ❌ Forgetting to delete merged branches
-- ❌ Not keeping branch up-to-date with main
-
-## Examples
-
-### Example 1: Feature Branch Workflow
+### Daily Integration Workflow
 
 ```bash
-# Start feature
-git checkout main
+# Start of day: sync with main
+git switch main
 git pull origin main
-git checkout -b feature/add-payment-processing
-
-# Work and commit
-# ... multiple commits ...
-
-# Before PR: update with main
-git checkout main
-git pull origin main
-git checkout feature/add-payment-processing
+git switch feat/current-work
 git rebase main
 
-# Run tests
-npm test
+# End of day: push progress
+git add . && git commit -m "wip: daily progress checkpoint"
+git push origin feat/current-work
 
-# Push and create PR
-git push -u origin feature/add-payment-processing
-gh pr create \
-  --title "feat: add payment processing" \
-  --body "Implements Stripe payment integration"
-
-# After merge: cleanup
-git checkout main
-git pull origin main
-git branch -d feature/add-payment-processing
+# Before PR: clean up history
+git rebase -i main
+git push --force-with-lease origin feat/current-work
 ```
 
-### Example 2: Bug Fix Workflow
+### Conflict Resolution with Rebase
 
 ```bash
-# Create fix branch
-git checkout main
-git pull origin main
-git checkout -b fix/resolve-memory-leak
-
-# Fix and test
-# Edit files...
-git add src/cache.py
-git commit -m "fix: prevent memory leak in cache
-
-Clear cache entries when limit reached to prevent unbounded growth.
-
-Fixes #456"
-
-# Push and PR
-git push -u origin fix/resolve-memory-leak
-gh pr create \
-  --title "fix: resolve memory leak in cache" \
-  --body "Fixes #456"
-
-# After merge
-git checkout main
-git pull origin main
-git branch -d fix/resolve-memory-leak
-```
-
-### Example 3: Handling Conflicts
-
-```bash
-# Update branch with main
-git checkout main
-git pull origin main
-git checkout feature/new-api
+# When rebase conflicts occur
 git rebase main
-
-# Conflict occurs
-# CONFLICT (content): Merge conflict in src/api.py
-
-# View conflict
-git status
-# both modified: src/api.py
-
-# Resolve in editor
-# Edit src/api.py, remove markers, keep desired changes
-
-# Mark resolved
-git add src/api.py
+# Fix conflicts in editor
+git add resolved-file.txt
 git rebase --continue
 
-# Force push (after rebase)
-git push --force-with-lease
+# If rebase gets messy, abort and merge instead
+git rebase --abort
+git merge main
 ```
 
-## Integration with Other Skills
-
-- **git-commit-workflow**: Branches are built from commits
-- **git-security-checks**: Run security checks before PR
-- **release-please-protection**: PRs trigger automated releases
-
-## Quick Reference
+### Safe Force Pushing
 
 ```bash
-# Start work
-git checkout main && git pull
-git checkout -b feature/name
+# Always use --force-with-lease to prevent overwriting others' work
+git push --force-with-lease origin feat/branch-name
 
-# Before PR
-git checkout main && git pull
-git checkout feature/name && git rebase main
-npm test                              # Run tests
-git push -u origin feature/name
-gh pr create
-
-# Cleanup after merge
-git checkout main && git pull
-git branch -d feature/name
-git fetch --prune
+# Never force push to main/shared branches
+# Use this alias for safety:
+git config alias.pushf 'push --force-with-lease'
 ```
 
-## References
+## Main Branch Protection
 
-- Related Skills: `git-commit-workflow`, `git-security-checks`
-- GitHub CLI: https://cli.github.com/
-- Git Branching: https://git-scm.com/book/en/v2/Git-Branching
-- Replaces: `git-workflow` (branch and PR sections)
+Configure branch rules for linear history via GitHub MCP:
+
+```bash
+# Require linear history (disable merge commits)
+# Configure via GitHub settings or MCP tools
+# - Require pull request reviews
+# - Require status checks to pass
+# - Enforce linear history (squash merge only)
+```
+
+## Pull Request Workflow
+
+### PR Title Format
+
+Use conventional commit format in PR titles:
+
+- `feat: add user authentication`
+- `fix: resolve login validation bug`
+- `docs: update API documentation`
+- `chore: update dependencies`
+
+### PR Body Template
+
+```markdown
+## Summary
+Brief description of changes
+
+## Changes
+- Bullet points of key changes
+- Link related work
+
+## Testing
+How changes were tested
+
+Closes #123
+```
+
+### PR Creation Best Practices
+
+- **One focus per PR** - Single logical change
+- **Small PRs** - Easier to review (< 400 lines preferred)
+- **Link issues** - Use "Closes #123" or "Fixes #456"
+- **Add labels** - Use GitHub labels for categorization
+- **Request reviewers** - Tag specific reviewers when needed
+
+## Troubleshooting
+
+### Branch Diverged from Remote
+
+```bash
+# Pull with rebase to maintain linear history
+git pull --rebase origin feat/branch-name
+
+# Or reset if local changes can be discarded
+git fetch origin
+git reset --hard origin/feat/branch-name
+```
+
+### Accidentally Committed to Main
+
+```bash
+# Move commit to new branch
+git branch feat/accidental-commit
+git reset --hard HEAD~1
+git switch feat/accidental-commit
+```
+
+### Rebase Conflicts Are Too Complex
+
+```bash
+# Abort rebase and use merge instead
+git rebase --abort
+git merge main
+```

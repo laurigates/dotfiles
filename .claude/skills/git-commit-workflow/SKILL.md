@@ -1,356 +1,397 @@
+---
+name: Git Commit Workflow
+description: Commit message conventions, staging practices, and commit best practices. Conventional commits, explicit staging workflow, logical change grouping, and humble fact-based communication style.
+allowed-tools: Bash, Read
+---
+
 # Git Commit Workflow
 
-## Description
+Expert guidance for commit message conventions, staging practices, and commit best practices using conventional commits and explicit staging workflows.
 
-Commit practices including frequency, messages, staging, and history management. Emphasizes commit early and often, explicit staging, meaningful messages, and clean git history.
+## Core Expertise
 
-## When to Use
+- **Conventional Commits**: Standardized format for automation and clarity
+- **Explicit Staging**: Always stage files individually with clear visibility
+- **Logical Grouping**: Group related changes into focused commits
+- **Communication Style**: Humble, factual, concise commit messages
+- **Pre-commit Integration**: Run checks before committing
 
-Automatically apply this skill when:
-- Making commits
-- Writing commit messages
-- Staging files
-- Managing work in progress
-- Amending commits
-- Working with git stashes
+## Conventional Commit Format
 
-## Core Principles
+### Standard Format
 
-**Commit Philosophy**:
-- Commit early and often - track small incremental changes
-- Explicit staging - never use `git add .` without review
-- Meaningful messages - follow conventional commit format
-- Clean history - small focused commits are better than large ones
+```
+type(scope): description
 
-## Commit Frequency Best Practices
+[optional body]
 
-**Commit Often**:
-```bash
-# After each logical change
-git add file.py && git commit -m "feat: add data validation"
-git add test.py && git commit -m "test: add validation tests"
-git add docs.md && git commit -m "docs: document validation API"
-
-# Small focused commits are better than large ones
-# Good:  3 commits for feature (impl, tests, docs)
-# Bad:   1 commit with everything
+[optional footer(s)]
 ```
 
-**When to Commit**:
-- After implementing a single function or method
-- After fixing a specific bug
-- After adding or updating tests
-- After documentation updates
-- Before switching context or taking a break
-- After any working state you might want to return to
+### Commit Types
 
-## Staging Files Explicitly
+- **feat**: New feature for the user
+- **fix**: Bug fix for the user
+- **docs**: Documentation changes
+- **style**: Formatting, missing semicolons, etc (no code change)
+- **refactor**: Code restructuring without changing behavior
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks, dependency updates, linter fixes
+- **perf**: Performance improvements
+- **ci**: CI/CD changes
+
+### Examples
 
 ```bash
-# Stage specific files (NEVER use git add .)
-git add path/to/file1.py
-git add path/to/file2.rs
-git add path/to/file3.ts
+# Feature with scope
+git commit -m "feat(auth): implement OAuth2 integration"
 
-# Or stage files by category
-git add src/                # All files in src/
-git add tests/test_*.py     # All test files
-git add '*.md'              # All Markdown files
+# Bug fix with body
+git commit -m "fix(api): resolve null pointer in user service
 
-# Review staged changes
-git diff --cached
+Fixed race condition where user object could be null during
+concurrent authentication requests."
+
+# Documentation update
+git commit -m "docs(readme): update installation instructions"
+
+# Breaking change
+git commit -m "feat(api)!: migrate to GraphQL endpoints
+
+BREAKING CHANGE: REST endpoints removed in favor of GraphQL.
+See migration guide at docs/migration.md"
+
+# Multiple fixes
+git commit -m "fix(auth): resolve login validation issues
+
+- Handle empty email addresses
+- Validate password strength requirements
+- Add rate limiting to prevent brute force
+
+Fixes #123, #124"
 ```
 
-**Important**: Always review what you're staging:
-```bash
-# Good practice: stage and verify
-git add file.py && git diff --cached file.py
-```
+### Commit Message Best Practices
 
-## Commit Message Format
+**DO:**
+- Use imperative mood ("add feature" not "added feature")
+- Keep first line under 72 characters
+- Be concise and factual
+- Reference issues with "Fixes #123" or "Closes #456"
+- Use lowercase for type and scope
+- Be humble and modest
 
-```bash
-# Commit with descriptive message
-git commit -m "feat: add user authentication endpoint
+**DON'T:**
+- Use past tense ("added" or "fixed")
+- Include unnecessary details in subject line
+- Use vague descriptions ("update stuff", "fix bug")
+- Forget to reference related issues
 
-- Implement JWT token generation
-- Add password hashing with bcrypt
-- Create login and logout routes
-- Add auth middleware for protected routes"
+### Scope Guidelines
 
-# Or use editor for longer messages
-git commit
-```
-
-**Commit Message Structure**:
-```
-type: short description (max 50 chars)
-
-- Bullet point of change 1
-- Bullet point of change 2
-- Bullet point of change 3
-
-[optional] More detailed explanation if needed
-[optional] Breaking changes
-[optional] Issue references: Fixes #123
-```
-
-**Commit Types**:
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `refactor:` - Code refactoring
-- `docs:` - Documentation
-- `test:` - Adding tests
-- `chore:` - Maintenance
-- `perf:` - Performance improvement
-- `style:` - Code style changes
-
-## Advanced Commit Practices
-
-### Interactive Staging
+Common scopes by area:
 
 ```bash
-# Stage parts of files
-git add -p file.py          # Interactive staging
-git add -i                  # Interactive mode
+# Feature areas
+feat(auth): login system changes
+feat(api): API endpoint changes
+feat(ui): user interface changes
+feat(db): database schema changes
 
-# Useful for splitting changes into logical commits
+# Component-specific
+fix(header): navigation menu bug
+fix(footer): copyright date
+fix(sidebar): responsive layout
+
+# Infrastructure
+chore(deps): dependency updates
+chore(ci): CI/CD configuration
+chore(docker): container configuration
+```
+
+## Explicit Staging Workflow
+
+### Always Stage Files Individually
+
+```bash
+# Show current status
+git status --porcelain
+
+# Stage files one by one for visibility
+git add src/auth/login.ts
+git add src/auth/oauth.ts
+git status  # Verify what's staged
+
+# Show what will be committed
+git diff --cached --stat
+git diff --cached  # Review actual changes
+
+# Commit with conventional message
+git commit -m "feat(auth): add OAuth2 support"
+```
+
+### Pre-commit Hook Integration
+
+```bash
+# Run pre-commit checks before staging
+pre-commit run --all-files --show-diff-on-failure
+
+# Stage files after fixes
+git add fixed-file.ts
+git status
+
+# Show staged changes before commit
+git diff --cached --name-only
+git commit -m "style(code): apply linter fixes"
+```
+
+### Avoiding `git add .`
+
+```bash
+# ❌ DON'T: Blind staging
+git add .
+git commit -m "updates"
+
+# ✅ DO: Explicit staging with review
+git status
+git add src/feature/new-file.ts
+git add tests/feature.test.ts
+git diff --cached --stat
+git commit -m "feat(feature): add new feature with tests"
+```
+
+## Logical Change Grouping
+
+### Group Related Changes
+
+```bash
+# Example: Authentication feature with multiple files
+# Group 1: Core implementation
+git add src/auth/oauth.ts
+git add src/auth/token.ts
+git commit -m "feat(auth): implement OAuth2 token handling"
+
+# Group 2: Tests
+git add tests/auth/oauth.test.ts
+git add tests/auth/token.test.ts
+git commit -m "test(auth): add OAuth2 integration tests"
+
+# Group 3: Documentation
+git add docs/api/authentication.md
+git add README.md
+git commit -m "docs(auth): document OAuth2 flow"
+```
+
+### Separate Concerns
+
+```bash
+# Example: Mixed changes
+# Separate linter fixes from feature work
+
+# Group 1: Linter/formatting (chore commit)
+git add src/**/*.ts  # (only formatting changes)
+git add .eslintrc
+git commit -m "chore(lint): apply ESLint fixes and update config"
+
+# Group 2: Feature implementation (feat commit)
+git add src/feature/implementation.ts
+git add tests/feature.test.ts
+git commit -m "feat(feature): add new user management feature"
+```
+
+### Change Classification
+
+**Linter/Formatting Group:**
+- Whitespace-only changes
+- Lock files (package-lock.json, Cargo.lock)
+- Auto-generated linter configs
+- Commit type: `chore`
+
+**Feature/Fix Groups:**
+- Implementation code
+- Related tests
+- Relevant documentation
+- Commit type: `feat`, `fix`, `refactor`
+
+**Documentation Group:**
+- README updates
+- API documentation
+- User guides
+- Commit type: `docs`
+
+## Communication Style
+
+### Humble, Fact-Based Messages
+
+```bash
+# ✅ GOOD: Concise, factual, modest
+git commit -m "fix(auth): handle edge case in token refresh"
+
+git commit -m "feat(api): add pagination support
+
+Implements cursor-based pagination for list endpoints.
+Includes tests and documentation."
+
+# ❌ BAD: Vague, verbose, or overly confident
+git commit -m "fix stuff"
+git commit -m "AMAZING new feature that revolutionizes everything!!!"
+git commit -m "Updated some files to make things work better and faster"
+```
+
+### Focus on Facts
+
+- **What changed**: Describe the change objectively
+- **Why it changed**: Explain the reason if non-obvious
+- **Impact**: Note breaking changes or important effects
+
+```bash
+# Example with context
+git commit -m "perf(db): optimize user query with index
+
+Added composite index on (user_id, created_at) to improve
+query performance for user activity feeds.
+
+Reduces query time from 800ms to 45ms for typical workloads."
+```
+
+## Workflow Examples
+
+### Complete Staging and Commit Flow
+
+```bash
+# 1. Check current state
+git status
+
+# 2. Run pre-commit checks
+pre-commit run --all-files
+
+# 3. Stage files explicitly
+git add src/feature.ts
+git add tests/feature.test.ts
+
+# 4. Review what's staged
+git status
+git diff --cached --stat
+
+# 5. Commit with conventional message
+git commit -m "feat(feature): add new capability
+
+Implements X feature with Y functionality.
+Includes unit tests and integration tests.
+
+Closes #123"
+
+# 6. Verify commit
+git log -1 --stat
 ```
 
 ### Amending Commits
 
 ```bash
-# Add to last commit (if not pushed)
-git add forgotten-file.py
+# Fix last commit (before pushing)
+git add forgotten-file.ts
 git commit --amend --no-edit
 
-# Update last commit message
-git commit --amend -m "fix: corrected commit message"
-
-# WARNING: Never amend pushed commits
+# Update commit message
+git commit --amend -m "feat(auth): improved OAuth2 implementation"
 ```
 
-### Stashing Changes
+### Interactive Staging
 
 ```bash
-# Save work in progress
-git stash push -m "WIP: feature implementation"
+# Stage parts of a file
+git add -p file.ts
 
-# Apply stashed changes
-git stash list              # See all stashes
-git stash apply             # Apply most recent
-git stash apply stash@{1}   # Apply specific stash
-
-# Drop stash after applying
-git stash drop
-```
-
-## Reviewing Changes
-
-```bash
-# See what changed
-git status                  # Overview
-git diff                    # Unstaged changes
-git diff --cached           # Staged changes
-git diff HEAD               # All changes
-
-# Review commit history
-git log --oneline -10       # Last 10 commits
-git log --graph --oneline   # Visual history
-git log -p                  # With diffs
-```
-
-## Undoing Changes
-
-```bash
-# Unstage files
-git reset HEAD file.py      # Unstage specific file
-git reset HEAD              # Unstage all
-
-# Discard changes
-git checkout -- file.py     # Discard file changes
-git restore file.py         # Modern syntax
-
-# Undo last commit (keep changes)
-git reset --soft HEAD^
-
-# Undo last commit (discard changes)
-git reset --hard HEAD^
-```
-
-## Commit Workflow Sequence
-
-### Basic Workflow
-
-```bash
-# 1. Review changes
-git status
-git diff
-
-# 2. Stage explicitly
-git add specific-file.py
-
-# 3. Review staged changes
-git diff --cached
-
-# 4. Commit with message
-git commit -m "type: description"
-```
-
-### Multi-Change Workflow
-
-```bash
-# Working on feature with multiple logical parts
-
-# 1. Implement core functionality
-# Edit files...
-git add src/core.py
-git commit -m "feat: implement core logic"
-
-# 2. Add tests
-# Write tests...
-git add tests/test_core.py
-git commit -m "test: add core logic tests"
-
-# 3. Add documentation
-# Write docs...
-git add docs/core.md
-git commit -m "docs: document core API"
-
-# Result: 3 clear, focused commits
+# Review hunks and choose:
+# y - stage this hunk
+# n - do not stage
+# s - split into smaller hunks
+# e - manually edit hunk
 ```
 
 ## Best Practices
 
-1. **Commit frequently** - Small commits are easier to review and revert
-2. **Write clear messages** - Future you will thank present you
-3. **Review before staging** - Always know what you're committing
-4. **Stage explicitly** - Avoid `git add .` and wildcards without review
-5. **Use conventional commits** - Consistent format helps automation
-6. **One concern per commit** - Don't mix unrelated changes
-7. **Test before committing** - Commits should represent working states
+### Commit Frequency
 
-## Common Pitfalls
+- **Commit early and often**: Small, focused commits
+- **One logical change per commit**: Easier to review and revert
+- **Keep commits atomic**: Each commit should be a complete, working state
 
-- ❌ Using `git add .` without reviewing changes
-- ❌ Vague commit messages like "fix stuff" or "update"
-- ❌ Mixing unrelated changes in one commit
-- ❌ Committing broken code
-- ❌ Forgetting to commit for hours (losing granular history)
-- ❌ Amending commits that have been pushed
-- ❌ Not reviewing `git diff --cached` before committing
-
-## Examples
-
-### Example 1: Feature Implementation
+### Commit Message Length
 
 ```bash
-# Feature: Add user authentication
+# Subject line: ≤ 72 characters
+feat(auth): add OAuth2 support
 
-# Step 1: Core implementation
-git add src/auth/jwt.py
-git commit -m "feat: add JWT token generation
-
-- Implement token creation with expiry
-- Add token validation logic
-- Use HS256 algorithm"
-
-# Step 2: Add tests
-git add tests/test_auth.py
-git commit -m "test: add JWT authentication tests
-
-- Test token generation
-- Test token validation
-- Test expiry handling"
-
-# Step 3: Integration
-git add src/api/routes.py
-git commit -m "feat: integrate JWT auth in API routes
-
-- Add auth middleware
-- Protect sensitive endpoints
-- Add login/logout routes"
-
-# Result: 3 clear commits showing progression
+# Body: ≤ 72 characters per line (wrap)
+# Use blank line between subject and body
 ```
 
-### Example 2: Bug Fix
+### Issue References
 
 ```bash
-# Bug: Connection pool exhaustion
-
-# Step 1: Fix the bug
-git add src/database/pool.py
-git commit -m "fix: increase connection pool size
-
-Pool was too small for async workload causing timeouts.
-Increased pool_size to 20, overflow to 10.
+# Link to issues
+git commit -m "fix(api): handle timeout
 
 Fixes #123"
 
-# Step 2: Add regression test
-git add tests/test_pool.py
-git commit -m "test: add connection pool stress test
+# Multiple issues
+git commit -m "feat(ui): redesign dashboard
 
-Ensures pool handles high concurrent load without exhaustion."
+Implements designs from #456
+Closes #457, #458"
 
-# Result: Fix + test in separate commits
+# Breaking changes
+git commit -m "feat(api)!: change authentication
+
+BREAKING CHANGE: API key format changed.
+See migration guide: #789"
 ```
 
-### Example 3: Refactoring
+## Troubleshooting
+
+### Accidentally Staged Wrong Files
 
 ```bash
-# Refactor: Extract validation logic
+# Unstage specific file
+git restore --staged wrong-file.ts
 
-# Step 1: Extract function
-git add src/validation.py src/api/users.py
-git commit -m "refactor: extract user validation to separate module
-
-- Create validation.py with validate_user function
-- Update users.py to use new validation module
-- No behavior changes"
-
-# Step 2: Add tests for new module
-git add tests/test_validation.py
-git commit -m "test: add validation module tests
-
-- Test email validation
-- Test password strength validation
-- Test required fields validation"
-
-# Result: Refactor + tests clearly separated
+# Unstage all
+git restore --staged .
 ```
 
-## Integration with Other Skills
-
-- **git-security-checks**: Run security checks before committing
-- **git-branch-pr-workflow**: Commits are building blocks for PRs
-- **release-please-protection**: Conventional commits enable automated releases
-
-## Quick Reference
+### Wrong Commit Message
 
 ```bash
-# Essential commit workflow
-git status                          # Review changes
-git add specific-file.py           # Stage explicitly
-git diff --cached                   # Review staged
-git commit -m "type: description"  # Commit
+# Amend last commit message (before push)
+git commit --amend -m "corrected message"
 
-# Amend (if not pushed)
-git add forgotten-file.py
+# After push (avoid if possible)
+git commit --amend -m "corrected message"
+git push --force-with-lease origin branch-name
+```
+
+### Forgot to Add File to Last Commit
+
+```bash
+# Add file and amend
+git add forgotten-file.ts
 git commit --amend --no-edit
-
-# Stash work in progress
-git stash push -m "WIP: description"
-git stash apply
-
-# Review history
-git log --oneline -10
-git log -p
 ```
 
-## References
+### Need to Split Last Commit
 
-- Related Skills: `git-security-checks`, `git-branch-pr-workflow`
-- Conventional Commits: https://www.conventionalcommits.org/
-- Replaces: `git-workflow` (commit sections)
+```bash
+# Undo last commit but keep changes staged
+git reset --soft HEAD~1
+
+# Unstage all
+git restore --staged .
+
+# Stage and commit in groups
+git add group1-file.ts
+git commit -m "first logical group"
+
+git add group2-file.ts
+git commit -m "second logical group"
+```
