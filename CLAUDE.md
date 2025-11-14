@@ -11,15 +11,25 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Target locations**: `~/.*` (never edit directly)
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 
-### Claude Code Directory (Symlinked)
+### Claude Code Directory (Managed with exact_)
 
-**Important**: The `.claude` directory is **symlinked** via `symlink_dot_claude.tmpl`:
-- **Source**: `~/.local/share/chezmoi/.claude/`
-- **Target**: `~/.claude` → symlink to source
-- **Effect**: Changes to source `.claude` directory are **immediately available** to Claude Code
-- **No `chezmoi apply` needed** for skills, commands, or `.claude` configuration changes
+**Important**: The `.claude` directory is managed via `exact_dot_claude/`:
+- **Source**: `~/.local/share/chezmoi/exact_dot_claude/`
+- **Target**: `~/.claude` (managed directory)
+- **Apply required**: Run `chezmoi apply -v ~/.claude` after making changes
+- **Auto-cleanup**: Orphaned skills/commands automatically removed (like Neovim plugins)
+- **Runtime protection**: Claude Code runtime directories (`projects/`, `session-env/`, `shell-snapshots/`) are preserved via `.chezmoiignore`
 
-This setup enables rapid skill development and testing without the apply step. Other dotfiles (configs, scripts) still require `chezmoi apply`.
+**Benefits of exact_ approach:**
+- ✅ Atomic updates prevent race conditions with running Claude processes
+- ✅ Automatic removal of deleted/renamed skills and commands
+- ✅ Predictable state - target always matches source
+- ✅ Explicit checkpoints via `chezmoi apply` ensure stability
+
+**Quick apply alias:**
+```bash
+alias ca-claude='chezmoi apply -v ~/.claude'
+```
 
 ### Claude Code Skills & Plugins
 This repository includes **Skills** (32 total) - automatically discovered capabilities that Claude uses based on context:
