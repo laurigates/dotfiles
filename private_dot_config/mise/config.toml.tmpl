@@ -1,5 +1,12 @@
 # mise configuration for unified tool version management
 # Documentation: https://mise.jdx.dev/configuration.html
+#
+# IMPORTANT: After applying this configuration with `chezmoi apply`, run:
+#   mise install       # Install all tools
+#   mise lock          # Generate mise.lock for reproducible builds
+#   git add mise.lock  # Commit the lockfile to version control
+#
+# The mise.lock file ensures consistent tool versions across machines and CI.
 
 # ============================================================================
 # Runtime Versions
@@ -19,6 +26,10 @@ rust = "stable"
 # ============================================================================
 # Python Tools (via pipx backend - automatically uses uvx if uv is installed)
 # ============================================================================
+# NOTE: During migration, some tools are defined in both .chezmoidata.toml (uv_tools)
+# and here (pipx backend). This temporary duplication ensures backward compatibility.
+# After confirming mise installation works, remove uv_tools from .chezmoidata.toml.
+
 # Infrastructure & Configuration Management
 "pipx:ansible" = "latest"
 
@@ -61,6 +72,11 @@ rust = "stable"
 # ============================================================================
 # CLI Tools (via aqua backend - security-focused with checksums)
 # ============================================================================
+# NOTE: Package names use GitHub org/repo format. The aqua registry normalizes
+# these to match the standard registry entries (e.g., "BurntSushi/ripgrep" is
+# recognized from the aqua-registry). Verify package availability at:
+# https://github.com/aquaproj/aqua-registry
+
 # Kubernetes & Container Orchestration
 "aqua:kubernetes/kubernetes" = "latest"        # kubectl
 "aqua:helm/helm" = "latest"
@@ -103,14 +119,14 @@ VISUAL = "nvim"
 PAGER = "less"
 
 # Dotfiles directory (templated by chezmoi)
-DOTFILES_DIR = "{{ "{{" }} .chezmoi.sourceDir {{ "}}" }}"
+DOTFILES_DIR = "{{ .chezmoi.sourceDir }}"
 
 # XDG Base Directory Specification
 {{- if eq .chezmoi.os "darwin" }}
-XDG_CONFIG_HOME = "{{ "{{" }} .chezmoi.homeDir {{ "}}" }}/.config"
-XDG_DATA_HOME = "{{ "{{" }} .chezmoi.homeDir {{ "}}" }}/.local/share"
-XDG_STATE_HOME = "{{ "{{" }} .chezmoi.homeDir {{ "}}" }}/.local/state"
-XDG_CACHE_HOME = "{{ "{{" }} .chezmoi.homeDir {{ "}}" }}/.cache"
+XDG_CONFIG_HOME = "{{ .chezmoi.homeDir }}/.config"
+XDG_DATA_HOME = "{{ .chezmoi.homeDir }}/.local/share"
+XDG_STATE_HOME = "{{ .chezmoi.homeDir }}/.local/state"
+XDG_CACHE_HOME = "{{ .chezmoi.homeDir }}/.cache"
 {{- end }}
 
 # Load API tokens from secure file (gitignored)

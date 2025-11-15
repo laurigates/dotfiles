@@ -69,6 +69,16 @@ Plugins are located in `plugins/` and can be installed via the marketplace syste
 
 ## Linting Commands
 
+### Using mise tasks (recommended):
+```bash
+mise run lint          # Run all linters (shell, lua, actions, Brewfile)
+mise run lint:shell    # Shell scripts only
+mise run lint:lua      # Neovim config only
+mise run lint:actions  # GitHub Actions only
+mise run test          # Run all tests (linting + docker)
+```
+
+### Direct commands:
 ```bash
 shellcheck **/*.sh                    # Shell scripts
 luacheck private_dot_config/nvim/lua  # Neovim config
@@ -87,10 +97,12 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 ## Key Files & Directories
 
 ### Configuration Files
+- `private_dot_config/mise/config.toml.tmpl` - mise tool version management and tasks
 - `private_dot_config/nvim/` - Neovim setup with lazy.nvim
 - `private_dot_config/fish/` - Fish shell with cross-platform paths
-- `Brewfile` - Homebrew package definitions
-- `dot_default-*-packages` - Tool package lists (cargo, npm, uv)
+- `Brewfile` - Homebrew package definitions (bootstrap and system tools)
+- `dot_default-*-packages` - Legacy tool package lists (cargo, npm)
+- `.chezmoidata.toml` - Data for chezmoi templates (includes uv_tools during migration)
 
 ## Cross-Platform Support
 
@@ -100,10 +112,15 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 
 ## Tools
 
-- **mise**: Tool version management (`.config/mise/config.toml`)
+- **mise**: Unified tool version management and task runner
+  - Configuration: `private_dot_config/mise/config.toml.tmpl`
+  - Manages: Python, Node, Go, Rust, and CLI tools
+  - Backends: `pipx:` (Python tools via uvx), `aqua:` (CLI tools with security checksums)
+  - Task runner: Replaces Makefile with cross-platform `mise run` tasks
+  - Lockfile: `mise.lock` for reproducible builds
 - **Fish**: Primary shell with Starship prompt
 - **Neovim**: Editor with LSP, formatting, debugging
-- **Homebrew**: Cross-platform package management
+- **Homebrew**: Cross-platform package management (bootstrap and system tools)
 
 ## Documentation Requirements
 **ALWAYS check documentation before implementing changes or features.**
