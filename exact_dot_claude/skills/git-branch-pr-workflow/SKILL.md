@@ -301,12 +301,25 @@ git reset --hard origin/feat/branch-name
 
 ### Accidentally Committed to Main
 
+Use the safe, non-destructive approach that preserves all commits:
+
 ```bash
-# Move commit to new branch
-git branch feat/accidental-commit
-git reset --hard HEAD~1
-git switch feat/accidental-commit
+# Create branch from current state (includes the commits)
+git switch -c feat/accidental-commit
+
+# Push the branch
+git push -u origin feat/accidental-commit
+
+# When the PR is merged to main on GitHub, sync local main:
+git switch main
+git pull  # Fast-forward merge handles this cleanly
 ```
+
+**Why this approach works:**
+- Preserves all commits without risky resets
+- When GitHub merges the PR to main, your local main becomes behind by the same commits
+- `git pull` recognizes the commits and fast-forwards cleanly
+- No history rewriting, no data loss, no merge conflicts
 
 ### Rebase Conflicts Are Too Complex
 
