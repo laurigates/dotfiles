@@ -1,12 +1,16 @@
 #!/bin/sh
-# Cleanup MCP servers - removes and re-adds all enabled servers
+# Cleanup MCP servers - removes all MCP servers from user and project scope
+#
+# NOTE: MCP servers are now managed project-by-project.
+# This script is primarily for cleanup of old user-scoped installations.
 #
 # WARNING: This script will disrupt active Claude sessions!
 # Only run this when:
-# - You need to clean up disabled servers
+# - You need to clean up old user-scoped MCP servers
 # - You need to fix broken MCP configurations
 # - No Claude Code sessions are running
 #
+# After cleanup, use /install-mcp command to reinstall servers per-project.
 # Configuration is read from .chezmoidata.toml [mcp_servers] section.
 
 set -e
