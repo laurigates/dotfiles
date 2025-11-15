@@ -261,64 +261,102 @@
   enable_gh_context = false          # Provide GitHub context for PRs
 
 [mcp_servers]
-  # MCP server configurations for Claude Code
-  # Each server has configuration details and an enabled flag
+  # MCP Server Favorites Registry
+  #
+  # This section maintains a curated list of your favorite MCP servers.
+  # By default, all servers are DISABLED to avoid bloating context in every repo.
+  #
+  # To install MCP servers for a specific project, use:
+  #   - /install-mcp command for interactive selection
+  #   - MCP Management skill for automated installation based on project needs
+  #
+  # Note: The update-ai-tools.sh script only installs servers with enabled=true.
+  # For project-specific needs, manually create .mcp.json in your project root.
 
   [mcp_servers.graphiti-memory]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     transport = "sse"
     command = "http://localhost:8000/sse"
     args = []
+    description = "Graph-based memory and knowledge management"
+    category = "memory"
 
   [mcp_servers.vectorcode]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "vectorcode-mcp-server"
     args = []
+    description = "Semantic code search using embeddings"
+    category = "search"
 
   [mcp_servers.zen-mcp-server]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "uvx"
     args = ["--from", "git+https://github.com/BeehiveInnovations/zen-mcp-server.git", "zen-mcp-server"]
+    description = "Zen productivity and focus tools"
+    category = "productivity"
 
   [mcp_servers.playwright]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "bunx"
     args = ["-y", "@playwright/mcp@latest"]
+    description = "Browser automation and testing"
+    category = "testing"
 
   [mcp_servers.context7]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "bunx"
     args = ["-y", "@upstash/context7-mcp"]
+    description = "Upstash context management"
+    category = "memory"
 
   [mcp_servers.github]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "go"
     args = ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"]
+    description = "GitHub API integration (issues, PRs, repos)"
+    category = "vcs"
+    env_vars = ["GITHUB_TOKEN"]
 
   [mcp_servers.podio-mcp]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "bunx"
     args = ["https://github.com/ForumViriumHelsinki/podio-mcp"]
+    description = "Podio project management integration"
+    category = "productivity"
+    env_vars = ["PODIO_CLIENT_ID", "PODIO_CLIENT_SECRET", "PODIO_APP_ID", "PODIO_APP_TOKEN"]
 
   [mcp_servers.sentry]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     transport = "http"
     command = "https://mcp.sentry.dev/mcp"
     args = []
+    description = "Sentry error tracking and monitoring"
+    category = "monitoring"
 
   [mcp_servers.argocd-mcp]
-    enabled = true
-    scope = "user"
+    enabled = false
+    scope = "project"
     command = "bunx"
     args = ["-y", "argocd-mcp@latest", "stdio"]
+    description = "ArgoCD GitOps deployment management"
+    category = "infrastructure"
+    env_vars = ["ARGOCD_SERVER", "ARGOCD_AUTH_TOKEN"]
+
+  [mcp_servers.sequential-thinking]
+    enabled = false
+    scope = "project"
+    command = "npx"
+    args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    description = "Enhanced reasoning with sequential thinking"
+    category = "ai"
 
 [platform]
   # Platform-specific settings will be populated by templates

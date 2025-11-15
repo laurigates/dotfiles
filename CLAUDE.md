@@ -32,7 +32,7 @@ alias ca-claude='chezmoi apply -v ~/.claude'
 ```
 
 ### Claude Code Skills & Plugins
-This repository includes **Skills** (32 total) - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (33 total) - automatically discovered capabilities that Claude uses based on context:
 
 **Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
@@ -70,12 +70,93 @@ This repository includes **Skills** (32 total) - automatically discovered capabi
 - **Infrastructure Terraform** - Infrastructure as Code with HCL and state management
 - **Embedded Systems** - ESP32/ESP-IDF, STM32, FreeRTOS, and real-time systems
 
+**MCP Server Management:**
+- **MCP Management** - Intelligent MCP server installation and project-based configuration
+
 Skills are located in `.claude/skills/` (symlinked to `~/.claude/skills/`) and are **immediately available** to Claude Code without running `chezmoi apply`.
 
 This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
 - **Dotfiles Toolkit** - 14 specialized agents and 20+ commands for development workflows, code quality, and infrastructure operations
 
 Plugins are located in `plugins/` and can be installed via the marketplace system. See `plugins/README.md` for details.
+
+## MCP Server Management
+
+**Philosophy**: MCP servers are managed **project-by-project** to avoid context bloat.
+
+### Why Project-Scoped?
+
+❌ **Old approach** (user-scoped in `~/.claude/settings.json`):
+- Bloated context in every repository
+- All MCP tools available everywhere (even when not needed)
+- Hidden dependencies not shared with team
+
+✅ **New approach** (project-scoped in `.mcp.json`):
+- Clean context - only relevant MCP servers per project
+- Explicit project dependencies
+- Team-shareable configuration
+
+### MCP Favorites Registry
+
+All your favorite MCP servers are maintained in `.chezmoidata.toml` (disabled by default):
+
+**Available MCP Servers:**
+- `github` - GitHub API integration (issues, PRs, repos)
+- `vectorcode` - Semantic code search using embeddings
+- `playwright` - Browser automation and testing
+- `graphiti-memory` - Graph-based memory and knowledge management
+- `context7` - Upstash context management
+- `zen-mcp-server` - Zen productivity and focus tools
+- `podio-mcp` - Podio project management integration
+- `argocd-mcp` - ArgoCD GitOps deployment management
+- `sentry` - Sentry error tracking and monitoring
+- `sequential-thinking` - Enhanced reasoning with sequential thinking
+
+### Installing MCP Servers
+
+**Interactive Installation:**
+```bash
+/install-mcp  # Claude command for guided installation
+```
+
+**Manual Installation:**
+Create/edit `.mcp.json` in your project root:
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "go",
+      "args": ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"],
+      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" }
+    },
+    "playwright": {
+      "command": "bunx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
+```
+
+**Intelligent Suggestions:**
+The **MCP Management skill** automatically suggests relevant MCP servers based on:
+- Project structure (detects `.github/`, `playwright.config.*`, etc.)
+- Required integrations (GitHub, ArgoCD, Sentry, etc.)
+- Codebase size (suggests vectorcode for large projects)
+
+### Environment Variables
+
+MCP servers requiring API tokens:
+- `github`: Set `GITHUB_TOKEN` in `~/.api_tokens` or project `.env`
+- `argocd-mcp`: Set `ARGOCD_SERVER` and `ARGOCD_AUTH_TOKEN`
+- `podio-mcp`: Set `PODIO_CLIENT_ID`, `PODIO_CLIENT_SECRET`, etc.
+
+**Never hardcode tokens in `.mcp.json`** - always use environment variable references like `${GITHUB_TOKEN}`.
+
+### Registry Location
+
+Full MCP server configurations: `~/.local/share/chezmoi/.chezmoidata.toml` (section `[mcp_servers]`)
+
+See `.claude/skills/mcp-management/SKILL.md` for complete documentation.
 
 ## Linting Commands
 

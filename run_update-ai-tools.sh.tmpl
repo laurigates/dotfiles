@@ -1,14 +1,18 @@
 #!/bin/sh
 # Update all AI tools
 #
-# This script dynamically configures MCP servers based on .chezmoidata.toml
-# It only adds new/missing servers to avoid disrupting active Claude sessions.
+# This script installs global AI tools (Claude Code, Gemini CLI).
 #
-# For cleanup of disabled servers, use cleanup-mcp-servers.sh instead.
+# NOTE: MCP servers are now managed project-by-project:
+# - User-scoped MCP servers have been REMOVED to avoid context bloat
+# - All MCP servers in .chezmoidata.toml are disabled by default
+# - Use /install-mcp command to install MCP servers per-project
+# - See MCP Management skill for intelligent server suggestions
 #
+# Legacy MCP server installation (if you enable servers in .chezmoidata.toml):
 # Configuration options in .chezmoidata.toml [mcp_servers] section:
 # - enabled: boolean - whether to include this server (true/false)
-# - scope: string - MCP scope ("user" or "global")
+# - scope: string - MCP scope ("user" or "project")
 # - command: string - the command to run
 # - args: array - command arguments
 # - transport: string - optional transport type ("http", "sse", "stdio")
@@ -16,7 +20,7 @@
 # Example server configuration:
 #   [mcp_servers.my-server]
 #     enabled = true
-#     scope = "user"
+#     scope = "project"
 #     command = "npx"
 #     args = ["-y", "my-mcp-package"]
 #     transport = "stdio"  # optional
