@@ -13,9 +13,9 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **33 specialized skills** organized by domain:
+This repository contains **63 specialized skills** organized by domain:
 
-### Core Development Tools (8 skills)
+### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
 - **shell-expert** - Shell scripting, CLI tools, automation, cross-platform scripting
 - **fd-file-finding** - Fast file search with smart defaults and gitignore awareness
@@ -24,12 +24,14 @@ This repository contains **33 specialized skills** organized by domain:
 - **yq-yaml-processing** - YAML querying, filtering, and transformation with yq (v4+) command-line tool
 - **ast-grep-search** - AST-based code search for structural pattern matching
 - **vectorcode-search** - Semantic code search using embeddings for concept-based discovery
+- **vectorcode-init** - Initialize VectorCode with automatic configuration generation
 
-### Version Control & Release (5 skills)
+### Version Control & Release (6 skills)
 - **git-branch-pr-workflow** - Branch management, pull request workflows, and GitHub integration
 - **git-commit-workflow** - Commit message conventions, staging, and commit best practices
 - **git-security-checks** - Pre-commit security validation and secret detection
 - **git-repo-detection** - Extract GitHub repository owner/name from git remotes
+- **github-issue-search** - Search and filter GitHub issues efficiently
 - **release-please-protection** - Prevents manual edits to automated release files
 
 ### GitHub Actions Integration (4 skills)
@@ -38,28 +40,66 @@ This repository contains **33 specialized skills** organized by domain:
 - **github-actions-auth-security** - Authentication methods, secrets management, security best practices
 - **github-actions-inspection** - Inspect workflow runs, analyze logs, debug CI/CD failures
 
-### Programming Languages (4 skills)
-- **python-development** - Modern Python with uv, ruff, pytest, type hints
-- **rust-development** - Memory-safe systems programming with cargo and modern tooling
+### Python Development (9 skills)
+- **python-development** - Core Python concepts, idioms, and best practices
+- **python-testing** - pytest, fixtures, parametrization, test organization
+- **python-code-quality** - Linting, formatting, type checking, code analysis
+- **python-packaging** - Package creation, distribution, publishing to PyPI
+- **uv-project-management** - Modern Python project management with uv
+- **uv-python-versions** - Python version management with uv
+- **uv-tool-management** - CLI tool installation and management with uv
+- **uv-workspaces** - Monorepo and workspace management with uv
+- **uv-advanced-dependencies** - Advanced dependency resolution with uv
+
+### TypeScript/JavaScript Development (3 skills)
 - **nodejs-development** - JavaScript/TypeScript with Bun, Vite, Vue 3, Pinia
+- **vitest-testing** - Modern TypeScript/JavaScript testing with Vitest
+- **bun-lockfile-update** - Manage Bun lockfile updates and version pinning
+
+### Other Languages (3 skills)
+- **rust-development** - Memory-safe systems programming with cargo and modern tooling
 - **cpp-development** - Modern C++20/23 with CMake, Conan, Clang tools
+- **embedded-systems** - ESP32/ESP-IDF, STM32, FreeRTOS, real-time systems
 
 ### Editor & Configuration (1 skill)
 - **neovim-configuration** - Lua configuration, plugin management, LSP setup, AI integration
 
-### Infrastructure & DevOps (4 skills)
+### Infrastructure & DevOps (10 skills)
 - **container-development** - Docker, multi-stage builds, 12-factor apps, Skaffold
 - **kubernetes-operations** - K8s cluster management, debugging, kubectl mastery
 - **infrastructure-terraform** - Infrastructure as Code with HCL and state management
-- **embedded-systems** - ESP32/ESP-IDF, STM32, FreeRTOS, real-time systems
+- **helm-chart-development** - Helm chart creation, templating, best practices
+- **helm-debugging** - Debug Helm deployments and template rendering
+- **helm-release-management** - Manage Helm releases and upgrades
+- **helm-release-recovery** - Recover from failed Helm releases
+- **helm-values-management** - Manage Helm values files and overrides
+- **argocd-login** - ArgoCD authentication and CLI login workflows
 
-### Meta Skills (3 skills)
-- **agent-context-management** - Managing context and delegation in multi-agent workflows
+### Testing & Quality (4 skills)
+- **api-testing** - HTTP API testing for TypeScript and Python (Supertest, httpx)
+- **playwright-testing** - End-to-end testing with Playwright (cross-browser, visual regression)
+- **mutation-testing** - Validate test effectiveness with Stryker and mutmut
+- **property-based-testing** - Property-based testing with fast-check and Hypothesis
+- **test-quality-analysis** - Detect test smells, overmocking, flaky tests
+
+### Code Quality & Formatting (3 skills)
+- **ruff-linting** - Python code quality with ruff linter
+- **ruff-formatting** - Python code formatting with ruff format
+- **ruff-integration** - Integrate ruff with editors, pre-commit, and CI/CD
+
+### Meta & Coordination (6 skills)
+- **agent-coordination-patterns** - Patterns for multi-agent task coordination
+- **agent-file-coordination** - File-based coordination between agents
 - **multi-agent-workflows** - Coordinating complex tasks across specialized agents
-- **knowledge-graph-patterns** - Structuring and querying knowledge graphs effectively
+- **blueprint-development** - PRD-first development methodology and skill generation
+- **project-discovery** - Systematic project orientation for unfamiliar codebases
+- **graphiti-episode-storage** - Episode-based memory storage with Graphiti
+- **graphiti-learning-workflows** - Learning workflows using Graphiti memory
+- **graphiti-memory-retrieval** - Retrieve and query episodic memory with Graphiti
 
-### Communication & Formatting (1 skill)
+### Communication & Formatting (2 skills)
 - **google-chat-formatting** - Convert Markdown to Google Chat formatting syntax
+- **imagemagick-conversion** - Image conversion and manipulation with ImageMagick
 
 ## Skill Structure
 
@@ -252,6 +292,6 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 
 ---
 
-**Last updated**: 2025-11-11
-**Total skills**: 33
+**Last updated**: 2025-11-15
+**Total skills**: 63
 **Skill version format**: YAML frontmatter in SKILL.md

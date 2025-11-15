@@ -32,7 +32,7 @@ alias ca-claude='chezmoi apply -v ~/.claude'
 ```
 
 ### Claude Code Skills & Plugins
-This repository includes **Skills** (33 total) - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (63 total) - automatically discovered capabilities that Claude uses based on context:
 
 **Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
@@ -194,6 +194,30 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 - `Brewfile` - Homebrew package definitions (bootstrap and system tools)
 - `dot_default-*-packages` - Legacy tool package lists (cargo, npm)
 - `.chezmoidata.toml` - Data for chezmoi templates (includes uv_tools during migration)
+
+## Detailed Documentation
+
+For detailed information about specific subdirectories, see the following CLAUDE.md files:
+
+### Claude Code Infrastructure
+- **`.claude/CLAUDE.md`** - High-level design principles, delegation strategy, and operational mandates for Claude Code
+- **`.claude/commands/CLAUDE.md`** - Comprehensive guide to slash commands, namespaces, and command creation
+- **`.claude/skills/CLAUDE.md`** - Skills system documentation, all 63 skills categorized by domain
+
+### Configuration & Scripts
+- **`private_dot_config/CLAUDE.md`** - Application configuration management with chezmoi naming conventions and cross-platform templating
+- **`scripts/CLAUDE.md`** - Maintenance scripts for Claude CLI completions, command migrations, and automation
+
+### Quick Reference
+
+| Topic | Documentation | Key Information |
+|-------|---------------|-----------------|
+| **Overall guidance** | `CLAUDE.md` (this file) | Repository overview, tools, security |
+| **Claude Code design** | `.claude/CLAUDE.md` | Delegation strategy, development principles |
+| **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
+| **Skills catalog** | `.claude/skills/CLAUDE.md` | 63 skills across 9 categories |
+| **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
+| **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |
 
 ## Cross-Platform Support
 
