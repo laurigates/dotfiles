@@ -1,0 +1,250 @@
+name: Auto Fix CI Failures
+
+on:
+  workflow_run:
+    workflows: ["Smoke Test CI"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+  # issues: write removed - not used in workflow
+
+concurrency:
+  # ✅ FIXED: Use workflow_run.id instead of unsafe array access
+  group: auto-fix-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  auto-fix:
+    # ✅ FIXED: Added timeout to prevent runaway jobs
+    timeout-minutes: 15
+    if: |
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.pull_requests[0] &&
+      !startsWith(github.event.workflow_run.head_branch, 'claude-auto-fix-ci-')
+    runs-on: ubuntu-latest
+
+    env:
+      BOT_NAME: "claude[bot]"
+      BOT_EMAIL: "claude[bot]@users.noreply.github.com"
+      MAX_LOG_SIZE: "10000"
+
+    steps:
+      # ✅ FIXED: Extract PR metadata with safety checks
+      - name: Extract PR metadata
+        id: pr_meta
+        run: |
+          # Safely extract PR number with fallback
+          PR_NUM="${{ github.event.workflow_run.pull_requests[0].number }}"
+          if [ -z "$PR_NUM" ]; then
+            echo "ERROR: No PR number found in workflow_run event"
+            exit 1
+          fi
+          echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+          echo "base_branch=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup git identity
+        run: |
+          git config --global user.email "${{ env.BOT_EMAIL }}"
+          git config --global user.name "${{ env.BOT_NAME }}"
+
+      - name: Create fix branch
+        id: branch
+        run: |
+          # Sanitize branch name to handle slashes
+          SANITIZED_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          SANITIZED_BRANCH="${SANITIZED_BRANCH//\//-}"
+          BRANCH_NAME="claude-auto-fix-ci-${SANITIZED_BRANCH}-${{ github.run_id }}"
+          git checkout -b "$BRANCH_NAME"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Get CI failure details
+        id: failure_details
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // ✅ FIXED: Proper log download with redirect following and sanitization
+            const MAX_LOG_SIZE = parseInt(process.env.MAX_LOG_SIZE || '10000');
+
+            // Sanitize logs: remove ANSI codes, control chars, and limit size
+            function sanitizeLogs(logs, maxSize = MAX_LOG_SIZE) {
+              if (!logs || typeof logs !== 'string') return '';
+
+              return logs
+                .replace(/\x1b\[[0-9;]*m/g, '') // Strip ANSI escape codes
+                .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // Remove control chars
+                .slice(-maxSize) // Keep only last N chars (most recent errors)
+                .trim();
+            }
+
+            const run = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{ github.event.workflow_run.id }}
+            });
+
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{ github.event.workflow_run.id }}
+            });
+
+            const failedJobs = jobs.data.jobs.filter(job => job.conclusion === 'failure');
+
+            // ✅ FIXED: Handle empty failed jobs array
+            if (failedJobs.length === 0) {
+              console.log('No failed jobs found - workflow may have timed out');
+              return {
+                runUrl: run.data.html_url,
+                failedJobs: ['Workflow failed with no specific job failures'],
+                errorLogs: [{
+                  jobName: 'Workflow Timeout',
+                  logs: 'The workflow failed but no individual jobs were marked as failed. This typically indicates a workflow-level timeout or cancellation.'
+                }]
+              };
+            }
+
+            let errorLogs = [];
+            for (const job of failedJobs) {
+              try {
+                // ✅ FIXED: Follow redirect to get actual log content
+                const logResponse = await github.rest.actions.downloadJobLogsForWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  job_id: job.id
+                });
+
+                // The API returns a redirect URL - fetch the actual content
+                const logsText = await fetch(logResponse.url).then(r => r.text());
+
+                // ✅ FIXED: Sanitize and truncate logs
+                const sanitizedLogs = sanitizeLogs(logsText);
+
+                errorLogs.push({
+                  jobName: job.name,
+                  logs: sanitizedLogs || 'No log content available'
+                });
+              } catch (error) {
+                console.log(`Failed to download logs for job ${job.name}: ${error.message}`);
+                errorLogs.push({
+                  jobName: job.name,
+                  logs: `Error downloading logs: ${error.message}`
+                });
+              }
+            }
+
+            return {
+              runUrl: run.data.html_url,
+              failedJobs: failedJobs.map(j => j.name),
+              errorLogs: errorLogs
+            };
+
+      - name: Fix CI failures with Claude
+        id: claude
+        if: steps.failure_details.outcome == 'success'
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            You are analyzing a CI failure in a dotfiles repository managed with chezmoi.
+
+            **Context:**
+            - Failed workflow: ${{ fromJSON(steps.failure_details.outputs.result).runUrl }}
+            - Failed jobs: ${{ join(fromJSON(steps.failure_details.outputs.result).failedJobs, ', ') }}
+            - Original PR: #${{ steps.pr_meta.outputs.pr_number }}
+            - Base branch: ${{ steps.pr_meta.outputs.base_branch }}
+            - Repository: ${{ github.repository }}
+
+            **Error Logs:**
+            ${{ toJSON(fromJSON(steps.failure_details.outputs.result).errorLogs) }}
+
+            **Your Task:**
+            1. Analyze the error logs to identify root causes
+            2. Fix ONLY the issues causing CI failures
+            3. Follow the project's code style and conventions (see CLAUDE.md)
+            4. Do NOT make unrelated changes
+            5. If the failure is NOT fixable via code changes (e.g., infrastructure issue), explain why in your output
+
+            **Constraints:**
+            - You can modify code files, configs, and tests
+            - You CANNOT modify GitHub Actions workflows
+            - You CANNOT modify CHANGELOG.md (managed by release-please)
+            - Use chezmoi conventions (private_ prefix for private files)
+
+            **Verification:**
+            After making changes, explain what you fixed and why.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--allowed-tools 'Edit,MultiEdit,Write,Read,Glob,Grep,LS,Bash(git:*),Bash(bun:*),Bash(npm:*),Bash(npx:*),Bash(gh:*)'"
+
+      - name: Push fix branch
+        if: steps.claude.outcome == 'success' && steps.claude.outputs.changed == 'true'
+        run: |
+          git push -u origin ${{ steps.branch.outputs.branch_name }}
+
+      - name: Create PR
+        if: steps.claude.outcome == 'success' && steps.claude.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base ${{ steps.pr_meta.outputs.base_branch }} \
+            --head ${{ steps.branch.outputs.branch_name }} \
+            --title "🤖 Auto-fix CI failures for PR #${{ steps.pr_meta.outputs.pr_number }}" \
+            --body "Automated fixes for CI failures detected in ${{ fromJSON(steps.failure_details.outputs.result).runUrl }}
+
+            ## Summary
+            This PR was automatically created by the CI auto-fix workflow using Claude Code.
+
+            **Original PR:** #${{ steps.pr_meta.outputs.pr_number }}
+            **Failed workflow:** ${{ fromJSON(steps.failure_details.outputs.result).runUrl }}
+            **Failed jobs:** ${{ join(fromJSON(steps.failure_details.outputs.result).failedJobs, ', ') }}
+
+            ## Review Checklist
+            - [ ] Verify fixes address the root cause
+            - [ ] Check for unintended side effects
+            - [ ] Ensure coding standards are followed
+            - [ ] Validate tests pass locally
+
+            Please review carefully before merging."
+
+      # ✅ ADDED: Comment on original PR if no fixes made
+      - name: Comment on original PR if no fixes made
+        if: steps.claude.outcome == 'success' && steps.claude.outputs.changed != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ steps.pr_meta.outputs.pr_number }} \
+            --body "🤖 Claude analyzed the CI failures but determined no code changes are needed.
+
+            **Failed workflow:** ${{ fromJSON(steps.failure_details.outputs.result).runUrl }}
+
+            This may indicate:
+            - Flaky tests
+            - Infrastructure issues
+            - Transient failures
+            - Configuration problems outside the codebase
+
+            Please review the failure logs manually."
+
+      # ✅ ADDED: Notify on workflow failure
+      - name: Report auto-fix failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ steps.pr_meta.outputs.pr_number }} \
+            --body "⚠️ Automated CI fix workflow encountered an error.
+
+            **Failed workflow:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Manual intervention may be required. Please review the auto-fix workflow logs."
