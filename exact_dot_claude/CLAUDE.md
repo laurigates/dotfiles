@@ -2,6 +2,31 @@
 
 You are responsible for high-level design principles and operational mandates. The core philosophy is to maintain strategic focus while delegating specific implementation tasks to specialized subagents.
 
+## Directory Management (exact_ approach)
+
+This `.claude` directory is managed via chezmoi's `exact_dot_claude/` source directory with the `exact_` prefix. This approach was chosen over symlinking for several critical reasons:
+
+**Why exact_ instead of symlink:**
+- **Process stability**: Symlinks caused race conditions when Claude Code processes accessed files during modifications/renames
+- **Atomic updates**: `chezmoi apply` provides explicit checkpoints, preventing mid-operation file changes
+- **Auto-cleanup**: Orphaned skills/commands are automatically removed (just like Neovim plugins)
+- **Predictable state**: Target directory always matches source exactly after apply
+
+**Runtime directories preserved:**
+The following directories are created by Claude Code at runtime and are NOT managed by chezmoi:
+- `projects/` - Project-specific state
+- `session-env/` - Session environment data
+- `shell-snapshots/` - Shell state snapshots
+- `settings.local.json` - Local settings override
+
+These are preserved via `exact_dot_claude/.chezmoiignore` patterns.
+
+**Workflow:**
+After editing skills, commands, or configuration:
+```bash
+chezmoi apply -v ~/.claude  # Or use alias: ca-claude
+```
+
 ## Delegation Strategy
 
 **STRONGLY PREFER subagents for appropriate tasks.** Subagents provide specialized expertise, systematic investigation, and expert validation that significantly improves output quality.

@@ -9,10 +9,7 @@ codecompanion-workspace.json
 stylua.toml
 images/
 lazy-lock.json
-.claude/settings.local.json
-.claude/agents/.claude/
-.claude/commands/.claude/
-.claude/.claude/
+# Claude Code runtime files are now handled via exact_dot_claude/.chezmoiignore
 CLAUDE.md
 /**/__pycache__/
 plugins/

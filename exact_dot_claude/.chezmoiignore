@@ -1,0 +1,12 @@
+# Runtime directories created by Claude Code - don't manage or remove these
+projects/
+session-env/
+shell-snapshots/
+
+# Local settings override - not managed by chezmoi
+settings.local.json
+
+# Nested .claude directories (runtime artifacts)
+agents/.claude/
+commands/.claude/
+.claude/
