@@ -64,10 +64,8 @@
 [packages.brew]
   # Taps for both macOS and Linux
   common_taps = [
-    "hashicorp/tap",
     "knqyf263/pet",
-    "norwoodj/tap",
-    "oven-sh/bun"
+    "norwoodj/tap"
   ]
 
   # macOS-specific taps
@@ -83,14 +81,13 @@
   ]
 
   # Common formulae for both macOS and Linux
+  # Note: Tools managed by mise have been removed to avoid duplication
+  # See docs/homebrew-mise-migration-analysis.md for details
   common = [
     "arduino-cli",
-    "argocd",
     "argocd-vault-plugin",
     "ast-grep",
-    "atuin",
     "autoconf",
-    "bat",
     "binwalk",
     "chezmoi",
     "cmake",
@@ -98,30 +95,20 @@
     "curl",
     "dbmate",
     "dfu-util",
-    "fd",
     "fish",
     "fswatch",
     "fzf",
-    "gh",
     "git",
-    "git-delta",
     "git-filter-repo",
     "git-lfs",
     "gnutls",
     "gobuster",
     "groff",
-    "helm",
     "help2man",
     "httpie",
     "imagemagick",
     "iperf3",
     "jd",
-    "jq",
-    "k9s",
-    "kubernetes-cli",
-    "kubectx",
-    "lazygit",
-    "lsd",
     "luarocks",
     "maven",
     "mermaid-cli",
@@ -134,14 +121,9 @@
     "ollama",
     "pandoc",
     "parallel",
-    "pipx",
     "platformio",
-    "python@3.11",
-    "python@3.13",
     "qemu",
     "ranger",
-    "ripgrep",
-    "skaffold",
     "so",
     "starship",
     "tcl-tk",
@@ -151,12 +133,9 @@
     "uv",
     "wireshark",
     "zlib",
-    "zoxide",
     "zsh-completions",
-    "hashicorp/tap/terraform",
     "knqyf263/pet/pet",
-    "norwoodj/tap/helm-docs",
-    "oven-sh/bun/bun"
+    "norwoodj/tap/helm-docs"
   ]
 
   # macOS-specific formulae

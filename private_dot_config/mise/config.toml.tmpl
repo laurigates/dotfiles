@@ -1,0 +1,536 @@
+# mise configuration for unified tool version management
+# Documentation: https://mise.jdx.dev/configuration.html
+#
+# IMPORTANT: After applying this configuration with `chezmoi apply`, run:
+#   mise install       # Install all tools
+#   mise lock          # Generate mise.lock for reproducible builds
+#   git add mise.lock  # Commit the lockfile to version control
+#
+# The mise.lock file ensures consistent tool versions across machines and CI.
+
+# ============================================================================
+# Runtime Versions
+# ============================================================================
+[tools]
+# Python versions (multi-version support)
+python = ["3.11", "3.13"]
+
+# Node.js ecosystem
+node = "22"
+bun = "latest"
+
+# Systems programming
+go = "1.23"
+rust = "stable"
+
+# ============================================================================
+# Python Tools (via pipx backend - automatically uses uvx if uv is installed)
+# ============================================================================
+# NOTE: During migration, some tools are defined in both .chezmoidata.toml (uv_tools)
+# and here (pipx backend). This temporary duplication ensures backward compatibility.
+# After confirming mise installation works, remove uv_tools from .chezmoidata.toml.
+
+# Infrastructure & Configuration Management
+"pipx:ansible" = "latest"
+
+# Development Tools
+"pipx:argcomplete" = "latest"
+"pipx:asciinema" = "latest"
+"pipx:cookiecutter" = "latest"
+"pipx:devpi-server" = "latest"
+"pipx:pdm" = "latest"
+"pipx:pre-commit" = "latest"
+
+# Hardware & IoT
+"pipx:esptool" = "latest"
+
+# Monitoring & System Tools
+"pipx:glances" = "latest"
+"pipx:ranger-fm" = "latest"
+
+# AI & Machine Learning
+"pipx:huggingface-hub" = "latest"
+"pipx:mlx-lm" = "latest"
+
+# Text Processing & Templating
+"pipx:jinjanator" = "latest"
+"pipx:trafilatura" = "latest"
+
+# Code Quality & Linting
+"pipx:ruff" = "latest"
+"pipx:yamllint" = "latest"
+
+# Communication
+"pipx:telegram-send" = "latest"
+
+# Development Productivity
+"pipx:vectorcode[mcp,cli]" = "latest"
+
+# Git-based tools
+"pipx:zen-mcp-server" = "git+https://github.com/BeehiveInnovations/zen-mcp-server"
+
+# ============================================================================
+# CLI Tools (via aqua backend - security-focused with checksums)
+# ============================================================================
+# NOTE: Package names use GitHub org/repo format. The aqua registry normalizes
+# these to match the standard registry entries (e.g., "BurntSushi/ripgrep" is
+# recognized from the aqua-registry). Verify package availability at:
+# https://github.com/aquaproj/aqua-registry
+
+# Kubernetes & Container Orchestration
+"aqua:kubernetes/kubernetes" = "latest"        # kubectl
+"aqua:helm/helm" = "latest"
+"aqua:argoproj/argo-cd" = "latest"            # argocd
+"aqua:ahmetb/kubectx" = "latest"
+"aqua:derailed/k9s" = "latest"
+"aqua:kubernetes-sigs/skaffold" = "latest"
+
+# Infrastructure as Code
+"aqua:hashicorp/terraform" = "latest"
+
+# Search & File Tools (Rust-based, fast!)
+"aqua:BurntSushi/ripgrep" = "latest"          # rg
+"aqua:sharkdp/fd" = "latest"                  # fd
+"aqua:sharkdp/bat" = "latest"                 # bat
+"aqua:lsd-rs/lsd" = "latest"                  # lsd
+"aqua:dandavison/delta" = "latest"            # git-delta
+
+# Version Control
+"aqua:jesseduffield/lazygit" = "latest"
+
+# Data Processing
+"aqua:jqlang/jq" = "latest"
+"aqua:mikefarah/yq" = "latest"
+
+# Terminal & Shell
+"aqua:ajeetdsouza/zoxide" = "latest"
+"aqua:atuin-sh/atuin" = "latest"
+
+# Development Tools
+"aqua:cli/cli" = "latest"                     # gh (GitHub CLI)
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+[env]
+# Editor configuration
+EDITOR = "nvim"
+VISUAL = "nvim"
+PAGER = "less"
+
+# Dotfiles directory (templated by chezmoi)
+DOTFILES_DIR = "{{ .chezmoi.sourceDir }}"
+
+# XDG Base Directory Specification
+{{- if eq .chezmoi.os "darwin" }}
+XDG_CONFIG_HOME = "{{ .chezmoi.homeDir }}/.config"
+XDG_DATA_HOME = "{{ .chezmoi.homeDir }}/.local/share"
+XDG_STATE_HOME = "{{ .chezmoi.homeDir }}/.local/state"
+XDG_CACHE_HOME = "{{ .chezmoi.homeDir }}/.cache"
+{{- end }}
+
+# Load API tokens from secure file (gitignored)
+_.file = "~/.api_tokens"
+
+# ============================================================================
+# mise Tasks (replaces Makefile functionality)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Dotfiles Management
+# ----------------------------------------------------------------------------
+[tasks.apply]
+description = "Apply dotfiles configuration to system"
+run = "chezmoi apply -v"
+
+[tasks.diff]
+description = "Show differences between current state and dotfiles"
+run = "chezmoi diff"
+
+[tasks.status]
+description = "Show status of dotfiles vs current system state"
+run = "chezmoi status"
+
+[tasks.verify]
+description = "Verify dotfiles configuration integrity"
+run = "chezmoi verify ."
+
+[tasks.check]
+alias = "status"
+description = "Check what changes would be made (alias for status)"
+
+# ----------------------------------------------------------------------------
+# Testing & Quality Assurance
+# ----------------------------------------------------------------------------
+[tasks.test]
+description = "Run all tests (linting + container testing)"
+depends = ["lint", "docker"]
+
+[tasks.lint]
+description = "Run all linters as used in CI"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔍 Running linters..."
+
+# Shell scripts
+if command -v shellcheck >/dev/null 2>&1; then
+    echo "  ✓ Running shellcheck..."
+    find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \; || {
+        echo "  ⚠️  Warning: shellcheck found issues"
+    }
+else
+    echo "  ⚠️  Warning: shellcheck not installed"
+fi
+
+# Lua (Neovim config)
+if command -v luacheck >/dev/null 2>&1; then
+    echo "  ✓ Running luacheck..."
+    luacheck private_dot_config/nvim/lua || {
+        echo "  ⚠️  Warning: luacheck found issues"
+    }
+else
+    echo "  ⚠️  Warning: luacheck not installed"
+fi
+
+# GitHub Actions workflows
+if command -v actionlint >/dev/null 2>&1; then
+    echo "  ✓ Running actionlint..."
+    actionlint || {
+        echo "  ⚠️  Warning: actionlint found issues"
+    }
+else
+    echo "  ⚠️  Warning: actionlint not installed"
+fi
+
+# Brewfile integrity (if exists)
+if [ -f Brewfile ]; then
+    echo "  ✓ Checking Brewfile integrity..."
+    brew bundle check --file=Brewfile || {
+        echo "  ⚠️  Warning: Brewfile check failed"
+    }
+else
+    echo "  ⚠️  Warning: Brewfile not found"
+fi
+
+echo "✅ Linting complete!"
+"""
+
+[tasks."lint:shell"]
+description = "Run shellcheck on shell scripts"
+run = 'find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \;'
+
+[tasks."lint:lua"]
+description = "Run luacheck on Neovim configuration"
+run = "luacheck private_dot_config/nvim/lua"
+
+[tasks."lint:actions"]
+description = "Run actionlint on GitHub Actions workflows"
+run = "actionlint"
+
+[tasks.docker]
+description = "Test full environment using Docker Compose"
+run = """
+#!/usr/bin/env bash
+if [ -f docker-compose.yml ]; then
+    docker-compose up --build
+else
+    echo "❌ Error: docker-compose.yml not found"
+    exit 1
+fi
+"""
+
+[tasks.qa]
+description = "Run quality assurance checks"
+depends = ["lint", "check"]
+
+# ----------------------------------------------------------------------------
+# Environment Setup
+# ----------------------------------------------------------------------------
+[tasks.setup]
+description = "Complete initial environment setup"
+depends = ["setup:brew", "setup:mise", "setup:nvim"]
+
+[tasks."setup:brew"]
+description = "Install/update Homebrew packages"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🍺 Setting up Homebrew packages..."
+
+if [ -f Brewfile ]; then
+    brew bundle install --file=Brewfile
+    brew cleanup
+else
+    echo "❌ Error: Brewfile not found"
+    exit 1
+fi
+"""
+
+[tasks."setup:mise"]
+description = "Install mise tool versions"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🛠️  Setting up mise tools..."
+
+if command -v mise >/dev/null 2>&1; then
+    mise install
+    mise doctor
+else
+    echo "⚠️  Warning: mise not installed"
+fi
+"""
+
+[tasks."setup:nvim"]
+description = "Install/update Neovim plugins and LSP tools"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "📦 Setting up Neovim plugins..."
+
+if command -v nvim >/dev/null 2>&1; then
+    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
+else
+    echo "⚠️  Warning: neovim not installed"
+fi
+"""
+
+# ----------------------------------------------------------------------------
+# Update Operations
+# ----------------------------------------------------------------------------
+[tasks.update]
+description = "Update all tools and packages"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔄 Updating all tools and packages..."
+
+# Homebrew
+if command -v brew >/dev/null 2>&1; then
+    echo "  🍺 Updating Homebrew..."
+    brew update && brew upgrade && brew cleanup
+else
+    echo "  ⚠️  Warning: brew not found"
+fi
+
+# mise-managed tools
+if command -v mise >/dev/null 2>&1; then
+    echo "  🛠️  Updating mise tools..."
+    mise upgrade
+else
+    echo "  ⚠️  Warning: mise not found"
+fi
+
+# Neovim plugins
+if command -v nvim >/dev/null 2>&1; then
+    echo "  📦 Updating Neovim plugins..."
+    nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa
+else
+    echo "  ⚠️  Warning: nvim not found"
+fi
+
+# uv tool packages (for tools not yet migrated to mise)
+if command -v uv >/dev/null 2>&1; then
+    echo "  📦 Updating uv tool packages..."
+    uv tool upgrade --all
+else
+    echo "  ⚠️  Warning: uv not found"
+fi
+
+echo "✅ All updates complete!"
+"""
+
+[tasks."update:brew"]
+description = "Update only Homebrew packages"
+run = "brew update && brew upgrade && brew cleanup"
+
+[tasks."update:mise"]
+description = "Update only mise-managed tools"
+run = "mise upgrade"
+
+[tasks."update:nvim"]
+description = "Update only Neovim plugins"
+run = 'nvim --headless "+Lazy! sync" "+lua require(\'lazy\').load({plugins={\'mason.nvim\'}})" "+MasonUpdate" +qa'
+
+[tasks."update:uv"]
+description = "Update only uv tool packages"
+run = "uv tool upgrade --all"
+
+# ----------------------------------------------------------------------------
+# Cleanup Operations
+# ----------------------------------------------------------------------------
+[tasks.clean]
+description = "Clean up temporary files and caches"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🧹 Cleaning up..."
+
+# Homebrew cache
+if command -v brew >/dev/null 2>&1; then
+    echo "  🍺 Cleaning Homebrew cache..."
+    brew cleanup
+fi
+
+# mise unused versions
+if command -v mise >/dev/null 2>&1; then
+    echo "  🛠️  Pruning unused mise versions..."
+    mise prune
+fi
+
+# Temporary files
+echo "  🗑️  Removing temporary files..."
+find . -name "*.tmp" -delete 2>/dev/null || true
+find . -name ".DS_Store" -delete 2>/dev/null || true
+
+echo "✅ Cleanup complete!"
+"""
+
+# ----------------------------------------------------------------------------
+# Security
+# ----------------------------------------------------------------------------
+[tasks."security:audit"]
+description = "Run security audit on configurations"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔒 Running security audit..."
+
+# Check for obvious secrets in files
+if command -v rg >/dev/null 2>&1; then
+    echo "  🔍 Checking for secrets in files..."
+    rg -i "password|secret|token|key" --type-not lock --type-not json . || {
+        echo "  ✅ No obvious secrets found"
+    }
+else
+    echo "  ⚠️  Warning: ripgrep not installed, cannot check for secrets"
+fi
+
+# Run detect-secrets if available
+if command -v detect-secrets >/dev/null 2>&1; then
+    echo "  🔍 Running detect-secrets scan..."
+    detect-secrets scan --baseline .secrets.baseline
+else
+    echo "  ⚠️  Warning: detect-secrets not installed"
+fi
+
+echo "✅ Security audit complete!"
+"""
+
+[tasks."security:scan"]
+description = "Scan for secrets with detect-secrets"
+run = "detect-secrets scan --baseline .secrets.baseline"
+
+# ----------------------------------------------------------------------------
+# Development Workflow
+# ----------------------------------------------------------------------------
+[tasks.dev]
+description = "Start development environment"
+run = """
+#!/usr/bin/env bash
+echo "🚀 Starting development environment..."
+echo ""
+echo "📊 Running initial checks..."
+chezmoi status
+echo ""
+echo "✅ Development environment ready!"
+echo "💡 Run 'mise run apply' to apply changes"
+"""
+
+[tasks.edit]
+description = "Edit dotfiles configuration"
+run = """
+#!/usr/bin/env bash
+if command -v nvim >/dev/null 2>&1; then
+    nvim .
+elif command -v code >/dev/null 2>&1; then
+    code .
+else
+    echo "⚠️  No preferred editor found, please edit manually"
+fi
+"""
+
+# ----------------------------------------------------------------------------
+# Information & Diagnostics
+# ----------------------------------------------------------------------------
+[tasks.info]
+description = "Show system and tool information"
+run = """
+#!/usr/bin/env bash
+echo "📊 System Information:"
+echo "OS: $(uname -s) $(uname -r)"
+echo "Architecture: $(uname -m)"
+echo "Shell: $SHELL"
+echo ""
+echo "🛠️  Tool Versions:"
+echo -n "chezmoi: "; chezmoi --version 2>/dev/null || echo "not installed"
+echo -n "brew: "; brew --version 2>/dev/null | head -1 || echo "not installed"
+echo -n "mise: "; mise --version 2>/dev/null || echo "not installed"
+echo -n "nvim: "; nvim --version 2>/dev/null | head -1 || echo "not installed"
+echo -n "git: "; git --version 2>/dev/null || echo "not installed"
+echo -n "uv: "; uv --version 2>/dev/null || echo "not installed"
+"""
+
+[tasks.doctor]
+description = "Run diagnostics on mise setup"
+run = "mise doctor"
+
+# ----------------------------------------------------------------------------
+# CI/CD Integration
+# ----------------------------------------------------------------------------
+[tasks.ci]
+description = "Run CI checks locally"
+depends = ["lint"]
+
+# ----------------------------------------------------------------------------
+# Documentation
+# ----------------------------------------------------------------------------
+[tasks.docs]
+description = "Show available documentation"
+run = """
+#!/usr/bin/env bash
+echo "📚 Available documentation:"
+echo "  • README.md - Repository overview"
+echo "  • CLAUDE.md - AI assistant guidance"
+echo "  • CONVENTIONS.md - Development conventions"
+echo "  • docs/ - Detailed documentation"
+"""
+
+# ============================================================================
+# Settings
+# ============================================================================
+[settings]
+# Automatically switch environments when entering directories with .mise.toml
+activate_aggressive = true
+
+# Use legacy version files (.tool-versions, .nvmrc, etc.)
+legacy_version_file = true
+
+# Disable telemetry
+disable_telemetry = true
+
+# Enable experimental features
+experimental = true
+
+# ============================================================================
+# Hooks
+# ============================================================================
+# Uncomment these hooks as needed for your workflow
+
+# [hooks]
+# Run security scan when entering dotfiles directory
+# enter = "detect-secrets scan --baseline .secrets.baseline"
+
+# Clean up when leaving
+# leave = "mise prune"
+
+# Verify installation after installing tools
+# postinstall = "mise doctor"
