@@ -10,6 +10,11 @@ on:
     #   - "src/**/*.js"
     #   - "src/**/*.jsx"
 
+# Prevent duplicate review runs for the same PR
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   claude-review:
     # Optional: Filter by PR author
@@ -31,6 +36,13 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Generate allowed tools for PR review
+        id: tools-config
+        run: |
+          chmod +x .github/scripts/generate-allowed-tools.sh
+          ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json pr_review)
+          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+
       - name: Run Claude Code Review
         id: claude-review
         uses: anthropics/claude-code-action@v1
@@ -50,4 +62,4 @@ jobs:
 
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
-          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+          claude_args: '--allowed-tools "${{ steps.tools-config.outputs.allowed_tools }}"'

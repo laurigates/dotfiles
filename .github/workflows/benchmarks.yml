@@ -1,0 +1,157 @@
+name: Performance Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  benchmark:
+    name: Run Performance Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install dependencies
+        run: |
+          brew install chezmoi neovim zsh hyperfine
+
+      - name: Setup mise
+        uses: nick-fields/setup-mise@v0
+
+      - name: Benchmark chezmoi apply
+        id: chezmoi-bench
+        run: |
+          echo "## ⚡ Chezmoi Apply Performance" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run hyperfine benchmark
+          hyperfine --warmup 1 --runs 3 --export-json chezmoi-bench.json \
+            'chezmoi apply --dry-run'
+
+          # Extract results
+          MEAN=$(jq -r '.results[0].mean' chezmoi-bench.json)
+          STDDEV=$(jq -r '.results[0].stddev' chezmoi-bench.json)
+
+          echo "- **Mean time**: ${MEAN}s" >> $GITHUB_STEP_SUMMARY
+          echo "- **Std dev**: ${STDDEV}s" >> $GITHUB_STEP_SUMMARY
+
+          echo "mean=$MEAN" >> $GITHUB_OUTPUT
+          echo "stddev=$STDDEV" >> $GITHUB_OUTPUT
+
+      - name: Benchmark shell startup
+        id: shell-bench
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🐚 Shell Startup Performance" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Create minimal zshrc for testing
+          cat > /tmp/test.zshrc <<'EOF'
+          # Minimal zsh configuration for benchmark
+          export ZSH_VERSION_CHECK=1
+          EOF
+
+          # Benchmark zsh startup
+          hyperfine --warmup 2 --runs 5 --export-json shell-bench.json \
+            'zsh -c "exit"' \
+            'bash -c "exit"'
+
+          # Extract results
+          ZSH_MEAN=$(jq -r '.results[0].mean' shell-bench.json)
+          BASH_MEAN=$(jq -r '.results[1].mean' shell-bench.json)
+
+          echo "| Shell | Startup Time |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Zsh** | ${ZSH_MEAN}s |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Bash** | ${BASH_MEAN}s |" >> $GITHUB_STEP_SUMMARY
+
+          echo "zsh_mean=$ZSH_MEAN" >> $GITHUB_OUTPUT
+          echo "bash_mean=$BASH_MEAN" >> $GITHUB_OUTPUT
+
+      - name: Benchmark Neovim startup
+        id: nvim-bench
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Neovim Startup Performance" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Benchmark Neovim startup (headless mode)
+          hyperfine --warmup 2 --runs 5 --export-json nvim-bench.json \
+            'nvim --headless +quit'
+
+          NVIM_MEAN=$(jq -r '.results[0].mean' nvim-bench.json)
+
+          echo "- **Mean startup time**: ${NVIM_MEAN}s" >> $GITHUB_STEP_SUMMARY
+
+          echo "nvim_mean=$NVIM_MEAN" >> $GITHUB_OUTPUT
+
+      - name: Store benchmark results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'customSmallerIsBetter'
+          output-file-path: benchmark-results.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          alert-threshold: '150%'
+          comment-on-alert: true
+          fail-on-alert: false
+          alert-comment-cc-users: '@${{ github.actor }}'
+
+      - name: Create benchmark summary JSON
+        run: |
+          mkdir -p .github/benchmarks
+          cat > .github/benchmarks/results-${{ github.run_id }}.json <<EOF
+          {
+            "run_id": "${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "benchmarks": {
+              "chezmoi_apply": {
+                "mean": ${{ steps.chezmoi-bench.outputs.mean }},
+                "stddev": ${{ steps.chezmoi-bench.outputs.stddev }}
+              },
+              "shell_startup": {
+                "zsh": ${{ steps.shell-bench.outputs.zsh_mean }},
+                "bash": ${{ steps.shell-bench.outputs.bash_mean }}
+              },
+              "neovim_startup": {
+                "mean": ${{ steps.nvim-bench.outputs.nvim_mean }}
+              }
+            }
+          }
+          EOF
+
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            .github/benchmarks/*.json
+            *-bench.json
+          retention-days: 90
+
+      - name: Compare with previous benchmarks
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Performance Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Benchmark results will be compared with the main branch when this PR is merged." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Current measurements:" >> $GITHUB_STEP_SUMMARY
+          echo "- Chezmoi apply: ${{ steps.chezmoi-bench.outputs.mean }}s" >> $GITHUB_STEP_SUMMARY
+          echo "- Shell startup (zsh): ${{ steps.shell-bench.outputs.zsh_mean }}s" >> $GITHUB_STEP_SUMMARY
+          echo "- Neovim startup: ${{ steps.nvim-bench.outputs.nvim_mean }}s" >> $GITHUB_STEP_SUMMARY

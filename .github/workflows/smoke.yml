@@ -60,6 +60,44 @@ jobs:
       - name: Setup mise
         uses: nick-fields/setup-mise@v0
 
+      - name: Cache mise tools
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/mise
+            ~/.local/state/mise
+          key: ${{ runner.os }}-mise-${{ hashFiles('**/.mise.toml', '**/mise.toml', '**/.config/mise/config.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-mise-
+
+      - name: Run environment health checks
+        run: |
+          echo "## 🏥 Environment Health Checks" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Homebrew doctor
+          echo "### Homebrew Doctor" >> $GITHUB_STEP_SUMMARY
+          if brew doctor 2>&1 | tee brew-doctor.log; then
+            echo "✅ Homebrew is healthy" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Homebrew has warnings (non-fatal)" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat brew-doctor.log >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # mise doctor
+          echo "### mise Doctor" >> $GITHUB_STEP_SUMMARY
+          if mise doctor 2>&1 | tee mise-doctor.log; then
+            echo "✅ mise is healthy" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ mise has warnings" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat mise-doctor.log >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
       - name: Run chezmoi apply
         # Use -v for verbose output, useful for debugging CI failures
         run: chezmoi apply -v

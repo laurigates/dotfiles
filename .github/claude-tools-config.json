@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "Claude Code allowed tools configuration for GitHub Actions workflows",
+  "version": "1.0.0",
+  "categories": {
+    "core": [
+      "Edit",
+      "MultiEdit",
+      "Write",
+      "Read",
+      "Glob",
+      "Grep",
+      "SlashCommand",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "git": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git switch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rebase:*)"
+    ],
+    "github_cli": [
+      "Bash(gh issue create:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr comment:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh workflow view:*)"
+    ],
+    "chezmoi": [
+      "Bash(chezmoi diff:*)",
+      "Bash(chezmoi status:*)",
+      "Bash(chezmoi apply:*)"
+    ],
+    "linters": [
+      "Bash(pre-commit:*)",
+      "Bash(actionlint:*)",
+      "Bash(shellcheck:*)",
+      "Bash(luacheck:*)",
+      "Bash(detect-secrets:*)"
+    ],
+    "package_managers": [
+      "Bash(uv:*)",
+      "Bash(brew bundle check:*)"
+    ],
+    "filesystem": [
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
+    ],
+    "mcp_servers": [
+      "mcp__context7",
+      "mcp__github",
+      "mcp__sequential-thinking",
+      "mcp__zen-mcp-server"
+    ]
+  },
+  "presets": {
+    "full_access": [
+      "core",
+      "git",
+      "github_cli",
+      "chezmoi",
+      "linters",
+      "package_managers",
+      "filesystem",
+      "mcp_servers"
+    ],
+    "read_only": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)"
+    ],
+    "pr_review": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(gh issue view:*)",
+      "Bash(gh search:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh pr comment:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)"
+    ]
+  }
+}

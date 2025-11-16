@@ -1,0 +1,86 @@
+# Auto-labeling configuration based on file paths
+# See: https://github.com/actions/labeler
+
+# Neovim configuration
+neovim:
+  - changed-files:
+    - any-glob-to-any-file: 'private_dot_config/nvim/**/*'
+    - any-glob-to-any-file: 'dot_config/nvim/**/*'
+
+# Fish shell
+shell:
+  - changed-files:
+    - any-glob-to-any-file: 'private_dot_config/fish/**/*'
+    - any-glob-to-any-file: 'dot_config/fish/**/*'
+    - any-glob-to-any-file: '**/*.fish'
+    - any-glob-to-any-file: 'dot_zshrc*'
+    - any-glob-to-any-file: 'dot_bashrc*'
+
+# GitHub Actions / CI
+ci:
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/**/*'
+    - any-glob-to-any-file: '.github/actions/**/*'
+
+# Chezmoi configuration
+chezmoi:
+  - changed-files:
+    - any-glob-to-any-file: 'dot_chezmoi*'
+    - any-glob-to-any-file: '.chezmoiignore'
+    - any-glob-to-any-file: '.chezmoiremove'
+    - any-glob-to-any-file: '.chezmoidata.toml'
+
+# Claude Code
+claude:
+  - changed-files:
+    - any-glob-to-any-file: 'exact_dot_claude/**/*'
+    - any-glob-to-any-file: 'dot_claude/**/*'
+    - any-glob-to-any-file: 'CLAUDE.md'
+    - any-glob-to-any-file: '.mcp.json'
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.md'
+    - any-glob-to-any-file: 'docs/**/*'
+
+# Security
+security:
+  - changed-files:
+    - any-glob-to-any-file: '.secrets.baseline'
+    - any-glob-to-any-file: '.pre-commit-config.yaml'
+    - any-glob-to-any-file: '**/*secret*'
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: 'Brewfile'
+    - any-glob-to-any-file: 'dot_default-*-packages'
+    - any-glob-to-any-file: 'package.json'
+    - any-glob-to-any-file: 'requirements*.txt'
+    - any-glob-to-any-file: 'Cargo.toml'
+
+# Git configuration
+git:
+  - changed-files:
+    - any-glob-to-any-file: 'dot_gitconfig*'
+    - any-glob-to-any-file: 'dot_gitignore*'
+
+# Mise/Tool version management
+mise:
+  - changed-files:
+    - any-glob-to-any-file: '**/.mise.toml'
+    - any-glob-to-any-file: '**/mise.toml'
+    - any-glob-to-any-file: 'dot_config/mise/**/*'
+
+# Skills
+skills:
+  - changed-files:
+    - any-glob-to-any-file: 'exact_dot_claude/skills/**/*'
+    - any-glob-to-any-file: 'plugins/**/*'
+
+# MCP Servers
+mcp:
+  - changed-files:
+    - any-glob-to-any-file: '.mcp.json'
+    - any-glob-to-any-file: '**/*mcp*'
