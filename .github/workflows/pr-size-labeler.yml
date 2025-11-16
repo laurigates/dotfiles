@@ -1,0 +1,62 @@
+name: PR Size Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  size-label:
+    name: Label PR by size
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Calculate PR size and apply label
+        uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/xs'
+          xs_max_size: '10'
+          s_label: 'size/s'
+          s_max_size: '100'
+          m_label: 'size/m'
+          m_max_size: '500'
+          l_label: 'size/l'
+          l_max_size: '1000'
+          xl_label: 'size/xl'
+          fail_if_xl: 'false'
+          message_if_xl: >
+            This PR is very large (XL). Consider breaking it into smaller,
+            more focused PRs for easier review and testing.
+          files_to_ignore: |
+            package-lock.json
+            yarn.lock
+            pnpm-lock.yaml
+            Cargo.lock
+            poetry.lock
+            lazy-lock.json
+            *.svg
+            *.png
+            *.jpg
+            *.jpeg
+
+      - name: Create PR size summary
+        run: |
+          echo "## 📏 PR Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This PR has been automatically labeled based on the number of changed lines:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Size | Lines Changed | Label |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|---------------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| XS | 0-10 | \`size/xs\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| S | 11-100 | \`size/s\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| M | 101-500 | \`size/m\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| L | 501-1000 | \`size/l\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| XL | 1000+ | \`size/xl\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note**: Lock files and image files are excluded from the calculation." >> $GITHUB_STEP_SUMMARY

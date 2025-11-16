@@ -1,0 +1,118 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  coverage:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install testing dependencies
+        run: |
+          brew install shellcheck shfmt
+
+      - name: Analyze shell scripts
+        id: shell-analysis
+        run: |
+          # Find all shell scripts
+          SHELL_SCRIPTS=$(find . -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.zsh" \) ! -path "./.git/*" ! -path "./private_dot_config/*" || true)
+
+          if [ -z "$SHELL_SCRIPTS" ]; then
+            echo "No shell scripts found"
+            echo "total_scripts=0" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          TOTAL_SCRIPTS=$(echo "$SHELL_SCRIPTS" | wc -l | tr -d ' ')
+          PASSED=0
+          FAILED=0
+
+          echo "## 🧪 Shell Script Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Script | Status | Issues |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          for script in $SHELL_SCRIPTS; do
+            if shellcheck -f gcc "$script" 2>&1 | tee shellcheck.log; then
+              echo "| \`$script\` | ✅ Pass | 0 |" >> $GITHUB_STEP_SUMMARY
+              PASSED=$((PASSED + 1))
+            else
+              ISSUES=$(grep -c ": error:" shellcheck.log || echo "0")
+              echo "| \`$script\` | ❌ Fail | $ISSUES |" >> $GITHUB_STEP_SUMMARY
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Scripts**: $TOTAL_SCRIPTS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Passed**: $PASSED ($(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL_SCRIPTS)*100}")%)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Failed**: $FAILED ($(awk "BEGIN {printf \"%.1f\", ($FAILED/$TOTAL_SCRIPTS)*100}")%)" >> $GITHUB_STEP_SUMMARY
+
+          echo "total_scripts=$TOTAL_SCRIPTS" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+      - name: Generate coverage badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          TOTAL=${{ steps.shell-analysis.outputs.total_scripts }}
+          PASSED=${{ steps.shell-analysis.outputs.passed }}
+
+          if [ "$TOTAL" -eq 0 ]; then
+            COVERAGE=0
+          else
+            COVERAGE=$(awk "BEGIN {printf \"%.0f\", ($PASSED/$TOTAL)*100}")
+          fi
+
+          # Determine badge color
+          if [ "$COVERAGE" -ge 80 ]; then
+            COLOR="brightgreen"
+          elif [ "$COVERAGE" -ge 60 ]; then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+
+          echo "Coverage: $COVERAGE% (Color: $COLOR)"
+          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
+          echo "BADGE_COLOR=$COLOR" >> $GITHUB_ENV
+
+      - name: Create coverage report artifact
+        if: always()
+        run: |
+          mkdir -p coverage-reports
+          cat > coverage-reports/shell-script-coverage.json <<EOF
+          {
+            "total_scripts": ${{ steps.shell-analysis.outputs.total_scripts }},
+            "passed": ${{ steps.shell-analysis.outputs.passed }},
+            "failed": ${{ steps.shell-analysis.outputs.failed }},
+            "coverage_percentage": $(awk "BEGIN {printf \"%.1f\", (${{ steps.shell-analysis.outputs.passed }}/${{ steps.shell-analysis.outputs.total_scripts }})*100}"),
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-reports/
+          retention-days: 90

@@ -1,0 +1,134 @@
+name: Link Checker
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  link-check:
+    name: Check Documentation Links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check links in markdown files
+        uses: lycheeverse/lychee-action@v1
+        with:
+          # Check all markdown files
+          args: |
+            --verbose
+            --no-progress
+            --accept 200,204,206,429
+            --timeout 30
+            --max-retries 3
+            --exclude-mail
+            --exclude 'localhost'
+            --exclude 'example.com'
+            --exclude '127.0.0.1'
+            '**/*.md'
+          # Fail on broken links in PRs, but only warn on main/scheduled runs
+          fail: ${{ github.event_name == 'pull_request' }}
+          output: lychee-report.md
+
+      - name: Create link check summary
+        if: always()
+        run: |
+          echo "## 🔗 Link Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f lychee-report.md ]; then
+            cat lychee-report.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ All links are valid!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment PR with broken links
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let report = '## ⚠️ Broken Links Detected\n\n';
+
+            if (fs.existsSync('lychee-report.md')) {
+              const content = fs.readFileSync('lychee-report.md', 'utf8');
+              report += content;
+            } else {
+              report += 'Link check failed but no report was generated.';
+            }
+
+            report += '\n\n---\n';
+            report += '*Please fix the broken links before merging.*';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+      - name: Create issue for broken links (scheduled run)
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let body = '## 🔗 Weekly Link Check Found Broken Links\n\n';
+
+            if (fs.existsSync('lychee-report.md')) {
+              const content = fs.readFileSync('lychee-report.md', 'utf8');
+              body += content;
+            }
+
+            body += '\n\n---\n';
+            body += `Detected in scheduled run: ${context.runId}\n`;
+            body += `Run URL: ${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            // Check if an issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'documentation,broken-links'
+            });
+
+            if (issues.data.length === 0) {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🔗 Broken Links Detected in Documentation',
+                body: body,
+                labels: ['documentation', 'broken-links', 'automated']
+              });
+            } else {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `### New broken links detected\n\n${body}`
+              });
+            }
+
+      - name: Upload link check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-check-report
+          path: lychee-report.md
+          retention-days: 30

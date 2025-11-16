@@ -10,6 +10,11 @@ on:
   pull_request_review:
     types: [submitted]
 
+# Prevent duplicate runs - cancel previous runs for the same issue/PR
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   claude:
     if: |
@@ -65,6 +70,29 @@ jobs:
         run: |
           brew install chezmoi
 
+      - name: Generate allowed tools configuration
+        id: tools-config
+        run: |
+          # Make script executable
+          chmod +x .github/scripts/generate-allowed-tools.sh
+
+          # Generate allowed tools string using full_access preset
+          ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json full_access)
+
+          # Export to GitHub output
+          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+
+          # Show in summary for debugging
+          echo "## 🔧 Allowed Tools Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Preset: \`full_access\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tools count: $(echo "$ALLOWED_TOOLS" | tr ',' '\n' | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Record start time
+        id: timing
+        run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+
       - name: Run Claude Code with MCP Integration
         id: claude
         uses: anthropics/claude-code-action@v1
@@ -80,8 +108,108 @@ jobs:
           # Enhanced Claude arguments for workflow integration
           claude_args: |
             --model claude-sonnet-4-5-20250929
-            --allowedTools "Edit,MultiEdit,Write,Read,Glob,Grep,SlashCommand,Bash(ls:*),Bash(find:*),Bash(grep:*),Bash(mkdir:*),Bash(mv:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git branch:*),Bash(git remote:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git switch:*),Bash(git checkout:*),Bash(git rebase:*),Bash(gh issue create:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh issue comment:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr checks:*),Bash(gh run view:*),Bash(gh run list:*),Bash(gh workflow view:*),Bash(chezmoi diff:*),Bash(chezmoi status:*),Bash(chezmoi apply:*),Bash(pre-commit:*),Bash(actionlint:*),Bash(shellcheck:*),Bash(luacheck:*),Bash(detect-secrets:*),Bash(uv:*),Bash(brew bundle check:*),WebSearch,WebFetch,mcp__context7,mcp__github,mcp__sequential-thinking,mcp__zen-mcp-server"
+            --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"
             --max-turns 100
+
+      - name: Collect workflow metrics
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          START_TIME=${{ steps.timing.outputs.start_time }}
+          DURATION=$((END_TIME - START_TIME))
+
+          # Create metrics summary
+          echo "## 📊 Workflow Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Duration** | ${DURATION}s |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Trigger** | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Actor** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Run ID** | [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Save metrics to file
+          mkdir -p .github/metrics
+          cat > .github/metrics/claude-workflow-${{ github.run_id }}.json <<EOF
+          {
+            "run_id": "${{ github.run_id }}",
+            "run_number": "${{ github.run_number }}",
+            "event": "${{ github.event_name }}",
+            "actor": "${{ github.actor }}",
+            "duration_seconds": ${DURATION},
+            "status": "${{ job.status }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+      - name: Handle workflow failure
+        if: failure()
+        run: |
+          # Create detailed error report
+          echo "## ❌ Workflow Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The Claude Code workflow encountered an error." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Error Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run ID**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by**: \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Actor**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Troubleshooting Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Check the workflow logs for detailed error messages" >> $GITHUB_STEP_SUMMARY
+          echo "2. Verify CLAUDE_CODE_OAUTH_TOKEN secret is configured" >> $GITHUB_STEP_SUMMARY
+          echo "3. Ensure MCP servers in .mcp.json are properly configured" >> $GITHUB_STEP_SUMMARY
+          echo "4. Review recent changes that may have affected the workflow" >> $GITHUB_STEP_SUMMARY
+
+          # Create error notification file
+          mkdir -p .github/errors
+          cat > .github/errors/failure-${{ github.run_id }}.md <<EOF
+          # Workflow Failure Report
+
+          **Run ID**: ${{ github.run_id }}
+          **Event**: ${{ github.event_name }}
+          **Actor**: ${{ github.actor }}
+          **Timestamp**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          ## Context
+          - Repository: ${{ github.repository }}
+          - Branch: ${{ github.ref }}
+          - Commit: ${{ github.sha }}
+
+          ## Logs
+          View full logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
+      - name: Comment on issue/PR with failure details
+        if: failure() && (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment')
+        run: |
+          COMMENT_BODY="## ❌ Claude Code Workflow Failed
+
+          The workflow encountered an error while processing your request.
+
+          **Run ID**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          Please check the workflow logs for more details. If this issue persists, please contact the repository maintainers.
+
+          <details>
+          <summary>Technical Details</summary>
+
+          - Event: \`${{ github.event_name }}\`
+          - Actor: @${{ github.actor }}
+          - Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          </details>"
+
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "$COMMENT_BODY"
+          elif [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Archive workflow artifacts
         if: always()
@@ -93,4 +221,6 @@ jobs:
             .claude/tasks/*.json
             .claude/docs/*.md
             .claude/status/*.md
+            .github/metrics/*.json
+            .github/errors/*.md
           retention-days: 30

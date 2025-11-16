@@ -1,5 +1,11 @@
 # My Dotfiles
 
+[![Smoke Test CI](https://github.com/laurigates/dotfiles/workflows/Smoke%20Test%20CI/badge.svg)](https://github.com/laurigates/dotfiles/actions/workflows/smoke.yml)
+[![SBOM Generation](https://github.com/laurigates/dotfiles/workflows/SBOM%20Generation/badge.svg)](https://github.com/laurigates/dotfiles/actions/workflows/sbom.yml)
+[![Link Checker](https://github.com/laurigates/dotfiles/workflows/Link%20Checker/badge.svg)](https://github.com/laurigates/dotfiles/actions/workflows/link-checker.yml)
+[![Performance Benchmarks](https://github.com/laurigates/dotfiles/workflows/Performance%20Benchmarks/badge.svg)](https://github.com/laurigates/dotfiles/actions/workflows/benchmarks.yml)
+[![Test Coverage](https://github.com/laurigates/dotfiles/workflows/Test%20Coverage/badge.svg)](https://github.com/laurigates/dotfiles/actions/workflows/coverage.yml)
+
 ## Overview
 
 This repository contains my personal dotfiles, managed using [chezmoi](https://www.chezmoi.io/). It sets up my development environment, including configurations for Zsh, Neovim, Git, and various development tools. Tool versions are managed using [mise-en-place](https://mise.jdx.dev/).
