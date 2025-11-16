@@ -3,7 +3,7 @@ name: code-analysis
 model: claude-sonnet-4-5
 color: "#A8FF6B"
 description: Use proactively to perform deep code analysis, semantic search, and leverage language server protocol (LSP) capabilities. This agent is an expert in understanding code structure, providing diagnostics, and performing advanced code searches.
-tools: Glob, Grep, LS, Read, TodoWrite, mcp__vectorcode, mcp__graphiti-memory
+tools: Glob, Grep, LS, Read, TodoWrite, mcp__vectorcode, mcp__lsp-typescript, mcp__lsp-basedpyright-langserver, mcp__lsp-clangd, mcp__lsp-rust, mcp__graphiti-memory
 ---
 
 <role>
