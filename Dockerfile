@@ -1,24 +1,38 @@
-# https://www.jamesridgway.co.uk/blog/dotfiles-with-github-travis-ci-and-docker
-# https://github.com/jamesridgway/dotfiles
+# Dotfiles testing container with chezmoi
+# Based on: https://www.jamesridgway.co.uk/blog/dotfiles-with-github-travis-ci-and-docker
 FROM alpine:3
 
-RUN apk add bash zsh git python3 shadow
+# Install base dependencies
+RUN apk add --no-cache \
+    bash \
+    fish \
+    git \
+    curl \
+    shadow \
+    age
 
-# Create test user and add to sudoers
-RUN adduser -D -s /bin/zsh tester
+# Install chezmoi
+RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
 
-# Add dotfiles and chown
-COPY --chown=tester:tester . /home/tester/dotfiles
+# Create test user with fish as default shell
+RUN adduser -D -s /bin/fish tester
 
-# Switch testuser
+# Switch to test user
 USER tester
 ENV HOME /home/tester
+WORKDIR /home/tester
 
-# Change working directory
-WORKDIR /home/tester/dotfiles
-SHELL ["/bin/zsh", "-c"]
+# Initialize chezmoi with the dotfiles
+COPY --chown=tester:tester . /tmp/dotfiles
+RUN chezmoi init --source=/tmp/dotfiles
 
-# dotbot requires pyyaml
-RUN ./install-profile workstation
+# Apply dotfiles (with verbose output for debugging)
+RUN chezmoi apply -v
 
-CMD ["/bin/zsh"]
+# Verify installation
+RUN chezmoi verify || true
+
+# Set working directory to home
+WORKDIR /home/tester
+
+CMD ["/bin/fish"]

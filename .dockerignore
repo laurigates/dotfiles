@@ -1,20 +1,30 @@
-# Ignore all submodules so my local files don't interfere with docker tests and vice-versa
-#
-# The following commands can be used to sync the list of submodules to
-# dockerignore and deduplicate them
-# git submodule | awk '{ print "/"$2 }' >> .dockerignore
-# awk '!seen[$0]++' .dockerignore > temp && mv temp .dockerignore
-/i3/i3blocks-contrib
-/meta/dotbot
-/node/node-build
-/node/nodenv
-/node/nodenv-default-packages
-/python/pyenv
-/ruby/rbenv
-/ruby/ruby-build
-/tmux/tmux-themepack
-/vim/vim-plug
-/zsh/fzf-tab
-/zsh/oh-my-zsh
-/zsh/zsh-autosuggestions
-/zsh/zsh-syntax-highlighting
+# Exclude files that shouldn't be in the Docker build context
+# for testing chezmoi dotfiles
+
+# Git and version control
+.git/
+.gitignore
+.gitattributes
+
+# Claude Code runtime directories (these are preserved via .chezmoiignore)
+.claude/projects/
+.claude/session-env/
+.claude/shell-snapshots/
+
+# CI/CD
+.github/
+
+# Secret and local files
+.env
+.api_tokens
+*.key
+*.pem
+
+# Editor and IDE
+.vscode/
+.idea/
+
+# Test and build artifacts
+*.log
+*.tmp
+.DS_Store
