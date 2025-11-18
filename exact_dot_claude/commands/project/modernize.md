@@ -141,7 +141,7 @@ For each detected framework:
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
     if DEBUG:
-        SECRET_KEY = 'dev-only-secret-key-not-for-production'
+        SECRET_KEY = 'dev-only-secret-key-not-for-production'  # pragma: allowlist secret
     else:
         raise ValueError("DJANGO_SECRET_KEY environment variable must be set")
 
@@ -377,7 +377,7 @@ SECRET_KEY=your-secret-key-here
 ALLOWED_HOSTS=localhost,yourdomain.com
 
 # Database Configuration
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname  # pragma: allowlist secret
 # or individual components:
 DB_HOST=localhost
 DB_PORT=5432

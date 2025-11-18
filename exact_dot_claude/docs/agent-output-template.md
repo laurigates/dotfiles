@@ -61,7 +61,7 @@ Command output
 ```json
 {
   "database_schema": "User model created with email, password_hash fields",
-  "jwt_secret": "Generated and stored in .env",
+  "jwt_secret": "Generated and stored in .env",  // pragma: allowlist secret
   "api_endpoints": "Base structure created, ready for route implementation"
 }
 ```

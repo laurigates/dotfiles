@@ -138,17 +138,17 @@ detect-secrets scans for:
 
 ```bash
 # ❌ DETECTED: Hardcoded API key
-API_KEY = "sk_live_abc123def456ghi789"
+API_KEY = "sk_live_abc123def456ghi789"  # pragma: allowlist secret
 
 # ❌ DETECTED: AWS credentials
-aws_access_key_id = AKIAIOSFODNN7EXAMPLE
+aws_access_key_id = AKIAIOSFODNN7EXAMPLE  # pragma: allowlist secret
 
 # ❌ DETECTED: Database password
-DB_URL = "postgresql://user:Pa$$w0rd@localhost/db"
+DB_URL = "postgresql://user:Pa$$w0rd@localhost/db"  # pragma: allowlist secret
 
-# ❌ DETECTED: Private key
------BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEA...
+# ❌ DETECTED: Private key  # pragma: allowlist secret
+-----BEGIN RSA PRIVATE KEY-----  # pragma: allowlist secret
+MIIEpAIBAAKCAQEA...  # pragma: allowlist secret
 ```
 
 ## Managing False Positives
@@ -167,11 +167,11 @@ detect-secrets scan --exclude-files 'test/.*\.py' > .secrets.baseline
 ### Inline Ignore Comments
 
 ```python
-# In code, mark false positives
+# In code, mark false positives  # pragma: allowlist secret
 api_key = "test-key-1234"  # pragma: allowlist secret
 
-# Or use detect-secrets specific pragma
-password = "fake-password"  # pragma: allowlist nextline secret
+# Or use detect-secrets specific pragma  # pragma: allowlist secret
+password = "fake-password"  # pragma: allowlist secret
 ```
 
 ### Baseline Management
@@ -216,10 +216,10 @@ For test fixtures or examples:
 
 ```bash
 # 1. Use obviously fake values
-API_KEY = "fake-key-for-testing-only"
+API_KEY = "fake-key-for-testing-only"  # pragma: allowlist secret
 
 # 2. Use placeholders
-API_KEY = "<your-api-key-here>"
+API_KEY = "<your-api-key-here>"  # pragma: allowlist secret
 
 # 3. Mark in baseline as false positive
 detect-secrets audit .secrets.baseline  # mark as 'n'

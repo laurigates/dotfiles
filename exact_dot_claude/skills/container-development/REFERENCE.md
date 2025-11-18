@@ -215,7 +215,7 @@ CMD ["node", "server.js"]
 services:
   app:
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/myapp
+      DATABASE_URL: postgresql://postgres:password@db:5432/myapp  # pragma: allowlist secret
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
 
@@ -768,7 +768,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/myapp
+      - DATABASE_URL=postgresql://postgres:password@db:5432/myapp  # pragma: allowlist secret
       - REDIS_URL=redis://redis:6379
     depends_on:
       db:

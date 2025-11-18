@@ -336,7 +336,7 @@ describe('POST /auth/register', () => {
       .post('/auth/register')
       .send({
         email: 'test@example.com',
-        password: 'SecurePass123!'
+        password: 'SecurePass123!'  // pragma: allowlist secret
       });
 
     expect(response.status).toBe(201);
