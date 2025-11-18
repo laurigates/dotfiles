@@ -57,10 +57,14 @@ vim.lsp.config("jsonls", {
 vim.lsp.config("arduino_language_server", {
   cmd = {
     "arduino-language-server",
-    "-cli-config", vim.fn.expand("~/.arduino15/arduino-cli.yaml"),
-    "-fqbn", "arduino:avr:uno", -- Default FQBN, can be overridden per project
-    "-cli", "arduino-cli",
-    "-clangd", "clangd",
+    "-cli-config",
+    vim.fn.expand("~/.arduino15/arduino-cli.yaml"),
+    "-fqbn",
+    "arduino:avr:uno", -- Default FQBN, can be overridden per project
+    "-cli",
+    "arduino-cli",
+    "-clangd",
+    "clangd",
   },
   filetypes = { "arduino", "ino" },
   root_markers = { "*.ino" },
