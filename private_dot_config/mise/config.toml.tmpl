@@ -66,8 +66,8 @@ rust = "stable"
 # Development Productivity
 "pipx:vectorcode[mcp,cli]" = "latest"
 
-# Git-based tools
-"pipx:zen-mcp-server" = "git+https://github.com/BeehiveInnovations/zen-mcp-server"
+# Git-based tools (using GitHub shorthand - mise converts to git+https)
+"pipx:BeehiveInnovations/zen-mcp-server" = "latest"
 
 # ============================================================================
 # CLI Tools (via aqua backend - security-focused with checksums)
@@ -78,12 +78,12 @@ rust = "stable"
 # https://github.com/aquaproj/aqua-registry
 
 # Kubernetes & Container Orchestration
-"aqua:kubernetes/kubernetes" = "latest"        # kubectl
+"aqua:kubernetes/kubectl" = "latest"           # kubectl
 "aqua:helm/helm" = "latest"
-"aqua:argoproj/argo-cd" = "latest"            # argocd
+"aqua:argoproj/argo-cd" = "latest"             # argocd
 "aqua:ahmetb/kubectx" = "latest"
 "aqua:derailed/k9s" = "latest"
-"aqua:kubernetes-sigs/skaffold" = "latest"
+"aqua:GoogleContainerTools/skaffold" = "latest"
 
 # Infrastructure as Code
 "aqua:hashicorp/terraform" = "latest"
@@ -104,7 +104,7 @@ rust = "stable"
 
 # Terminal & Shell
 "aqua:ajeetdsouza/zoxide" = "latest"
-"aqua:atuin-sh/atuin" = "latest"
+"aqua:atuinsh/atuin" = "latest"
 
 # Development Tools
 "aqua:cli/cli" = "latest"                     # gh (GitHub CLI)
@@ -177,7 +177,7 @@ echo "🔍 Running linters..."
 # Shell scripts
 if command -v shellcheck >/dev/null 2>&1; then
     echo "  ✓ Running shellcheck..."
-    find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \; || {
+    find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \\; || {
         echo "  ⚠️  Warning: shellcheck found issues"
     }
 else
@@ -219,7 +219,7 @@ echo "✅ Linting complete!"
 
 [tasks."lint:shell"]
 description = "Run shellcheck on shell scripts"
-run = 'find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \;'
+run = 'find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \\;'
 
 [tasks."lint:lua"]
 description = "Run luacheck on Neovim configuration"
@@ -356,7 +356,7 @@ run = "mise upgrade"
 
 [tasks."update:nvim"]
 description = "Update only Neovim plugins"
-run = 'nvim --headless "+Lazy! sync" "+lua require(\'lazy\').load({plugins={\'mason.nvim\'}})" "+MasonUpdate" +qa'
+run = "nvim --headless \"+Lazy! sync\" \"+lua require('lazy').load({plugins={'mason.nvim'}})\" \"+MasonUpdate\" +qa"
 
 [tasks."update:uv"]
 description = "Update only uv tool packages"
@@ -513,9 +513,6 @@ activate_aggressive = true
 
 # Use legacy version files (.tool-versions, .nvmrc, etc.)
 legacy_version_file = true
-
-# Disable telemetry
-disable_telemetry = true
 
 # Enable experimental features
 experimental = true
