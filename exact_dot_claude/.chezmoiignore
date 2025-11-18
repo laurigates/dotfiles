@@ -3,6 +3,13 @@ projects/
 session-env/
 shell-snapshots/
 
+# Runtime files created by Claude Code
+.update.lock
+debug
+history.jsonl
+statsig
+todos
+
 # Local settings override - not managed by chezmoi
 settings.local.json
 
