@@ -1,0 +1,9 @@
+{
+  "poll_interval": 300,
+  "event_lookback_minutes": 30,
+  "github_repo": "your-org/your-infrastructure-repo",
+  "severity_threshold": "warning",
+  "telegram_notify": true,
+  "issue_labels": ["argocd", "auto-detected", "needs-triage"],
+  "argocd_server": "argocd.example.com"
+}

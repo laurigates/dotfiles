@@ -337,6 +337,31 @@
     description = "Enhanced reasoning with sequential thinking"
     category = "ai"
 
+[argocd_monitor]
+  # ArgoCD Monitor Agent Configuration
+  # This agent monitors ArgoCD events and creates GitHub issues for problems
+
+  # Enable/disable the monitor
+  enabled = false
+
+  # Poll interval in seconds
+  poll_interval = 300
+
+  # How far back to look for events (minutes)
+  event_lookback_minutes = 30
+
+  # Minimum severity to report (info, warning, error)
+  severity_threshold = "warning"
+
+  # Send notifications via telegram-send
+  telegram_notify = false
+
+  # Labels to add to GitHub issues
+  issue_labels = ["argocd", "auto-detected", "needs-triage"]
+
+  # Priority thresholds for notification
+  notify_priorities = ["critical", "high"]
+
 [platform]
   # Platform-specific settings will be populated by templates
   cpu_cores = 0

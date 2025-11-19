@@ -1,0 +1,25 @@
+[Unit]
+Description=ArgoCD Event Monitor Agent
+Documentation=https://github.com/laurigates/dotfiles
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/argocd-monitor --watch
+Restart=on-failure
+RestartSec=60
+
+# Environment file for secrets
+EnvironmentFile=-%h/.config/argocd-monitor/env
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=50%
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

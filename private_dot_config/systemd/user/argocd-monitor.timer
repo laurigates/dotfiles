@@ -1,0 +1,16 @@
+[Unit]
+Description=Run ArgoCD Monitor periodically
+Documentation=https://github.com/laurigates/dotfiles
+
+[Timer]
+# Run every 5 minutes
+OnBootSec=2min
+OnUnitActiveSec=5min
+
+# Randomize to avoid thundering herd
+RandomizedDelaySec=30
+
+Persistent=true
+
+[Install]
+WantedBy=timers.target

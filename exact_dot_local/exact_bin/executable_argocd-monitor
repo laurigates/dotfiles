@@ -1,0 +1,522 @@
+#!/usr/bin/env python3
+"""
+ArgoCD Event Monitor Agent
+
+Monitors ArgoCD application events and logs, investigates issues automatically,
+and creates GitHub issues for problems that need attention.
+
+Uses the Claude Agent SDK to analyze events and determine root causes.
+
+Usage:
+    argocd-monitor --once          # Run once and exit
+    argocd-monitor --watch         # Continuous monitoring (default)
+    argocd-monitor --interval 300  # Custom poll interval (seconds)
+    argocd-monitor --dry-run       # Analyze but don't create issues
+"""
+
+import asyncio
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Optional
+
+# SDK imports - graceful fallback if not installed
+try:
+    from claude_agent_sdk import query, ClaudeAgentOptions
+    SDK_AVAILABLE = True
+except ImportError:
+    SDK_AVAILABLE = False
+    print("Warning: claude-agent-sdk not installed. Install with: uv tool install claude-agent-sdk")
+
+# Configuration
+CONFIG_DIR = Path.home() / ".config" / "argocd-monitor"
+STATE_FILE = CONFIG_DIR / "state.json"
+LOG_FILE = CONFIG_DIR / "monitor.log"
+
+# Default settings (override via environment or config)
+DEFAULT_SETTINGS = {
+    "poll_interval": 300,  # 5 minutes
+    "event_lookback_minutes": 30,
+    "github_repo": None,  # Set via ARGOCD_MONITOR_GITHUB_REPO
+    "severity_threshold": "warning",  # info, warning, error
+    "telegram_notify": False,
+    "issue_labels": ["argocd", "auto-detected", "needs-triage"],
+    "argocd_server": None,  # Set via ARGOCD_SERVER
+}
+
+
+def load_config() -> dict:
+    """Load configuration from file and environment"""
+    config = DEFAULT_SETTINGS.copy()
+
+    config_file = CONFIG_DIR / "config.json"
+    if config_file.exists():
+        with open(config_file) as f:
+            config.update(json.load(f))
+
+    # Environment overrides
+    if os.getenv("ARGOCD_SERVER"):
+        config["argocd_server"] = os.getenv("ARGOCD_SERVER")
+    if os.getenv("ARGOCD_MONITOR_GITHUB_REPO"):
+        config["github_repo"] = os.getenv("ARGOCD_MONITOR_GITHUB_REPO")
+    if os.getenv("ARGOCD_MONITOR_INTERVAL"):
+        config["poll_interval"] = int(os.getenv("ARGOCD_MONITOR_INTERVAL"))
+
+    return config
+
+
+def load_state() -> dict:
+    """Load previous state (last processed events)"""
+    if STATE_FILE.exists():
+        with open(STATE_FILE) as f:
+            return json.load(f)
+    return {"last_check": None, "processed_events": [], "created_issues": []}
+
+
+def save_state(state: dict):
+    """Save current state"""
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f, indent=2, default=str)
+
+
+def log_message(message: str, level: str = "INFO"):
+    """Log to file and stdout"""
+    timestamp = datetime.now().isoformat()
+    log_line = f"[{timestamp}] [{level}] {message}"
+    print(log_line)
+
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, "a") as f:
+        f.write(log_line + "\n")
+
+
+async def fetch_argocd_events(config: dict, since_minutes: int = 30) -> str:
+    """
+    Fetch ArgoCD events using argocd CLI.
+    Returns raw event data for analysis.
+    """
+    import subprocess
+
+    events = []
+
+    # Get application list
+    try:
+        result = subprocess.run(
+            ["argocd", "app", "list", "-o", "json"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        if result.returncode == 0:
+            apps = json.loads(result.stdout)
+
+            for app in apps:
+                app_name = app.get("metadata", {}).get("name", "unknown")
+
+                # Get app details including sync status and health
+                detail_result = subprocess.run(
+                    ["argocd", "app", "get", app_name, "-o", "json"],
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+
+                if detail_result.returncode == 0:
+                    app_detail = json.loads(detail_result.stdout)
+
+                    status = app_detail.get("status", {})
+                    health = status.get("health", {}).get("status", "Unknown")
+                    sync = status.get("sync", {}).get("status", "Unknown")
+
+                    # Collect conditions/events
+                    conditions = status.get("conditions", [])
+
+                    events.append({
+                        "app": app_name,
+                        "health": health,
+                        "sync": sync,
+                        "conditions": conditions,
+                        "operationState": status.get("operationState", {}),
+                        "resources": status.get("resources", [])
+                    })
+    except subprocess.TimeoutExpired:
+        log_message("Timeout fetching ArgoCD apps", "ERROR")
+    except Exception as e:
+        log_message(f"Error fetching ArgoCD events: {e}", "ERROR")
+
+    # Also fetch recent events from kubectl if available
+    try:
+        result = subprocess.run(
+            ["kubectl", "get", "events", "-n", "argocd",
+             "--sort-by=.lastTimestamp", "-o", "json"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        if result.returncode == 0:
+            k8s_events = json.loads(result.stdout)
+            events.append({"kubernetes_events": k8s_events.get("items", [])[-50:]})
+    except Exception:
+        pass  # kubectl events are optional
+
+    return json.dumps(events, indent=2)
+
+
+async def analyze_events_with_claude(events_json: str, config: dict, dry_run: bool = False) -> Optional[dict]:
+    """
+    Use Claude Agent SDK to analyze ArgoCD events and determine if issues exist.
+    Returns analysis result with potential GitHub issue content.
+    """
+    if not SDK_AVAILABLE:
+        log_message("Claude Agent SDK not available, skipping analysis", "WARNING")
+        return None
+
+    # Build MCP server config for ArgoCD and GitHub
+    mcp_servers = {}
+
+    if config.get("argocd_server"):
+        mcp_servers["argocd-mcp"] = {
+            "command": "bunx",
+            "args": ["-y", "argocd-mcp@latest", "stdio"],
+            "env": {
+                "ARGOCD_SERVER": config["argocd_server"],
+                "ARGOCD_AUTH_TOKEN": os.getenv("ARGOCD_AUTH_TOKEN", "")
+            }
+        }
+
+    if config.get("github_repo") and not dry_run:
+        mcp_servers["github"] = {
+            "command": "go",
+            "args": ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"],
+            "env": {
+                "GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")
+            }
+        }
+
+    analysis_prompt = f"""Analyze these ArgoCD application events and logs for issues that need attention.
+
+## Event Data
+```json
+{events_json}
+```
+
+## Analysis Tasks
+
+1. **Health Check Analysis**
+   - Identify any applications with Degraded, Missing, or Unknown health status
+   - Check for resource health issues (pods not ready, deployment failures)
+   - Look for recurring health transitions
+
+2. **Sync Status Analysis**
+   - Identify OutOfSync applications that should be synced
+   - Check for sync failures with error messages
+   - Look for applications stuck in syncing state
+
+3. **Event Pattern Detection**
+   - Identify error patterns in Kubernetes events
+   - Look for CrashLoopBackOff, ImagePullBackOff, OOMKilled
+   - Detect resource constraint issues
+
+4. **Root Cause Investigation**
+   - For each issue found, determine likely root cause
+   - Check if issue is transient (might self-resolve) or persistent
+   - Identify if issue requires manual intervention
+
+5. **Priority Assessment**
+   - Critical: Production impact, data loss risk, security issue
+   - High: Service degradation, partial outage
+   - Medium: Non-production issue, performance degradation
+   - Low: Warning condition, informational
+
+## Output Format
+
+Provide your analysis as JSON with this structure:
+```json
+{{
+  "summary": "Brief overall status summary",
+  "issues_found": true/false,
+  "issues": [
+    {{
+      "title": "Clear, actionable issue title",
+      "app": "application-name",
+      "priority": "critical|high|medium|low",
+      "category": "health|sync|resource|config",
+      "description": "Detailed description of the issue",
+      "evidence": ["Specific log/event evidence"],
+      "root_cause": "Most likely root cause",
+      "recommended_actions": ["Step 1", "Step 2"],
+      "is_transient": false,
+      "needs_github_issue": true
+    }}
+  ],
+  "healthy_apps": ["list of healthy apps"],
+  "next_check_recommendation": "when to check again"
+}}
+```
+
+Focus on actionable issues. Ignore transient conditions that typically self-resolve within minutes.
+"""
+
+    try:
+        result_data = None
+
+        async for msg in query(
+            prompt=analysis_prompt,
+            options=ClaudeAgentOptions(
+                allowed_tools=["Read", "Bash"],  # Minimal tools for analysis
+                permission_mode="plan",  # Read-only analysis
+                mcp_servers=mcp_servers if mcp_servers else None,
+                system_prompt="""You are an expert SRE specializing in Kubernetes and ArgoCD.
+You analyze application health, sync status, and events to identify issues that need attention.
+Be precise and avoid false positives. Only flag issues that genuinely need investigation.
+Output valid JSON only."""
+            )
+        ):
+            if msg.type == "result":
+                # Extract JSON from response
+                result_text = str(msg.result) if hasattr(msg, 'result') else str(msg)
+
+                # Try to parse JSON from the result
+                try:
+                    # Find JSON block in response
+                    import re
+                    json_match = re.search(r'\{[\s\S]*\}', result_text)
+                    if json_match:
+                        result_data = json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    log_message(f"Failed to parse analysis result as JSON", "WARNING")
+                    result_data = {"summary": result_text, "issues_found": False, "issues": []}
+
+        return result_data
+
+    except Exception as e:
+        log_message(f"Error during Claude analysis: {e}", "ERROR")
+        return None
+
+
+async def create_github_issue(issue: dict, config: dict) -> Optional[str]:
+    """
+    Create a GitHub issue for the detected problem.
+    Returns the issue URL if created successfully.
+    """
+    if not SDK_AVAILABLE:
+        return None
+
+    if not config.get("github_repo"):
+        log_message("GitHub repo not configured, skipping issue creation", "WARNING")
+        return None
+
+    labels = config.get("issue_labels", [])
+    labels.append(f"priority:{issue['priority']}")
+    labels.append(f"category:{issue['category']}")
+
+    issue_body = f"""## ArgoCD Issue Detected
+
+**Application**: `{issue.get('app', 'N/A')}`
+**Priority**: {issue['priority'].upper()}
+**Category**: {issue['category']}
+**Detected**: {datetime.now().isoformat()}
+
+## Description
+
+{issue['description']}
+
+## Evidence
+
+{''.join(f"- {e}" + chr(10) for e in issue.get('evidence', []))}
+
+## Root Cause Analysis
+
+{issue.get('root_cause', 'Unknown')}
+
+## Recommended Actions
+
+{''.join(f"{i+1}. {action}" + chr(10) for i, action in enumerate(issue.get('recommended_actions', [])))}
+
+---
+*This issue was automatically created by argocd-monitor using Claude Agent SDK*
+"""
+
+    try:
+        issue_url = None
+
+        async for msg in query(
+            prompt=f"""Create a GitHub issue in {config['github_repo']} with:
+
+Title: {issue['title']}
+
+Body:
+{issue_body}
+
+Labels: {', '.join(labels)}
+
+Use the mcp__github__create_issue tool to create the issue.
+Return only the issue URL.""",
+            options=ClaudeAgentOptions(
+                allowed_tools=["mcp__github__create_issue"],
+                permission_mode="acceptEdits",
+                mcp_servers={
+                    "github": {
+                        "command": "go",
+                        "args": ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"],
+                        "env": {
+                            "GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")
+                        }
+                    }
+                }
+            )
+        ):
+            if msg.type == "result":
+                result_text = str(msg.result) if hasattr(msg, 'result') else str(msg)
+                # Extract URL from result
+                import re
+                url_match = re.search(r'https://github\.com/[^\s]+/issues/\d+', result_text)
+                if url_match:
+                    issue_url = url_match.group()
+
+        return issue_url
+
+    except Exception as e:
+        log_message(f"Error creating GitHub issue: {e}", "ERROR")
+        return None
+
+
+async def send_notification(message: str, config: dict):
+    """Send notification via telegram-send if enabled"""
+    if not config.get("telegram_notify"):
+        return
+
+    try:
+        import subprocess
+        subprocess.run(
+            ["telegram-send", message],
+            timeout=10,
+            check=True
+        )
+    except Exception as e:
+        log_message(f"Failed to send telegram notification: {e}", "WARNING")
+
+
+async def monitor_once(config: dict, state: dict, dry_run: bool = False) -> dict:
+    """Run one monitoring cycle"""
+    log_message("Starting ArgoCD monitoring cycle")
+
+    # Fetch events
+    events_json = await fetch_argocd_events(
+        config,
+        since_minutes=config.get("event_lookback_minutes", 30)
+    )
+
+    if not events_json or events_json == "[]":
+        log_message("No events to analyze")
+        return state
+
+    # Analyze with Claude
+    analysis = await analyze_events_with_claude(events_json, config, dry_run)
+
+    if not analysis:
+        log_message("Analysis returned no results")
+        return state
+
+    log_message(f"Analysis summary: {analysis.get('summary', 'No summary')}")
+
+    # Process issues
+    if analysis.get("issues_found") and analysis.get("issues"):
+        for issue in analysis["issues"]:
+            issue_id = f"{issue.get('app', 'unknown')}:{issue.get('title', 'unknown')}"
+
+            # Skip if already processed recently
+            if issue_id in state.get("processed_events", []):
+                log_message(f"Skipping already processed issue: {issue_id}")
+                continue
+
+            log_message(f"Found issue: {issue['title']} (Priority: {issue['priority']})")
+
+            # Create GitHub issue if needed
+            if issue.get("needs_github_issue") and not issue.get("is_transient"):
+                if dry_run:
+                    log_message(f"[DRY RUN] Would create GitHub issue: {issue['title']}")
+                else:
+                    issue_url = await create_github_issue(issue, config)
+                    if issue_url:
+                        log_message(f"Created GitHub issue: {issue_url}")
+                        state.setdefault("created_issues", []).append({
+                            "url": issue_url,
+                            "title": issue["title"],
+                            "created_at": datetime.now().isoformat()
+                        })
+
+                        # Send notification
+                        await send_notification(
+                            f"🚨 ArgoCD Issue Created\n{issue['title']}\n{issue_url}",
+                            config
+                        )
+
+            # Mark as processed
+            state.setdefault("processed_events", []).append(issue_id)
+    else:
+        log_message("No actionable issues found")
+
+    # Update state
+    state["last_check"] = datetime.now().isoformat()
+
+    # Clean up old processed events (keep last 100)
+    if len(state.get("processed_events", [])) > 100:
+        state["processed_events"] = state["processed_events"][-100:]
+
+    return state
+
+
+async def main():
+    parser = argparse.ArgumentParser(description="ArgoCD Event Monitor Agent")
+    parser.add_argument("--once", action="store_true", help="Run once and exit")
+    parser.add_argument("--watch", action="store_true", help="Continuous monitoring (default)")
+    parser.add_argument("--interval", type=int, help="Poll interval in seconds")
+    parser.add_argument("--dry-run", action="store_true", help="Analyze but don't create issues")
+    parser.add_argument("--config", type=str, help="Path to config file")
+    args = parser.parse_args()
+
+    # Load configuration
+    config = load_config()
+
+    if args.interval:
+        config["poll_interval"] = args.interval
+
+    # Validate requirements
+    if not config.get("github_repo") and not args.dry_run:
+        log_message("Warning: ARGOCD_MONITOR_GITHUB_REPO not set, issues won't be created", "WARNING")
+
+    # Load state
+    state = load_state()
+
+    log_message(f"ArgoCD Monitor started (interval: {config['poll_interval']}s)")
+
+    if args.once:
+        # Run once
+        state = await monitor_once(config, state, args.dry_run)
+        save_state(state)
+    else:
+        # Continuous monitoring
+        try:
+            while True:
+                state = await monitor_once(config, state, args.dry_run)
+                save_state(state)
+
+                log_message(f"Sleeping for {config['poll_interval']} seconds...")
+                await asyncio.sleep(config["poll_interval"])
+        except KeyboardInterrupt:
+            log_message("Monitor stopped by user")
+            save_state(state)
+
+
+if __name__ == "__main__":
+    if not SDK_AVAILABLE:
+        print("Error: claude-agent-sdk is required")
+        print("Install with: uv tool install claude-agent-sdk")
+        sys.exit(1)
+
+    asyncio.run(main())
