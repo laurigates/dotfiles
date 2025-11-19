@@ -337,6 +337,15 @@
     description = "Enhanced reasoning with sequential thinking"
     category = "ai"
 
+  [mcp_servers.consult7]
+    enabled = false
+    scope = "project"
+    command = "uvx"
+    args = ["consult7", "${OPENROUTER_API_KEY}"]
+    description = "Consult large context window LLMs via OpenRouter for analyzing extensive codebases"
+    category = "ai"
+    env_vars = ["OPENROUTER_API_KEY"]
+
 [platform]
   # Platform-specific settings will be populated by templates
   cpu_cores = 0
