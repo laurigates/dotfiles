@@ -106,6 +106,7 @@ All your favorite MCP servers are maintained in `.chezmoidata.toml` (disabled by
 - `playwright` - Browser automation and testing
 - `graphiti-memory` - Graph-based memory and knowledge management
 - `context7` - Upstash context management
+- `consult7` - Consult large context window LLMs via OpenRouter for analyzing extensive codebases
 - `zen-mcp-server` - Zen productivity and focus tools
 - `podio-mcp` - Podio project management integration
 - `argocd-mcp` - ArgoCD GitOps deployment management
