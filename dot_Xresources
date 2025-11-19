@@ -1,8 +1,0 @@
-## Cursor
-/* Xcursor.size: 32 */
-
-## Note that Xft.dpi is different than xrandr --dpi
-/* Xft.dpi: 180 */
-
-## For OSC 52 clipboard reading
-XTerm*allowWindowOps: true
