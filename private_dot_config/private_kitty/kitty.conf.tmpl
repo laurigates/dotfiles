@@ -427,6 +427,13 @@ close_on_child_death no
 #: to yes means that any background processes still using the terminal
 #: can fail silently because their stdout/stderr/stdin no longer work.
 
+enable_focus_events no
+
+#: Disable focus event escape sequences. These sequences (\e[I for focus
+#: in, \e[O for focus out) are sent when switching tabs/windows. Some
+#: applications don't properly consume them, causing [O[I to appear as
+#: literal text in input fields.
+
 allow_remote_control yes
 
 #: Allow other programs to control kitty. If you turn this on other
@@ -670,7 +677,7 @@ map kitty_mod+h         show_scrollback
 
 #: Window management # region
 
-map kitty_mod+enter new_window
+map kitty_mod+enter combine : new_window : next_layout
 
 #: You can open a new window running an arbitrary program, for
 #: example::
@@ -691,8 +698,9 @@ map kitty_mod+enter new_window
 
 map kitty_mod+n new_os_window
 map kitty_mod+w close_window
-map kitty_mod+] next_window
-map kitty_mod+[ previous_window
+# These don't work with the Finnish keyboard layout
+# map kitty_mod+] next_window
+# map kitty_mod+[ previous_window
 map kitty_mod+f move_window_forward
 map kitty_mod+b move_window_backward
 map kitty_mod+` move_window_to_top
