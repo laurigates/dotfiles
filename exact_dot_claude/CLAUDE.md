@@ -14,6 +14,7 @@ This `.claude` directory is managed via chezmoi's `exact_dot_claude/` source dir
 
 **Runtime directories preserved:**
 The following directories are created by Claude Code at runtime and are NOT managed by chezmoi:
+- `plans/` - Plan mode state
 - `projects/` - Project-specific state
 - `session-env/` - Session environment data
 - `shell-snapshots/` - Shell state snapshots

@@ -1,4 +1,5 @@
 # Runtime directories created by Claude Code - don't manage or remove these
+plans/
 projects/
 session-env/
 shell-snapshots/
