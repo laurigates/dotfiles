@@ -29,7 +29,7 @@ ruff check
 ruff check path/to/file.py
 ruff check src/ tests/
 
-# IMPORTANT: Pass directory as parameter (don't use cd)
+# IMPORTANT: Pass directory as parameter to stay in repo root
 # ✅ Good
 ruff check services/orchestrator
 

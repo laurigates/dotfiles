@@ -26,7 +26,7 @@ Automatically apply this skill when:
 2. Review past approaches and outcomes
 3. Note lessons learned from previous work
 4. Apply proven patterns
-5. Avoid approaches that failed before
+5. Use proven successful approaches
 ```
 
 **Example**:

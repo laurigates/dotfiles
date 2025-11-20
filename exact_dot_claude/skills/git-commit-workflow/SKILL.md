@@ -145,14 +145,10 @@ git diff --cached --name-only
 git commit -m "style(code): apply linter fixes"
 ```
 
-### Avoiding `git add .`
+### Explicit Staging Best Practices
 
 ```bash
-# ❌ DON'T: Blind staging
-git add .
-git commit -m "updates"
-
-# ✅ DO: Explicit staging with review
+# ✅ Explicit staging with review
 git status
 git add src/feature/new-file.ts
 git add tests/feature.test.ts
@@ -366,7 +362,7 @@ git restore --staged .
 # Amend last commit message (before push)
 git commit --amend -m "corrected message"
 
-# After push (avoid if possible)
+# After push (prefer pre-push correction when possible)
 git commit --amend -m "corrected message"
 git push --force-with-lease origin branch-name
 ```

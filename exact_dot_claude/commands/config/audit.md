@@ -177,7 +177,7 @@ If `--verbose` flag is provided:
 
 ## Notes
 
-- This is a **read-only audit** - do not modify files unless explicitly requested
+- This is a **read-only audit** - modifications require explicit user request
 - Focus on configuration correctness and security implications
 - Provide actionable recommendations with specific file locations
 - Use TodoWrite to track audit progress if checking multiple agents

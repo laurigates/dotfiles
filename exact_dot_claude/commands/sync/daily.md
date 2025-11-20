@@ -306,7 +306,7 @@ Show concise summary in terminal:
 
 - **GitHub API fails**: Continue with Podio only, note GitHub unavailability
 - **Podio API fails**: Continue with GitHub only, note Podio unavailability
-- **Both APIs fail**: Display error, don't update state, suggest retry
+- **Both APIs fail**: Display error, preserve current state, suggest retry
 
 ### State File Issues
 

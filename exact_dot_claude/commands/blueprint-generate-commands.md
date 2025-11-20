@@ -123,7 +123,7 @@ Generate workflow commands customized for this project.
    ```
 
 **Important**:
-- Detect actual project commands (don't hardcode)
+- Detect actual project commands (detect dynamically from project structure)
 - Include project-specific test commands
 - Commands should be immediately usable
 - Report what was detected for transparency

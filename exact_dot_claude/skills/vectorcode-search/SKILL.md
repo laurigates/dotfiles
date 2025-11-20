@@ -472,7 +472,7 @@ mcp__vectorcode__query({
 **Query Formulation:**
 - Spend time on good keywords
 - Use 2-5 distinct concepts
-- Avoid redundant terms
+- Use distinct, specific search terms
 - Think about synonyms and related concepts
 
 **Project Root:**

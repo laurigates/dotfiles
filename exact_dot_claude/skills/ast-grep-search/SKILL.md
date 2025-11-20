@@ -1058,8 +1058,8 @@ ast-grep -p 'pattern' -r 'replacement' -U --lang js %
 - Use `kind` matching when possible (faster than pattern)
 - Place most specific rules first in `any` blocks
 - Use `stopBy` in relational rules to limit search depth
-- Avoid overly broad patterns like `$$$`
-- Use utility rules to avoid pattern duplication
+- Use specific patterns instead of broad `$$$` wildcards
+- Use utility rules to centralize common patterns
 
 ## Best Practices
 

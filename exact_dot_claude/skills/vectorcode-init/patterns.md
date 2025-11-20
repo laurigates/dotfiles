@@ -408,7 +408,7 @@ Exclude if you want production code only:
 
 1. **Be Specific**: Use `src/**/*.ts` instead of `**/*.ts` when possible
 2. **Exclude Early**: Large directories like `node_modules/` should be excluded first
-3. **Avoid Redundancy**: Don't include patterns that are subsets of others
+3. **Be Distinct**: Include only non-overlapping patterns
 4. **Test Patterns**: Use `vectorcode ls` to verify what gets indexed
 5. **Iterate**: Start narrow and expand as needed
 

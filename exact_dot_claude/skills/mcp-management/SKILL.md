@@ -265,7 +265,7 @@ fi
 
 ❌ **DON'T**: Hardcode secrets in `.mcp.json`
 ```json
-"env": { "GITHUB_TOKEN": "ghp_actualtoken123" }  // NEVER DO THIS
+"env": { "GITHUB_TOKEN": "ghp_actualtoken123" }  // Use environment variable reference instead
 ```
 
 ### Gitignore Strategy

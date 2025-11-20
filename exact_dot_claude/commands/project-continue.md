@@ -45,7 +45,7 @@ Continue project development by analyzing current state and resuming work.
      * Next item in work-overview "Pending" section
      * Next requirement in PRD
      * Next work-order to execute
-   - Consider dependencies (don't start tasks that are blocked)
+   - Consider dependencies (start with unblocked tasks first)
 
 4. **Report status before starting**:
    ```
@@ -108,7 +108,7 @@ Continue project development by analyzing current state and resuming work.
 
 **Scenario: Tests failing**:
 1. Analyze failures
-2. Fix failing tests (don't skip RED step)
+2. Fix failing tests (always complete RED step first)
 3. Continue once tests pass
 
 **Scenario: Unclear what to do next**:

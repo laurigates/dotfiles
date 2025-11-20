@@ -200,7 +200,7 @@ The `uv.lock` file:
 - **Pins exact versions** of all dependencies (direct and transitive)
 - **Ensures reproducibility** across environments
 - **Tracks package hashes** for security
-- **Auto-generated** - never edit manually
+- **Auto-generated** - use uv commands to update
 - **Should be committed** to version control
 
 ### Creating and Updating Lockfiles

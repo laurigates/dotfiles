@@ -29,7 +29,7 @@ ruff format
 ruff format path/to/file.py
 ruff format src/ tests/
 
-# IMPORTANT: Pass directory as parameter (don't use cd)
+# IMPORTANT: Pass directory as parameter to stay in repo root
 # ✅ Good
 ruff format services/orchestrator
 

@@ -160,7 +160,7 @@ Handle these command variations:
 - `/workflow:dev --max-cycles 3` - Limit to 3 issue resolution cycles
 - `/workflow:dev --focus bug` - Only work on issues labeled "bug"
 - `/workflow:dev --quick-wins` - Only pick issues estimated < 30 minutes
-- `/workflow:dev --test-only` - Only create issues for test failures, don't implement
+- `/workflow:dev --test-only` - Only create issues for test failures; implementation handled separately
 - `/workflow:dev --dry-run` - Explain what would be done without making changes
 
 ## Error Handling

@@ -100,19 +100,17 @@ roles/aiplatform.user
 
 ### Critical Security Rules
 
-**NEVER do these:**
-- Hardcode credentials in workflows or code
-- Grant excessive permissions beyond requirements
-- Skip input validation from external sources
-- Disable commit signing
-- Share secrets across untrusted repositories
-
-**ALWAYS do these:**
-- Use `${{ secrets.SECRET_NAME }}` for all credentials
-- Implement minimal required permissions
-- Validate and sanitize external inputs
+**Security Requirements:**
+- Use `${{ secrets.SECRET_NAME }}` for all credentials (keep credentials out of code)
+- Implement minimal required permissions (scope to actual needs)
+- Validate and sanitize all external inputs
 - Enable commit signing (automatic with `contents: write`)
+- Isolate secrets to their intended repositories
+
+**Additional Best Practices:**
 - Review generated code before merging
+- Use OIDC for cloud provider authentication when possible
+- Rotate secrets periodically
 
 ### Secrets Management
 
@@ -144,7 +142,7 @@ gh secret set ANTHROPIC_API_KEY
 - Use repository secrets for single-repo access
 - Use environment secrets for deployment-specific keys
 - Use organization secrets for shared resources
-- Avoid secrets in logs: `echo "::add-mask::$SECRET"`
+- Mask secrets in logs: `echo "::add-mask::$SECRET"`
 
 ### Permission Scoping
 

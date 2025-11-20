@@ -114,7 +114,7 @@ Install Model Context Protocol (MCP) servers for this project.
 
 6. **Add to .gitignore (optional)**:
    - Ask if user wants to add `.mcp.json` to `.gitignore`
-   - Personal projects → recommend ignoring (avoid committing API configs)
+   - Personal projects → recommend ignoring (keep API configs local via .gitignore)
    - Team projects → recommend committing (share MCP setup)
 
 7. **Report installation**:

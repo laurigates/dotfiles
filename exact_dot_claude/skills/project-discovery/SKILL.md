@@ -421,7 +421,7 @@ No README.md found or content is minimal.
 
 ### Before Making Any Changes
 1. **Always run project discovery** when entering an unfamiliar codebase
-2. **Check git state** to avoid overwriting uncommitted work
+2. **Check git state** to preserve uncommitted work
 3. **Identify tooling** to use correct build/test commands
 4. **Read README** for setup requirements and project conventions
 

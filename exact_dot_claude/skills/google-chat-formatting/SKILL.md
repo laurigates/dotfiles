@@ -446,7 +446,7 @@ Share image links or upload separately
 
 **Mobile rendering**:
 - Test on mobile devices
-- Avoid complex formatting
+- Use simple, readable formatting
 - Keep lines short
 
 ## Advanced Patterns

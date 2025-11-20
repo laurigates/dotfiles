@@ -388,7 +388,7 @@ helm install myapp ./chart \
 # Good: values.yaml
 helm install myapp ./chart -f values.yaml
 
-# Avoid: many --set flags
+# Prefer: values.yaml over many --set flags
 helm install myapp ./chart --set a=1 --set b=2 --set c=3
 ```
 
