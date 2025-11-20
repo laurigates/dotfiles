@@ -25,7 +25,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Task|Read|Grep|Search|TodoWrite|mcp__graphiti-memory__search.*|WebFetch|WebSearch|Glob|LS",
+        "matcher": "Task|Read|Grep|Search|TodoWrite|mcp__graphiti-memory__search.*|WebFetch|WebSearch|Glob|LS|SlashCommand|Skill",
         "hooks": []
       },
       {
