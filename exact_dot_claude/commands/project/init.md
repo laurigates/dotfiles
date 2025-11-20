@@ -7,8 +7,8 @@ description: Base project initialization that other commands can extend for lang
 ## Context
 
 - Current directory: !`pwd`
-- Git configured: !`git config user.name 2>/dev/null || echo "not configured"`
-- GitHub CLI: !`command -v gh >/dev/null 2>&1 && echo "available" || echo "not available"`
+- Git user: !`git config user.name`
+- GitHub CLI: !`which gh`
 
 ## Parameters
 

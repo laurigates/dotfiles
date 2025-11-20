@@ -6,9 +6,9 @@ description: Universal linter that automatically detects and runs the appropriat
 
 ## Context
 
-- Project type: !`if [ -f package.json ]; then echo "node"; elif [ -f pyproject.toml ] || [ -f setup.py ]; then echo "python"; elif [ -f Cargo.toml ]; then echo "rust"; elif [ -f go.mod ]; then echo "go"; else echo "unknown"; fi`
-- Linting tools: !`command -v ruff >/dev/null 2>&1 && echo "ruff available"; command -v eslint >/dev/null 2>&1 && echo "eslint available"; command -v rustfmt >/dev/null 2>&1 && echo "rustfmt available"; command -v gofmt >/dev/null 2>&1 && echo "gofmt available"`
-- Pre-commit: !`if [ -f .pre-commit-config.yaml ]; then echo "configured"; else echo "not configured"; fi`
+- Package files: !`ls package.json pyproject.toml setup.py Cargo.toml go.mod`
+- Linting tools: !`which ruff eslint rustfmt gofmt`
+- Pre-commit: !`ls .pre-commit-config.yaml`
 
 ## Parameters
 

@@ -6,12 +6,12 @@ description: Complete workflow from changes to PR - analyze changes, create logi
 
 ## Context
 
-- Pre-commit checks: !`pre-commit run --all-files --show-diff-on-failure || true`
+- Pre-commit config: !`ls .pre-commit-config.yaml`
 - Current branch: !`git branch --show-current`
 - Git status: !`git status --short`
 - Unstaged changes: !`git diff --stat`
 - Staged changes: !`git diff --cached --stat`
-- Recent commits: !`git log --oneline -5 2>/dev/null || echo "No commits yet"`
+- Recent commits: !`git log --oneline -5`
 - Remote status: !`git remote -v | head -1`
 - Upstream status: !`git status -sb | head -1`
 

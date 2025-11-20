@@ -10,7 +10,7 @@ description: Perform repository maintenance and cleanup
 - Git status: !`git status --short`
 - Local branches: !`git branch -vv`
 - Stash list: !`git stash list`
-- Repository size: !`du -sh .git 2>/dev/null || echo "N/A"`
+- Repository size: !`du -sh .git`
 
 ## Parameters
 
@@ -27,7 +27,7 @@ Parse these parameters from the command (all optional):
 
 ### 1. Check for accidentally committed files
 
-- Scan for common files that shouldn't be in git:
+- Scan for files to exclude from git:
   - Environment files: `.env`, `.env.local`, `*.env.*`
   - IDE files: `.DS_Store`, `Thumbs.db`, `*.swp`, `*.swo`
   - Dependency directories: `node_modules/`, `__pycache__/`, `.venv/`

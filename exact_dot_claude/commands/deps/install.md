@@ -6,9 +6,9 @@ description: Universal dependency installer that automatically detects and uses 
 
 ## Context
 
-- Project type: !`if [ -f package.json ]; then echo "node"; elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then echo "python"; elif [ -f Cargo.toml ]; then echo "rust"; elif [ -f go.mod ]; then echo "go"; elif [ -f Gemfile ]; then echo "ruby"; else echo "unknown"; fi`
-- Package manager: !`if command -v uv >/dev/null 2>&1 && [ -f pyproject.toml ]; then echo "uv"; elif command -v bun >/dev/null 2>&1 && [ -f package.json ]; then echo "bun"; elif [ -f package-lock.json ]; then echo "npm"; elif [ -f yarn.lock ]; then echo "yarn"; elif [ -f pnpm-lock.yaml ]; then echo "pnpm"; elif [ -f Cargo.toml ]; then echo "cargo"; elif [ -f go.mod ]; then echo "go"; else echo "none"; fi`
-- Lock file: !`ls -la | grep -E "(uv.lock|package-lock|yarn.lock|pnpm-lock|Cargo.lock|go.sum)" || echo "no lock file"`
+- Package files: !`ls package.json pyproject.toml requirements.txt Cargo.toml go.mod Gemfile`
+- Package managers: !`which uv bun npm yarn pnpm cargo go`
+- Lock files: !`ls uv.lock package-lock.json yarn.lock pnpm-lock.yaml Cargo.lock go.sum`
 
 ## Parameters
 

@@ -6,10 +6,10 @@ argument-hint: [--coverage] [--ci <github|gitlab|circleci>]
 
 ## Context
 
-- Project type: !`if [ -f package.json ]; then echo "node"; elif [ -f pyproject.toml ] || [ -f setup.py ]; then echo "python"; elif [ -f go.mod ]; then echo "go"; else echo "unknown"; fi`
-- Test framework: !`if [ -f pytest.ini ] || [ -f pyproject.toml ]; then echo "pytest"; elif [ -f package.json ] && grep -q jest package.json; then echo "jest"; elif [ -f package.json ] && grep -q mocha package.json; then echo "mocha"; else echo "none"; fi`
-- Pre-commit installed: !`if [ -f .pre-commit-config.yaml ]; then echo "yes"; else echo "no"; fi`
-- GitHub Actions: !`ls -la .github/workflows/ 2>/dev/null | tail -n +4 | awk '{print $9}' | grep -E '\.ya?ml$' || echo "none"`
+- Package files: !`ls package.json pyproject.toml setup.py go.mod Cargo.toml`
+- Test config: !`ls pytest.ini jest.config.* mocha.opts .mocharc.*`
+- Pre-commit: !`ls .pre-commit-config.yaml`
+- GitHub Actions: !`ls .github/workflows/`
 
 ## Your task
 
