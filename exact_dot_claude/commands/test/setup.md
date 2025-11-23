@@ -6,10 +6,10 @@ argument-hint: [--coverage] [--ci <github|gitlab|circleci>]
 
 ## Context
 
-- Package files: !`ls package.json pyproject.toml setup.py go.mod Cargo.toml`
-- Test config: !`ls pytest.ini jest.config.* mocha.opts .mocharc.*`
-- Pre-commit: !`ls .pre-commit-config.yaml`
-- GitHub Actions: !`ls .github/workflows/`
+- Package files: !`find . -maxdepth 1 \( -name "package.json" -o -name "pyproject.toml" -o -name "setup.py" -o -name "go.mod" -o -name "Cargo.toml" \) -type f`
+- Test config: !`find . -maxdepth 1 \( -name "pytest.ini" -o -name "jest.config.*" -o -name "vitest.config.*" -o -name ".mocharc.*" \) -type f`
+- Pre-commit config: !`find . -maxdepth 1 -name ".pre-commit-config.yaml" -type f`
+- GitHub Actions: !`find .github/workflows -maxdepth 1 -type f -name "*.yml" -o -name "*.yaml"`
 
 ## Your task
 

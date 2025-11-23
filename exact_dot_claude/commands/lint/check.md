@@ -6,9 +6,8 @@ description: Universal linter that automatically detects and runs the appropriat
 
 ## Context
 
-- Package files: !`ls package.json pyproject.toml setup.py Cargo.toml go.mod`
-- Linting tools: !`which ruff eslint rustfmt gofmt`
-- Pre-commit: !`ls .pre-commit-config.yaml`
+- Package files: !`find . -maxdepth 1 \( -name "package.json" -o -name "pyproject.toml" -o -name "setup.py" -o -name "Cargo.toml" -o -name "go.mod" \) -type f`
+- Pre-commit config: !`find . -maxdepth 1 -name ".pre-commit-config.yaml" -type f`
 
 ## Parameters
 

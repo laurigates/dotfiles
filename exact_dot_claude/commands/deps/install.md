@@ -6,9 +6,8 @@ description: Universal dependency installer that automatically detects and uses 
 
 ## Context
 
-- Package files: !`ls package.json pyproject.toml requirements.txt Cargo.toml go.mod Gemfile`
-- Package managers: !`which uv bun npm yarn pnpm cargo go`
-- Lock files: !`ls uv.lock package-lock.json yarn.lock pnpm-lock.yaml Cargo.lock go.sum`
+- Package files: !`find . -maxdepth 1 \( -name "package.json" -o -name "pyproject.toml" -o -name "requirements.txt" -o -name "Cargo.toml" -o -name "go.mod" -o -name "Gemfile" \) -type f`
+- Lock files: !`find . -maxdepth 1 \( -name "uv.lock" -o -name "package-lock.json" -o -name "yarn.lock" -o -name "pnpm-lock.yaml" -o -name "Cargo.lock" -o -name "go.sum" \) -type f`
 
 ## Parameters
 

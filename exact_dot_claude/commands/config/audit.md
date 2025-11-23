@@ -6,9 +6,8 @@ argument-hint: "[--verbose]"
 
 ## Context
 
-- Agent definitions: !`find .claude/agents -name "*.md" -not -name "settings*" | wc -l`
-- Agent files: !`find .claude/agents -name "*.md" -not -name "settings*" | sort`
-- Settings file: !`if [ -f .claude/agents/settings.local.json ]; then echo "present"; else echo "missing"; fi`
+- Agent definitions: !`find .claude/agents -name "*.md" -not -name "settings*"`
+- Settings file: !`find .claude/agents -maxdepth 1 -name "settings.local.json" -type f`
 
 ## Your task
 

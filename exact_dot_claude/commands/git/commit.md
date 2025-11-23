@@ -6,7 +6,7 @@ description: Complete workflow from changes to PR - analyze changes, create logi
 
 ## Context
 
-- Pre-commit config: !`ls .pre-commit-config.yaml`
+- Pre-commit config: !`find . -maxdepth 1 -name ".pre-commit-config.yaml"`
 - Current branch: !`git branch --show-current`
 - Git status: !`git status --short`
 - Unstaged changes: !`git diff --stat`
