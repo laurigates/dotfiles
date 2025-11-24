@@ -420,6 +420,125 @@ while iteration <= max_iterations:
 write_output("final-implementation.md", implementation)
 ```
 
+### Example 4: UX Implementation Handoff
+
+```python
+# Workflow: Accessible Modal Component
+
+# Step 1: Service Design creates UX strategy
+service_design_output = {
+    "component": "ConfirmationModal",
+    "user_journey": "User clicks delete → Modal confirms → Action executes",
+    "accessibility_requirements": [
+        "WCAG 2.1 AA compliance",
+        "Keyboard navigable",
+        "Screen reader compatible"
+    ],
+    "interaction_pattern": "Modal dialog with focus trap"
+}
+write_output("service-design-output.md", service_design_output)
+
+# Step 2: UX Implementation creates specifications
+ux_specs = {
+    "aria_pattern": {
+        "role": "dialog",
+        "aria-modal": "true",
+        "aria-labelledby": "modal-title"
+    },
+    "keyboard_handling": {
+        "Tab": "Cycle through focusable elements",
+        "Escape": "Close modal",
+        "Enter": "Activate focused button"
+    },
+    "focus_management": {
+        "on_open": "Focus first focusable element",
+        "on_close": "Return focus to trigger element",
+        "trap": "Keep focus within modal"
+    }
+}
+
+# Create @HANDOFF marker in code for typescript-development
+handoff_marker = """
+// @HANDOFF(typescript-development) {
+//   type: "component-implementation",
+//   context: "Modal dialog for confirmation actions",
+//   ux-specs: {
+//     aria: "role=dialog, aria-modal=true, aria-labelledby",
+//     focus: "trap focus, return on close, Escape to dismiss",
+//     animation: "fade-in 150ms ease-out"
+//   },
+//   tests: [
+//     "focus moves to first element on open",
+//     "Escape key closes modal",
+//     "focus returns to trigger on close",
+//     "Tab cycles within modal"
+//   ],
+//   refs: ["src/components/Dialog/Dialog.tsx"]
+// }
+"""
+write_output("ux-implementation-output.md", ux_specs)
+
+# Step 3: TypeScript development implements component
+# Reads UX specs and implements accessible React component
+context = read_output("ux-implementation-output.md")
+implementation = implement_component(context)
+
+# Step 4: Code review validates accessibility
+accessibility_review = {
+    "wcag_compliance": "AA",
+    "aria_audit": "PASS",
+    "keyboard_test": "PASS",
+    "issues": []
+}
+```
+
+**Handoff Marker Pattern**:
+
+The `@HANDOFF` marker in code creates an asynchronous communication channel:
+
+```typescript
+// In src/components/Modal/Modal.tsx
+
+// @HANDOFF(ux-implementation) {
+//   type: "form-validation",
+//   context: "Delete confirmation with validation",
+//   needs: [
+//     "Error announcement pattern for screen readers",
+//     "Focus management after validation failure"
+//   ],
+//   priority: "blocking"
+// }
+function ConfirmationModal({ onConfirm, onCancel }: Props) {
+  // Implementation with UX placeholder
+  const handleValidationError = (error: string) => {
+    // @UX-PLACEHOLDER: accessible error announcement
+    setError(error);
+  };
+}
+```
+
+After UX agent processes:
+
+```typescript
+// @HANDOFF-COMPLETE(ux-implementation) {
+//   resolved: "2024-01-15",
+//   implemented: [
+//     "ARIA live region for errors",
+//     "Focus moves to error summary",
+//     "Clear button gets focus after error"
+//   ]
+// }
+function ConfirmationModal({ onConfirm, onCancel }: Props) {
+  const handleValidationError = (error: string) => {
+    setError(error);
+    // Announce error to screen readers
+    announceToScreenReader(error, 'assertive');
+    // Move focus to error summary
+    errorSummaryRef.current?.focus();
+  };
+}
+```
+
 ## Integration with Other Skills
 
 - **agent-file-coordination**: Uses file structures for coordination

@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **63 specialized skills** organized by domain:
+This repository contains **67 specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -64,6 +64,10 @@ This repository contains **63 specialized skills** organized by domain:
 ### Editor & Configuration (1 skill)
 - **neovim-configuration** - Lua configuration, plugin management, LSP setup, AI integration
 
+### UX & Accessibility (2 skills)
+- **accessibility-implementation** - WCAG 2.1/2.2 compliance, ARIA patterns, keyboard navigation, focus management, testing
+- **design-tokens** - CSS custom property architecture, theme systems, design token organization, component integration
+
 ### Infrastructure & DevOps (10 skills)
 - **container-development** - Docker, multi-stage builds, 12-factor apps, Skaffold
 - **kubernetes-operations** - K8s cluster management, debugging, kubectl mastery
@@ -75,7 +79,7 @@ This repository contains **63 specialized skills** organized by domain:
 - **helm-values-management** - Manage Helm values files and overrides
 - **argocd-login** - ArgoCD authentication and CLI login workflows
 
-### Testing & Quality (4 skills)
+### Testing & Quality (5 skills)
 - **api-testing** - HTTP API testing for TypeScript and Python (Supertest, httpx)
 - **playwright-testing** - End-to-end testing with Playwright (cross-browser, visual regression)
 - **mutation-testing** - Validate test effectiveness with Stryker and mutmut
@@ -87,10 +91,11 @@ This repository contains **63 specialized skills** organized by domain:
 - **ruff-formatting** - Python code formatting with ruff format
 - **ruff-integration** - Integrate ruff with editors, pre-commit, and CI/CD
 
-### Meta & Coordination (6 skills)
+### Meta & Coordination (9 skills)
 - **agent-coordination-patterns** - Patterns for multi-agent task coordination
 - **agent-file-coordination** - File-based coordination between agents
 - **multi-agent-workflows** - Coordinating complex tasks across specialized agents
+- **ux-handoff-markers** - Standardized @HANDOFF markers for inter-agent communication
 - **blueprint-development** - PRD-first development methodology and skill generation
 - **project-discovery** - Systematic project orientation for unfamiliar codebases
 - **graphiti-episode-storage** - Episode-based memory storage with Graphiti
@@ -292,6 +297,6 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 
 ---
 
-**Last updated**: 2025-11-15
-**Total skills**: 63
+**Last updated**: 2025-11-24
+**Total skills**: 67
 **Skill version format**: YAML frontmatter in SKILL.md

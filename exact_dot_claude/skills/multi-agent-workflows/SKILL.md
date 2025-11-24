@@ -133,6 +133,44 @@ Implement → Review → Refine → Test → [Pass? → Next Phase : Iterate]
 - Documentation references both internal/external sources
 - Knowledge persists for future similar tasks
 
+### UX Implementation Workflow
+**Objective**: Bridge design decisions to production code with accessibility and usability
+
+**Agent Sequence**:
+1. **Service Design** - User journey mapping, service blueprints, high-level UX strategy
+2. **UX Implementation** - Accessibility patterns (WCAG/ARIA), component usability, design tokens
+3. **TypeScript/JavaScript Development** - Framework-specific implementation, state management
+4. **Code Review** - Quality validation, accessibility audit
+5. **Test Architecture** - Accessibility testing, visual regression, E2E tests
+6. **Documentation** - Component usage guides, accessibility notes
+
+**Critical Integration Points**:
+- Service blueprints define user flows and interaction patterns
+- UX specs include ARIA patterns, keyboard handling, focus management
+- Design tokens shared as CSS custom properties
+- Accessibility requirements become test criteria
+- Component APIs defined before implementation
+
+**Handoff Artifacts**:
+- **Service Design → UX Implementation**: Journey maps, accessibility requirements, design system specs
+- **UX Implementation → Development**: `@HANDOFF` markers with ARIA patterns, keyboard specs, responsive behavior
+- **Development → Code Review**: Implemented components for accessibility validation
+- **Code Review → Test Architecture**: Identified test scenarios, accessibility criteria
+
+**Quality Gates**:
+- WCAG 2.1 AA compliance verified before deployment
+- Keyboard navigation tested manually
+- Screen reader compatibility confirmed
+- Color contrast ratios meet standards
+- Touch targets meet minimum size (44x44px)
+
+**Example Use Cases**:
+- Building accessible form components
+- Implementing modal dialogs with focus trap
+- Creating responsive navigation patterns
+- Adding dark mode with design tokens
+- Improving existing component accessibility
+
 ## Coordination Principles
 
 ### 1. Clear Handoff Points
