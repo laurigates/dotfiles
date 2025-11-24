@@ -47,6 +47,7 @@ Commands are organized by namespace for clarity and discoverability:
 | `/project-continue` | Analyze project state and continue development | Resuming work after interruption |
 | `/project-test-loop` | Run test → fix → refactor TDD loop | Test-driven development workflow |
 | `/refactor` | Refactor code selection for quality | Legacy refactor command |
+| `/handoffs` | List and manage @HANDOFF markers | Inter-agent communication tracking |
 
 ### `code:` - Code Quality and Review
 
@@ -81,6 +82,7 @@ Commands are organized by namespace for clarity and discoverability:
 |---------|---------|-------|
 | `/docs:generate` | Update docs from code annotations | API references, README, changelog |
 | `/docs:build` | Set up documentation build system | Sphinx, MkDocs, Docusaurus, GitHub Pages |
+| `/docs:sync` | Sync documentation with codebase | Update counts, lists, cross-references |
 | `/docs:decommission` | Generate service decommission docs | Service shutdown documentation |
 | `/docs:knowledge-graph` | Build knowledge graph from Obsidian vault | Comprehensive documentation analysis |
 
