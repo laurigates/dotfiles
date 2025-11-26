@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git branch:*), Bash(git status:*), Bash(git diff:*), Bash(gh repo view:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(git log:*), Bash(pytest:*), Bash(npm test:*), Bash(make test:*)
+allowed-tools: Task, TodoWrite
 argument-hint: [pr-number] [--auto-fix] [--push]
 description: Analyze and fix failing PR checks
 ---
@@ -21,39 +21,31 @@ Parse these parameters from the command (all optional):
 
 ## Your task
 
-1. **Parse parameters** from the command arguments
+**Delegate this task to the `git-operations` agent.**
 
-2. **Determine PR number**:
-   - If $1 is provided: use PR #$1
-   - Otherwise: detect from current branch with `gh pr view --json number --jq .number`
+Use the Task tool with `subagent_type: git-operations` to analyze and fix the failing PR checks. Pass all the context gathered above and the parsed parameters to the agent.
 
-3. **Analyze PR check failures**:
-   - Execute: `gh pr checks <pr-number> --watch` to see all checks
-   - Identify failing checks and their error messages
-   - Create a todo list to track each failing check
+The git-operations agent should:
 
-4. **For each failing check**:
-   - Research the specific error messages and patterns
-   - Run tests locally to reproduce the issue:
-     - For Python: `pytest` or `python -m pytest`
-     - For Node.js: `npm test` or `npm run test`
-     - For Make-based: `make test`
-   - Determine if it's a CI-specific issue or code problem
-
-5. **Fix issues** (if --auto-fix):
+1. **Determine PR number** from argument or current branch
+2. **Analyze PR check failures** using `gh pr checks`
+3. **Identify failing checks** and research error messages
+4. **Run tests locally** to reproduce issues
+5. **Apply fixes** if --auto-fix flag is set:
    - Linting errors: Run appropriate linters/formatters
    - Type errors: Fix type annotations or implementations
    - Test failures: Fix failing tests or implementation bugs
-   - Import errors: Fix missing dependencies or imports
+6. **Commit and push** if --push flag is set
+7. **Verify fixes** by re-running checks
 
-6. **Commit and push** (if --push):
-   - Stage fixed files with `git add`
-   - Commit with descriptive message: `git commit -m "fix: resolve PR check failures"`
-   - Push changes: `git push`
+Provide the agent with:
+- All context from the section above
+- The parsed parameters
+- The project's testing framework (pytest, npm test, etc.)
+- Any CI/CD configuration files if relevant
 
-7. **Verify fixes**:
-   - Re-run `gh pr checks <pr-number> --watch` to monitor progress
-   - Report status of each check
-
-## Execution
-Execute all commands directly with the Bash tool. Use TodoWrite to track failing checks and their resolution. Show the user progress as you work through each issue.
+The agent has expertise in:
+- GitHub Actions workflow analysis
+- CI/CD failure debugging
+- Common fix patterns for linting, types, and tests
+- Git operations for committing and pushing fixes

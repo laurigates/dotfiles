@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(find:*), Bash(ls:*), Bash(pytest:*), Bash(npm test:*), Grep, TodoWrite
+allowed-tools: Task, TodoWrite
 description: Perform comprehensive code review with automated fixes
 argument-hint: "[PATH]"
 ---
@@ -11,36 +11,57 @@ argument-hint: "[PATH]"
 - Test files: !`find ${1:-.} -type f -name "*test*" 2>/dev/null | wc -l`
 - Project size: !`find ${1:-.} -type f -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rs" | xargs wc -l 2>/dev/null | tail -1`
 
+## Parameters
+
+- `$1`: Path to review (defaults to current directory)
+
 ## Your task
 
-### 1. Analysis
-- Use `mcp__zen-mcp-server__codereview` with Gemini Pro
-- Set review type: full (or security/performance/quick as needed)
-- Configure thinking mode based on complexity
+**Delegate this task to the `code-review` agent.**
 
-### 2. Planning
-- Use `mcp__zen-mcp-server__planner` for action plan
-- Prioritize critical issues first
-- Group related fixes together
+Use the Task tool with `subagent_type: code-review` to perform a comprehensive code review. Pass all the context gathered above to the agent.
 
-### 3. Review Focus
-- **Quality**: Naming, structure, maintainability
-- **Security**: Input validation, authentication, secrets
-- **Performance**: Bottlenecks, memory, optimization
-- **Architecture**: SOLID principles, patterns, coupling
-- **Testing**: Coverage gaps, edge cases
+The code-review agent should:
 
-### 4. Fix Implementation
-- Apply fixes incrementally
-- Validate after each fix
-- Maintain git history for rollback
+1. **Analyze code quality**:
+   - Naming conventions and readability
+   - Code structure and maintainability
+   - SOLID principles adherence
 
-### 5. Validation
-- Run existing tests
-- Use `mcp__zen-mcp-server__precommit` for final check
-- Ensure no regressions
+2. **Security assessment**:
+   - Input validation vulnerabilities
+   - Authentication and authorization issues
+   - Secrets and sensitive data exposure
 
-### 6. Report
-- Summary of issues found/fixed
-- Remaining manual interventions needed
-- Improvement recommendations
+3. **Performance evaluation**:
+   - Bottlenecks and inefficiencies
+   - Memory usage patterns
+   - Optimization opportunities
+
+4. **Architecture review**:
+   - Design patterns usage
+   - Component coupling
+   - Dependency management
+
+5. **Test coverage gaps**:
+   - Missing test cases
+   - Edge cases not covered
+   - Integration test needs
+
+6. **Apply fixes** where appropriate and safe
+
+7. **Generate report** with:
+   - Summary of issues found/fixed
+   - Remaining manual interventions needed
+   - Improvement recommendations
+
+Provide the agent with:
+- The review path from context
+- Project type (language/framework)
+- Any specific focus areas requested
+
+The agent has expertise in:
+- Multi-language code analysis (Python, TypeScript, Go, Rust)
+- LSP integration for accurate diagnostics
+- Security vulnerability patterns (OWASP)
+- Performance analysis and optimization

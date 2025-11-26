@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git:*), Read, Write, Edit, Glob, TodoWrite
+allowed-tools: Task, TodoWrite
 argument-hint: [--prune] [--gc] [--verify] [--branches] [--stash] [--all]
 description: Perform repository maintenance and cleanup
 ---
@@ -25,138 +25,52 @@ Parse these parameters from the command (all optional):
 
 ## Your task
 
-### 1. Check for accidentally committed files
+**Delegate this task to the `git-operations` agent.**
 
-- Scan for files to exclude from git:
-  - Environment files: `.env`, `.env.local`, `*.env.*`
-  - IDE files: `.DS_Store`, `Thumbs.db`, `*.swp`, `*.swo`
-  - Dependency directories: `node_modules/`, `__pycache__/`, `.venv/`
-  - Build artifacts: `dist/`, `build/`, `*.pyc`, `*.pyo`
-  - Secret files: `*.key`, `*.pem`, `*.p12`, `credentials.json`
-  - Large binary files (>10MB)
+Use the Task tool with `subagent_type: git-operations` to perform repository maintenance and cleanup. Pass all the context gathered above and the parsed parameters to the agent.
 
-- If found, warn the user and suggest:
-  - Add to `.gitignore`
-  - Use `git rm --cached <file>` to unstage
-  - Consider using `git filter-branch` or `BFG Repo-Cleaner` for history removal
+The git-operations agent should:
 
-### 2. Update .gitignore
+1. **Check for accidentally committed files**:
+   - Environment files, IDE files, dependencies, build artifacts, secrets
+   - Suggest adding to `.gitignore` and removing with `git rm --cached`
 
-- Read current `.gitignore`
-- Suggest common patterns if missing:
-  ```
-  # OS files
-  .DS_Store
-  Thumbs.db
+2. **Update .gitignore**:
+   - Suggest common patterns if missing
+   - Offer to append missing patterns
 
-  # IDE
-  .vscode/
-  .idea/
-  *.swp
-  *.swo
+3. **Delete merged branches** (if --branches or --all):
+   - List and clean branches merged via GitHub PR
+   - Protect main, master, develop, staging, production
+   - Delete local branches safely with `git branch -d`
 
-  # Environment
-  .env
-  .env.local
-  .env.*.local
+4. **Clean up redundant stashes** (if --stash or --all):
+   - Show stash ages and context
+   - Suggest cleanup for old stashes (>30 days)
+   - Drop stashes from deleted branches
 
-  # Dependencies
-  node_modules/
-  __pycache__/
-  .venv/
+5. **Repository optimization** (if --prune, --gc, or --all):
+   - Prune unreachable objects
+   - Run garbage collection
+   - Repack objects
+   - Show size improvement
 
-  # Build
-  dist/
-  build/
-  *.pyc
-  ```
+6. **Verify repository integrity** (if --verify or --all):
+   - Run `git fsck --full --strict`
+   - Report any issues
 
-- Offer to append missing patterns
+7. **Final summary**:
+   - Report all actions taken
+   - Show before/after metrics
 
-### 3. Delete merged branches
+Provide the agent with:
+- All context from the section above
+- The parsed parameters
+- Whether to run in dry-run mode first for destructive operations
 
-Clean up branches that have been merged:
-
-- List local branches: `git branch --merged`
-- Identify branches merged via GitHub PR:
-  - Fetch latest: `git fetch --prune origin`
-  - Find remote-tracking branches gone from remote: `git branch -vv | grep ': gone]'`
-  - Extract branch names and delete: `git branch -d <branch-name>`
-
-- Protected branches (never delete):
-  - `main`, `master`, `develop`, `staging`, `production`
-  - Current branch
-
-- For each merged branch:
-  - Confirm it's fully merged: `git branch --merged | grep <branch>`
-  - Delete local: `git branch -d <branch-name>`
-  - Delete remote if exists: `git push origin --delete <branch-name>` (ask first)
-
-### 4. Clean up redundant stashes
-
-- List all stashes: `git stash list`
-- For each stash, show:
-  - Age: `git log -1 --format="%cr" <stash>`
-  - Message and branch context
-
-- Suggest cleanup for:
-  - Stashes older than 30 days
-  - Stashes from deleted branches
-  - Duplicate stashes with same message
-
-- Commands:
-  - Drop specific stash: `git stash drop stash@{n}`
-  - Clear all stashes (with confirmation): `git stash clear`
-
-### 5. Repository optimization (if --prune or --gc or --all)
-
-Execute maintenance commands:
-
-1. **Prune unreachable objects**:
-   ```bash
-   git prune --dry-run  # Show what would be removed
-   git prune            # Actually remove
-   ```
-
-2. **Garbage collection**:
-   ```bash
-   git gc --aggressive --prune=now
-   ```
-
-3. **Repack objects**:
-   ```bash
-   git repack -Ad      # Repack into single pack
-   git prune-packed    # Remove redundant packs
-   ```
-
-4. **Show size improvement**:
-   - Before: stored size
-   - After: new size
-   - Saved: difference
-
-### 6. Verify repository integrity (if --verify or --all)
-
-Run verification checks:
-
-```bash
-git fsck --full --strict
-```
-
-Report any:
-- Dangling objects (harmless, can be cleaned)
-- Missing objects (corruption, needs attention)
-- Connectivity issues (serious, backup immediately)
-
-### 7. Final summary
-
-Display:
-- ✓ Accidentally committed files checked
-- ✓ `.gitignore` updated (if changed)
-- ✓ X branches deleted (list them)
-- ✓ X stashes cleaned (list them)
-- ✓ Repository optimized (size before → after)
-- ✓ Integrity verified (status)
-
-## Execution
-
-Execute all git commands directly with the Bash tool. Always show dry-run output before destructive operations and ask for confirmation. Show the user what's being done as you go.
+The agent has expertise in:
+- Git repository maintenance
+- Branch cleanup strategies
+- Stash management
+- Repository optimization
+- Integrity verification

@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Write, Edit, MultiEdit, Bash(git:*), Bash(npm test:*), Bash(pytest:*), Bash(go test:*), Bash(make test:*), mcp__github__get_issue, mcp__github__update_issue, mcp__github__create_pull_request, TodoWrite
+allowed-tools: Task, TodoWrite
 description: Process and fix a single GitHub issue with TDD workflow
 argument-hint: <issue-number>
 ---
@@ -14,12 +14,30 @@ argument-hint: <issue-number>
 
 ## Your task
 
-- Ensure working directory is clean (commit or stash if needed)
-- Switch to main and pull latest: `git switch main && git pull`
-- Create issue branch: `git switch -c fix-issue-$1`
-- Analyze issue #$1 requirements
-- Write failing tests first (RED phase)
-- Implement fix until tests pass (GREEN phase)
-- Refactor if needed (REFACTOR phase)
-- Commit with message referencing issue: `Fixes #$1`
-- Push branch and create PR linked to issue
+**Delegate this task to the `git-operations` agent.**
+
+Use the Task tool with `subagent_type: git-operations` to process and fix GitHub issue #$1 using a TDD workflow. Pass all the context gathered above to the agent.
+
+The git-operations agent should:
+
+1. **Ensure clean working directory** (commit or stash if needed)
+2. **Switch to main and pull latest**: `git switch main && git pull`
+3. **Create issue branch**: `git switch -c fix-issue-$1`
+4. **Analyze issue requirements** from the issue details
+5. **Write failing tests first** (RED phase)
+6. **Implement fix** until tests pass (GREEN phase)
+7. **Refactor** if needed (REFACTOR phase)
+8. **Commit** with message referencing issue: `Fixes #$1`
+9. **Push branch and create PR** linked to the issue
+
+Provide the agent with:
+- All context from the section above
+- The issue number: $1
+- The project's testing framework
+- Any coding standards or conventions
+
+The agent has expertise in:
+- TDD workflow (RED → GREEN → REFACTOR)
+- Git branch management
+- GitHub issue and PR linking
+- Conventional commit messages
