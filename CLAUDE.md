@@ -73,7 +73,7 @@ This repository includes **Skills** (67 total) - automatically discovered capabi
 **MCP Server Management:**
 - **MCP Management** - Intelligent MCP server installation and project-based configuration
 
-Skills are located in `.claude/skills/` (symlinked to `~/.claude/skills/`) and are **immediately available** to Claude Code without running `chezmoi apply`.
+Skills are located in `.claude/skills/` and managed via chezmoi's `exact_dot_claude/` source directory. Run `chezmoi apply -v ~/.claude` after editing skills.
 
 This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
 - **Dotfiles Toolkit** - 14 specialized agents and 20+ commands for development workflows, code quality, and infrastructure operations
@@ -203,7 +203,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 ### Claude Code Infrastructure
 - **`.claude/CLAUDE.md`** - High-level design principles, delegation strategy, and operational mandates for Claude Code
 - **`.claude/commands/CLAUDE.md`** - Comprehensive guide to slash commands, namespaces, and command creation
-- **`.claude/skills/CLAUDE.md`** - Skills system documentation, all 67 skills categorized by domain
+- **`.claude/skills/CLAUDE.md`** - Skills system documentation, all 69 skills categorized by domain
 
 ### Configuration & Scripts
 - **`private_dot_config/CLAUDE.md`** - Application configuration management with chezmoi naming conventions and cross-platform templating
@@ -216,7 +216,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 | **Overall guidance** | `CLAUDE.md` (this file) | Repository overview, tools, security |
 | **Claude Code design** | `.claude/CLAUDE.md` | Delegation strategy, development principles |
 | **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
-| **Skills catalog** | `.claude/skills/CLAUDE.md` | 67 skills across 10 categories |
+| **Skills catalog** | `.claude/skills/CLAUDE.md` | 69 skills across 10 categories |
 | **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
 | **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |
 

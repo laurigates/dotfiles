@@ -53,6 +53,7 @@ Commands are organized by namespace for clarity and discoverability:
 
 | Command | Purpose | Usage |
 |---------|---------|-------|
+| `/code:antipatterns` | Analyze codebase for anti-patterns | ast-grep analysis, code smells, parallel agents |
 | `/code:review` | Comprehensive code review with fixes | Quality analysis, security, performance |
 | `/code:refactor` | Refactor following SOLID principles | Improving code quality and design |
 
@@ -122,6 +123,10 @@ Commands are organized by namespace for clarity and discoverability:
 
 | Command | Purpose | Usage |
 |---------|---------|-------|
+| `/test:quick` | Fast unit tests only | Rapid feedback (< 30s) |
+| `/test:full` | Complete test suite | All tiers before commit/PR |
+| `/test:consult` | Consult test-architecture agent | Strategy, coverage, frameworks |
+| `/test:report` | Show test status from last run | Quick status without re-running |
 | `/test:run` | Universal test runner auto-detection | Run appropriate testing framework |
 | `/test:setup` | Configure comprehensive testing infrastructure | Coverage, CI/CD integration |
 
@@ -311,14 +316,15 @@ Describe what Claude should produce or report back to the user.
 
 ### Step 4: Test Command
 
-Since `.claude/` is symlinked, commands are immediately available:
+Apply changes and test:
 
 ```bash
+# Apply changes to ~/.claude
+chezmoi apply -v ~/.claude  # Or use alias: ca-claude
+
 # In Claude Code session
 /namespace:new-command test-arg
 ```
-
-No `chezmoi apply` needed for `.claude/` changes!
 
 ### Step 5: Document and Commit
 
@@ -341,7 +347,11 @@ vim namespace/command.md
 
 ### Test Changes
 
-Since `.claude/` is symlinked, changes are immediately active. Test in Claude Code.
+Apply changes and test in Claude Code:
+
+```bash
+chezmoi apply -v ~/.claude  # Or use alias: ca-claude
+```
 
 ### Commit Changes
 
@@ -437,9 +447,10 @@ Skills are auto-discovered and invoked based on context. Commands explicitly req
 **Symptom:** `/namespace:command` shows "command not found"
 
 **Solutions:**
-1. Verify file exists: `ls ~/.claude/commands/namespace/command.md`
-2. Check symlink: `ls -la ~/.claude` should point to chezmoi source
-3. Restart Claude Code session
+1. Verify file exists in source: `ls ~/.local/share/chezmoi/exact_dot_claude/commands/namespace/command.md`
+2. Apply changes: `chezmoi apply -v ~/.claude`
+3. Verify target file: `ls ~/.claude/commands/namespace/command.md`
+4. Restart Claude Code session
 
 ### Command Not Executing Correctly
 

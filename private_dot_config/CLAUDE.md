@@ -13,15 +13,16 @@ This directory uses chezmoi's attribute-based naming system to control file hand
 | `dot_` | Add `.` prefix | `dot_gitconfig` | `~/.config/.gitconfig` |
 | `private_` | Skip git tracking (local only) | `private_api_keys` | Not committed to repo |
 | `executable_` | Make file executable | `executable_startup.sh` | Executable script |
-| `symlink_` | Create symlink | `symlink_dot_claude.tmpl` | Symlink to source |
+| `symlink_` | Create symlink | `symlink_dotfile.tmpl` | Symlink to source |
 | `readonly_` | Make file read-only | `readonly_config` | Read-only file |
+| `exact_` | Exact directory match | `exact_dot_claude` | Auto-cleanup orphans |
 
 ### Combined Prefixes
 
 Multiple prefixes combine their effects:
 - `private_dot_config` → `~/.config/` (private, hidden directory)
 - `private_executable_script.sh` → Private executable script
-- `symlink_dot_claude.tmpl` → Symlink to `~/.claude`
+- `exact_dot_claude` → `~/.claude` (exact directory, orphan cleanup)
 
 ### Template Suffix
 

@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **67 specialized skills** organized by domain:
+This repository contains **70 specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -79,14 +79,16 @@ This repository contains **67 specialized skills** organized by domain:
 - **helm-values-management** - Manage Helm values files and overrides
 - **argocd-login** - ArgoCD authentication and CLI login workflows
 
-### Testing & Quality (5 skills)
+### Testing & Quality (6 skills)
+- **test-tier-selection** - Automatic test tier selection (unit/integration/e2e) based on change scope
 - **api-testing** - HTTP API testing for TypeScript and Python (Supertest, httpx)
 - **playwright-testing** - End-to-end testing with Playwright (cross-browser, visual regression)
 - **mutation-testing** - Validate test effectiveness with Stryker and mutmut
 - **property-based-testing** - Property-based testing with fast-check and Hypothesis
 - **test-quality-analysis** - Detect test smells, overmocking, flaky tests
 
-### Code Quality & Formatting (3 skills)
+### Code Quality & Formatting (4 skills)
+- **code-antipatterns-analysis** - Detect anti-patterns, code smells, and quality issues using ast-grep across JavaScript, TypeScript, Vue, React, Python
 - **ruff-linting** - Python code quality with ruff linter
 - **ruff-formatting** - Python code formatting with ruff format
 - **ruff-integration** - Integrate ruff with editors, pre-commit, and CI/CD
@@ -101,6 +103,9 @@ This repository contains **67 specialized skills** organized by domain:
 - **graphiti-episode-storage** - Episode-based memory storage with Graphiti
 - **graphiti-learning-workflows** - Learning workflows using Graphiti memory
 - **graphiti-memory-retrieval** - Retrieve and query episodic memory with Graphiti
+
+### Knowledge Management (1 skill)
+- **obsidian-bases** - Obsidian Bases database feature for YAML-based interactive note views, filters, formulas, and table/card views
 
 ### Communication & Formatting (2 skills)
 - **google-chat-formatting** - Convert Markdown to Google Chat formatting syntax
@@ -153,7 +158,7 @@ Skills are discovered from three sources (in precedence order):
 2. **Personal Skills**: `~/.claude/skills/` (individual workflows)
 3. **Plugin Skills**: Bundled with installed plugins
 
-**Symlink Setup**: The `.claude` directory is symlinked (`~/.claude` → `~/.local/share/chezmoi/.claude`), so changes to project skills in the source directory are **immediately available** to Claude Code without running `chezmoi apply`.
+**Chezmoi Management**: The `.claude` directory is managed via chezmoi's `exact_dot_claude/` source directory. Run `chezmoi apply -v ~/.claude` (alias: `ca-claude`) after editing skills to apply changes.
 
 ## Creating New Skills
 
@@ -286,17 +291,18 @@ Official example skills are available at:
 
 To add a new skill to this repository:
 
-1. Create a directory in `.claude/skills/skill-name/`
+1. Create a directory in `exact_dot_claude/skills/skill-name/`
 2. Add `SKILL.md` with proper YAML frontmatter
-3. Test activation with relevant queries (changes are immediately available via symlink)
-4. Update this `CLAUDE.md` with the new skill
-5. Update repository `CLAUDE.md` skill count if needed
-6. Commit and push to share with the team
+3. Run `chezmoi apply -v ~/.claude` to apply changes
+4. Test activation with relevant queries
+5. Update this `CLAUDE.md` with the new skill
+6. Update repository `CLAUDE.md` skill count if needed
+7. Commit and push to share with the team
 
-Skills in `.claude/skills/` are automatically distributed to all team members who pull the repository. The symlink setup means **no `chezmoi apply` is needed** - new skills are immediately available for testing.
+Skills in `.claude/skills/` are automatically distributed to all team members who pull the repository. After pulling, run `chezmoi apply -v ~/.claude` to update local skills.
 
 ---
 
-**Last updated**: 2025-11-24
-**Total skills**: 67
+**Last updated**: 2025-11-26
+**Total skills**: 70
 **Skill version format**: YAML frontmatter in SKILL.md

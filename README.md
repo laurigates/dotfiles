@@ -118,12 +118,12 @@ The repository provides three Claude Code plugins via a local marketplace for in
 vim ~/.local/share/chezmoi/.claude/skills/python-development/SKILL.md
 vim ~/.local/share/chezmoi/plugins/dotfiles-core/commands/git/git:commit.md
 
-# Changes are IMMEDIATE via symlink - no chezmoi apply needed!
-# The .claude directory is symlinked: ~/.claude → ~/.local/share/chezmoi/.claude
+# Apply changes to ~/.claude after editing
+chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 ```
 
-**Why no `chezmoi apply` needed?**
-The `symlink_dot_claude.tmpl` file creates a symlink from `~/.claude` to the source directory, so all changes to skills, commands, and `.claude` configuration are instantly available. Only run `chezmoi apply` for other dotfiles (configs, scripts, etc.).
+**Why `exact_dot_claude/` instead of symlink?**
+The `.claude` directory uses chezmoi's `exact_` prefix for atomic updates and auto-cleanup of orphaned files. This prevents race conditions with running Claude processes and ensures predictable state. Run `chezmoi apply -v ~/.claude` after editing skills or commands.
 
 Full guide: See [.claude/docs/plugins-setup.md](./.claude/docs/plugins-setup.md)
 

@@ -40,6 +40,7 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 - **Debugging complex issues** - Use `system-debugging` agent for systematic root cause analysis
 - **Git operations** - Use `git-operations` agent for workflows, branch management, conflict resolution
 - **Documentation generation** - Use `documentation` agent for comprehensive docs from code
+- **Test execution and analysis** - Use `test-runner` agent for running tests and concise failure summaries
 - **Testing strategies** - Use `test-architecture` agent for test coverage and framework selection
 - **CI/CD pipelines** - Use `cicd-pipelines` agent for GitHub Actions and deployment automation
 - **Code refactoring** - Use `code-refactoring` agent for quality improvements and SOLID principles
@@ -100,6 +101,29 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 - Write tests before implementation
 - Ensure all tests pass before moving forward
 - Maintain test coverage for robust, maintainable code
+
+**Tiered Test Execution:**
+
+| Tier | When to Run | Command | Duration |
+|------|-------------|---------|----------|
+| Unit | After every change | `/test:quick` | < 30s |
+| Integration | After feature completion | `/test:full` | < 5min |
+| E2E | Before commit/PR | `/test:full` | < 30min |
+
+**Testing Agent Consultation:**
+
+| Scenario | Agent |
+|----------|-------|
+| Run tests, analyze failures | `test-runner` |
+| New feature test strategy | `test-architecture` |
+| Complex test failures | `system-debugging` |
+| Test code quality review | `code-review` |
+
+Consult `test-architecture` agent when:
+- Creating tests for new features (use `/test:consult new-feature`)
+- Coverage drops or gaps identified
+- Flaky tests detected
+- Test framework decisions needed
 
 **Version Control:**
 
@@ -213,12 +237,13 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
    - Instead of: Manual Grep/Glob searches across multiple files
    - Use when: Need to understand code structure, find implementations, trace dependencies
 2. **Specialized domain agents** - Match task to appropriate agent:
+   - `test-runner` → Test execution, failure analysis, concise reporting
+   - `test-architecture` → Test strategies, coverage analysis, framework selection
    - `security-audit` → Security analysis, vulnerability assessment
    - `code-review` → Code quality, architecture, performance review
    - `system-debugging` → Complex debugging, root cause analysis
    - `git-operations` → Branch management, conflict resolution, workflows
    - `documentation` → Generate docs from code, API references
-   - `test-architecture` → Test strategies, coverage analysis
    - `cicd-pipelines` → GitHub Actions, deployment automation
    - `code-refactoring` → Quality improvements, SOLID principles
 3. **General-purpose agent** - For multi-step tasks not matching specific domains
