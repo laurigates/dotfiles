@@ -17,32 +17,6 @@
       "~/repos/infrastructure.wiki"
     ]
   },
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": []
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Task|Read|Grep|Search|TodoWrite|mcp__graphiti-memory__search.*|WebFetch|WebSearch|Glob|LS|SlashCommand|Skill",
-        "hooks": []
-      },
-      {
-        "matcher": "mcp__github__create_pull_request",
-        "hooks": []
-      },
-      {
-        "matcher": "Bash(git add*)",
-        "hooks": []
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": []
-      }
-    ]
-  },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
