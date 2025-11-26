@@ -220,6 +220,10 @@ case ${HIST_STAMPS-} in
   *) alias history="omz_history -t '$HIST_STAMPS'" ;;
 esac
 
+# Save stack on every directory change
+chpwd() {
+  print -r "$(date -Iseconds) $TTY $PWD" >> ~/.directory_history
+}
 
 #======================================================================
 # Zsh Options (setopt)
