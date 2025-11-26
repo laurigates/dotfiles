@@ -40,6 +40,7 @@ Commands are organized by namespace for clarity and discoverability:
 
 | Command | Purpose | Usage |
 |---------|---------|-------|
+| `/delegate` | Delegate tasks to specialized agents | Multi-task parallel execution with auto agent matching |
 | `/blueprint-init` | Initialize Blueprint Development structure | Setting up new Blueprint project |
 | `/blueprint-generate-commands` | Generate commands from PRDs | Creating workflow commands from requirements |
 | `/blueprint-generate-skills` | Generate skills from PRDs | Creating project-specific skills |
