@@ -1,6 +1,6 @@
 ---
 name: typescript-development
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#3178C6"
 description: Use proactively for TypeScript development including type system design, compiler configuration, modern patterns, framework integration, and tooling. Automatically assists with TypeScript projects, type safety, and best practices.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, BashOutput, TodoWrite, WebSearch, mcp__lsp-typescript, mcp__graphiti-memory, mcp__context7

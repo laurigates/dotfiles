@@ -1,6 +1,6 @@
 ---
 name: documentation
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#4A90E2"
 description: Use proactively when generating documentation from code annotations, API references, README creation, and GitHub Pages setup. Automatically creates comprehensive documentation.
 tools: Glob, Grep, LS, Read, Write, MultiEdit, TodoWrite, mcp__context7, mcp__graphiti-memory

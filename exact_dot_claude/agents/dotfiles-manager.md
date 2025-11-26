@@ -1,6 +1,6 @@
 ---
 name: dotfiles-manager
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#FECA57"
 description: Use proactively for dotfiles management including chezmoi operations, cross-platform configuration, and reproducible environments.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, BashOutput, TodoWrite

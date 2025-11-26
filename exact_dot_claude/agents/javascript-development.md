@@ -1,6 +1,6 @@
 ---
 name: javascript-development
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#F7DF1E"
 description: Use proactively for JavaScript development including modern ES2024+ features, async patterns, module systems, browser/Node.js APIs, and ecosystem tooling. Automatically assists with JavaScript projects and best practices.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, BashOutput, TodoWrite, WebSearch, mcp__lsp-typescript, mcp__graphiti-memory, mcp__context7

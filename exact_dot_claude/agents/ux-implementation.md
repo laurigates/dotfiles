@@ -1,6 +1,6 @@
 ---
 name: ux-implementation
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#9B59B6"
 description: Use proactively for implementing UX designs including accessibility compliance (WCAG/ARIA), component usability patterns, design tokens, responsive behavior, and bridging service-design decisions to production code.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, BashOutput, TodoWrite, WebSearch, mcp__playwright, mcp__context7, mcp__graphiti-memory

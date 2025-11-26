@@ -1,6 +1,6 @@
 ---
 name: system-debugging
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#FF7043"
 description: Use proactively for cross-cutting debugging concerns including memory leaks, performance profiling, system-level tracing, distributed systems, and concurrency issues.
 tools: Glob, Grep, LS, Read, Write, MultiEdit, Bash, BashOutput, TodoWrite, WebSearch, mcp__zen-mcp-server, mcp__graphiti-memory, mcp__context7

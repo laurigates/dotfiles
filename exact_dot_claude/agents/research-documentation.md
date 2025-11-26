@@ -1,6 +1,6 @@
 ---
 name: research-documentation
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#FF6B9D"
 description: Use proactively when performing documentation lookup, technical research, and knowledge retrieval for development projects. Essential for gathering context and understanding systems.
 tools: Read, WebFetch, WebSearch, mcp__context7, mcp__graphiti-memory

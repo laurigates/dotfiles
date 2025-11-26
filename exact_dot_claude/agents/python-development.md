@@ -1,6 +1,6 @@
 ---
 name: python-development
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#3776AB"
 description: Use proactively for Python development including modern Python 3.12+ features, type hints, async patterns, packaging, and tooling with uv/ruff. Automatically assists with Python projects and best practices.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, BashOutput, TodoWrite, WebSearch, mcp__lsp-basedpyright-langserver, mcp__graphiti-memory, mcp__context7

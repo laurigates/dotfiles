@@ -1,6 +1,6 @@
 ---
 name: test-architecture
-model: claude-sonnet-4-5
+model: claude-opus-4-5
 color: "#00B894"
 description: Use proactively for testing strategies including test architecture, coverage analysis, framework selection, and automation.
 tools: Glob, Grep, LS, Read, Edit, MultiEdit, Write, Bash, TodoWrite, mcp__graphiti-memory
