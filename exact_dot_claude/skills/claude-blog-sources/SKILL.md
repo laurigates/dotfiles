@@ -138,12 +138,14 @@ Extract practical patterns and update recommendations. Focus on:
 
 ## Recent Articles Checklist
 
-Articles worth checking monthly (November 2025):
+*Last reviewed: November 2025. Update this list monthly when reviewing new articles.*
 
-- [ ] /blog/improving-frontend-design-through-skills (Nov 12, 2025)
-- [ ] /blog/claude-code-on-the-web (Oct 20, 2025)
-- [ ] /blog/building-ai-agents-in-financial-services (Oct 30, 2025)
-- [ ] /blog/how-anthropic-teams-use-claude-code (Jul 24, 2025)
+Articles worth checking (sorted by relevance to Claude Code):
+
+- [ ] /blog/using-claude-md-files - CLAUDE.md best practices
+- [ ] /blog/how-anthropic-teams-use-claude-code - Internal usage patterns
+- [ ] /blog/improving-frontend-design-through-skills - Skills feature
+- [ ] /blog/claude-code-on-the-web - Web-based features
 
 ## Integration with Other Skills
 
