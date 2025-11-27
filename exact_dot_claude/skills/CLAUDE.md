@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **70 specialized skills** organized by domain:
+This repository contains **71 specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -51,9 +51,8 @@ This repository contains **70 specialized skills** organized by domain:
 - **uv-workspaces** - Monorepo and workspace management with uv
 - **uv-advanced-dependencies** - Advanced dependency resolution with uv
 
-### TypeScript/JavaScript Development (3 skills)
+### TypeScript/JavaScript Development (2 skills)
 - **nodejs-development** - JavaScript/TypeScript with Bun, Vite, Vue 3, Pinia
-- **vitest-testing** - Modern TypeScript/JavaScript testing with Vitest
 - **bun-lockfile-update** - Manage Bun lockfile updates and version pinning
 
 ### Other Languages (3 skills)
@@ -68,24 +67,25 @@ This repository contains **70 specialized skills** organized by domain:
 - **accessibility-implementation** - WCAG 2.1/2.2 compliance, ARIA patterns, keyboard navigation, focus management, testing
 - **design-tokens** - CSS custom property architecture, theme systems, design token organization, component integration
 
-### Infrastructure & DevOps (10 skills)
+### Infrastructure & DevOps (15 skills)
 - **container-development** - Docker, multi-stage builds, 12-factor apps, Skaffold
 - **kubernetes-operations** - K8s cluster management, debugging, kubectl mastery
 - **infrastructure-terraform** - Infrastructure as Code with HCL and state management
+- **mcp-management** - Intelligent MCP server installation and project-based configuration
 - **helm-chart-development** - Helm chart creation, templating, best practices
 - **helm-debugging** - Debug Helm deployments and template rendering
 - **helm-release-management** - Manage Helm releases and upgrades
 - **helm-release-recovery** - Recover from failed Helm releases
 - **helm-values-management** - Manage Helm values files and overrides
 - **argocd-login** - ArgoCD authentication and CLI login workflows
+- **tfc-list-runs** - List Terraform Cloud runs with filtering by status and date
+- **tfc-plan-json** - Parse and analyze Terraform Cloud plan JSON output
+- **tfc-run-logs** - Retrieve and analyze Terraform Cloud run logs
+- **tfc-run-status** - Check Terraform Cloud run status and details
+- **tfc-workspace-runs** - Manage Terraform Cloud workspace runs
 
-### Testing & Quality (6 skills)
+### Testing & Quality (1 skill)
 - **test-tier-selection** - Automatic test tier selection (unit/integration/e2e) based on change scope
-- **api-testing** - HTTP API testing for TypeScript and Python (Supertest, httpx)
-- **playwright-testing** - End-to-end testing with Playwright (cross-browser, visual regression)
-- **mutation-testing** - Validate test effectiveness with Stryker and mutmut
-- **property-based-testing** - Property-based testing with fast-check and Hypothesis
-- **test-quality-analysis** - Detect test smells, overmocking, flaky tests
 
 ### Code Quality & Formatting (4 skills)
 - **code-antipatterns-analysis** - Detect anti-patterns, code smells, and quality issues using ast-grep across JavaScript, TypeScript, Vue, React, Python
@@ -93,23 +93,26 @@ This repository contains **70 specialized skills** organized by domain:
 - **ruff-formatting** - Python code formatting with ruff format
 - **ruff-integration** - Integrate ruff with editors, pre-commit, and CI/CD
 
-### Meta & Coordination (9 skills)
+### Meta & Coordination (10 skills)
 - **agent-coordination-patterns** - Patterns for multi-agent task coordination
 - **agent-file-coordination** - File-based coordination between agents
 - **multi-agent-workflows** - Coordinating complex tasks across specialized agents
 - **ux-handoff-markers** - Standardized @HANDOFF markers for inter-agent communication
 - **blueprint-development** - PRD-first development methodology and skill generation
 - **project-discovery** - Systematic project orientation for unfamiliar codebases
+- **command-context-patterns** - Best practices for context expressions in slash commands
 - **graphiti-episode-storage** - Episode-based memory storage with Graphiti
 - **graphiti-learning-workflows** - Learning workflows using Graphiti memory
 - **graphiti-memory-retrieval** - Retrieve and query episodic memory with Graphiti
 
-### Knowledge Management (1 skill)
+### Knowledge Management (2 skills)
 - **obsidian-bases** - Obsidian Bases database feature for YAML-based interactive note views, filters, formulas, and table/card views
+- **claude-blog-sources** - Access Claude Blog for latest Claude Code improvements, patterns, and best practices
 
-### Communication & Formatting (2 skills)
+### Communication & Formatting (3 skills)
 - **google-chat-formatting** - Convert Markdown to Google Chat formatting syntax
 - **imagemagick-conversion** - Image conversion and manipulation with ImageMagick
+- **ticket-drafting-guidelines** - Structured guidelines for drafting GitHub issues and technical tickets
 
 ## Skill Structure
 
@@ -303,6 +306,6 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 
 ---
 
-**Last updated**: 2025-11-26
-**Total skills**: 70
+**Last updated**: 2025-11-27
+**Total skills**: 71
 **Skill version format**: YAML frontmatter in SKILL.md
