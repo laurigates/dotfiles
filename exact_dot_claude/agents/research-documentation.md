@@ -39,3 +39,22 @@ tools: Read, WebFetch, WebSearch, mcp__context7, mcp__graphiti-memory
 - **Implementation Examples**: GitHub repositories, tutorials, guides
 - **Community Resources**: Stack Overflow, forums, blogs
 - **Technical Specifications**: RFCs, standards, protocols
+- **Claude Blog**: https://www.claude.com/blog/ - Latest Claude Code patterns and best practices
+
+## Claude Blog Research
+
+When researching Claude Code features or CLAUDE.md patterns:
+
+1. **Check Recent Articles** (within past month):
+   - Search: `site:claude.com/blog "Claude Code" OR "CLAUDE.md"`
+   - Review article titles for relevance to current task
+
+2. **Key Reference Articles**:
+   - `/blog/using-claude-md-files` - CLAUDE.md structure and best practices
+   - `/blog/how-anthropic-teams-use-claude-code` - Internal usage patterns
+   - `/blog/claude-code-on-the-web` - Web-based features
+
+3. **Extract Actionable Insights**:
+   - New features or capabilities
+   - Updated best practices
+   - Concrete examples and patterns

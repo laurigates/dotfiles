@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **70 specialized skills** organized by domain:
+This repository contains **71 specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -104,8 +104,9 @@ This repository contains **70 specialized skills** organized by domain:
 - **graphiti-learning-workflows** - Learning workflows using Graphiti memory
 - **graphiti-memory-retrieval** - Retrieve and query episodic memory with Graphiti
 
-### Knowledge Management (1 skill)
+### Knowledge Management (2 skills)
 - **obsidian-bases** - Obsidian Bases database feature for YAML-based interactive note views, filters, formulas, and table/card views
+- **claude-blog-sources** - Access Claude Blog for latest Claude Code improvements, patterns, and best practices
 
 ### Communication & Formatting (2 skills)
 - **google-chat-formatting** - Convert Markdown to Google Chat formatting syntax
@@ -303,6 +304,6 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 
 ---
 
-**Last updated**: 2025-11-26
-**Total skills**: 70
+**Last updated**: 2025-11-27
+**Total skills**: 71
 **Skill version format**: YAML frontmatter in SKILL.md
