@@ -107,6 +107,25 @@
       "Bash(gh pr diff:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr list:*)"
+    ],
+    "config_validation": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit",
+      "Write",
+      "WebSearch",
+      "WebFetch",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git switch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)"
     ]
   }
 }
