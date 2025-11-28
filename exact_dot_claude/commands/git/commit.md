@@ -57,3 +57,11 @@ The agent has expertise in:
 - GitHub PR creation and linking
 - Pre-commit hook integration
 - Multi-PR splitting strategies
+
+**Workflow Guidance:**
+
+- After running pre-commit hooks, stage files modified by hooks using `git add -u`
+- Unstaged changes after pre-commit are expected formatter output - stage them and continue
+- Branch operations (deletion, force push) require user confirmation first
+- When encountering unexpected state, report findings and ask user how to proceed
+- Include all pre-commit automatic fixes in commits

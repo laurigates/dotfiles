@@ -132,18 +132,31 @@ git commit -m "feat(auth): add OAuth2 support"
 
 ### Pre-commit Hook Integration
 
+Pre-commit hooks often AUTO-MODIFY files (formatters, linters with autofix). This is expected behavior.
+
 ```bash
-# Run pre-commit checks before staging
+# 1. Run pre-commit checks
 pre-commit run --all-files --show-diff-on-failure
 
-# Stage files after fixes
-git add fixed-file.ts
-git status
+# 2. Check if pre-commit modified any files
+git status --porcelain
+# M  src/file.ts     <- Modified by pre-commit (formatting)
 
-# Show staged changes before commit
-git diff --cached --name-only
-git commit -m "style(code): apply linter fixes"
+# 3. Stage modified tracked files (original + pre-commit modifications)
+git add -u
+
+# 4. Verify pre-commit passes now
+pre-commit run --all-files  # Should exit 0
+
+# 5. Commit with all changes
+git commit -m "feat(feature): add feature with formatting fixes"
 ```
+
+**Understanding Pre-commit Exit Codes:**
+- Exit 0: All hooks passed
+- Exit 1: Hook failed OR files were modified (re-stage and re-run)
+
+Pre-commit file modifications are normal - stage them and proceed with the commit.
 
 ### Explicit Staging Best Practices
 

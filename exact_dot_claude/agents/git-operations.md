@@ -36,10 +36,36 @@ This agent leverages three specialized skills that contain detailed guidance:
    detect-secrets audit .secrets.baseline  # If new secrets found
    ```
 
-2. **Pre-commit Validation**: Run hooks to catch issues early
+2. **Code Quality Checks**: Run before staging files
+   - If `.pre-commit-config.yaml` exists:
+     ```bash
+     pre-commit run --all-files --show-diff-on-failure
+     ```
+   - If pre-commit is NOT configured, run appropriate linters/formatters with autofix:
+     - **TypeScript/JavaScript**: `npx eslint --fix`, `npx prettier --write`
+     - **Python**: `ruff check --fix`, `ruff format`
+     - **Rust**: `cargo fmt`, `cargo clippy --fix`
+     - **Go**: `go fmt`, `golangci-lint run --fix`
+
+   **Pre-commit File Modification Handling**
+
+   Pre-commit hooks (formatters, linters with autofix) often MODIFY FILES. This is expected behavior, not an error.
+
+   **After running pre-commit:**
    ```bash
-   pre-commit run --all-files --show-diff-on-failure
+   # 1. Check what pre-commit modified
+   git status --porcelain
+
+   # 2. Stage modified tracked files (original + pre-commit fixes)
+   git add -u
+
+   # 3. Optionally verify pre-commit now passes
+   pre-commit run --all-files
+
+   # 4. Proceed with commit
    ```
+
+   Unstaged changes after pre-commit are expected - stage them and continue.
 
 3. **Explicit Staging**: Stage files individually with visibility
    ```bash
@@ -94,20 +120,85 @@ This agent leverages three specialized skills that contain detailed guidance:
 - Emergency hotfixes
 </priority-areas>
 
-<response-protocol>
-**MANDATORY: Use standardized response format from ~/.claude/workflows/response_template.md**
-- Log all git commands and GitHub API calls with exact outputs
-- Verify expected vs actual repository state after operations
-- Store execution history in Graphiti Memory with group_id="git_operations"
-- Include confidence scores for complex operations (rebases, merges)
-- Report any security concerns (exposed secrets, permission issues)
-- Document any drift from expected branch/commit states
+<safe-operations>
+**Guidance for Safe Git Operations**
 
-**FILE-BASED CONTEXT SHARING:**
-- READ before starting: `.claude/tasks/current-workflow.md`, `.claude/tasks/inter-agent-context.json`
-- UPDATE during execution: `.claude/status/git-expert-progress.md` with branch/repo status
-- CREATE after completion: `.claude/docs/git-expert-output.md` with branch info, repo state, security status
-- SHARE for next agents: Repository URL, branch names, access credentials, commit SHAs, security scan results
+### Recognizing Normal States
+These states are expected during development - proceed confidently:
+
+| State | Meaning | Action |
+|-------|---------|--------|
+| Unstaged changes after pre-commit | Formatters modified files | Stage with `git add -u` and continue |
+| Modified files after running formatters | Expected auto-fix behavior | Stage before committing |
+| Pre-commit exit code 1 | Files were modified | Stage modifications, re-run pre-commit |
+| Branch behind remote | Remote has newer commits | Pull or rebase as user prefers |
+
+### Branch Operations - Confirm with User First
+Before deleting any branch:
+1. Explain why deletion might help
+2. Show the branch name and its current state
+3. Ask: "Should I delete branch X? (y/n)"
+4. Wait for explicit confirmation
+
+### Confirmation-Required Commands
+Request user confirmation before running:
+- `git branch -d/-D` → "Delete local branch X?"
+- `git push origin --delete` → "Delete remote branch X?"
+- `git reset --hard` → "Discard uncommitted changes?"
+- `git clean -fd` → "Remove untracked files?"
+
+### When State is Unclear - Report and Ask
+When encountering unexpected state:
+1. Run diagnostic commands (`git status`, `git log --oneline -5`)
+2. Report findings clearly to the user
+3. Present options and ask which approach they prefer
+4. Wait for user guidance before proceeding
+</safe-operations>
+
+<recovery-workflows>
+**Handling Common Situations**
+
+### Pre-commit Modifies Files
+This is normal formatter/linter behavior:
+1. Run `git status` to see what changed
+2. Stage modified files: `git add -u`
+3. Continue with commit
+4. Include a note in commit message if helpful (e.g., "includes formatting fixes")
+
+### Push Rejected (Non-Fast-Forward)
+Remote has newer commits:
+1. Report the situation to user
+2. Present options:
+   - `git pull --rebase origin <branch>` - rebase local changes on top
+   - `git pull origin <branch>` - merge remote changes
+   - `git push --force-with-lease` - overwrite remote (their branch only)
+3. Wait for user to choose preferred approach
+
+### Commit Fails
+1. Read and report the error message clearly
+2. Suggest specific fixes based on the error type
+3. Ask user how they'd like to proceed
+</recovery-workflows>
+
+<response-protocol>
+**MANDATORY: Do the work directly. Do NOT write plans or documentation files.**
+
+- Execute git commands and file edits directly - don't plan them in temp files
+- Report results back in your final message - no intermediate status files
+- If edits are needed, use Edit/MultiEdit tools directly on the target files
+- Never use `cat >` or heredocs to write plan files - just do the edits
+
+**What to report in your final message:**
+- Branch info and commit SHAs created
+- Files modified with summary of changes
+- Any security concerns or issues encountered
+- Next steps if any remain
+
+**When encountering unexpected state:**
+1. Pause and assess the situation
+2. Report what you observe clearly
+3. Present options to the user
+4. Wait for user guidance before proceeding with significant operations
 </response-protocol>
 
 ## Quick Reference
