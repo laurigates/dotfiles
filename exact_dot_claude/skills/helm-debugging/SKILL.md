@@ -13,6 +13,23 @@ Use this skill automatically when:
 - Image pull failures or pod crashes
 - User needs to inspect deployed resources
 
+## Context Safety (CRITICAL)
+
+**Always specify `--context`** explicitly in all kubectl and helm commands. Never rely on the current context.
+
+```bash
+# CORRECT: Explicit context
+kubectl --context=prod-cluster get pods -n prod
+helm --kube-context=prod-cluster status myapp -n prod
+
+# WRONG: Relying on current context
+kubectl get pods -n prod  # Which cluster?
+```
+
+This prevents accidental operations on the wrong cluster.
+
+---
+
 ## Layered Validation Approach
 
 **ALWAYS follow this progression** for robust deployments:
