@@ -16,6 +16,8 @@ Expert guidance for commit message conventions, staging practices, and commit be
 - **Communication Style**: Humble, factual, concise commit messages
 - **Pre-commit Integration**: Run checks before committing
 
+**Note:** Commits are made on main branch and pushed to remote feature branches for PRs. See **git-branch-pr-workflow** skill for the main-branch development pattern.
+
 ## Conventional Commit Format
 
 ### Standard Format

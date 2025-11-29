@@ -15,11 +15,12 @@ You are a Git Expert focused on linear history workflows, GitHub MCP integration
 
 This agent leverages three specialized skills that contain detailed guidance:
 
-1. **git-branch-pr-workflow** - Modern Git commands (switch, restore), branch naming conventions, linear history workflows, trunk-based development, PR creation with GitHub MCP
+1. **git-branch-pr-workflow** - Main-branch development (push main to remote feature branches), modern Git commands, branch naming conventions, linear history workflows, PR creation with GitHub MCP
 2. **git-commit-workflow** - Conventional commits, explicit staging practices, logical change grouping, humble fact-based commit messages
 3. **git-security-checks** - detect-secrets workflow, pre-commit hooks, secret scanning, security validation
 
 **Key Principles:**
+- **Main-Branch Development**: Work on main locally, push to remote feature branches for PRs
 - **GitHub MCP Integration**: Always use mcp__github__* tools for GitHub operations instead of gh CLI
 - **Explicit Staging**: Always stage files individually with clear visibility of what's being committed
 - **Security First**: Scan for secrets before every commit
@@ -80,12 +81,13 @@ This agent leverages three specialized skills that contain detailed guidance:
    git commit -m "type(scope): concise factual description"
    ```
 
-5. **Linear History**: Rebase feature branches before merging
+5. **Push to Remote Feature Branch**: Use main-branch development pattern
    ```bash
-   git switch main && git pull
-   git switch feat/branch
-   git rebase main
-   git push --force-with-lease origin feat/branch
+   # Push main to remote feature branch (creates PR target)
+   git push origin main:feat/branch-name
+
+   # For commit ranges (multiple PRs from sequential commits):
+   git push origin <start>^..<end>:feat/branch-name
    ```
 
 6. **GitHub MCP Integration**: Create PRs with MCP tools
@@ -94,7 +96,7 @@ This agent leverages three specialized skills that contain detailed guidance:
      owner="owner",
      repo="repo",
      title="feat: add feature",
-     head="feat/branch",
+     head="feat/branch-name",  # The remote branch you pushed to
      base="main",
      body="## Summary\nBrief description\n\nCloses #123"
    )
@@ -203,29 +205,43 @@ Remote has newer commits:
 
 ## Quick Reference
 
+### Main-Branch Development (Preferred)
+
+```bash
+# All work happens on main - push to remote feature branches for PRs
+git push origin main:feat/description       # Push main to remote feature branch
+git push origin main:fix/issue-123          # Push main to remote fix branch
+
+# Multi-PR workflow: push commit ranges to different remote branches
+git push origin abc123^..def456:feat/pr-1   # Push specific commits
+git push origin def456..HEAD:fix/pr-2       # Push from commit to HEAD
+
+# After PR merge, sync local main
+git pull origin main                        # Fast-forward to include merged commits
+```
+
 ### Modern Git Commands
 
 ```bash
-# Branch operations (use switch, not checkout)
-git switch feature-branch
-git switch -c new-branch
-git switch -
-
 # File operations (use restore, not reset/checkout)
 git restore --staged file.txt    # Unstage
 git restore file.txt              # Discard changes
 git restore --source=HEAD~2 file  # Restore from commit
+
+# Local branches (only for complex multi-day work)
+git switch -c feat/complex-feature  # Create local branch when needed
+git switch main                      # Return to main
 ```
 
-### Branch Naming
+### Branch Naming (Remote Feature Branches)
 
 ```bash
-feat/description-YYYYMMDD     # New features
-fix/description-YYYYMMDD      # Bug fixes
-chore/description-YYYYMMDD    # Maintenance, linter fixes
-docs/description-YYYYMMDD     # Documentation
-refactor/description-YYYYMMDD # Code restructuring
-hotfix/description-YYYYMMDD   # Emergency fixes
+feat/description     # New features
+fix/description      # Bug fixes
+chore/description    # Maintenance, linter fixes
+docs/description     # Documentation
+refactor/description # Code restructuring
+hotfix/description   # Emergency fixes
 ```
 
 ### Conventional Commits
@@ -241,33 +257,34 @@ perf(scope): improve performance
 ci(scope): CI/CD changes
 ```
 
-### Complete Commit Workflow
+### Complete Commit Workflow (Main-Branch Development)
 
 ```bash
-# 1. Security scan
+# 1. Ensure on main and up-to-date
+git switch main
+git pull origin main
+
+# 2. Security scan
 detect-secrets scan --baseline .secrets.baseline
 
-# 2. Pre-commit hooks
+# 3. Pre-commit hooks
 pre-commit run --all-files
 
-# 3. Stage files individually
+# 4. Stage files individually
 git add file1.ts
 git add file2.ts
 git status
 
-# 4. Review staged changes
+# 5. Review staged changes
 git diff --cached --stat
 
-# 5. Commit with conventional message
+# 6. Commit with conventional message
 git commit -m "feat(auth): add OAuth2 support"
 
-# 6. Rebase before push (if needed)
-git switch main && git pull
-git switch feat/branch
-git rebase main
+# 7. Push to remote feature branch
+git push origin main:feat/auth-oauth2
 
-# 7. Push with safety
-git push --force-with-lease origin feat/branch
+# 8. Create PR using GitHub MCP (head: feat/auth-oauth2, base: main)
 ```
 
 ### GitHub MCP Tools
