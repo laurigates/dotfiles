@@ -105,14 +105,11 @@ jobs:
 
           # MCP servers configured via .mcp.json in repository root
 
-          # Model selection
-          model: claude-opus-4-5-20251101
-
-          # Tool allowlist from generated config
-          allowed_tools: ${{ steps.tools-config.outputs.allowed_tools }}
-
-          # Max turns for complex tasks
-          max_turns: 100
+          # Claude Code configuration via CLI arguments
+          claude_args: |
+            --model claude-opus-4-5-20251101
+            --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"
+            --max-turns 100
 
       - name: Collect workflow metrics
         if: always()

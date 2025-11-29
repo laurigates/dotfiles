@@ -18,17 +18,27 @@ argument-hint: <issue-number>
 
 Use the Task tool with `subagent_type: git-operations` to process and fix GitHub issue #$1 using a TDD workflow. Pass all the context gathered above to the agent.
 
-The git-operations agent should:
+The git-operations agent should use the **main-branch development workflow**:
 
 1. **Ensure clean working directory** (commit or stash if needed)
 2. **Switch to main and pull latest**: `git switch main && git pull`
-3. **Create issue branch**: `git switch -c fix-issue-$1`
-4. **Analyze issue requirements** from the issue details
-5. **Write failing tests first** (RED phase)
-6. **Implement fix** until tests pass (GREEN phase)
-7. **Refactor** if needed (REFACTOR phase)
-8. **Commit** with message referencing issue: `Fixes #$1`
-9. **Push branch and create PR** linked to the issue
+3. **Analyze issue requirements** from the issue details
+4. **Write failing tests first** (RED phase)
+5. **Implement fix** until tests pass (GREEN phase)
+6. **Refactor** if needed (REFACTOR phase)
+7. **Commit on main** with message referencing issue: `Fixes #$1`
+8. **Push to remote issue branch**: `git push origin main:fix/issue-$1`
+9. **Create PR** from `fix/issue-$1` to `main`, linked to the issue
+
+**Main-Branch Development Pattern:**
+
+```bash
+# All work stays on main
+git switch main && git pull
+# ... make changes, commit on main ...
+git push origin main:fix/issue-$1    # Push to remote feature branch
+# Create PR: head=fix/issue-$1, base=main
+```
 
 Provide the agent with:
 - All context from the section above
@@ -37,7 +47,7 @@ Provide the agent with:
 - Any coding standards or conventions
 
 The agent has expertise in:
+- Main-branch development workflow
 - TDD workflow (RED → GREEN → REFACTOR)
-- Git branch management
 - GitHub issue and PR linking
 - Conventional commit messages
