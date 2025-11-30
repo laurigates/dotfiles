@@ -1,6 +1,6 @@
 ---
 name: Rust Development
-description: Modern Rust development with cargo, rustc, clippy, rustfmt, async programming, and memory-safe systems programming. Automatically assists with Rust projects, ownership patterns, and fearless concurrency.
+description: Modern Rust development with cargo, rustc, clippy, rustfmt, async programming, and memory-safe systems programming. Automatically assists with Rust projects, ownership patterns, fearless concurrency, and the modern Rust ecosystem including Tokio, Serde, and popular crates.
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite, WebFetch, WebSearch, BashOutput, KillShell
 ---
 
@@ -17,6 +17,12 @@ Expert knowledge for modern systems programming with Rust, focusing on memory sa
 - **Rustfmt**: Consistent code formatting following Rust style guidelines
 - **Rust-analyzer**: Advanced IDE support with LSP integration
 
+**Language Features**
+- Rust 2024 edition: RPITIT, async fn in traits, impl Trait improvements
+- Const generics and compile-time computation
+- Generic associated types (GATs)
+- Let-else patterns and if-let chains
+
 ## Key Capabilities
 
 **Ownership & Memory Safety**
@@ -24,6 +30,7 @@ Expert knowledge for modern systems programming with Rust, focusing on memory sa
 - Design zero-copy abstractions and efficient memory layouts
 - Apply RAII patterns through Drop trait and smart pointers (Box, Rc, Arc)
 - Leverage interior mutability patterns (Cell, RefCell, Mutex, RwLock)
+- Use Pin/Unpin for self-referential structures
 
 **Async Programming & Concurrency**
 - **Tokio**: Async runtime for high-performance network applications
@@ -55,55 +62,112 @@ Expert knowledge for modern systems programming with Rust, focusing on memory sa
 
 ```bash
 # Project setup
-cargo new my-project
-cargo init
+cargo new my-project      # Binary crate
+cargo new my-lib --lib    # Library crate
+cargo init                # Initialize in existing directory
 
 # Development workflow
 cargo build                      # Debug build
 cargo build --release           # Optimized build
 cargo run                       # Build and run
-cargo test                      # Run tests
+cargo run --release             # Run optimized
+cargo test                      # Run all tests
+cargo test --lib               # Library tests only
 cargo bench                     # Run benchmarks
 
 # Code quality
 cargo clippy                    # Lint code
+cargo clippy -- -W clippy::pedantic  # Stricter lints
 cargo fmt                       # Format code
+cargo fmt --check              # Check formatting
 cargo fix                       # Auto-fix warnings
+
+# Dependencies
+cargo add serde --features derive  # Add dependency
+cargo update                       # Update deps
+cargo audit                        # Security audit
+cargo deny check                   # License/advisory check
 
 # Advanced tools
 cargo expand                    # Macro expansion
 cargo flamegraph               # Profile with flame graph
-cargo audit                    # Security audit
+cargo doc --open               # Generate and open docs
+cargo miri test                # Check for UB
+
+# Cross-compilation
+rustup target add wasm32-unknown-unknown
+cargo build --target wasm32-unknown-unknown
 ```
 
 ## Best Practices
 
 **Idiomatic Rust Patterns**
-- Use RAII for all resource management
-- Apply const-correctness and constexpr where possible
-- Implement move semantics and perfect forwarding
-- Prefer std::unique_ptr and std::shared_ptr over raw pointers
+```rust
+// Use iterators over manual loops
+let sum: i32 = numbers.iter().filter(|x| **x > 0).sum();
+
+// Prefer combinators for Option/Result
+let value = config.get("key")
+    .and_then(|v| v.parse().ok())
+    .unwrap_or_default();
+
+// Use pattern matching effectively
+match result {
+    Ok(value) if value > 0 => process(value),
+    Ok(_) => handle_zero(),
+    Err(e) => return Err(e.into()),
+}
+
+// Let-else for early returns
+let Some(config) = load_config() else {
+    return Err(ConfigError::NotFound);
+};
+```
 
 **Project Structure**
-- Organize code with modules and workspaces
-- Separate library (src/lib.rs) from binary (src/main.rs)
-- Use feature flags for optional dependencies
-- Implement proper visibility controls
+```
+my-project/
+├── Cargo.toml
+├── src/
+│   ├── lib.rs        # Library root
+│   ├── main.rs       # Binary entry point
+│   ├── error.rs      # Error types
+│   └── modules/
+│       └── mod.rs
+├── tests/            # Integration tests
+├── benches/          # Benchmarks
+└── examples/         # Example programs
+```
 
 **Error Handling**
 ```rust
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-enum AppError {
+pub enum AppError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
 
-    #[error("Parse error: {0}")]
-    Parse(String),
+    #[error("parse error: {message}")]
+    Parse { message: String },
+
+    #[error("not found: {0}")]
+    NotFound(String),
 }
 
-type Result<T> = std::result::Result<T, AppError>;
+pub type Result<T> = std::result::Result<T, AppError>;
 ```
+
+**Common Crates**
+| Crate | Purpose |
+|-------|---------|
+| `serde` | Serialization/deserialization |
+| `tokio` | Async runtime |
+| `reqwest` | HTTP client |
+| `sqlx` | Async SQL |
+| `clap` | CLI argument parsing |
+| `tracing` | Logging/diagnostics |
+| `anyhow` | Application errors |
+| `thiserror` | Library errors |
 
 For detailed async patterns, unsafe code guidelines, WebAssembly compilation, embedded development, and advanced debugging, see REFERENCE.md.
