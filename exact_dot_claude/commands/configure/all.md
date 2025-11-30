@@ -34,6 +34,7 @@ Execute each configure command in check-only mode:
 /configure:dockerfile --check-only
 /configure:skaffold --check-only
 /configure:workflows --check-only
+/configure:sentry --check-only
 ```
 
 Collect results from each check.
@@ -59,6 +60,7 @@ Component Summary:
 │ Dockerfile      │ ❌ FAIL  │ Missing healthcheck             │
 │ Skaffold        │ ✅ PASS  │ 3 profiles configured           │
 │ CI Workflows    │ ⚠️ WARN  │ Missing test workflow           │
+│ Sentry          │ ✅ PASS  │ SDK configured                  │
 └─────────────────┴──────────┴─────────────────────────────────┘
 
 Overall Status: 1 FAIL, 2 WARN, 2 PASS
@@ -83,6 +85,7 @@ If `--fix` flag or user confirms:
    /configure:dockerfile --fix
    /configure:skaffold --fix
    /configure:workflows --fix
+   /configure:sentry --fix
    ```
 
 2. Report what was fixed and what requires manual intervention
@@ -104,6 +107,7 @@ components:
   dockerfile: "2025.1"
   skaffold: "2025.1"
   workflows: "2025.1"
+  sentry: "2025.1"
 
 # Documented deviations from standard
 deviations: []
@@ -152,6 +156,7 @@ Not all components apply to all project types:
 | Dockerfile | ✅ | ⏭️ SKIP | ✅ |
 | Skaffold | If k8s/ | ⏭️ SKIP | If k8s/ |
 | CI Workflows | ✅ | ✅ | ✅ |
+| Sentry | ✅ | Optional | ✅ |
 
 ## See Also
 
@@ -161,3 +166,4 @@ Not all components apply to all project types:
 - `/configure:dockerfile` - Container configuration checks
 - `/configure:skaffold` - Kubernetes development checks
 - `/configure:workflows` - GitHub Actions checks
+- `/configure:sentry` - Sentry error tracking checks

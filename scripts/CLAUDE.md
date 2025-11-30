@@ -106,7 +106,8 @@ chezmoi apply
 |-----------|---------|------------------|
 | `git:` | Git and GitHub operations | `git:commit`, `git:issues`, `git:fix-pr` |
 | `code:` | Code quality and review | `code:review`, `code:refactor` |
-| `config:` | Configuration management | `config:audit`, `config:assimilate` |
+| `meta:` | Claude Code introspection | `meta:audit`, `meta:assimilate` |
+| `configure:` | FVH infrastructure standards | `configure:all`, `configure:sentry` |
 | `project:` | Project setup and maintenance | `project:new`, `project:modernize` |
 | `test:` | Testing infrastructure | `test:run`, `test:setup` |
 | `docs:` | Documentation generation | `docs:generate`, `docs:build` |
