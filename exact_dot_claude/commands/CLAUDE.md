@@ -21,7 +21,8 @@ Commands are organized by namespace for clarity and discoverability:
 ├── project-*.md             # Project-wide operations (root-level)
 ├── refactor.md              # Legacy refactor command (root-level)
 ├── code/                    # Code quality and review
-├── config/                  # Configuration management
+├── meta/                    # Claude Code introspection and meta-config
+├── configure/               # FVH infrastructure standards compliance
 ├── deploy/                  # Deployment operations
 ├── deps/                    # Dependency management
 ├── docs/                    # Documentation generation
@@ -58,12 +59,25 @@ Commands are organized by namespace for clarity and discoverability:
 | `/code:review` | Comprehensive code review with fixes | Quality analysis, security, performance |
 | `/code:refactor` | Refactor following SOLID principles | Improving code quality and design |
 
-### `config:` - Configuration Management
+### `meta:` - Claude Code Introspection
 
 | Command | Purpose | Usage |
 |---------|---------|-------|
-| `/config:assimilate` | Analyze and assimilate project configs | Understanding unfamiliar project setups |
-| `/config:audit` | Audit subagent configurations | Validating completeness and security |
+| `/meta:assimilate` | Analyze and assimilate project configs | Understanding unfamiliar project setups |
+| `/meta:audit` | Audit subagent configurations | Validating completeness and security |
+
+### `configure:` - FVH Infrastructure Standards
+
+| Command | Purpose | Usage |
+|---------|---------|-------|
+| `/configure:all` | Run all FVH compliance checks | Comprehensive infrastructure validation |
+| `/configure:status` | Quick read-only compliance overview | Pre-flight check without modifications |
+| `/configure:pre-commit` | Validate pre-commit hooks | Hook versions and configuration |
+| `/configure:release-please` | Validate release automation | Workflow and config validation |
+| `/configure:dockerfile` | Validate container configuration | Multi-stage builds, healthchecks |
+| `/configure:skaffold` | Validate K8s development setup | Port forwarding, profiles |
+| `/configure:workflows` | Validate GitHub Actions workflows | Action versions, permissions |
+| `/configure:sentry` | Validate Sentry error tracking | SDK installation, configuration |
 
 ### `deploy:` - Deployment Operations
 

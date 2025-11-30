@@ -53,12 +53,26 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 - **Quick file reading** for context gathering (single Read tool call)
 - **Trivial operations** that would take longer to explain to a subagent than to execute
 
+**Parallel Work - Orchestrate Accordingly:**
+
+When a task can be decomposed into independent subtasks, launch multiple subagents simultaneously:
+
+- **Identify independent work** - Tasks without dependencies can run in parallel
+- **Maximize throughput** - Launch all independent agents in a single message
+- **Orchestrate results** - Consolidate findings after parallel execution completes
+
+**Examples of parallel work:**
+- "Review code and run tests" → Launch `code-review` + `test-runner` simultaneously
+- "Check security and update docs" → Launch `security-audit` + `documentation` simultaneously
+- "Explore auth flow and find API usages" → Launch multiple `Explore` agents with different queries
+
 **Decision Framework:**
 
 1. **Default to subagents** - When in doubt, delegate
-2. **State your reasoning** - If handling directly, explicitly explain why delegation isn't appropriate
-3. **Consider complexity** - If task requires >3 tool calls or domain expertise, delegate
-4. **Think systematically** - Subagents provide structured investigation and validation
+2. **Parallelize when possible** - Identify independent subtasks and orchestrate accordingly
+3. **State your reasoning** - If handling directly, explicitly explain why delegation isn't appropriate
+4. **Consider complexity** - If task requires >3 tool calls or domain expertise, delegate
+5. **Think systematically** - Subagents provide structured investigation and validation
 
 ## Communication Style
 
@@ -138,6 +152,14 @@ Consult `test-architecture` agent when:
 - Prefer to stay in the repository root directory, specify paths as command arguments to maintain clarity and avoid directory context switching.
 
 ### Code Quality & Design
+
+**Convention Over Configuration:**
+
+- Follow established project conventions rather than inventing new patterns
+- Adopt framework and language idioms—do what the ecosystem expects
+- Place files where developers expect to find them
+- Use standard naming conventions, directory structures, and tooling defaults
+- When conventions exist, follow them; only configure when conventions don't apply
 
 **Simplicity and Clarity:**
 
@@ -265,6 +287,8 @@ Consult `test-architecture` agent when:
 
 ```
 Task received
+├─ Can it be split into independent subtasks?
+│  └─ YES → Identify subtasks, launch multiple agents in parallel
 ├─ Is it code exploration/research?
 │  └─ YES → Use Explore agent
 ├─ Does it match a specialized domain?
@@ -284,6 +308,7 @@ Task received
 - User: "Review this code for security issues" → Use **security-audit agent**
 - User: "Debug this performance problem" → Use **system-debugging agent**
 - User: "Help me understand the authentication flow" → Use **Explore agent**
+- User: "Review, test, and check for security issues" → Launch **code-review** + **test-runner** + **security-audit** in parallel
 
 **❌ INCORRECT - Manual Tool Usage:**
 
