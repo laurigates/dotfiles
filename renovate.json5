@@ -1,0 +1,124 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    "group:allNonMajor",
+    "schedule:weekly"
+  ],
+  "description": "Renovate configuration for dotfiles repository",
+
+  // Labels for PRs
+  "labels": ["dependencies", "renovate"],
+
+  // PR settings
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+
+  // Automerge non-major updates
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "platformAutomerge": true,
+
+  // Only automerge patch and minor, not major
+  "packageRules": [
+    {
+      "description": "Automerge patch and minor updates",
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Do not automerge major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Group GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "groupSlug": "github-actions"
+    },
+    {
+      "description": "Group pre-commit hooks updates",
+      "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit hooks",
+      "groupSlug": "pre-commit"
+    },
+    {
+      "description": "Group chezmoi external dependencies",
+      "matchManagers": ["regex"],
+      "matchFileNames": [".chezmoiexternal.toml"],
+      "groupName": "chezmoi externals",
+      "groupSlug": "chezmoi-externals"
+    },
+    {
+      "description": "Pin GitHub Actions to digest for security",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    }
+  ],
+
+  // Enable managers for this repo
+  "enabledManagers": [
+    "github-actions",
+    "pre-commit",
+    "regex"
+  ],
+
+  // GitHub Actions configuration
+  "github-actions": {
+    "fileMatch": [
+      "^\\.github/workflows/[^/]+\\.ya?ml$"
+    ]
+  },
+
+  // Pre-commit configuration
+  "pre-commit": {
+    "enabled": true
+  },
+
+  // Custom regex managers for chezmoi externals
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update git repos in .chezmoiexternal.toml",
+      "fileMatch": ["^\\.chezmoiexternal\\.toml$"],
+      "matchStrings": [
+        "url\\s*=\\s*\"https://github\\.com/(?<depName>[^\"]+?)(?:\\.git)?\"\\s*[\\s\\S]*?(?:ref|tag|branch)\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Update git repos (without explicit version) in .chezmoiexternal.toml - track latest releases",
+      "fileMatch": ["^\\.chezmoiexternal\\.toml$"],
+      "matchStrings": [
+        "\\[\"(?<path>[^\"]+)\"\\]\\s*\\n\\s*type\\s*=\\s*\"git-repo\"\\s*\\n\\s*url\\s*=\\s*\"https://github\\.com/(?<depName>[^/]+/[^\"]+?)(?:\\.git)?\""
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "{{{depName}}}",
+      "currentValueTemplate": "main",
+      "versioningTemplate": "loose"
+    }
+  ],
+
+  // Commit message settings
+  "commitMessagePrefix": "chore(deps):",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+
+  // PR body template
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
+
+  // Vulnerability alerts
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+
+  // Timezone for scheduling
+  "timezone": "Europe/Helsinki"
+}
