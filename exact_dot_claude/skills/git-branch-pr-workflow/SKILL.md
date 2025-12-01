@@ -388,3 +388,76 @@ git pull origin main  # Fast-forward merge handles this cleanly
 git rebase --abort
 git merge main
 ```
+
+## Safe Operations
+
+### Recognizing Normal States
+
+These states are expected during development - proceed confidently:
+
+| State | Meaning | Action |
+|-------|---------|--------|
+| Unstaged changes after pre-commit | Formatters modified files | Stage with `git add -u` and continue |
+| Modified files after running formatters | Expected auto-fix behavior | Stage before committing |
+| Pre-commit exit code 1 | Files were modified | Stage modifications, re-run pre-commit |
+| Branch behind remote | Remote has newer commits | Pull or rebase as appropriate |
+
+### Confirmation-Required Commands
+
+Request user confirmation before running destructive commands:
+
+```bash
+# These require explicit user approval:
+git branch -d/-D       # "Delete local branch X?"
+git push origin --delete  # "Delete remote branch X?"
+git reset --hard       # "Discard uncommitted changes?"
+git clean -fd          # "Remove untracked files?"
+```
+
+### When State is Unclear
+
+When encountering unexpected state:
+1. Run diagnostic commands (`git status`, `git log --oneline -5`)
+2. Report findings clearly
+3. Present options and wait for guidance
+
+## Recovery Workflows
+
+### Pre-commit Modifies Files
+
+This is normal formatter/linter behavior:
+
+```bash
+# 1. Check what changed
+git status
+
+# 2. Stage modified files
+git add -u
+
+# 3. Continue with commit
+git commit -m "feat(feature): description"
+```
+
+### Push Rejected (Non-Fast-Forward)
+
+Remote has newer commits:
+
+```bash
+# Option 1: Rebase local changes on top (preferred for linear history)
+git pull --rebase origin <branch>
+
+# Option 2: Merge remote changes
+git pull origin <branch>
+
+# Option 3: Overwrite remote (your branch only, use cautiously)
+git push --force-with-lease
+```
+
+### Commit Fails
+
+1. Read the error message
+2. Common causes:
+   - Pre-commit hooks failed → Fix issues and retry
+   - No staged changes → Stage files first
+   - Empty commit message → Provide message
+3. Fix the underlying issue and retry
