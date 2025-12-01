@@ -32,7 +32,7 @@ alias ca-claude='chezmoi apply -v ~/.claude'
 ```
 
 ### Claude Code Skills & Plugins
-This repository includes **Skills** (71 total) - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (72 total) - automatically discovered capabilities that Claude uses based on context:
 
 **Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
@@ -203,7 +203,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 ### Claude Code Infrastructure
 - **`.claude/CLAUDE.md`** - High-level design principles, delegation strategy, and operational mandates for Claude Code
 - **`.claude/commands/CLAUDE.md`** - Comprehensive guide to slash commands, namespaces, and command creation
-- **`.claude/skills/CLAUDE.md`** - Skills system documentation, all 71 skills categorized by domain
+- **`.claude/skills/CLAUDE.md`** - Skills system documentation, all 72 skills categorized by domain
 
 ### Configuration & Scripts
 - **`private_dot_config/CLAUDE.md`** - Application configuration management with chezmoi naming conventions and cross-platform templating
@@ -216,7 +216,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 | **Overall guidance** | `CLAUDE.md` (this file) | Repository overview, tools, security |
 | **Claude Code design** | `.claude/CLAUDE.md` | Delegation strategy, development principles |
 | **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
-| **Skills catalog** | `.claude/skills/CLAUDE.md` | 71 skills across 10 categories |
+| **Skills catalog** | `.claude/skills/CLAUDE.md` | 72 skills across 10 categories |
 | **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
 | **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |
 
