@@ -1,5 +1,5 @@
 ---
-allowed-tools: Task, TodoWrite
+allowed-tools: Bash, Edit, Read, Glob, Grep, Write, TodoWrite, mcp__github__pull_request_read
 argument-hint: [pr-number] [--auto-fix] [--push]
 description: Analyze and fix failing PR checks
 ---
@@ -21,31 +21,67 @@ Parse these parameters from the command (all optional):
 
 ## Your task
 
-**Delegate this task to the `git-operations` agent.**
+Analyze and fix failing PR checks.
 
-Use the Task tool with `subagent_type: git-operations` to analyze and fix the failing PR checks. Pass all the context gathered above and the parsed parameters to the agent.
+### Step 1: Determine PR
 
-The git-operations agent should:
+1. **Get PR number** from argument or detect from current branch
+2. **Fetch PR status** using `gh pr checks <pr-number>` or mcp__github__pull_request_read
 
-1. **Determine PR number** from argument or current branch
-2. **Analyze PR check failures** using `gh pr checks`
-3. **Identify failing checks** and research error messages
-4. **Run tests locally** to reproduce issues
-5. **Apply fixes** if --auto-fix flag is set:
-   - Linting errors: Run appropriate linters/formatters
-   - Type errors: Fix type annotations or implementations
-   - Test failures: Fix failing tests or implementation bugs
-6. **Commit and push** if --push flag is set
-7. **Verify fixes** by re-running checks
+### Step 2: Analyze Failures
 
-Provide the agent with:
-- All context from the section above
-- The parsed parameters
-- The project's testing framework (pytest, npm test, etc.)
-- Any CI/CD configuration files if relevant
+1. **Identify failing checks** from PR status
+2. **Research error messages** in workflow logs
+3. **Categorize failures**:
+   - Linting errors
+   - Type errors
+   - Test failures
+   - Build errors
 
-The agent has expertise in:
-- GitHub Actions workflow analysis
-- CI/CD failure debugging
-- Common fix patterns for linting, types, and tests
-- Git operations for committing and pushing fixes
+### Step 3: Reproduce Locally
+
+1. **Run tests locally** to reproduce issues
+2. **Run linters** to check for style issues
+3. **Run type checker** if applicable
+
+### Step 4: Apply Fixes (if --auto-fix)
+
+Based on failure type:
+
+- **Linting errors**: Run appropriate linters/formatters
+  ```bash
+  # Python
+  uv run ruff check --fix .
+  uv run ruff format .
+
+  # JavaScript/TypeScript
+  npm run lint -- --fix
+  ```
+
+- **Type errors**: Fix type annotations or implementations
+- **Test failures**: Fix failing tests or implementation bugs
+
+### Step 5: Commit and Push (if --push)
+
+1. **Stage fixes**: `git add -u`
+2. **Commit**: `git commit -m "fix: resolve CI failures"`
+3. **Push**: `git push`
+
+### Step 6: Verify
+
+1. **Re-run checks** locally to verify fixes
+2. **Monitor PR checks** after push
+
+## Common Fix Patterns
+
+| Check Type | Common Fixes |
+|------------|--------------|
+| Linting | Run formatter, fix import order |
+| Types | Add type annotations, fix mismatches |
+| Tests | Fix assertions, update snapshots |
+| Build | Fix imports, resolve dependencies |
+
+## See Also
+
+- **github-actions-inspection** skill for workflow analysis
+- **git-branch-pr-workflow** skill for PR patterns

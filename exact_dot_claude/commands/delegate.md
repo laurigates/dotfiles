@@ -37,7 +37,6 @@ For each identified task, determine the best agent match using this reference:
 | Security review, vulnerability assessment, OWASP analysis | `security-audit` | Security concerns, auth flows, injection risks |
 | Code quality review, architecture analysis | `code-review` | Quality assessment, design evaluation |
 | Bug investigation, root cause analysis | `system-debugging` | Complex debugging, error analysis |
-| Git operations, branch management, PRs | `git-operations` | Version control workflows |
 | Documentation generation, API docs | `documentation` | Creating/updating documentation |
 | Running tests, analyzing failures | `test-runner` | Test execution and reporting |
 | Test strategy, coverage analysis | `test-architecture` | Testing design decisions |

@@ -38,7 +38,6 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 - **Security audits** - Use `security-audit` agent for OWASP analysis and vulnerability assessment
 - **Code reviews** - Use `code-review` agent for quality, security, performance analysis
 - **Debugging complex issues** - Use `system-debugging` agent for systematic root cause analysis
-- **Git operations** - Use `git-operations` agent for workflows, branch management, conflict resolution
 - **Documentation generation** - Use `documentation` agent for comprehensive docs from code
 - **Test execution and analysis** - Use `test-runner` agent for running tests and concise failure summaries
 - **Testing strategies** - Use `test-architecture` agent for test coverage and framework selection
@@ -264,7 +263,6 @@ Consult `test-architecture` agent when:
    - `security-audit` → Security analysis, vulnerability assessment
    - `code-review` → Code quality, architecture, performance review
    - `system-debugging` → Complex debugging, root cause analysis
-   - `git-operations` → Branch management, conflict resolution, workflows
    - `documentation` → Generate docs from code, API references
    - `cicd-pipelines` → GitHub Actions, deployment automation
    - `code-refactoring` → Quality improvements, SOLID principles

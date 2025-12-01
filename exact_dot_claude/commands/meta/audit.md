@@ -42,12 +42,11 @@ Evaluate tool assignments for security and appropriateness:
 **Write-enabled agents** (appropriate write access):
 - code-refactoring (Edit, MultiEdit)
 - documentation (Write, MultiEdit)
-- git-operations (Edit, Bash, GitHub)
 - cicd-pipelines (Write, Edit, GitHub)
 
 **Special privileges** (validate necessity):
-- Bash access (security-audit, git-operations, system-debugging, cicd-pipelines, test-architecture)
-- GitHub access (git-operations, cicd-pipelines, commit-review)
+- Bash access (security-audit, system-debugging, cicd-pipelines, test-architecture)
+- GitHub access (cicd-pipelines, commit-review)
 - Zen MCP access (system-debugging only)
 - All tools access (should be rare, validate justification)
 

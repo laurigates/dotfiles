@@ -1,5 +1,5 @@
 ---
-allowed-tools: Task, TodoWrite
+allowed-tools: Bash, Edit, Read, Glob, Grep, Write, TodoWrite, mcp__github__create_pull_request, mcp__github__issue_read
 description: Process and fix a single GitHub issue with TDD workflow
 argument-hint: <issue-number>
 ---
@@ -14,23 +14,50 @@ argument-hint: <issue-number>
 
 ## Your task
 
-**Delegate this task to the `git-operations` agent.**
+Process and fix GitHub issue #$1 using a TDD workflow with the **main-branch development pattern**.
 
-Use the Task tool with `subagent_type: git-operations` to process and fix GitHub issue #$1 using a TDD workflow. Pass all the context gathered above to the agent.
-
-The git-operations agent should use the **main-branch development workflow**:
+### Step 1: Prepare Working Directory
 
 1. **Ensure clean working directory** (commit or stash if needed)
 2. **Switch to main and pull latest**: `git switch main && git pull`
-3. **Analyze issue requirements** from the issue details
-4. **Write failing tests first** (RED phase)
-5. **Implement fix** until tests pass (GREEN phase)
-6. **Refactor** if needed (REFACTOR phase)
-7. **Commit on main** with message referencing issue: `Fixes #$1`
-8. **Push to remote issue branch**: `git push origin main:fix/issue-$1`
-9. **Create PR** from `fix/issue-$1` to `main`, linked to the issue
 
-**Main-Branch Development Pattern:**
+### Step 2: Analyze Issue
+
+1. **Read issue details** using mcp__github__issue_read or from context above
+2. **Identify requirements** and acceptance criteria
+3. **Plan the implementation** approach
+
+### Step 3: TDD Workflow
+
+1. **RED phase**: Write failing tests first
+   - Create test file if needed
+   - Write tests that define expected behavior
+   - Run tests to verify they fail
+
+2. **GREEN phase**: Implement fix
+   - Write minimal code to make tests pass
+   - Run tests to verify they pass
+
+3. **REFACTOR phase**: Improve code quality
+   - Clean up implementation
+   - Ensure tests still pass
+
+### Step 4: Commit and Push
+
+1. **Stage changes**: `git add -u` and `git add <new-files>`
+2. **Run pre-commit** if configured
+3. **Commit on main** with message: `fix: <description>\n\nFixes #$1`
+4. **Push to remote issue branch**: `git push origin main:fix/issue-$1`
+
+### Step 5: Create PR
+
+Use `mcp__github__create_pull_request` with:
+- `head`: `fix/issue-$1`
+- `base`: `main`
+- `title`: From issue title with `fix:` prefix
+- `body`: Include `Fixes #$1` to auto-link
+
+## Main-Branch Development Pattern
 
 ```bash
 # All work stays on main
@@ -40,14 +67,7 @@ git push origin main:fix/issue-$1    # Push to remote feature branch
 # Create PR: head=fix/issue-$1, base=main
 ```
 
-Provide the agent with:
-- All context from the section above
-- The issue number: $1
-- The project's testing framework
-- Any coding standards or conventions
+## See Also
 
-The agent has expertise in:
-- Main-branch development workflow
-- TDD workflow (RED → GREEN → REFACTOR)
-- GitHub issue and PR linking
-- Conventional commit messages
+- **git-branch-pr-workflow** skill for workflow patterns
+- **test-tier-selection** skill for test strategy

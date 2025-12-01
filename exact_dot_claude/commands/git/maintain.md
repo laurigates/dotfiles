@@ -1,5 +1,5 @@
 ---
-allowed-tools: Task, TodoWrite
+allowed-tools: Bash, Read, Glob, TodoWrite
 argument-hint: [--prune] [--gc] [--verify] [--branches] [--stash] [--all]
 description: Perform repository maintenance and cleanup
 ---
@@ -25,52 +25,72 @@ Parse these parameters from the command (all optional):
 
 ## Your task
 
-**Delegate this task to the `git-operations` agent.**
+Perform repository maintenance and cleanup based on the flags provided.
 
-Use the Task tool with `subagent_type: git-operations` to perform repository maintenance and cleanup. Pass all the context gathered above and the parsed parameters to the agent.
+### Step 1: Check for accidentally committed files
 
-The git-operations agent should:
+- Environment files, IDE files, dependencies, build artifacts, secrets
+- Suggest adding to `.gitignore` and removing with `git rm --cached`
 
-1. **Check for accidentally committed files**:
-   - Environment files, IDE files, dependencies, build artifacts, secrets
-   - Suggest adding to `.gitignore` and removing with `git rm --cached`
+### Step 2: Update .gitignore
 
-2. **Update .gitignore**:
-   - Suggest common patterns if missing
-   - Offer to append missing patterns
+- Suggest common patterns if missing
+- Offer to append missing patterns
 
-3. **Delete merged branches** (if --branches or --all):
-   - List and clean branches merged via GitHub PR
-   - Protect main, master, develop, staging, production
-   - Delete local branches safely with `git branch -d`
+### Step 3: Delete merged branches (if --branches or --all)
 
-4. **Clean up redundant stashes** (if --stash or --all):
-   - Show stash ages and context
-   - Suggest cleanup for old stashes (>30 days)
-   - Drop stashes from deleted branches
+- List and clean branches merged via GitHub PR
+- Protect main, master, develop, staging, production
+- Delete local branches safely with `git branch -d`
+- **Require user confirmation** before deleting branches
 
-5. **Repository optimization** (if --prune, --gc, or --all):
-   - Prune unreachable objects
-   - Run garbage collection
-   - Repack objects
-   - Show size improvement
+### Step 4: Clean up redundant stashes (if --stash or --all)
 
-6. **Verify repository integrity** (if --verify or --all):
-   - Run `git fsck --full --strict`
-   - Report any issues
+- Show stash ages and context
+- Suggest cleanup for old stashes (>30 days)
+- Drop stashes from deleted branches
+- **Require user confirmation** before dropping stashes
 
-7. **Final summary**:
-   - Report all actions taken
-   - Show before/after metrics
+### Step 5: Repository optimization (if --prune, --gc, or --all)
 
-Provide the agent with:
-- All context from the section above
-- The parsed parameters
-- Whether to run in dry-run mode first for destructive operations
+```bash
+# Prune unreachable objects
+git prune
 
-The agent has expertise in:
-- Git repository maintenance
-- Branch cleanup strategies
-- Stash management
-- Repository optimization
-- Integrity verification
+# Run garbage collection
+git gc --aggressive
+
+# Repack objects
+git repack -ad
+
+# Show size improvement
+du -sh .git
+```
+
+### Step 6: Verify repository integrity (if --verify or --all)
+
+```bash
+git fsck --full --strict
+```
+
+Report any issues found.
+
+### Step 7: Final summary
+
+- Report all actions taken
+- Show before/after metrics
+
+## Safe Operations
+
+These operations are safe and non-destructive:
+- `git gc` - Garbage collection
+- `git prune` - Prune unreachable objects
+- `git fsck` - Verify integrity
+
+These require user confirmation:
+- `git branch -d` - Delete branches
+- `git stash drop` - Drop stashes
+
+## See Also
+
+- **git-branch-pr-workflow** skill for branch management patterns

@@ -1,5 +1,5 @@
 ---
-allowed-tools: Task, TodoWrite
+allowed-tools: Bash, Edit, Read, Glob, Grep, TodoWrite, mcp__github__create_pull_request
 argument-hint: [remote-branch] [--push] [--pr] [--draft] [--issue <num>] [--no-commit] [--range <start>..<end>]
 description: Complete workflow from changes to PR - analyze changes, create logical commits, push to remote feature branch, and optionally create pull request
 ---
@@ -29,41 +29,44 @@ Parse these parameters from the command (all optional):
 
 ## Your task
 
-**Delegate this task to the `git-operations` agent.**
+Execute this commit workflow using the **main-branch development pattern**:
 
-Use the Task tool with `subagent_type: git-operations` to handle this commit workflow. Pass all the context gathered above and the parsed parameters to the agent.
-
-The git-operations agent should use the **main-branch development workflow**:
+### Step 1: Verify State
 
 1. **Ensure on main**: Verify working on main branch (warn if not)
-2. **Analyze changes** and detect if splitting into multiple PRs is appropriate
-3. **Group related changes** into logical commits on main
-4. **Run pre-commit hooks** if configured
-5. **Push to remote feature branch**: `git push origin main:<remote-branch>` (or commit range if --range specified)
-6. **Create PR** if requested (--pr flag) with proper title, body, and issue linking
+2. **Check for changes**: Confirm there are staged or unstaged changes to commit (unless --no-commit)
 
-**Main-Branch Development Pattern:**
+### Step 2: Create Commits (unless --no-commit)
+
+1. **Analyze changes** and detect if splitting into multiple PRs is appropriate
+2. **Group related changes** into logical commits on main
+3. **Stage changes**: Use `git add -u` for modified files, `git add <file>` for new files
+4. **Run pre-commit hooks** if configured: `pre-commit run`
+5. **Handle pre-commit modifications**: Stage any files modified by hooks with `git add -u`
+6. **Create commit** with conventional commit message format
+
+### Step 3: Push to Remote (if --push or --pr)
+
+Use the main-branch development pattern:
 
 ```bash
-# All work stays on main
-git push origin main:feat/branch-name        # Push main to remote feature branch
-git push origin abc123^..def456:feat/branch  # Push commit range for multi-PR workflow
+# Push main to remote feature branch
+git push origin main:<remote-branch>
+
+# Or push commit range for multi-PR workflow
+git push origin <start>^..<end>:<remote-branch>
 ```
 
-Provide the agent with:
-- All context from the section above
-- The parsed parameters
-- The remote branch name (auto-generated or provided)
-- Whether to use commit range for multi-PR workflow
+### Step 4: Create PR (if --pr)
 
-The agent has expertise in:
-- Main-branch development workflow
-- Conventional commit formatting
-- GitHub PR creation and linking
-- Pre-commit hook integration
-- Multi-PR commit range strategies
+Use `mcp__github__create_pull_request` with:
+- `head`: The remote branch name (e.g., `feat/auth-oauth2`)
+- `base`: `main`
+- `title`: Derived from commit message
+- `body`: Include summary and issue link if --issue provided
+- `draft`: true if --draft flag set
 
-**Workflow Guidance:**
+## Workflow Guidance
 
 - After running pre-commit hooks, stage files modified by hooks using `git add -u`
 - Unstaged changes after pre-commit are expected formatter output - stage them and continue
@@ -71,3 +74,8 @@ The agent has expertise in:
 - For multi-PR workflow, use `git push origin <start>^..<end>:<remote-branch>` for commit ranges
 - When encountering unexpected state, report findings and ask user how to proceed
 - Include all pre-commit automatic fixes in commits
+
+## See Also
+
+- **git-branch-pr-workflow** skill for detailed patterns
+- **git-commit-workflow** skill for commit message conventions
