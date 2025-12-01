@@ -79,15 +79,16 @@ Fixes #123, #124"
 - Use imperative mood ("add feature" not "added feature")
 - Keep first line under 72 characters
 - Be concise and factual
-- Reference issues with "Fixes #123" or "Closes #456"
+- Use GitHub keywords to auto-close issues: `Fixes #123`, `Closes #456`, `Resolves #789`
 - Use lowercase for type and scope
 - Be humble and modest
+- Reference related issues even without closing: `Refs #234`
 
 **DON'T:**
 - Use past tense ("added" or "fixed")
 - Include unnecessary details in subject line
 - Use vague descriptions ("update stuff", "fix bug")
-- Forget to reference related issues
+- Forget to reference related issues when applicable
 
 ### Scope Guidelines
 
@@ -338,25 +339,56 @@ feat(auth): add OAuth2 support
 # Use blank line between subject and body
 ```
 
-### Issue References
+### GitHub Issue Linking Keywords
+
+GitHub recognizes these keywords to automatically link and close issues when commits are merged to the default branch:
+
+| Keyword | Variants | Effect |
+|---------|----------|--------|
+| close | close, closes, closed | Closes the issue |
+| fix | fix, fixes, fixed | Closes the issue |
+| resolve | resolve, resolves, resolved | Closes the issue |
+
+**Syntax patterns:**
+- **Same repository:** `KEYWORD #ISSUE-NUMBER` (e.g., `Fixes #123`)
+- **Cross-repository:** `KEYWORD OWNER/REPO#ISSUE-NUMBER` (e.g., `Fixes octo-org/octo-repo#100`)
+- **Multiple issues:** Use full syntax for each (e.g., `Fixes #123, fixes #456`)
+
+**Formatting flexibility:**
+- Case insensitive: `FIXES #123`, `Fixes #123`, `fixes #123`
+- Optional colon: `Fixes: #123`, `Fixes #123`
+
+**Important:** Keywords only work when merged to the **default branch**. PRs targeting other branches won't auto-close issues.
+
+### Issue Reference Examples
 
 ```bash
-# Link to issues
+# Fix with auto-close (single issue)
 git commit -m "fix(api): handle timeout
 
 Fixes #123"
 
-# Multiple issues
+# Feature linked to multiple issues
 git commit -m "feat(ui): redesign dashboard
 
 Implements designs from #456
-Closes #457, #458"
+Closes #457, closes #458"
 
-# Breaking changes
+# Cross-repository reference
+git commit -m "fix(shared): resolve validation bug
+
+Fixes org/shared-lib#42"
+
+# Breaking change with migration reference
 git commit -m "feat(api)!: change authentication
 
 BREAKING CHANGE: API key format changed.
 See migration guide: #789"
+
+# Reference without closing (use "Refs" or "Related to")
+git commit -m "refactor(auth): extract token validation
+
+Refs #234"
 ```
 
 ## Troubleshooting

@@ -32,6 +32,9 @@ Check for presence and validity of each configuration:
 | Skaffold | `skaffold.yaml` |
 | CI Workflows | `.github/workflows/*.yml` |
 | Helm | `helm/*/Chart.yaml` |
+| Documentation | `tsdoc.json`, `typedoc.json`, `mkdocs.yml`, `docs/conf.py`, `pyproject.toml [tool.ruff.lint.pydocstyle]` |
+| GitHub Pages | `.github/workflows/docs.yml`, `.github/workflows/*pages*.yml` |
+| Cache Busting | `next.config.*`, `vite.config.*`, `vercel.json`, `_headers` |
 
 ### Phase 3: Quick Compliance Check
 
@@ -61,6 +64,7 @@ Component Status:
   Skaffold        ✅ PASS   3 profiles configured
   CI Workflows    ⚠️ WARN   Missing test workflow
   Helm            ⏭️ SKIP   No helm/ directory
+  Cache Busting   ✅ PASS   Content hashing enabled (Next.js)
 
 Summary: 2 warnings, 0 failures
 Run /configure:all to fix issues
@@ -73,6 +77,7 @@ If `--verbose` flag:
 - List individual compliance checks performed
 - Show detected deviations from `.fvh-standards.yaml`
 - Display file modification timestamps
+- Show cache-busting configuration details (framework, CDN, hash patterns)
 
 ## Flags
 
@@ -101,3 +106,4 @@ If `--verbose` flag:
 - `/configure:all` - Fix all compliance issues
 - `/configure:pre-commit` - Pre-commit specific checks
 - `/configure:release-please` - Release-please specific checks
+- `/configure:cache-busting` - Cache-busting specific checks

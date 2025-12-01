@@ -44,6 +44,11 @@ Execute this commit workflow using the **main-branch development pattern**:
 4. **Run pre-commit hooks** if configured: `pre-commit run`
 5. **Handle pre-commit modifications**: Stage any files modified by hooks with `git add -u`
 6. **Create commit** with conventional commit message format
+7. **Include GitHub keywords** when changes relate to issues:
+   - Use `Fixes #N` for bug fixes that close an issue
+   - Use `Closes #N` for features that complete an issue
+   - Use `Resolves #N` as alternative to close issues
+   - Use `Refs #N` to reference without closing
 
 ### Step 3: Push to Remote (if --push or --pr)
 
@@ -74,6 +79,12 @@ Use `mcp__github__create_pull_request` with:
 - For multi-PR workflow, use `git push origin <start>^..<end>:<remote-branch>` for commit ranges
 - When encountering unexpected state, report findings and ask user how to proceed
 - Include all pre-commit automatic fixes in commits
+- **GitHub issue linking**: When `--issue` is provided or context suggests issue relevance:
+  - Use GitHub keywords (`Fixes`, `Closes`, `Resolves`) in commit body to auto-close issues
+  - Keywords are case-insensitive and work with optional colon: `Fixes: #123`
+  - For cross-repo: `Fixes org/repo#123`
+  - Multiple issues: `Fixes #1, fixes #2, fixes #3`
+  - Keywords only auto-close when merged to default branch
 
 ## See Also
 

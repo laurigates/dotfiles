@@ -35,6 +35,9 @@ Execute each configure command in check-only mode:
 /configure:skaffold --check-only
 /configure:workflows --check-only
 /configure:sentry --check-only
+/configure:docs --check-only
+/configure:github-pages --check-only
+/configure:cache-busting --check-only
 ```
 
 Collect results from each check.
@@ -61,9 +64,12 @@ Component Summary:
 │ Skaffold        │ ✅ PASS  │ 3 profiles configured           │
 │ CI Workflows    │ ⚠️ WARN  │ Missing test workflow           │
 │ Sentry          │ ✅ PASS  │ SDK configured                  │
+│ Documentation   │ ⚠️ WARN  │ Generator configured, no deploy │
+│ GitHub Pages    │ ❌ FAIL  │ No workflow configured          │
+│ Cache Busting   │ ✅ PASS  │ Content hashing enabled         │
 └─────────────────┴──────────┴─────────────────────────────────┘
 
-Overall Status: 1 FAIL, 2 WARN, 2 PASS
+Overall Status: 1 FAIL, 2 WARN, 3 PASS
 
 Issues to Fix:
   1. [FAIL] Dockerfile: Add HEALTHCHECK instruction
@@ -86,6 +92,9 @@ If `--fix` flag or user confirms:
    /configure:skaffold --fix
    /configure:workflows --fix
    /configure:sentry --fix
+   /configure:docs --fix
+   /configure:github-pages --fix
+   /configure:cache-busting --fix
    ```
 
 2. Report what was fixed and what requires manual intervention
@@ -108,6 +117,9 @@ components:
   skaffold: "2025.1"
   workflows: "2025.1"
   sentry: "2025.1"
+  docs: "2025.1"
+  github-pages: "2025.1"
+  cache-busting: "2025.1"
 
 # Documented deviations from standard
 deviations: []
@@ -157,6 +169,9 @@ Not all components apply to all project types:
 | Skaffold | If k8s/ | ⏭️ SKIP | If k8s/ |
 | CI Workflows | ✅ | ✅ | ✅ |
 | Sentry | ✅ | Optional | ✅ |
+| Documentation | ✅ | Optional | ✅ |
+| GitHub Pages | ✅ | Optional | ✅ |
+| Cache Busting | ✅ | ⏭️ SKIP | Optional |
 
 ## See Also
 
@@ -167,3 +182,6 @@ Not all components apply to all project types:
 - `/configure:skaffold` - Kubernetes development checks
 - `/configure:workflows` - GitHub Actions checks
 - `/configure:sentry` - Sentry error tracking checks
+- `/configure:docs` - Documentation standards and generators
+- `/configure:github-pages` - GitHub Pages deployment
+- `/configure:cache-busting` - Cache-busting strategies

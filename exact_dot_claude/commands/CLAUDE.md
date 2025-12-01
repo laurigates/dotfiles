@@ -72,12 +72,15 @@ Commands are organized by namespace for clarity and discoverability:
 |---------|---------|-------|
 | `/configure:all` | Run all FVH compliance checks | Comprehensive infrastructure validation |
 | `/configure:status` | Quick read-only compliance overview | Pre-flight check without modifications |
+| `/configure:cache-busting` | Configure cache-busting strategies | Next.js and Vite asset hashing, CDN headers |
+| `/configure:docs` | Configure documentation standards | TSDoc, JSDoc, pydoc, rustdoc with tests |
+| `/configure:dockerfile` | Validate container configuration | Multi-stage builds, healthchecks |
+| `/configure:github-pages` | Configure GitHub Pages deployment | Documentation hosting workflow |
 | `/configure:pre-commit` | Validate pre-commit hooks | Hook versions and configuration |
 | `/configure:release-please` | Validate release automation | Workflow and config validation |
-| `/configure:dockerfile` | Validate container configuration | Multi-stage builds, healthchecks |
+| `/configure:sentry` | Validate Sentry error tracking | SDK installation, configuration |
 | `/configure:skaffold` | Validate K8s development setup | Port forwarding, profiles |
 | `/configure:workflows` | Validate GitHub Actions workflows | Action versions, permissions |
-| `/configure:sentry` | Validate Sentry error tracking | SDK installation, configuration |
 
 ### `deploy:` - Deployment Operations
 
@@ -97,7 +100,6 @@ Commands are organized by namespace for clarity and discoverability:
 | Command | Purpose | Usage |
 |---------|---------|-------|
 | `/docs:generate` | Update docs from code annotations | API references, README, changelog |
-| `/docs:build` | Set up documentation build system | Sphinx, MkDocs, Docusaurus, GitHub Pages |
 | `/docs:sync` | Sync documentation with codebase | Update counts, lists, cross-references |
 | `/docs:decommission` | Generate service decommission docs | Service shutdown documentation |
 | `/docs:knowledge-graph` | Build knowledge graph from Obsidian vault | Comprehensive documentation analysis |

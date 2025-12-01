@@ -3,6 +3,18 @@
   "env": {},
   "permissions": {
     "defaultMode": "acceptEdits",
+    "allow": [
+      "WebFetch(domain:docs.orbstack.dev)",
+      "WebFetch(domain:orbstack.dev)",
+      "WebFetch(domain:skaffold.dev)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:kubernetes.io)",
+      "WebFetch(domain:argo-cd.readthedocs.io)",
+      "WebFetch(domain:argoproj.github.io)",
+      "WebFetch(domain:kyverno.io)",
+      "WebFetch(domain:argocd-image-updater.readthedocs.io)"
+    ],
     "deny": [
       "Bash(git add .)",
       "Bash(git add -A)",
