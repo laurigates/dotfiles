@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **71 specialized skills** organized by domain:
+This repository contains **72 specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -40,12 +40,13 @@ This repository contains **71 specialized skills** organized by domain:
 - **github-actions-auth-security** - Authentication methods, secrets management, security best practices
 - **github-actions-inspection** - Inspect workflow runs, analyze logs, debug CI/CD failures
 
-### Python Development (9 skills)
+### Python Development (10 skills)
 - **python-development** - Core Python concepts, idioms, and best practices
 - **python-testing** - pytest, fixtures, parametrization, test organization
 - **python-code-quality** - Linting, formatting, type checking, code analysis
 - **python-packaging** - Package creation, distribution, publishing to PyPI
-- **uv-project-management** - Modern Python project management with uv
+- **uv-run** - Running scripts, inline dependencies (PEP 723), temporary dependencies
+- **uv-project-management** - Project setup, dependencies, and lockfiles with uv
 - **uv-python-versions** - Python version management with uv
 - **uv-tool-management** - CLI tool installation and management with uv
 - **uv-workspaces** - Monorepo and workspace management with uv
@@ -307,5 +308,5 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 ---
 
 **Last updated**: 2025-11-27
-**Total skills**: 71
+**Total skills**: 72
 **Skill version format**: YAML frontmatter in SKILL.md

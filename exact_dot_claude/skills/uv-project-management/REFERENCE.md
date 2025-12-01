@@ -322,75 +322,13 @@ uv sync
 
 ---
 
-## Running Commands
+## Running Scripts
 
-### uv run
-
-Execute commands in project's virtual environment:
-
-```bash
-# Run Python script
-uv run python script.py
-
-# Run installed tool
-uv run pytest
-uv run ruff check
-uv run mypy src/
-
-# Run module
-uv run -m http.server
-
-# Pass arguments
-uv run pytest tests/ -v --cov
-
-# Run with specific Python
-uv run --python 3.11 script.py
-```
-
-### Running Scripts
-
-**Define scripts in pyproject.toml:**
-```toml
-[project.scripts]
-serve = "my_project.server:main"
-cli = "my_project.cli:app"
-```
-
-**Run via uv:**
-```bash
-uv run serve
-uv run cli --help
-```
-
-### Single-File Scripts (PEP 723)
-
-**Inline dependencies:**
-```python
-# script.py
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "requests>=2.31",
-#   "rich>=13.0",
-# ]
-# ///
-
-import requests
-from rich import print
-
-response = requests.get("https://api.github.com")
-print(response.json())
-```
-
-**Run with uv:**
-```bash
-uv run script.py
-```
-
-**Add dependencies:**
-```bash
-uv add --script script.py beautifulsoup4
-```
+For running Python scripts, see the **uv-run** skill which covers:
+- `uv run script.py` - Direct script execution
+- `uv run --with pkg script.py` - Temporary dependencies
+- PEP 723 inline script dependencies
+- Shebang patterns for executable scripts
 
 ---
 

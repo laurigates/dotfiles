@@ -1,6 +1,9 @@
 ---
 name: Python Development
-description: Core Python development concepts, idioms, best practices, and language features. Use for Python language fundamentals, design patterns, and Pythonic code. For tools, see specialized skills (uv-*, python-testing, python-code-quality, python-packaging).
+description: |
+  Core Python development concepts, idioms, best practices, and language features.
+  Use for Python language fundamentals, design patterns, and Pythonic code.
+  For running scripts, see uv-run. For project setup, see uv-project-management.
 allowed-tools: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, Edit, Write, NotebookEdit, Bash
 ---
 
@@ -149,19 +152,19 @@ uv run pytest --pdb --pdbcls=IPython.terminal.debugger:TerminalPdb
 
 ```bash
 # CPU profiling
-python -m cProfile -s cumtime script.py | head -20
+uv run python -m cProfile -s cumtime script.py | head -20
 
-# Line-by-line profiling
-pip install line-profiler
-kernprof -l -v script.py
+# Line-by-line profiling (temporary dependency)
+uv run --with line-profiler kernprof -l -v script.py
 
-# Memory profiling
-pip install memory-profiler
-python -m memory_profiler script.py
+# Memory profiling (temporary dependency)
+uv run --with memory-profiler python -m memory_profiler script.py
 
-# Real-time profiling
-pip install py-spy
-py-spy top -- python script.py
+# Real-time profiling (ephemeral tool)
+uvx py-spy top -- python script.py
+
+# Quick profiling with scalene
+uv run --with scalene python -m scalene script.py
 ```
 
 ### Built-in Debugging Tools
@@ -345,7 +348,9 @@ my-project/
 
 ## See Also
 
+- **uv-run** - Running scripts, temporary dependencies, PEP 723
 - **uv-project-management** - Project setup and dependency management
+- **uv-tool-management** - Installing CLI tools globally
 - **python-testing** - Testing with pytest
 - **python-code-quality** - Linting and type checking with ruff/mypy
 - **python-packaging** - Building and publishing packages

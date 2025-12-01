@@ -1,14 +1,16 @@
 # UV Project Management
 
-Quick reference for UV project lifecycle and dependency management.
+Quick reference for UV project setup, dependencies, and lockfiles.
 
 ## When This Skill Applies
 
-- Python projects using UV for dependency management
-- Initializing new Python projects
-- Adding, removing, or updating dependencies
-- Managing lockfiles and virtual environments
-- Syncing project dependencies
+- Initializing new Python projects (`uv init`)
+- Adding, removing, or updating dependencies (`uv add`, `uv remove`)
+- Managing lockfiles (`uv lock`)
+- Syncing project environments (`uv sync`)
+- Configuring pyproject.toml
+
+For running scripts, see **uv-run** skill.
 
 ## Quick Reference
 
@@ -72,18 +74,6 @@ uv sync --frozen
 
 # Error if lockfile is out of date
 uv sync --locked
-```
-
-### Running Commands
-
-```bash
-# Run command in project environment
-uv run python script.py
-uv run pytest
-uv run ruff check
-
-# Run with specific Python version
-uv run --python 3.11 script.py
 ```
 
 ## Project Structure
@@ -162,11 +152,13 @@ uv sync
 
 ## See Also
 
-- `uv-python-versions` - Managing Python interpreter versions
-- `uv-workspaces` - Monorepo and multi-package projects
-- `uv-advanced-dependencies` - Git, path, and constraint dependencies
-- `python-testing` - Running tests with pytest
-- `python-code-quality` - Linting and formatting with ruff
+- **uv-run** - Running scripts, temporary dependencies, PEP 723
+- **uv-python-versions** - Managing Python interpreter versions
+- **uv-workspaces** - Monorepo and multi-package projects
+- **uv-advanced-dependencies** - Git, path, and constraint dependencies
+- **uv-tool-management** - Installing CLI tools globally
+- **python-testing** - Running tests with pytest
+- **python-code-quality** - Linting and formatting with ruff
 
 ## References
 
