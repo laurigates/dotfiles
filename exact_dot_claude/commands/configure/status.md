@@ -35,6 +35,13 @@ Check for presence and validity of each configuration:
 | Documentation | `tsdoc.json`, `typedoc.json`, `mkdocs.yml`, `docs/conf.py`, `pyproject.toml [tool.ruff.lint.pydocstyle]` |
 | GitHub Pages | `.github/workflows/docs.yml`, `.github/workflows/*pages*.yml` |
 | Cache Busting | `next.config.*`, `vite.config.*`, `vercel.json`, `_headers` |
+| Tests | `vitest.config.*`, `jest.config.*`, `pytest.ini`, `pyproject.toml [tool.pytest]`, `.cargo/config.toml` |
+| Coverage | `vitest.config.* [coverage]`, `pyproject.toml [tool.coverage]`, `.coveragerc` |
+| Linting | `biome.json`, `eslint.config.*`, `pyproject.toml [tool.ruff]`, `clippy.toml` |
+| Formatting | `.prettierrc*`, `biome.json`, `pyproject.toml [tool.ruff.format]`, `rustfmt.toml` |
+| Dead Code | `knip.json`, `knip.ts`, `pyproject.toml [tool.vulture]` |
+| Editor | `.editorconfig`, `.vscode/settings.json`, `.vscode/extensions.json` |
+| Security | `.github/workflows/*security*`, `.secrets.baseline`, `pyproject.toml [tool.bandit]` |
 
 ### Phase 3: Quick Compliance Check
 
@@ -65,6 +72,13 @@ Component Status:
   CI Workflows    ⚠️ WARN   Missing test workflow
   Helm            ⏭️ SKIP   No helm/ directory
   Cache Busting   ✅ PASS   Content hashing enabled (Next.js)
+  Tests           ✅ PASS   Vitest configured
+  Coverage        ⚠️ WARN   72% (below 80% threshold)
+  Linting         ✅ PASS   Biome configured
+  Formatting      ✅ PASS   Biome configured
+  Dead Code       ⚠️ WARN   Knip found 3 unused exports
+  Editor          ✅ PASS   .editorconfig present
+  Security        ✅ PASS   detect-secrets + npm audit
 
 Summary: 2 warnings, 0 failures
 Run /configure:all to fix issues

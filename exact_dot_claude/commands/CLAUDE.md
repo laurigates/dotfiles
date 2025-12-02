@@ -73,13 +73,20 @@ Commands are organized by namespace for clarity and discoverability:
 | `/configure:all` | Run all FVH compliance checks | Comprehensive infrastructure validation |
 | `/configure:status` | Quick read-only compliance overview | Pre-flight check without modifications |
 | `/configure:cache-busting` | Configure cache-busting strategies | Next.js and Vite asset hashing, CDN headers |
+| `/configure:coverage` | Configure code coverage | Thresholds, reporting, CI integration |
+| `/configure:dead-code` | Configure dead code detection | Knip, Vulture, cargo-machete |
 | `/configure:docs` | Configure documentation standards | TSDoc, JSDoc, pydoc, rustdoc with tests |
 | `/configure:dockerfile` | Validate container configuration | Multi-stage builds, healthchecks |
+| `/configure:editor` | Configure editor/IDE settings | .editorconfig, VS Code, extensions |
+| `/configure:formatting` | Configure code formatters | Biome, Prettier, Ruff format, rustfmt |
 | `/configure:github-pages` | Configure GitHub Pages deployment | Documentation hosting workflow |
+| `/configure:linting` | Configure linters | Biome, ESLint, Ruff, Clippy |
 | `/configure:pre-commit` | Validate pre-commit hooks | Hook versions and configuration |
 | `/configure:release-please` | Validate release automation | Workflow and config validation |
+| `/configure:security` | Configure security scanning | Dependency audit, SAST, secrets |
 | `/configure:sentry` | Validate Sentry error tracking | SDK installation, configuration |
 | `/configure:skaffold` | Validate K8s development setup | Port forwarding, profiles |
+| `/configure:tests` | Configure testing frameworks | Vitest, pytest, cargo-nextest |
 | `/configure:workflows` | Validate GitHub Actions workflows | Action versions, permissions |
 
 ### `deploy:` - Deployment Operations

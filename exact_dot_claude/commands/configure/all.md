@@ -38,6 +38,13 @@ Execute each configure command in check-only mode:
 /configure:docs --check-only
 /configure:github-pages --check-only
 /configure:cache-busting --check-only
+/configure:tests --check-only
+/configure:coverage --check-only
+/configure:linting --check-only
+/configure:formatting --check-only
+/configure:dead-code --check-only
+/configure:editor --check-only
+/configure:security --check-only
 ```
 
 Collect results from each check.
@@ -67,6 +74,13 @@ Component Summary:
 │ Documentation   │ ⚠️ WARN  │ Generator configured, no deploy │
 │ GitHub Pages    │ ❌ FAIL  │ No workflow configured          │
 │ Cache Busting   │ ✅ PASS  │ Content hashing enabled         │
+│ Tests           │ ✅ PASS  │ Vitest configured               │
+│ Coverage        │ ⚠️ WARN  │ Below 80% threshold             │
+│ Linting         │ ✅ PASS  │ Biome configured                │
+│ Formatting      │ ✅ PASS  │ Biome configured                │
+│ Dead Code       │ ⚠️ WARN  │ 3 unused exports                │
+│ Editor          │ ✅ PASS  │ .editorconfig present           │
+│ Security        │ ✅ PASS  │ Dependency audit enabled        │
 └─────────────────┴──────────┴─────────────────────────────────┘
 
 Overall Status: 1 FAIL, 2 WARN, 3 PASS
@@ -95,6 +109,13 @@ If `--fix` flag or user confirms:
    /configure:docs --fix
    /configure:github-pages --fix
    /configure:cache-busting --fix
+   /configure:tests --fix
+   /configure:coverage --fix
+   /configure:linting --fix
+   /configure:formatting --fix
+   /configure:dead-code --fix
+   /configure:editor --fix
+   /configure:security --fix
    ```
 
 2. Report what was fixed and what requires manual intervention
@@ -120,6 +141,13 @@ components:
   docs: "2025.1"
   github-pages: "2025.1"
   cache-busting: "2025.1"
+  tests: "2025.1"
+  coverage: "2025.1"
+  linting: "2025.1"
+  formatting: "2025.1"
+  dead-code: "2025.1"
+  editor: "2025.1"
+  security: "2025.1"
 
 # Documented deviations from standard
 deviations: []
@@ -161,17 +189,24 @@ deviations: []
 
 Not all components apply to all project types:
 
-| Component | Frontend | Infrastructure | Python |
-|-----------|----------|----------------|--------|
-| Pre-commit | ✅ | ✅ | ✅ |
-| Release-please | ✅ | Optional | ✅ |
-| Dockerfile | ✅ | ⏭️ SKIP | ✅ |
-| Skaffold | If k8s/ | ⏭️ SKIP | If k8s/ |
-| CI Workflows | ✅ | ✅ | ✅ |
-| Sentry | ✅ | Optional | ✅ |
-| Documentation | ✅ | Optional | ✅ |
-| GitHub Pages | ✅ | Optional | ✅ |
-| Cache Busting | ✅ | ⏭️ SKIP | Optional |
+| Component | Frontend | Infrastructure | Python | Rust |
+|-----------|----------|----------------|--------|------|
+| Pre-commit | ✅ | ✅ | ✅ | ✅ |
+| Release-please | ✅ | Optional | ✅ | ✅ |
+| Dockerfile | ✅ | ⏭️ SKIP | ✅ | ✅ |
+| Skaffold | If k8s/ | ⏭️ SKIP | If k8s/ | If k8s/ |
+| CI Workflows | ✅ | ✅ | ✅ | ✅ |
+| Sentry | ✅ | Optional | ✅ | Optional |
+| Documentation | ✅ | Optional | ✅ | ✅ |
+| GitHub Pages | ✅ | Optional | ✅ | ✅ |
+| Cache Busting | ✅ | ⏭️ SKIP | Optional | ⏭️ SKIP |
+| Tests | ✅ | Optional | ✅ | ✅ |
+| Coverage | ✅ | Optional | ✅ | ✅ |
+| Linting | ✅ | Optional | ✅ | ✅ |
+| Formatting | ✅ | Optional | ✅ | ✅ |
+| Dead Code | ✅ | Optional | ✅ | ✅ |
+| Editor | ✅ | ✅ | ✅ | ✅ |
+| Security | ✅ | ✅ | ✅ | ✅ |
 
 ## See Also
 
@@ -185,3 +220,10 @@ Not all components apply to all project types:
 - `/configure:docs` - Documentation standards and generators
 - `/configure:github-pages` - GitHub Pages deployment
 - `/configure:cache-busting` - Cache-busting strategies
+- `/configure:tests` - Testing framework setup
+- `/configure:coverage` - Code coverage configuration
+- `/configure:linting` - Linter configuration
+- `/configure:formatting` - Code formatter setup
+- `/configure:dead-code` - Dead code detection
+- `/configure:editor` - Editor/IDE configuration
+- `/configure:security` - Security scanning

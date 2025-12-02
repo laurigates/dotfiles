@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Edit, Read, Glob, Grep, TodoWrite, mcp__github__create_pull_request
-argument-hint: [remote-branch] [--push] [--pr] [--draft] [--issue <num>] [--no-commit] [--range <start>..<end>]
+argument-hint: [remote-branch] [--push] [--direct] [--pr] [--draft] [--issue <num>] [--no-commit] [--range <start>..<end>]
 description: Complete workflow from changes to PR - analyze changes, create logical commits, push to remote feature branch, and optionally create pull request
 ---
 
@@ -19,9 +19,10 @@ description: Complete workflow from changes to PR - analyze changes, create logi
 
 Parse these parameters from the command (all optional):
 
-- `$1`: Remote branch name to push to (e.g., `feat/auth-oauth2`). If not provided, auto-generate from first commit type.
-- `--push`: Automatically push to remote feature branch after commits
-- `--pr` / `--pull-request`: Create pull request after pushing (implies --push)
+- `$1`: Remote branch name to push to (e.g., `feat/auth-oauth2`). If not provided, auto-generate from first commit type. Ignored with `--direct`.
+- `--push`: Automatically push after commits
+- `--direct`: Push current branch directly to same-named remote (e.g., `git push origin main`). Mutually exclusive with `--pr`.
+- `--pr` / `--pull-request`: Create pull request after pushing (implies --push, uses feature branch pattern)
 - `--draft`: Create as draft PR (requires --pr)
 - `--issue <num>`: Link to specific issue number (requires --pr)
 - `--no-commit`: Skip commit creation (assume commits already exist)
@@ -33,7 +34,7 @@ Execute this commit workflow using the **main-branch development pattern**:
 
 ### Step 1: Verify State
 
-1. **Ensure on main**: Verify working on main branch (warn if not)
+1. **Check branch**: If `--direct`, any branch is valid. Otherwise, verify on main branch (warn if not).
 2. **Check for changes**: Confirm there are staged or unstaged changes to commit (unless --no-commit)
 
 ### Step 2: Create Commits (unless --no-commit)
@@ -52,7 +53,14 @@ Execute this commit workflow using the **main-branch development pattern**:
 
 ### Step 3: Push to Remote (if --push or --pr)
 
-Use the main-branch development pattern:
+**If `--direct`**: Push current branch to same-named remote:
+
+```bash
+# Direct push to current branch
+git push origin HEAD
+```
+
+**Otherwise** (feature branch pattern for PRs):
 
 ```bash
 # Push main to remote feature branch
@@ -75,7 +83,8 @@ Use `mcp__github__create_pull_request` with:
 
 - After running pre-commit hooks, stage files modified by hooks using `git add -u`
 - Unstaged changes after pre-commit are expected formatter output - stage them and continue
-- Use `git push origin main:<remote-branch>` to push to remote feature branches
+- **Direct mode** (`--direct`): Use `git push origin HEAD` to push current branch directly
+- **Feature branch mode** (default): Use `git push origin main:<remote-branch>` for PR workflow
 - For multi-PR workflow, use `git push origin <start>^..<end>:<remote-branch>` for commit ranges
 - When encountering unexpected state, report findings and ask user how to proceed
 - Include all pre-commit automatic fixes in commits
