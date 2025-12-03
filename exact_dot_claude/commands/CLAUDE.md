@@ -87,6 +87,7 @@ Commands are organized by namespace for clarity and discoverability:
 | `/configure:sentry` | Validate Sentry error tracking | SDK installation, configuration |
 | `/configure:skaffold` | Validate K8s development setup | Port forwarding, profiles |
 | `/configure:tests` | Configure testing frameworks | Vitest, pytest, cargo-nextest |
+| `/configure:ux-testing` | Configure UX testing infrastructure | Playwright, accessibility, visual regression |
 | `/configure:feature-flags` | Configure feature flag infrastructure | OpenFeature SDK, GO Feature Flag, flagd |
 | `/configure:workflows` | Validate GitHub Actions workflows | Action versions, permissions |
 
