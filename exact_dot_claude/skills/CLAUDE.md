@@ -13,7 +13,7 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 ## Skills in This Repository
 
-This repository contains **72 specialized skills** organized by domain:
+This repository contains **74 specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -68,10 +68,12 @@ This repository contains **72 specialized skills** organized by domain:
 - **accessibility-implementation** - WCAG 2.1/2.2 compliance, ARIA patterns, keyboard navigation, focus management, testing
 - **design-tokens** - CSS custom property architecture, theme systems, design token organization, component integration
 
-### Infrastructure & DevOps (15 skills)
+### Infrastructure & DevOps (17 skills)
 - **container-development** - Docker, multi-stage builds, 12-factor apps, Skaffold
 - **kubernetes-operations** - K8s cluster management, debugging, kubectl mastery
 - **infrastructure-terraform** - Infrastructure as Code with HCL and state management
+- **openfeature** - Vendor-agnostic feature flag SDK, evaluation context, hooks, testing patterns
+- **go-feature-flag** - Self-hosted feature flags with file-based config, relay proxy, targeting rules
 - **mcp-management** - Intelligent MCP server installation and project-based configuration
 - **helm-chart-development** - Helm chart creation, templating, best practices
 - **helm-debugging** - Debug Helm deployments and template rendering

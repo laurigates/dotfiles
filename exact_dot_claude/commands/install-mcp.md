@@ -8,27 +8,30 @@ Install Model Context Protocol (MCP) servers for this project.
 **Available MCP Servers** (from dotfiles favorites registry):
 
 **Memory & Knowledge:**
+
 - `graphiti-memory` - Graph-based memory and knowledge management
 - `context7` - Upstash context management
 
-**Search & Code:**
-- `vectorcode` - Semantic code search using embeddings
-
 **Testing & Automation:**
+
 - `playwright` - Browser automation and testing
 
 **Version Control:**
+
 - `github` - GitHub API integration (issues, PRs, repos)
 
 **Productivity:**
+
 - `zen-mcp-server` - Zen productivity and focus tools
 - `podio-mcp` - Podio project management integration
 
 **Infrastructure & Monitoring:**
+
 - `argocd-mcp` - ArgoCD GitOps deployment management
 - `sentry` - Sentry error tracking and monitoring
 
 **AI Enhancement:**
+
 - `sequential-thinking` - Enhanced reasoning with sequential thinking
 
 **Steps**:
@@ -65,14 +68,13 @@ Install Model Context Protocol (MCP) servers for this project.
        "args": ["-y", "@getzep/graphiti-mcp-server"],
        "env": { "GRAPHITI_API_KEY": "${GRAPHITI_API_KEY}" }
      },
-     "vectorcode": {
-       "command": "uvx",
-       "args": ["vectorcode-mcp"],
-       "env": { "VECTORCODE_INDEX_PATH": "${HOME}/.vectorcode" }
-     },
      "zen-mcp-server": {
        "command": "uvx",
-       "args": ["--from", "git+https://github.com/BeehiveInnovations/zen-mcp-server.git", "zen-mcp-server"]
+       "args": [
+         "--from",
+         "git+https://github.com/BeehiveInnovations/zen-mcp-server.git",
+         "zen-mcp-server"
+       ]
      },
      "playwright": {
        "command": "bunx",
@@ -84,8 +86,11 @@ Install Model Context Protocol (MCP) servers for this project.
      },
      "github": {
        "command": "go",
-       "args": ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"],
-       "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" }
+       "args": [
+         "run",
+         "github.com/github/github-mcp-server/cmd/github-mcp-server@latest",
+         "stdio"
+       ]
      },
      "podio-mcp": {
        "command": "bunx",
@@ -118,12 +123,12 @@ Install Model Context Protocol (MCP) servers for this project.
    - Team projects → recommend committing (share MCP setup)
 
 7. **Report installation**:
+
    ```
    ✅ MCP servers configured!
 
    Added to .mcp.json:
    - github (requires GITHUB_TOKEN)
-   - vectorcode
    - playwright
 
    Next steps:
@@ -135,6 +140,7 @@ Install Model Context Protocol (MCP) servers for this project.
    ```
 
 **Important Notes**:
+
 - MCP servers are project-scoped (only available in this repo)
 - To install globally, manually edit `~/.claude/settings.json`
 - Server configurations are maintained in your dotfiles `.chezmoidata.toml`
