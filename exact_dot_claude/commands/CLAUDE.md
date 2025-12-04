@@ -81,6 +81,7 @@ Commands are organized by namespace for clarity and discoverability:
 | `/configure:formatting` | Configure code formatters | Biome, Prettier, Ruff format, rustfmt |
 | `/configure:github-pages` | Configure GitHub Pages deployment | Documentation hosting workflow |
 | `/configure:linting` | Configure linters | Biome, ESLint, Ruff, Clippy |
+| `/configure:makefile` | Configure Makefile with standard targets | Create/validate Makefile (test, build, clean, lint, etc.) |
 | `/configure:pre-commit` | Validate pre-commit hooks | Hook versions and configuration |
 | `/configure:release-please` | Validate release automation | Workflow and config validation |
 | `/configure:security` | Configure security scanning | Dependency audit, SAST, secrets |
