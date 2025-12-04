@@ -29,6 +29,7 @@ Orchestrator command that runs all `/configure:*` subcommands and provides a com
 Execute each configure command in check-only mode:
 
 ```
+/configure:makefile --check-only
 /configure:pre-commit --check-only
 /configure:release-please --check-only
 /configure:dockerfile --check-only
@@ -65,6 +66,7 @@ Component Summary:
 ┌─────────────────┬──────────┬─────────────────────────────────┐
 │ Component       │ Status   │ Notes                           │
 ├─────────────────┼──────────┼─────────────────────────────────┤
+│ Makefile        │ ✅ PASS  │ All targets present             │
 │ Pre-commit      │ ⚠️ WARN  │ 2 outdated hooks                │
 │ Release-please  │ ✅ PASS  │ Fully compliant                 │
 │ Dockerfile      │ ❌ FAIL  │ Missing healthcheck             │
