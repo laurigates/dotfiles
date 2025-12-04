@@ -149,21 +149,23 @@ jobs:
         if: failure()
         run: |
           # Create detailed error report
-          echo "## ❌ Workflow Failed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "The Claude Code workflow encountered an error." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Error Details" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run ID**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
-          echo "- **Triggered by**: \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Actor**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Timestamp**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Troubleshooting Steps" >> $GITHUB_STEP_SUMMARY
-          echo "1. Check the workflow logs for detailed error messages" >> $GITHUB_STEP_SUMMARY
-          echo "2. Verify CLAUDE_CODE_OAUTH_TOKEN secret is configured" >> $GITHUB_STEP_SUMMARY
-          echo "3. Ensure MCP servers in .mcp.json are properly configured" >> $GITHUB_STEP_SUMMARY
-          echo "4. Review recent changes that may have affected the workflow" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## ❌ Workflow Failed"
+            echo ""
+            echo "The Claude Code workflow encountered an error."
+            echo ""
+            echo "### Error Details"
+            echo "- **Run ID**: [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            echo "- **Triggered by**: \`${{ github.event_name }}\`"
+            echo "- **Actor**: @${{ github.actor }}"
+            echo "- **Timestamp**: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo ""
+            echo "### Troubleshooting Steps"
+            echo "1. Check the workflow logs for detailed error messages"
+            echo "2. Verify CLAUDE_CODE_OAUTH_TOKEN secret is configured"
+            echo "3. Ensure MCP servers in .mcp.json are properly configured"
+            echo "4. Review recent changes that may have affected the workflow"
+          } >> "$GITHUB_STEP_SUMMARY"
 
           # Create error notification file
           mkdir -p .github/errors

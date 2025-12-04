@@ -63,15 +63,20 @@ jobs:
       - name: Create SBOM summary
         if: always()
         run: |
-          echo "## 📦 Software Bill of Materials (SBOM)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "SBOM files have been generated for this build:" >> $GITHUB_STEP_SUMMARY
-          echo "- \`sbom-spdx.json\` (SPDX format)" >> $GITHUB_STEP_SUMMARY
-          echo "- \`sbom-cyclonedx.json\` (CycloneDX format)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 📦 Software Bill of Materials (SBOM)"
+            echo ""
+            echo "SBOM files have been generated for this build:"
+            echo "- \`sbom-spdx.json\` (SPDX format)"
+            echo "- \`sbom-cyclonedx.json\` (CycloneDX format)"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
           if [ -f "sbom-spdx.json" ]; then
-            echo "### Dependencies Summary" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            jq -r '.packages | length' sbom-spdx.json | xargs -I {} echo "Total packages: {}" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            {
+              echo "### Dependencies Summary"
+              echo "\`\`\`"
+              jq -r '.packages | length' sbom-spdx.json | xargs -I {} echo "Total packages: {}"
+              echo "\`\`\`"
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
