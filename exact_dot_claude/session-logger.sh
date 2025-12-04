@@ -26,7 +26,7 @@ USER_MESSAGES=0
 ASSISTANT_MESSAGES=0
 
 if [[ -n "$TRANSCRIPT_PATH" && -f "$TRANSCRIPT_PATH" ]]; then
-    TRANSCRIPT_LINES=$(wc -l < "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
+    TRANSCRIPT_LINES=$(wc -l < "$TRANSCRIPT_PATH" 2>/dev/null | tr -d ' ' || echo 0)
     # Count tool uses (approximate from JSON structure)
     TOOL_CALLS=$(grep -c '"tool_use"' "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
     # Count user and assistant messages
@@ -67,9 +67,6 @@ CSV_LINE="${TIMESTAMP},${SESSION_ID},${REASON},$(escape_csv "$PROJECT_NAME"),$(e
     flock -x 200
     echo "$CSV_LINE" >> "$CSV_FILE"
 ) 200>"${CSV_FILE}.lock"
-
-# Clean up lock file (optional, keeps things tidy)
-rm -f "${CSV_FILE}.lock"
 
 # Exit successfully
 exit 0
