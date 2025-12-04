@@ -11,6 +11,10 @@ history.jsonl
 statsig
 todos
 
+# Session logging runtime data
+session-logs.csv
+session-logs.csv.lock
+
 # Local settings override - not managed by chezmoi
 settings.local.json
 
