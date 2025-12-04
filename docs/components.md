@@ -17,7 +17,7 @@ This document outlines the key tools and components managed by these dotfiles an
         -   Command completions (potentially via `fzf-tab`).
     -   **[fzf-tab](https://github.com/Aloxaf/fzf-tab)** (Implied): Provides fzf-powered completions for various commands (e.g., `git`, `kubectl`).
     -   **[bat](https://github.com/sharkdp/bat)**: A `cat` clone with syntax highlighting, used for previewing files within `fzf`.
-    -   **[zkbd](https://github.com/mattmc3/zkbd)**: Utility to configure Zsh key bindings, particularly for terminal emulators.
+    -   **[zkbd](https://github.com/zsh-users/zsh/blob/master/Functions/Misc/zkbd)**: Built-in Zsh utility to configure key bindings for terminal emulators.
 
 ## Editor (Neovim)
 
@@ -36,7 +36,7 @@ Configuration is managed via Lua (`private_dot_config/nvim/lua/`).
     -   **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)** (Implied): Standard configurations for various language servers.
     -   **[Navic](https://github.com/SmiteshP/nvim-navic)**: Displays LSP symbol context (like current function/class) in the status line or winbar.
 -   **Completion & Snippets:**
-    -   **[Blink](https://github.com/otavioschwanck/blink.nvim)**: Provides completion menu enhancements, including icons via `mini.icons`.
+    -   **[Blink](https://github.com/saghen/blink.cmp)**: Performant completion plugin with LSP, snippets, and fuzzy matching.
     -   **[LuaSnip](https://github.com/L3MON4D3/LuaSnip)**: Snippet engine.
 -   **Formatting & Linting:**
     -   **[Conform](https://github.com/stevearc/conform.nvim)**: Manages and runs code formatters.
@@ -44,7 +44,7 @@ Configuration is managed via Lua (`private_dot_config/nvim/lua/`).
 -   **Git Integration:**
     -   **[Gitsigns](https://github.com/lewis6991/gitsigns.nvim)**: Shows Git status (added, modified, deleted lines) in the sign column and provides related actions (preview hunk, stage, reset, blame, etc.).
 -   **AI / LLM Integration:**
-    -   **[CodeCompanion.nvim](https://github.com/laurigates/codecompanion.nvim)** (Private Plugin): Integrates Large Language Models (LLMs) like Gemini into Neovim.
+    -   **[CodeCompanion.nvim](https://github.com/olimorris/codecompanion.nvim)**: AI-powered coding plugin supporting Anthropic, Copilot, Gemini, Ollama, OpenAI and other LLMs.
         -   **Strategies (`strategies.lua`)**: Defines different interaction modes (e.g., chat, workflow).
         -   **Tools**: Allows the LLM to invoke external commands securely:
             -   `git diff`, `git log`, `git status`, `git commit`, `git push`

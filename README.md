@@ -125,7 +125,7 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 **Why `exact_dot_claude/` instead of symlink?**
 The `.claude` directory uses chezmoi's `exact_` prefix for atomic updates and auto-cleanup of orphaned files. This prevents race conditions with running Claude processes and ensures predictable state. Run `chezmoi apply -v ~/.claude` after editing skills or commands.
 
-Full guide: See [.claude/docs/plugins-setup.md](./.claude/docs/plugins-setup.md)
+Full guide: See [PLUGINS.md](./PLUGINS.md) and [CLAUDE.md](./CLAUDE.md)
 
 ### Skills
 
@@ -137,13 +137,7 @@ Full guide: See [.claude/docs/plugins-setup.md](./.claude/docs/plugins-setup.md)
 - **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform, embedded-systems
 - **Agent/Memory**: agent-coordination-patterns, agent-file-coordination, multi-agent-workflows, graphiti-episode-storage, graphiti-learning-workflows, graphiti-memory-retrieval
 
-Skills activate automatically based on your work context. See [.claude/skills/CLAUDE.md](./.claude/skills/CLAUDE.md)
-
-### Configuration Files
-
-- [dot_claude/docs/claude-config.md](./dot_claude/docs/claude-config.md) - Settings.json explained
-- [dot_claude/docs/hooks-guide.md](./dot_claude/docs/hooks-guide.md) - Hook system reference
-- [dot_claude/settings.json.tmpl](./dot_claude/settings.json.tmpl) - Main configuration template
+Skills activate automatically based on your work context. See [exact_dot_claude/skills/CLAUDE.md](./exact_dot_claude/skills/CLAUDE.md)
 
 ## Further Documentation
 
