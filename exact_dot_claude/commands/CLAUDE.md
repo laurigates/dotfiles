@@ -21,7 +21,8 @@ Commands are organized by namespace for clarity and discoverability:
 ├── project-*.md             # Project-wide operations (root-level)
 ├── refactor.md              # Legacy refactor command (root-level)
 ├── code/                    # Code quality and review
-├── config/                  # Configuration management
+├── meta/                    # Claude Code introspection and meta-config
+├── configure/               # FVH infrastructure standards compliance
 ├── deploy/                  # Deployment operations
 ├── deps/                    # Dependency management
 ├── docs/                    # Documentation generation
@@ -58,12 +59,37 @@ Commands are organized by namespace for clarity and discoverability:
 | `/code:review` | Comprehensive code review with fixes | Quality analysis, security, performance |
 | `/code:refactor` | Refactor following SOLID principles | Improving code quality and design |
 
-### `config:` - Configuration Management
+### `meta:` - Claude Code Introspection
 
 | Command | Purpose | Usage |
 |---------|---------|-------|
-| `/config:assimilate` | Analyze and assimilate project configs | Understanding unfamiliar project setups |
-| `/config:audit` | Audit subagent configurations | Validating completeness and security |
+| `/meta:assimilate` | Analyze and assimilate project configs | Understanding unfamiliar project setups |
+| `/meta:audit` | Audit subagent configurations | Validating completeness and security |
+
+### `configure:` - FVH Infrastructure Standards
+
+| Command | Purpose | Usage |
+|---------|---------|-------|
+| `/configure:all` | Run all FVH compliance checks | Comprehensive infrastructure validation |
+| `/configure:status` | Quick read-only compliance overview | Pre-flight check without modifications |
+| `/configure:cache-busting` | Configure cache-busting strategies | Next.js and Vite asset hashing, CDN headers |
+| `/configure:coverage` | Configure code coverage | Thresholds, reporting, CI integration |
+| `/configure:dead-code` | Configure dead code detection | Knip, Vulture, cargo-machete |
+| `/configure:docs` | Configure documentation standards | TSDoc, JSDoc, pydoc, rustdoc with tests |
+| `/configure:dockerfile` | Validate container configuration | Multi-stage builds, healthchecks |
+| `/configure:editor` | Configure editor/IDE settings | .editorconfig, VS Code, extensions |
+| `/configure:formatting` | Configure code formatters | Biome, Prettier, Ruff format, rustfmt |
+| `/configure:github-pages` | Configure GitHub Pages deployment | Documentation hosting workflow |
+| `/configure:linting` | Configure linters | Biome, ESLint, Ruff, Clippy |
+| `/configure:pre-commit` | Validate pre-commit hooks | Hook versions and configuration |
+| `/configure:release-please` | Validate release automation | Workflow and config validation |
+| `/configure:security` | Configure security scanning | Dependency audit, SAST, secrets |
+| `/configure:sentry` | Validate Sentry error tracking | SDK installation, configuration |
+| `/configure:skaffold` | Validate K8s development setup | Port forwarding, profiles |
+| `/configure:tests` | Configure testing frameworks | Vitest, pytest, cargo-nextest |
+| `/configure:ux-testing` | Configure UX testing infrastructure | Playwright, accessibility, visual regression |
+| `/configure:feature-flags` | Configure feature flag infrastructure | OpenFeature SDK, GO Feature Flag, flagd |
+| `/configure:workflows` | Validate GitHub Actions workflows | Action versions, permissions |
 
 ### `deploy:` - Deployment Operations
 
@@ -83,7 +109,6 @@ Commands are organized by namespace for clarity and discoverability:
 | Command | Purpose | Usage |
 |---------|---------|-------|
 | `/docs:generate` | Update docs from code annotations | API references, README, changelog |
-| `/docs:build` | Set up documentation build system | Sphinx, MkDocs, Docusaurus, GitHub Pages |
 | `/docs:sync` | Sync documentation with codebase | Update counts, lists, cross-references |
 | `/docs:decommission` | Generate service decommission docs | Service shutdown documentation |
 | `/docs:knowledge-graph` | Build knowledge graph from Obsidian vault | Comprehensive documentation analysis |

@@ -144,7 +144,7 @@ Before committing plugin changes, validate the plugin structure:
    ```
 
 3. **Documentation Sync**: Ensure README lists match actual files
-   - Check that all commands listed in `plugins/dotfiles-toolkit/README.md` exist
+   - Check that all commands exist and are properly documented
    - Verify agent descriptions are accurate
    - Update command/agent counts if changed
 
@@ -186,8 +186,8 @@ If you've cloned this repository and want to use the plugin locally:
 
 ## More Information
 
-- **Plugin Details**: See [plugins/dotfiles-toolkit/README.md](./plugins/dotfiles-toolkit/README.md)
-- **All Plugins**: See [plugins/README.md](./plugins/README.md)
+- **Commands**: See [exact_dot_claude/commands/CLAUDE.md](./exact_dot_claude/commands/CLAUDE.md)
+- **Skills**: See [exact_dot_claude/skills/CLAUDE.md](./exact_dot_claude/skills/CLAUDE.md)
 - **Claude Code Plugins**: [Official Announcement](https://www.anthropic.com/news/claude-code-plugins)
 
 ## Migrating from Direct Configuration

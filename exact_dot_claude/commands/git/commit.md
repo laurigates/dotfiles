@@ -1,7 +1,7 @@
 ---
-allowed-tools: Task, TodoWrite
-argument-hint: [branch-name] [--base <branch>] [--direct] [--push] [--pr] [--draft] [--issue <num>] [--no-commit]
-description: Complete workflow from changes to PR - analyze changes, create logical commits, push, and optionally create pull request
+allowed-tools: Bash, Edit, Read, Glob, Grep, TodoWrite, mcp__github__create_pull_request
+argument-hint: [remote-branch] [--push] [--direct] [--pr] [--draft] [--issue <num>] [--no-commit] [--range <start>..<end>]
+description: Complete workflow from changes to PR - analyze changes, create logical commits, push to remote feature branch, and optionally create pull request
 ---
 
 ## Context
@@ -11,7 +11,7 @@ description: Complete workflow from changes to PR - analyze changes, create logi
 - Git status: !`git status --short`
 - Unstaged changes: !`git diff --stat`
 - Staged changes: !`git diff --cached --stat`
-- Recent commits: !`git log --oneline -5`
+- Recent commits: !`git log --oneline -10`
 - Remote status: !`git remote -v | head -1`
 - Upstream status: !`git status -sb | head -1`
 
@@ -19,41 +19,83 @@ description: Complete workflow from changes to PR - analyze changes, create logi
 
 Parse these parameters from the command (all optional):
 
-- `$1`: Custom branch name (if not provided, auto-generate from first commit type)
-- `--base <branch>`: Base branch to create from (default: main)
-- `--direct`: Commit directly to current branch (skip branch creation)
-- `--push`: Automatically push branch after commits
-- `--pr` / `--pull-request`: Create pull request after pushing (implies --push)
+- `$1`: Remote branch name to push to (e.g., `feat/auth-oauth2`). If not provided, auto-generate from first commit type. Ignored with `--direct`.
+- `--push`: Automatically push after commits
+- `--direct`: Push current branch directly to same-named remote (e.g., `git push origin main`). Mutually exclusive with `--pr`.
+- `--pr` / `--pull-request`: Create pull request after pushing (implies --push, uses feature branch pattern)
 - `--draft`: Create as draft PR (requires --pr)
 - `--issue <num>`: Link to specific issue number (requires --pr)
 - `--no-commit`: Skip commit creation (assume commits already exist)
-- `--no-split`: Force single-PR mode even with multiple logical groups (disables auto-splitting)
+- `--range <start>..<end>`: Push specific commit range instead of all commits on main
 
 ## Your task
 
-**Delegate this task to the `git-operations` agent.**
+Execute this commit workflow using the **main-branch development pattern**:
 
-Use the Task tool with `subagent_type: git-operations` to handle this commit workflow. Pass all the context gathered above and the parsed parameters to the agent.
+### Step 1: Verify State
 
-The git-operations agent should:
+1. **Check branch**: If `--direct`, any branch is valid. Otherwise, verify on main branch (warn if not).
+2. **Check for changes**: Confirm there are staged or unstaged changes to commit (unless --no-commit)
 
-1. **Check current state** and determine if branch creation is needed
-2. **Create branch** (unless --direct flag)
-3. **Analyze changes** and detect if splitting into multiple PRs is appropriate
-4. **Group related changes** into logical commits
-5. **Run pre-commit hooks** if configured
-6. **Push** if requested (--push or --pr flag)
-7. **Create PR** if requested (--pr flag) with proper title, body, and issue linking
+### Step 2: Create Commits (unless --no-commit)
 
-Provide the agent with:
-- All context from the section above
-- The parsed parameters
-- Any specific branch naming conventions or commit message preferences
-- Whether to use multi-PR flow (auto-split) or single-PR flow
+1. **Analyze changes** and detect if splitting into multiple PRs is appropriate
+2. **Group related changes** into logical commits on main
+3. **Stage changes**: Use `git add -u` for modified files, `git add <file>` for new files
+4. **Run pre-commit hooks** if configured: `pre-commit run`
+5. **Handle pre-commit modifications**: Stage any files modified by hooks with `git add -u`
+6. **Create commit** with conventional commit message format
+7. **Include GitHub keywords** when changes relate to issues:
+   - Use `Fixes #N` for bug fixes that close an issue
+   - Use `Closes #N` for features that complete an issue
+   - Use `Resolves #N` as alternative to close issues
+   - Use `Refs #N` to reference without closing
 
-The agent has expertise in:
-- Git workflows and branch management
-- Conventional commit formatting
-- GitHub PR creation and linking
-- Pre-commit hook integration
-- Multi-PR splitting strategies
+### Step 3: Push to Remote (if --push or --pr)
+
+**If `--direct`**: Push current branch to same-named remote:
+
+```bash
+# Direct push to current branch
+git push origin HEAD
+```
+
+**Otherwise** (feature branch pattern for PRs):
+
+```bash
+# Push main to remote feature branch
+git push origin main:<remote-branch>
+
+# Or push commit range for multi-PR workflow
+git push origin <start>^..<end>:<remote-branch>
+```
+
+### Step 4: Create PR (if --pr)
+
+Use `mcp__github__create_pull_request` with:
+- `head`: The remote branch name (e.g., `feat/auth-oauth2`)
+- `base`: `main`
+- `title`: Derived from commit message
+- `body`: Include summary and issue link if --issue provided
+- `draft`: true if --draft flag set
+
+## Workflow Guidance
+
+- After running pre-commit hooks, stage files modified by hooks using `git add -u`
+- Unstaged changes after pre-commit are expected formatter output - stage them and continue
+- **Direct mode** (`--direct`): Use `git push origin HEAD` to push current branch directly
+- **Feature branch mode** (default): Use `git push origin main:<remote-branch>` for PR workflow
+- For multi-PR workflow, use `git push origin <start>^..<end>:<remote-branch>` for commit ranges
+- When encountering unexpected state, report findings and ask user how to proceed
+- Include all pre-commit automatic fixes in commits
+- **GitHub issue linking**: When `--issue` is provided or context suggests issue relevance:
+  - Use GitHub keywords (`Fixes`, `Closes`, `Resolves`) in commit body to auto-close issues
+  - Keywords are case-insensitive and work with optional colon: `Fixes: #123`
+  - For cross-repo: `Fixes org/repo#123`
+  - Multiple issues: `Fixes #1, fixes #2, fixes #3`
+  - Keywords only auto-close when merged to default branch
+
+## See Also
+
+- **git-branch-pr-workflow** skill for detailed patterns
+- **git-commit-workflow** skill for commit message conventions

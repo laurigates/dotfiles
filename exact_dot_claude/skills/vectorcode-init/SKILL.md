@@ -166,6 +166,6 @@ chmod +x .git/hooks/post-checkout
 - **Shell Expert** - Shell scripting and command execution
 
 ## References
-- [VectorCode Documentation](https://github.com/vectorcode/vectorcode)
+- [VectorCode Documentation](https://github.com/davidyz/vectorcode)
 - [VectorCode MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/vectorcode)
 - `.claude/skills/vectorcode-init/patterns.md` - Common pattern reference

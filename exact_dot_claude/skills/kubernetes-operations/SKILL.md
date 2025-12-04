@@ -96,6 +96,21 @@ kubectl state show <resource>
 
 ## Best Practices
 
+**Context Safety (CRITICAL)**
+- **Always specify `--context`** explicitly in every kubectl command
+- Never rely on the current context - it may have been changed by another process
+- Use `kubectl --context=<context-name> get pods` format for all operations
+- This prevents accidental operations on the wrong cluster (e.g., running production commands against staging)
+
+```bash
+# CORRECT: Explicit context
+kubectl --context=gke_myproject_us-central1_prod get pods
+kubectl --context=staging-cluster apply -f deployment.yaml
+
+# WRONG: Relying on current context
+kubectl get pods  # Which cluster is this targeting?
+```
+
 **Resource Definitions**
 - Use declarative YAML manifests
 - Implement proper labels and selectors

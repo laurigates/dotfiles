@@ -427,7 +427,7 @@ close_on_child_death no
 #: to yes means that any background processes still using the terminal
 #: can fail silently because their stdout/stderr/stdin no longer work.
 
-enable_focus_events no
+enable_focus_events yes
 
 #: Disable focus event escape sequences. These sequences (\e[I for focus
 #: in, \e[O for focus out) are sent when switching tabs/windows. Some
@@ -440,7 +440,7 @@ allow_remote_control yes
 #: programs can control all aspects of kitty, including sending text
 #: to kitty windows, opening new windows, closing windows, reading the
 #: content of windows, etc. Note that this even works over ssh
-#: connections. Enabled for Claude Code integration and dynamic tab titles.
+#: connections.
 
 # env
 

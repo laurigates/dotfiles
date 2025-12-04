@@ -1,0 +1,146 @@
+---
+description: Check and configure pre-commit hooks for FVH standards
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+argument-hint: "[--check-only] [--fix] [--type <frontend|infrastructure|python>]"
+---
+
+# /configure:pre-commit
+
+Check and configure pre-commit hooks against FVH (Forum Virium Helsinki) standards.
+
+## Context
+
+This command validates `.pre-commit-config.yaml` against FVH standards and optionally applies fixes.
+
+**Skills referenced**: `fvh-pre-commit`
+
+## Workflow
+
+### Phase 1: Project Type Detection
+
+Determine project type to select appropriate standards:
+
+1. Check for `.fvh-standards.yaml` with `project_type` field
+2. If not found, auto-detect:
+   - **infrastructure**: Has `terraform/`, `helm/`, `argocd/`, or `*.tf` files
+   - **frontend**: Has `package.json` with vue/react dependencies
+   - **python**: Has `pyproject.toml` or `requirements.txt`
+3. Allow override via `--type` flag
+
+### Phase 2: Configuration Detection
+
+1. Check if `.pre-commit-config.yaml` exists
+2. If missing: Report FAIL status, offer to create from template
+3. If exists: Read and parse configuration
+
+### Phase 3: Compliance Analysis
+
+Compare existing configuration against FVH standards (from `fvh-pre-commit` skill):
+
+**Required Base Hooks (All Projects):**
+- `pre-commit-hooks` v5.0.0+ with: trailing-whitespace, end-of-file-fixer, check-yaml, check-json, check-merge-conflict, check-added-large-files
+- `conventional-pre-commit` v4.3.0+ with commit-msg stage
+
+**Frontend-specific:**
+- `prettier` v4.0.0-alpha.8+
+- `eslint` (mirrors) v9.17.0+
+- `helmlint` (if helm/ directory exists)
+
+**Infrastructure-specific:**
+- `tflint`, `helmlint` (gruntwork v0.1.29+)
+- `actionlint` v1.7.7+
+- `helm-docs` v1.14.2+
+- `detect-secrets` v1.5.0+
+
+**Python-specific:**
+- `ruff-pre-commit` v0.8.4+ (ruff, ruff-format)
+- `detect-secrets` v1.5.0+
+
+### Phase 4: Report Generation
+
+Generate compliance report:
+
+```
+FVH Pre-commit Compliance Report
+================================
+Project Type: frontend (detected)
+Config File: .pre-commit-config.yaml (found)
+
+Hook Status:
+  pre-commit-hooks     v5.0.0   ✅ PASS
+  conventional-pre-commit v3.6.0   ⚠️ WARN (standard: v4.3.0)
+  prettier             v4.0.0-alpha.8  ✅ PASS
+  eslint               -        ❌ FAIL (missing)
+  helmlint             v0.1.23  ⚠️ WARN (standard: v0.1.29)
+
+Required Hooks Missing:
+  - eslint with eslint-plugin-vue
+
+Outdated Hooks:
+  - conventional-pre-commit: v3.6.0 → v4.3.0
+  - gruntwork/helmlint: v0.1.23 → v0.1.29
+
+Overall: 2 issues found
+```
+
+### Phase 5: Configuration (If Requested)
+
+If `--fix` flag or user confirms:
+
+1. **Missing config file**: Create from FVH template for detected project type
+2. **Missing hooks**: Add required hooks with standard versions
+3. **Outdated versions**: Update `rev:` values to standard versions
+4. **Missing hook types**: Add `default_install_hook_types` with `pre-commit` and `commit-msg`
+
+After modification:
+- Run `pre-commit install --install-hooks` to install hooks
+- Update `.fvh-standards.yaml` with compliance status
+
+### Phase 6: Standards Tracking
+
+Update or create `.fvh-standards.yaml`:
+
+```yaml
+standards_version: "2025.1"
+project_type: "frontend"
+last_configured: "2025-11-28"
+components:
+  pre-commit: "2025.1"
+```
+
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| `--check-only` | Report status without offering fixes |
+| `--fix` | Apply all fixes automatically without prompting |
+| `--type <type>` | Override project type detection (frontend, infrastructure, python) |
+
+## Examples
+
+```bash
+# Check compliance and offer fixes
+/configure:pre-commit
+
+# Check only, no modifications
+/configure:pre-commit --check-only
+
+# Auto-fix all issues
+/configure:pre-commit --fix
+
+# Force infrastructure type
+/configure:pre-commit --type infrastructure
+```
+
+## Error Handling
+
+- **No git repository**: Warn but continue (pre-commit still useful)
+- **Invalid YAML**: Report parse error, offer to replace with template
+- **Unknown hook repos**: Skip (don't remove custom hooks)
+- **Permission errors**: Report and suggest manual fix
+
+## See Also
+
+- `/configure:all` - Run all FVH compliance checks
+- `/configure:status` - Quick compliance overview
+- `fvh-pre-commit` skill - Standard definitions

@@ -1,0 +1,55 @@
+name: Organize GitHub Stars
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      process_all:
+        description: 'Process all stars (ignore state)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  organize-stars:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run star organizer
+        env:
+          GH_TOKEN: ${{ secrets.GH_STAR_TOKEN }}
+          PROCESS_ALL: ${{ github.event.inputs.process_all || 'false' }}
+        run: |
+          bash .github/scripts/organize-stars.sh
+
+      - name: Commit state changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet .github/star-organizer-state.json 2>/dev/null; then
+            echo "No state changes to commit"
+          else
+            git add .github/star-organizer-state.json
+            git commit -m "chore(stars): update organization state [skip ci]"
+            git push
+          fi
+
+      - name: Upload processing log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: star-organizer-log-${{ github.run_number }}
+          path: /tmp/star-organizer.log
+          retention-days: 30
+          if-no-files-found: ignore

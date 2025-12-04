@@ -615,4 +615,4 @@ Search: "bug updated:>2024-11-01 repo:org/repo"
 - [GitHub Search Syntax](https://docs.github.com/en/search-github/searching-on-github/searching-issues-and-pull-requests)
 - [GitHub Search Qualifiers](https://docs.github.com/en/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax)
 - [GitHub Issues Documentation](https://docs.github.com/en/issues)
-- [GitHub MCP Server Tools](https://github.com/modelcontextprotocol/servers/tree/main/src/github)
+- [GitHub MCP Server Tools](https://github.com/modelcontextprotocol/servers-archived/tree/main/src/github)

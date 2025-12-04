@@ -4,11 +4,73 @@ Comprehensive reference for Kubernetes debugging, troubleshooting, Helm workflow
 
 ## Table of Contents
 
+- [Context Management](#context-management)
 - [Complete kubectl Command Reference](#complete-kubectl-command-reference)
 - [Troubleshooting by Issue Type](#troubleshooting-by-issue-type)
 - [Helm Workflows](#helm-workflows)
 - [Advanced Operations](#advanced-operations)
 - [Cluster Administration](#cluster-administration)
+
+---
+
+## Context Management
+
+### Critical Safety Rule
+
+**Always specify `--context` explicitly** in every kubectl command. Never rely on the current context.
+
+This prevents accidental operations on the wrong cluster, which can lead to:
+- Production outages from test deployments
+- Data loss from delete operations
+- Security incidents from misapplied configurations
+
+### Listing Available Contexts
+
+```bash
+# List all contexts
+kubectl config get-contexts
+
+# Show current context (informational only - don't rely on this)
+kubectl config current-context
+
+# Get detailed cluster info for a context
+kubectl --context=my-context cluster-info
+```
+
+### Command Pattern
+
+Always use this pattern:
+
+```bash
+# Format: kubectl --context=<context-name> <command>
+kubectl --context=gke_myproject_us-central1_prod get pods
+kubectl --context=staging-cluster apply -f deployment.yaml
+kubectl --context=local-dev delete pod test-pod
+```
+
+### Shell Helpers (Optional)
+
+If you frequently work with specific clusters, create aliases:
+
+```bash
+# Fish shell
+alias kprod='kubectl --context=production'
+alias kstage='kubectl --context=staging'
+
+# Then use:
+kprod get pods
+kstage apply -f manifest.yaml
+```
+
+### Why Not Use `kubectl config use-context`?
+
+Switching context with `use-context` creates hidden state that can lead to errors:
+- Another terminal may change the context while you're working
+- Scripts may assume a different context
+- Automation tools may interfere
+- Long-running shells may have stale context
+
+Explicit `--context` eliminates this entire class of errors.
 
 ---
 

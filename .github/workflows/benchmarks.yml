@@ -29,7 +29,7 @@ jobs:
           brew install chezmoi neovim zsh hyperfine
 
       - name: Setup mise
-        uses: nick-fields/setup-mise@v0
+        uses: jdx/mise-action@v2
 
       - name: Benchmark chezmoi apply
         id: chezmoi-bench

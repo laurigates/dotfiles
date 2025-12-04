@@ -16,6 +16,8 @@ Expert guidance for commit message conventions, staging practices, and commit be
 - **Communication Style**: Humble, factual, concise commit messages
 - **Pre-commit Integration**: Run checks before committing
 
+**Note:** Commits are made on main branch and pushed to remote feature branches for PRs. See **git-branch-pr-workflow** skill for the main-branch development pattern.
+
 ## Conventional Commit Format
 
 ### Standard Format
@@ -77,15 +79,16 @@ Fixes #123, #124"
 - Use imperative mood ("add feature" not "added feature")
 - Keep first line under 72 characters
 - Be concise and factual
-- Reference issues with "Fixes #123" or "Closes #456"
+- Use GitHub keywords to auto-close issues: `Fixes #123`, `Closes #456`, `Resolves #789`
 - Use lowercase for type and scope
 - Be humble and modest
+- Reference related issues even without closing: `Refs #234`
 
 **DON'T:**
 - Use past tense ("added" or "fixed")
 - Include unnecessary details in subject line
 - Use vague descriptions ("update stuff", "fix bug")
-- Forget to reference related issues
+- Forget to reference related issues when applicable
 
 ### Scope Guidelines
 
@@ -132,18 +135,31 @@ git commit -m "feat(auth): add OAuth2 support"
 
 ### Pre-commit Hook Integration
 
+Pre-commit hooks often AUTO-MODIFY files (formatters, linters with autofix). This is expected behavior.
+
 ```bash
-# Run pre-commit checks before staging
+# 1. Run pre-commit checks
 pre-commit run --all-files --show-diff-on-failure
 
-# Stage files after fixes
-git add fixed-file.ts
-git status
+# 2. Check if pre-commit modified any files
+git status --porcelain
+# M  src/file.ts     <- Modified by pre-commit (formatting)
 
-# Show staged changes before commit
-git diff --cached --name-only
-git commit -m "style(code): apply linter fixes"
+# 3. Stage modified tracked files (original + pre-commit modifications)
+git add -u
+
+# 4. Verify pre-commit passes now
+pre-commit run --all-files  # Should exit 0
+
+# 5. Commit with all changes
+git commit -m "feat(feature): add feature with formatting fixes"
 ```
+
+**Understanding Pre-commit Exit Codes:**
+- Exit 0: All hooks passed
+- Exit 1: Hook failed OR files were modified (re-stage and re-run)
+
+Pre-commit file modifications are normal - stage them and proceed with the commit.
 
 ### Explicit Staging Best Practices
 
@@ -323,25 +339,56 @@ feat(auth): add OAuth2 support
 # Use blank line between subject and body
 ```
 
-### Issue References
+### GitHub Issue Linking Keywords
+
+GitHub recognizes these keywords to automatically link and close issues when commits are merged to the default branch:
+
+| Keyword | Variants | Effect |
+|---------|----------|--------|
+| close | close, closes, closed | Closes the issue |
+| fix | fix, fixes, fixed | Closes the issue |
+| resolve | resolve, resolves, resolved | Closes the issue |
+
+**Syntax patterns:**
+- **Same repository:** `KEYWORD #ISSUE-NUMBER` (e.g., `Fixes #123`)
+- **Cross-repository:** `KEYWORD OWNER/REPO#ISSUE-NUMBER` (e.g., `Fixes octo-org/octo-repo#100`)
+- **Multiple issues:** Use full syntax for each (e.g., `Fixes #123, fixes #456`)
+
+**Formatting flexibility:**
+- Case insensitive: `FIXES #123`, `Fixes #123`, `fixes #123`
+- Optional colon: `Fixes: #123`, `Fixes #123`
+
+**Important:** Keywords only work when merged to the **default branch**. PRs targeting other branches won't auto-close issues.
+
+### Issue Reference Examples
 
 ```bash
-# Link to issues
+# Fix with auto-close (single issue)
 git commit -m "fix(api): handle timeout
 
 Fixes #123"
 
-# Multiple issues
+# Feature linked to multiple issues
 git commit -m "feat(ui): redesign dashboard
 
 Implements designs from #456
-Closes #457, #458"
+Closes #457, closes #458"
 
-# Breaking changes
+# Cross-repository reference
+git commit -m "fix(shared): resolve validation bug
+
+Fixes org/shared-lib#42"
+
+# Breaking change with migration reference
 git commit -m "feat(api)!: change authentication
 
 BREAKING CHANGE: API key format changed.
 See migration guide: #789"
+
+# Reference without closing (use "Refs" or "Related to")
+git commit -m "refactor(auth): extract token validation
+
+Refs #234"
 ```
 
 ## Troubleshooting

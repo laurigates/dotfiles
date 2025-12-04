@@ -1,5 +1,5 @@
 ---
-allowed-tools: Task, TodoWrite
+allowed-tools: Bash, Edit, Read, Glob, Grep, Write, TodoWrite, mcp__github__create_pull_request, mcp__github__list_issues
 description: Process multiple GitHub issues in sequence
 argument-hint: [--filter <label>] [--limit <n>]
 ---
@@ -19,35 +19,51 @@ Parse these parameters from the command (all optional):
 
 ## Your task
 
-**Delegate this task to the `git-operations` agent.**
+Process multiple GitHub issues in sequence using the **main-branch development pattern**.
 
-Use the Task tool with `subagent_type: git-operations` to process multiple GitHub issues in sequence. Pass all the context gathered above and the parsed parameters to the agent.
-
-The git-operations agent should:
+### Step 1: Prepare
 
 1. **Check for unmerged PRs** and prompt user if found
 2. **Filter issues** based on --filter label if provided
 3. **Limit issue count** based on --limit if provided
-4. **For each open issue**:
-   - Switch to main and pull: `git switch main && git pull`
-   - Create feature branch: `git switch -c fix-issue-<number>`
-   - Analyze issue requirements
-   - Write failing tests (RED phase)
-   - Implement fix until tests pass (GREEN phase)
-   - Run pre-commit checks
-   - Commit with `Fixes #<number>` in message
-   - Push and create PR via GitHub
-   - Switch back to main for next issue
+4. **Create todo list** with all issues to process
 
-Provide the agent with:
-- All context from the section above
-- The parsed parameters (--filter, --limit)
-- The project's testing framework
-- Any coding standards or conventions
+### Step 2: For Each Issue
 
-The agent has expertise in:
-- Bulk issue processing workflows
-- TDD methodology
-- Git branch management
-- GitHub API operations
-- Sequential task orchestration
+Repeat for each open issue:
+
+1. **Pull latest main**: `git pull origin main`
+2. **Analyze issue requirements** from issue details
+3. **Write failing tests** (RED phase)
+4. **Implement fix** until tests pass (GREEN phase)
+5. **Run pre-commit checks** if configured
+6. **Commit on main** with `Fixes #<number>` in message
+7. **Push to remote issue branch**: `git push origin main:fix/issue-<number>`
+8. **Create PR** via mcp__github__create_pull_request:
+   - `head`: `fix/issue-<number>`
+   - `base`: `main`
+   - `body`: Include `Fixes #<number>`
+9. **Continue on main** for next issue
+
+### Step 3: Summary
+
+Report:
+- Issues processed
+- PRs created
+- Any issues that couldn't be resolved
+
+## Main-Branch Development Pattern
+
+```bash
+# All work stays on main - each issue gets its own remote branch
+git pull origin main
+# ... fix issue, commit on main ...
+git push origin main:fix/issue-123    # Push to remote feature branch
+# Create PR: head=fix/issue-123, base=main
+# Continue on main for next issue
+```
+
+## See Also
+
+- **/git:issue** for single issue processing
+- **git-branch-pr-workflow** skill for workflow patterns

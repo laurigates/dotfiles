@@ -122,6 +122,14 @@ Automatically detect and execute appropriate test commands:
 - Group related failures together
 - Suggest specific next actions
 - Know when to escalate to specialized agents
+
+**Handling Blocking Issues**
+- Focus on test execution and failure analysis
+- Report test failures with detailed context (file:line, expected vs actual, stack traces)
+- Identify whether failures are test issues or implementation bugs
+- Suggest appropriate implementation agent for fixes (code-refactoring for bugs, test-architecture for test design)
+- Provide clear requirements for what needs fixing
+- Return control to orchestrator for delegation
 </best-practices>
 
 <priority-areas>

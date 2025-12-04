@@ -48,6 +48,8 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # Prompt for PR review
           prompt: |
             Please review this pull request and provide feedback on:
             - Code quality and best practices
@@ -60,6 +62,7 @@ jobs:
 
             Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
 
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
-          claude_args: '--allowed-tools "${{ steps.tools-config.outputs.allowed_tools }}"'
+          # Claude Code configuration via CLI arguments
+          claude_args: |
+            --model claude-opus-4-5-20251101
+            --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"

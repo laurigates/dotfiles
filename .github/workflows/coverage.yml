@@ -44,31 +44,37 @@ jobs:
           PASSED=0
           FAILED=0
 
-          echo "## 🧪 Shell Script Analysis" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Script | Status | Issues |" >> $GITHUB_STEP_SUMMARY
-          echo "|--------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🧪 Shell Script Analysis"
+            echo ""
+            echo "| Script | Status | Issues |"
+            echo "|--------|--------|--------|"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          for script in $SHELL_SCRIPTS; do
+          while IFS= read -r script; do
             if shellcheck -f gcc "$script" 2>&1 | tee shellcheck.log; then
-              echo "| \`$script\` | ✅ Pass | 0 |" >> $GITHUB_STEP_SUMMARY
+              echo "| \`$script\` | ✅ Pass | 0 |" >> "$GITHUB_STEP_SUMMARY"
               PASSED=$((PASSED + 1))
             else
               ISSUES=$(grep -c ": error:" shellcheck.log || echo "0")
-              echo "| \`$script\` | ❌ Fail | $ISSUES |" >> $GITHUB_STEP_SUMMARY
+              echo "| \`$script\` | ❌ Fail | $ISSUES |" >> "$GITHUB_STEP_SUMMARY"
               FAILED=$((FAILED + 1))
             fi
-          done
+          done <<< "$SHELL_SCRIPTS"
 
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Scripts**: $TOTAL_SCRIPTS" >> $GITHUB_STEP_SUMMARY
-          echo "- **Passed**: $PASSED ($(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL_SCRIPTS)*100}")%)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Failed**: $FAILED ($(awk "BEGIN {printf \"%.1f\", ($FAILED/$TOTAL_SCRIPTS)*100}")%)" >> $GITHUB_STEP_SUMMARY
+          {
+            echo ""
+            echo "### Summary"
+            echo "- **Total Scripts**: $TOTAL_SCRIPTS"
+            echo "- **Passed**: $PASSED ($(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL_SCRIPTS)*100}")%)"
+            echo "- **Failed**: $FAILED ($(awk "BEGIN {printf \"%.1f\", ($FAILED/$TOTAL_SCRIPTS)*100}")%)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "total_scripts=$TOTAL_SCRIPTS" >> $GITHUB_OUTPUT
-          echo "passed=$PASSED" >> $GITHUB_OUTPUT
-          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          {
+            echo "total_scripts=$TOTAL_SCRIPTS"
+            echo "passed=$PASSED"
+            echo "failed=$FAILED"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Generate coverage badge
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -92,8 +98,10 @@ jobs:
           fi
 
           echo "Coverage: $COVERAGE% (Color: $COLOR)"
-          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
-          echo "BADGE_COLOR=$COLOR" >> $GITHUB_ENV
+          {
+            echo "COVERAGE=$COVERAGE"
+            echo "BADGE_COLOR=$COLOR"
+          } >> "$GITHUB_ENV"
 
       - name: Create coverage report artifact
         if: always()

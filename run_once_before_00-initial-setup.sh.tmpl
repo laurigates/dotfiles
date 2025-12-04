@@ -32,13 +32,23 @@ git config --global color.ui auto
 git config --global log.date iso
 git config --global help.autocorrect 20
 
-# Install pre-commit hooks
-echo "Installing pre-commit hooks..."
-(cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+# Install pre-commit hooks (if pre-commit is available)
+if command -v pre-commit &> /dev/null; then
+    echo "Installing pre-commit hooks..."
+    (cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+else
+    echo "Skipping pre-commit hooks installation (pre-commit not installed yet)"
+    echo "Run 'chezmoi apply' again after installing pre-commit to set up hooks"
+fi
 
-# Install neovim plugins
-echo "Installing neovim plugins..."
-nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
+# Install neovim plugins (if nvim is available)
+if command -v nvim &> /dev/null; then
+    echo "Installing neovim plugins..."
+    nvim --headless "+Lazy! sync" "+MasonUpdate" +qa
+else
+    echo "Skipping neovim plugin installation (nvim not installed yet)"
+    echo "Run 'nvim' after installation to trigger lazy.nvim plugin sync"
+fi
 
 {{- if eq .chezmoi.os "darwin" }}
 echo "Running macOS specific setup..."

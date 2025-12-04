@@ -1,6 +1,6 @@
 ---
 name: Git Branch PR Workflow
-description: Branch management, pull request workflows, and GitHub integration. Modern Git commands (switch, restore), branch naming conventions, linear history with rebase, trunk-based development, and GitHub MCP tools for PRs.
+description: Branch management, pull request workflows, and GitHub integration. Main-branch development pattern (push main to remote feature branches), modern Git commands (switch, restore), branch naming conventions, linear history, and GitHub MCP tools for PRs.
 allowed-tools: Bash, Read, mcp__github__create_pull_request, mcp__github__list_pull_requests, mcp__github__update_pull_request
 ---
 
@@ -10,11 +10,66 @@ Expert guidance for branch management, pull request workflows, and GitHub integr
 
 ## Core Expertise
 
+- **Main-Branch Development**: Work on main locally, push to remote feature branches for PRs
 - **Modern Git Commands**: Use `git switch` and `git restore` instead of checkout
 - **Branch Naming**: Structured conventions (feat/, fix/, chore/, hotfix/)
 - **Linear History**: Rebase-first workflow, squash merging, clean history
-- **Trunk-Based Development**: Short-lived feature branches with frequent integration
 - **GitHub MCP Integration**: Use mcp__github__* tools instead of gh CLI
+
+## Main-Branch Development (Preferred)
+
+Develop directly on main, push to remote feature branches for PRs. This eliminates local branch management overhead.
+
+### Basic Workflow
+
+```bash
+# All work happens on main
+git switch main
+git pull origin main
+
+# Make changes, commit on main
+git add file.ts
+git commit -m "feat(auth): add OAuth2 support"
+
+# Push to remote feature branch (creates PR target)
+git push origin main:feat/auth-oauth2
+
+# Create PR using GitHub MCP (head: feat/auth-oauth2, base: main)
+```
+
+### Multi-PR Workflow (Sequential Commits)
+
+When you have commits for multiple PRs on main, push specific commit ranges to different remote branches:
+
+```bash
+# Commits on main:
+# abc1234 feat(auth): add OAuth2 support       <- PR #1
+# def5678 feat(auth): add token refresh        <- PR #1
+# ghi9012 fix(api): handle timeout edge case   <- PR #2
+
+# Push first 2 commits to auth feature branch
+git push origin abc1234^..def5678:feat/auth-oauth2
+
+# Push remaining commit to fix branch
+git push origin ghi9012^..ghi9012:fix/api-timeout
+
+# Alternative: push from a specific commit to HEAD
+git push origin def5678..HEAD:fix/api-timeout
+```
+
+**Commit range patterns:**
+- `git push origin <start>^..<end>:<remote-branch>` - Push commit range (inclusive)
+- `git push origin <commit>..<commit>:<remote-branch>` - Push range (exclusive start)
+- `git push origin <commit>..HEAD:<remote-branch>` - Push from commit to current HEAD
+- `git push origin main:<remote-branch>` - Push entire main to remote branch
+
+### Benefits
+
+- **No local branch juggling** - Always on main
+- **Always on latest main** - No branch drift
+- **Clean local state** - No stale branches to clean up
+- **Remote branches are ephemeral** - Deleted after PR merge
+- **Simpler mental model** - One local branch, many remote targets
 
 ## Modern Git Commands (2025)
 
@@ -102,7 +157,9 @@ git switch -c hotfix/critical-bug-fix
 
 ### Trunk-Based Development
 
-Short-lived feature branches with frequent integration:
+**Preferred: Main-branch development** (see above) - no local feature branches needed.
+
+**Alternative: Local feature branches** for complex multi-day work:
 
 ```bash
 # Feature branch lifecycle (max 2 days)
@@ -122,6 +179,11 @@ git rebase -i main
 # Push and create PR
 git push -u origin feat/user-auth
 ```
+
+Use local branches only when:
+- Multi-day complex features requiring isolation
+- Experimental work that might be abandoned
+- Need to switch contexts frequently between unrelated work
 
 ### Squash Merge Strategy
 
@@ -299,25 +361,23 @@ git fetch origin
 git reset --hard origin/feat/branch-name
 ```
 
-### Accidentally Committed to Main
+### Committed to Main (Expected Workflow)
 
-Use the safe, non-destructive approach that preserves all commits:
+With main-branch development, committing to main is the expected workflow:
 
 ```bash
-# Create branch from current state (includes the commits)
-git switch -c feat/accidental-commit
+# Commits are already on main - just push to remote feature branch
+git push origin main:feat/new-feature
 
-# Push the branch
-git push -u origin feat/accidental-commit
+# Create PR using GitHub MCP (head: feat/new-feature, base: main)
 
-# When the PR is merged to main on GitHub, sync local main:
-git switch main
-git pull  # Fast-forward merge handles this cleanly
+# After PR is merged, local main is behind - sync it:
+git pull origin main  # Fast-forward merge handles this cleanly
 ```
 
-**Why this approach works:**
-- Preserves all commits without risky resets
-- When GitHub merges the PR to main, your local main becomes behind by the same commits
+**Why this works:**
+- Commits exist on both local main and remote feature branch
+- When PR merges to remote main, your local main is behind by same commits
 - `git pull` recognizes the commits and fast-forwards cleanly
 - No history rewriting, no data loss, no merge conflicts
 
@@ -328,3 +388,76 @@ git pull  # Fast-forward merge handles this cleanly
 git rebase --abort
 git merge main
 ```
+
+## Safe Operations
+
+### Recognizing Normal States
+
+These states are expected during development - proceed confidently:
+
+| State | Meaning | Action |
+|-------|---------|--------|
+| Unstaged changes after pre-commit | Formatters modified files | Stage with `git add -u` and continue |
+| Modified files after running formatters | Expected auto-fix behavior | Stage before committing |
+| Pre-commit exit code 1 | Files were modified | Stage modifications, re-run pre-commit |
+| Branch behind remote | Remote has newer commits | Pull or rebase as appropriate |
+
+### Confirmation-Required Commands
+
+Request user confirmation before running destructive commands:
+
+```bash
+# These require explicit user approval:
+git branch -d/-D       # "Delete local branch X?"
+git push origin --delete  # "Delete remote branch X?"
+git reset --hard       # "Discard uncommitted changes?"
+git clean -fd          # "Remove untracked files?"
+```
+
+### When State is Unclear
+
+When encountering unexpected state:
+1. Run diagnostic commands (`git status`, `git log --oneline -5`)
+2. Report findings clearly
+3. Present options and wait for guidance
+
+## Recovery Workflows
+
+### Pre-commit Modifies Files
+
+This is normal formatter/linter behavior:
+
+```bash
+# 1. Check what changed
+git status
+
+# 2. Stage modified files
+git add -u
+
+# 3. Continue with commit
+git commit -m "feat(feature): description"
+```
+
+### Push Rejected (Non-Fast-Forward)
+
+Remote has newer commits:
+
+```bash
+# Option 1: Rebase local changes on top (preferred for linear history)
+git pull --rebase origin <branch>
+
+# Option 2: Merge remote changes
+git pull origin <branch>
+
+# Option 3: Overwrite remote (your branch only, use cautiously)
+git push --force-with-lease
+```
+
+### Commit Fails
+
+1. Read the error message
+2. Common causes:
+   - Pre-commit hooks failed → Fix issues and retry
+   - No staged changes → Stage files first
+   - Empty commit message → Provide message
+3. Fix the underlying issue and retry

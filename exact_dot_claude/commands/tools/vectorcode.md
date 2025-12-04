@@ -292,6 +292,6 @@ git commit --allow-empty -m "test"
 
 ## References
 
-- VectorCode documentation: https://github.com/vectorcode/vectorcode
+- VectorCode documentation: https://github.com/davidyz/vectorcode
 - Pattern reference: `.claude/skills/vectorcode-init/patterns.md`
 - VectorCode search skill: `.claude/skills/vectorcode-search/`

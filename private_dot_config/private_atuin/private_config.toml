@@ -103,10 +103,65 @@
 ## with ^ or end with $, they'll match anywhere in the command.
 ## For details on the supported regular expression syntax, see
 ## https://docs.rs/regex/latest/regex/#syntax
-# history_filter = [
-#   "^secret-cmd",
-#   "^innocuous-cmd .*--secret=.+",
-# ]
+history_filter = [
+  # === DANGEROUS COMMANDS ===
+  # Destructive file operations
+  "rm -rf /",
+  "rm -rf \\*",
+  "rm -rf ~",
+
+  # Kubernetes production dangers
+  "kubectl delete.*(--all|namespace|pv|pvc|deploy|statefulset)",
+  "kubectl.* --force",
+
+  # Git history rewriting (use with caution)
+  "git push.*(--force|-f)",
+  "git reset --hard",
+  "git clean -fd",
+
+  # Disk operations
+  "^dd if=",
+  "^mkfs",
+  "> /dev/sd",
+
+  # Database dangers
+  "DROP (TABLE|DATABASE|SCHEMA)",
+  "DELETE FROM.*WHERE 1|DELETE FROM [^W]+$",
+  "TRUNCATE TABLE",
+
+  # Permission dangers
+  "chmod.* 777",
+  "chown.* -R.*/",
+
+  # === NOISY/REPETITIVE COMMANDS ===
+  # Navigation (too frequent to be useful)
+  "^ls$",
+  "^ll$",
+  "^la$",
+  "^l$",
+  "^cd$",
+  "^cd -$",
+  "^pwd$",
+
+  # Terminal housekeeping
+  "^clear$",
+  "^exit$",
+  "^history$",
+  "^reset$",
+
+  # Job control
+  "^fg",
+  "^bg",
+
+  # Common typos and accidents
+  "^:q$",
+  "^:wq$",
+  "^:x$",
+  "^q$",
+
+  # Empty or whitespace-only
+  "^\\s*$",
+]
 
 ## prevent commands run with cwd matching any of these regexes from being written
 ## to history. Note that these regular expressions are unanchored, i.e. if they don't
