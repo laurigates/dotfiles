@@ -164,8 +164,20 @@ description = "Check what changes would be made (alias for status)"
 # Testing & Quality Assurance
 # ----------------------------------------------------------------------------
 [tasks.test]
-description = "Run all tests (linting + container testing)"
-depends = ["lint", "docker"]
+description = "Run all tests (linting + setup verification + container testing)"
+depends = ["lint", "test:setup", "docker"]
+
+[tasks."test:setup"]
+description = "Test initial setup script handles missing commands gracefully (Issue #128)"
+run = """
+#!/usr/bin/env bash
+if [ -x tests/test-initial-setup.sh ]; then
+    tests/test-initial-setup.sh
+else
+    echo "⚠️  Warning: tests/test-initial-setup.sh not found or not executable"
+    exit 1
+fi
+"""
 
 [tasks.lint]
 description = "Run all linters as used in CI"
