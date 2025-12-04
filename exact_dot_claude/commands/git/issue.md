@@ -10,7 +10,6 @@ argument-hint: <issue-number>
 - Current branch: !`git branch --show-current`
 - Clean working tree: !`git status --porcelain | wc -l`
 - Open PRs: !`gh pr list --state open --json number,title`
-- Issue details: !`gh issue view $1 --json title,body,state,assignees`
 
 ## Your task
 
@@ -23,8 +22,8 @@ Process and fix GitHub issue #$1 using a TDD workflow with the **main-branch dev
 
 ### Step 2: Analyze Issue
 
-1. **Read issue details** using mcp__github__issue_read or from context above
-2. **Identify requirements** and acceptance criteria
+1. **Fetch issue details**: Run `gh issue view $1 --json title,body,state,assignees` or use `mcp__github__issue_read` with issue_number=$1
+2. **Identify requirements** and acceptance criteria from the issue
 3. **Plan the implementation** approach
 
 ### Step 3: TDD Workflow
