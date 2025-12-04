@@ -72,31 +72,33 @@ jobs:
 
       - name: Run environment health checks
         run: |
-          echo "## 🏥 Environment Health Checks" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🏥 Environment Health Checks"
+            echo ""
 
-          # Homebrew doctor
-          echo "### Homebrew Doctor" >> $GITHUB_STEP_SUMMARY
-          if brew doctor 2>&1 | tee brew-doctor.log; then
-            echo "✅ Homebrew is healthy" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ Homebrew has warnings (non-fatal)" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cat brew-doctor.log >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
+            # Homebrew doctor
+            echo "### Homebrew Doctor"
+            if brew doctor 2>&1 | tee brew-doctor.log; then
+              echo "✅ Homebrew is healthy"
+            else
+              echo "⚠️ Homebrew has warnings (non-fatal)"
+              echo "\`\`\`"
+              cat brew-doctor.log
+              echo "\`\`\`"
+            fi
+            echo ""
 
-          # mise doctor
-          echo "### mise Doctor" >> $GITHUB_STEP_SUMMARY
-          if mise doctor 2>&1 | tee mise-doctor.log; then
-            echo "✅ mise is healthy" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ mise has warnings" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cat mise-doctor.log >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          fi
+            # mise doctor
+            echo "### mise Doctor"
+            if mise doctor 2>&1 | tee mise-doctor.log; then
+              echo "✅ mise is healthy"
+            else
+              echo "⚠️ mise has warnings"
+              echo "\`\`\`"
+              cat mise-doctor.log
+              echo "\`\`\`"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run chezmoi apply
         # Use -v for verbose output, useful for debugging CI failures
@@ -105,21 +107,21 @@ jobs:
       - name: Test zsh shell initialization
         run: |
           # Test that zsh shell loads and configuration works
-          timeout 10s zsh -c '
+          timeout 10s zsh -c "
             source ~/.zshrc
             # Check if zsh configuration loaded by testing for ZSH_VERSION
-            if [[ -n "$ZSH_VERSION" ]]; then
-              echo "✅ zsh configuration loaded successfully"
+            if [[ -n \"\$ZSH_VERSION\" ]]; then
+              echo \"✅ zsh configuration loaded successfully\"
             else
-              echo "❌ zsh configuration failed to load"
+              echo \"❌ zsh configuration failed to load\"
               exit 1
             fi
 
             # Test that prompt is configured (PS1 or PROMPT)
-            if [[ -n "$PROMPT" ]] || [[ -n "$PS1" ]]; then
-              echo "✅ zsh prompt configured"
+            if [[ -n \"\$PROMPT\" ]] || [[ -n \"\$PS1\" ]]; then
+              echo \"✅ zsh prompt configured\"
             else
-              echo "❌ zsh prompt not configured"
+              echo \"❌ zsh prompt not configured\"
               exit 1
             fi
-          '
+          "

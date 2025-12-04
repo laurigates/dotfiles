@@ -1,0 +1,161 @@
+name: Claude Config Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview changes without creating PR'
+        type: boolean
+        default: false
+  # Schedule weekly validation runs (uncomment to enable)
+  # schedule:
+  #   - cron: '0 9 * * 1'  # Every Monday at 9:00 AM UTC
+
+# Only one validation run at a time
+concurrency:
+  group: claude-config-validation
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Claude Code Configs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Generate allowed tools configuration
+        id: tools-config
+        run: |
+          chmod +x .github/scripts/generate-allowed-tools.sh
+          ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json config_validation)
+          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Config Validation
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            ## Task: Validate Claude Code Configuration Files
+
+            Validate the Claude Code configurations in this dotfiles repository against the latest official documentation and best practices.
+
+            ### Scope
+            Check these directories for compliance:
+            - `exact_dot_claude/agents/` - Agent definitions
+            - `exact_dot_claude/commands/` - Slash commands
+            - `exact_dot_claude/skills/` - Skill definitions
+            - `exact_dot_claude/settings.json` - Settings file
+
+            ### Validation Criteria
+
+            **1. Agent Files (*.md in agents/)**
+            - Required frontmatter: `name`, `model`, `color`, `description`, `tools`
+            - Model should be valid Claude model (claude-sonnet-4-5, claude-opus-4-5, etc.)
+            - Description should clearly state use case
+            - Tools should follow least-privilege principle
+            - Check for deprecated model names
+
+            **2. Command Files (*.md in commands/)**
+            - Required frontmatter: `description`, `allowed-tools`
+            - Optional: `argument-hint`
+            - Commands should have clear, actionable instructions
+            - Tool permissions should be minimal for the task
+
+            **3. Skill Files (SKILL.md in skills/*/)**
+            - Required frontmatter: `name`, `description`, `allowed-tools`
+            - Skills should have focused, specific expertise
+            - Documentation should be accurate and useful
+
+            **4. Settings File (settings.json)**
+            - Valid JSON schema
+            - Reasonable permission defaults
+            - No overly permissive configurations
+
+            ### Important Guidelines
+
+            **AVOID CHURN:**
+            - Only make changes that have functional impact
+            - Do NOT reword descriptions just for style
+            - Do NOT reorder fields unless required
+            - Do NOT add comments or documentation unless missing
+            - Do NOT change formatting if it's already valid
+            - Focus on: missing fields, deprecated values, security issues, broken references
+
+            **USE OFFICIAL DOCS:**
+            - Use WebSearch to check current Claude Code documentation for:
+              - Valid model names
+              - Frontmatter schema requirements
+              - Best practices for agents/commands/skills
+            - Only suggest changes backed by official documentation
+
+            ### Output Requirements
+
+            1. **If changes needed:**
+               - Make the minimal necessary edits
+               - Create a commit with message: "fix(claude): update configs to match latest specs"
+               - Push to branch: `claude/config-validation-${{ github.run_id }}`
+               - Use `gh pr create` with this format:
+
+               ```
+               gh pr create --title "fix(claude): update configs to match latest specs" --body "$(cat <<'EOF'
+               ## What
+               Updates Claude Code configuration files to comply with current specifications.
+
+               ## Why
+               - [List specific issues found, e.g., "deprecated model name", "missing required field"]
+
+               ## How
+               - [List specific changes made, e.g., "Updated model from X to Y in agent-name.md"]
+
+               ## Validation
+               - [ ] Changes are minimal and functional only
+               - [ ] No style-only rewording
+               - [ ] All edits backed by official docs
+               EOF
+               )"
+               ```
+
+            2. **If no changes needed:**
+               - Report: "All Claude Code configurations are up to spec."
+               - List what was validated
+
+            3. **If dry_run is true (${{ inputs.dry_run }}):**
+               - Report findings but do NOT make any changes
+               - List what would be changed
+
+          claude_args: |
+            --model claude-sonnet-4-5-20250929
+            --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"
+            --max-turns 50
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🔍 Claude Config Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Run ID** | \`${{ github.run_id }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Trigger** | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Dry Run** | \`${{ inputs.dry_run || 'false' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY

@@ -590,8 +590,8 @@ curl http://localhost:1032/info
 
 - **Official Docs**: https://gofeatureflag.org/docs
 - **Flag Format**: https://gofeatureflag.org/docs/configure_flag/flag_format
-- **Relay Proxy**: https://gofeatureflag.org/docs/relay_proxy
-- **OpenFeature Providers**: https://gofeatureflag.org/docs/openfeature_sdk
+- **Relay Proxy**: https://gofeatureflag.org/docs/relay-proxy
+- **OpenFeature SDKs**: https://gofeatureflag.org/docs/sdk
 
 ## Related Commands
 

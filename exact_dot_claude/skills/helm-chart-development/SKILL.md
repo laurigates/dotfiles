@@ -614,7 +614,7 @@ helm install myapp oci://registry.example.com/charts/mychart
 
 ## Configuration
 
-See [values.yaml](values.yaml) for configuration options.
+See `values.yaml` in your chart directory for configuration options.
 
 Key parameters:
 - `replicaCount` - Number of replicas (default: 1)

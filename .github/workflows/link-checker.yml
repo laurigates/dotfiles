@@ -45,13 +45,13 @@ jobs:
       - name: Create link check summary
         if: always()
         run: |
-          echo "## 🔗 Link Check Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔗 Link Check Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
 
           if [ -f lychee-report.md ]; then
-            cat lychee-report.md >> $GITHUB_STEP_SUMMARY
+            cat lychee-report.md >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "✅ All links are valid!" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All links are valid!" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Comment PR with broken links
