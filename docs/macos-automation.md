@@ -171,5 +171,4 @@ defaults write com.apple.Siri StatusMenuVisible -bool false
 ## Resources
 
 - [macOS defaults Reference](https://macos-defaults.com/)
-- [Apple Configuration Profile Reference](https://developer.apple.com/documentation/devicemanagement/configurationprofile)
-- [macOS Keyboard Shortcuts Research](../research_macos_shortcuts.md)
+- [Apple Configuration Profile Reference](https://developer.apple.com/documentation/devicemanagement)

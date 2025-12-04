@@ -555,6 +555,6 @@ bunx biome check --reporter=json src/
 
 - Official docs: https://biomejs.dev
 - Configuration: https://biomejs.dev/reference/configuration/
-- Rules: https://biomejs.dev/linter/rules/
+- Rules: https://biomejs.dev/linter/
 - Migration guide: https://biomejs.dev/guides/migrate-eslint-prettier/
-- Editor integration: https://biomejs.dev/guides/integrate-in-editor/
+- Editor integration: https://biomejs.dev/

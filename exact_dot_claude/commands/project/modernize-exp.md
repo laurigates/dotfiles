@@ -467,7 +467,7 @@ cd {frontend-dir}/
 
 ## Deployment
 
-See [deployment documentation](docs/deployment.md) for production setup.
+For production setup, run `/deploy:handoff` to generate deployment documentation.
 
 ````
 
