@@ -1,14 +1,17 @@
 # Work-Order Template
 
-Use this template to create work-order documents for isolated subagent execution in Blueprint Development projects.
+Use this template to create work-order documents for isolated subagent execution in Blueprint Development projects. Enhanced with PRP (Product Requirement Prompt) concepts for one-pass implementation success.
 
 ## Purpose
 
 Work-orders are **minimal-context task packages** that enable clean subagent delegation. They contain:
 - **Specific objective** - Exactly what needs to be done
 - **Required context only** - Relevant files, decisions, and dependencies
+- **ai_docs references** - Curated library documentation for the task
+- **Known gotchas** - Critical warnings and edge cases
 - **TDD requirements** - Tests to write first, then implementation
-- **Success criteria** - How to verify completion
+- **Validation gates** - Executable commands to verify quality
+- **Confidence score** - Quality assessment for delegation readiness
 
 ## Template
 
@@ -27,10 +30,16 @@ Work-orders are **minimal-context task packages** that enable clean subagent del
 - `path/to/file2.js` - [What needs to be done with this file]
 - `tests/path/to/test.js` - [Tests to write]
 
-### PRD Reference
-[Link to specific section of relevant PRD]
+### PRP Reference
+[Link to specific section of relevant PRP]
 
-See `.claude/blueprints/prds/[prd-name].md` - [Section Name]
+See `.claude/blueprints/prps/[prp-name].md` - [Section Name]
+
+### ai_docs References
+[Links to curated documentation relevant to this task]
+
+- See `ai_docs/libraries/[library].md` - [Specific section]
+- See `ai_docs/project/patterns.md` - [Specific pattern to follow]
 
 ### Technical Decisions
 [Only the decisions relevant to this specific task]
@@ -51,6 +60,17 @@ See `.claude/blueprints/prds/[prd-name].md` - [Section Name]
 
 - **Library/Service**: [What it does, how it's used in this task]
 - **Environment Variables**: [Any required configuration]
+
+### Known Gotchas
+[Critical implementation warnings specific to this task]
+
+- **Gotcha 1: [Title]**
+  - **Issue:** [What can go wrong]
+  - **Mitigation:** [How to avoid it]
+
+- **Gotcha 2: [Title]**
+  - **Issue:** [What can go wrong]
+  - **Mitigation:** [How to avoid it]
 
 ## TDD Requirements
 
@@ -119,6 +139,33 @@ describe('[Feature/Function]', () => {
 - [ ] Code follows project patterns (see `.claude/skills/`)
 - [ ] No regressions (all existing tests still pass)
 
+## Validation Gates
+[Executable commands to verify implementation quality]
+
+### Gate 1: Linting
+```bash
+[linting command for new/modified files]
+```
+**Expected:** No errors
+
+### Gate 2: Type Checking
+```bash
+[type checking command]
+```
+**Expected:** No errors
+
+### Gate 3: Unit Tests
+```bash
+[test command for specific tests]
+```
+**Expected:** All pass
+
+### Gate 4: Full Test Suite
+```bash
+[full test suite command]
+```
+**Expected:** No regressions
+
 ## Performance Baselines
 [Only if relevant to this task]
 
@@ -131,10 +178,27 @@ describe('[Feature/Function]', () => {
 - [ ] [Security requirement 2]
 
 ## Notes
-[Any additional context, gotchas, or considerations]
+[Any additional context or considerations not covered above]
 
 - [Note 1]
 - [Note 2]
+
+## Confidence Score
+
+Rate the work-order quality (1-10 for each dimension):
+
+| Dimension | Score | Notes |
+|-----------|-------|-------|
+| Context Completeness | X/10 | [Are all file paths, code snippets explicit?] |
+| Gotchas Documented | X/10 | [Are known pitfalls documented?] |
+| Test Coverage | X/10 | [Are all test cases specified?] |
+| Validation Gates | X/10 | [Are executable commands provided?] |
+| **Overall** | **X/10** | [Average score] |
+
+**Scoring Guide:**
+- **9+**: Ready for isolated subagent execution
+- **7-8**: Ready for execution with some discovery
+- **< 7**: Needs more context/research before execution
 
 ## Related Work-Orders
 [If this work-order depends on or blocks other work-orders]
@@ -160,8 +224,13 @@ Implement JWT access token and refresh token generation methods in the authentic
 - `tests/unit/services/authService.test.js` - Add token generation tests
 - `config/jwt.js` - Create JWT configuration module
 
-### PRD Reference
-See `.claude/blueprints/prds/user-authentication.md` - Section: "Token Management"
+### PRP Reference
+See `.claude/blueprints/prps/user-authentication.md` - Section: "Token Management"
+
+### ai_docs References
+- See `ai_docs/libraries/jsonwebtoken.md` - RS256 signing section
+- See `ai_docs/libraries/redis-py.md` - Key expiration patterns
+- See `ai_docs/project/patterns.md` - Service layer pattern
 
 ### Technical Decisions
 - **JWT Signing Algorithm**: RS256 (asymmetric) for better security
@@ -203,6 +272,20 @@ class AuthService {
   - `JWT_PUBLIC_KEY` - RSA public key (PEM format)
   - `ACCESS_TOKEN_EXPIRY` - Default: "15m"
   - `REFRESH_TOKEN_EXPIRY` - Default: "7d"
+
+### Known Gotchas
+
+- **Gotcha 1: RS256 Key Format**
+  - **Issue:** `jsonwebtoken` expects PEM format, not raw key bytes
+  - **Mitigation:** Ensure keys start with `-----BEGIN RSA PRIVATE KEY-----`
+
+- **Gotcha 2: Clock Skew in Token Expiry**
+  - **Issue:** Server time differences can cause premature token expiration
+  - **Mitigation:** Add 30-second buffer to expiry checks; use NTP sync
+
+- **Gotcha 3: Redis Connection Pool**
+  - **Issue:** Creating new Redis connection per request exhausts connections
+  - **Mitigation:** Use shared Redis client with connection pooling
 
 ## TDD Requirements
 
@@ -384,6 +467,32 @@ describe('generateRefreshToken', () => {
 - [ ] No hardcoded secrets or keys in code
 - [ ] Token expiry values enforced (not optional)
 
+## Validation Gates
+
+### Gate 1: Linting
+```bash
+npm run lint -- services/authService.js config/jwt.js
+```
+**Expected:** No errors
+
+### Gate 2: Unit Tests
+```bash
+npm test -- authService.test.js
+```
+**Expected:** All 5 new tests pass
+
+### Gate 3: Full Test Suite
+```bash
+npm test
+```
+**Expected:** No regressions
+
+### Gate 4: Security Check
+```bash
+npm audit
+```
+**Expected:** No high/critical vulnerabilities
+
 ## Notes
 
 - **RS256 vs HS256**: RS256 chosen because public key can be shared for token verification without compromising security. HS256 requires shared secret, which is risky if multiple services verify tokens.
@@ -397,6 +506,16 @@ describe('generateRefreshToken', () => {
   # Extract public key
   openssl rsa -pubout -in private_key.pem -out public_key.pem
   ```
+
+## Confidence Score
+
+| Dimension | Score | Notes |
+|-----------|-------|-------|
+| Context Completeness | 9/10 | All files, dependencies, code excerpts provided |
+| Gotchas Documented | 8/10 | Key format and connection pool issues covered |
+| Test Coverage | 9/10 | 5 specific test cases with assertions |
+| Validation Gates | 8/10 | Lint, test, and security commands provided |
+| **Overall** | **8.5/10** | Ready for subagent delegation |
 
 ## Related Work-Orders
 
