@@ -1,7 +1,7 @@
 # Makefile for dotfiles repository
 # Serves as documentation for integration points and common operations
 
-.PHONY: help status apply check diff verify clean update lint test setup dev ci docker
+.PHONY: help status apply check diff verify clean update lint test setup dev ci docker smoke smoke-lint smoke-build smoke-shell smoke-clean
 .DEFAULT_GOAL := help
 
 # Colors for output
@@ -33,7 +33,7 @@ verify: ## Verify dotfiles configuration integrity
 
 ##@ Testing
 
-test: lint docker ## Run all tests (linting + container testing)
+test: lint smoke ## Run all tests (linting + smoke test in Docker)
 
 lint: ## Run all linters as used in CI
 	@echo "$(BLUE)Running linters...$(RESET)"
@@ -62,14 +62,27 @@ lint: ## Run all linters as used in CI
 		echo "$(YELLOW)Warning: Brewfile not found$(RESET)"; \
 	fi
 
-docker: ## Test full environment using Docker Compose
-	@echo "$(BLUE)Testing environment with Docker...$(RESET)"
-	@if [ -f docker-compose.yml ]; then \
-		docker-compose up --build; \
-	else \
-		echo "$(RED)Error: docker-compose.yml not found$(RESET)"; \
-		exit 1; \
-	fi
+docker: smoke ## Alias for smoke test (deprecated, use 'make smoke')
+
+smoke: ## Run full smoke test in Docker (reproduces CI)
+	@echo "$(BLUE)Running smoke test in Docker...$(RESET)"
+	docker-compose up --build smoke
+
+smoke-lint: ## Run lint stage only in Docker
+	@echo "$(BLUE)Running lint stage in Docker...$(RESET)"
+	docker-compose run --rm smoke lint
+
+smoke-build: ## Run build stage only in Docker
+	@echo "$(BLUE)Running build stage in Docker...$(RESET)"
+	docker-compose run --rm smoke build
+
+smoke-shell: ## Start interactive shell for debugging smoke test failures
+	@echo "$(BLUE)Starting interactive smoke test shell...$(RESET)"
+	docker-compose run --rm smoke-shell
+
+smoke-clean: ## Clean up smoke test Docker resources
+	@echo "$(BLUE)Cleaning up smoke test containers...$(RESET)"
+	docker-compose down --rmi local --volumes --remove-orphans
 
 ##@ Environment Setup
 

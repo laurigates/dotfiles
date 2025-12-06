@@ -1,21 +1,33 @@
-version: "3.8"
-
+# Docker Compose for local smoke testing
+# Reproduces CI environment for faster iteration
+#
+# Usage:
+#   docker-compose up --build              # Run full smoke test
+#   docker-compose run --rm smoke lint     # Run lint stage only
+#   docker-compose run --rm smoke build    # Run build stage only
+#   docker-compose run --rm smoke-shell    # Interactive shell for debugging
+#
 services:
-  dotfiles:
-    image: laurigates/dotfiles
+  smoke:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dotfiles-test
-    # Interactive shell for manual testing
-    stdin_open: true
-    tty: true
-    # Optional: Mount a volume for persistent testing
-    # volumes:
-    #   - dotfiles-test-home:/home/tester
+    container_name: dotfiles-smoke
     environment:
       - TERM=xterm-256color
+      - HOMEBREW_NO_AUTO_UPDATE=1
+      - HOMEBREW_NO_ANALYTICS=1
 
-# Optional: Persistent volume for testing iterations
-# volumes:
-#   dotfiles-test-home:
+  # Interactive shell for debugging failed tests
+  smoke-shell:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dotfiles-smoke-shell
+    environment:
+      - TERM=xterm-256color
+      - HOMEBREW_NO_AUTO_UPDATE=1
+      - HOMEBREW_NO_ANALYTICS=1
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/zsh
