@@ -130,7 +130,7 @@ function fzf_apropos() {
 export SDL_VIDEO_FULLSCREEN_HEAD=0
 # export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
-export MAKEFLAGS="-j{{ .cpu.threads }}"
+export MAKEFLAGS="-j{{ output "nproc" | trim }}"
 export BAT_THEME=TwoDark
 export BAT_STYLE=plain
 
