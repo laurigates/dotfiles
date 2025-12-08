@@ -1,3 +1,12 @@
+---
+name: release-please-protection
+description: |
+  Detects and prevents manual edits to release-please managed files (CHANGELOG.md,
+  version fields in package.json, pyproject.toml, Cargo.toml). Provides conventional
+  commit templates. Use when editing changelogs, version bumps, release files, or
+  when user mentions "release", "changelog", "version bump", or "conventional commits".
+---
+
 # Release-Please Protection
 
 Automatically detects and prevents manual edits to release-please managed files across all projects.

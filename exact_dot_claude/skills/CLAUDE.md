@@ -11,6 +11,41 @@ Skills are **model-invoked** capabilities. Claude autonomously decides when to u
 
 **Key distinction**: Unlike slash commands (explicit user invocation), skills activate automatically when Claude determines they're relevant.
 
+## Why Skills Don't Activate (And How to Fix It)
+
+### The Activation Problem
+
+Research shows that **basic skill descriptions achieve only ~20% activation rate**. This is because:
+
+1. **Only metadata is pre-loaded**: At startup, Claude only sees the `name` and `description` fields (~100 tokens), not the full SKILL.md
+2. **Description is the PRIMARY trigger**: Claude decides whether to load a skill almost entirely based on its description
+3. **Vague descriptions get ignored**: Generic descriptions like "helps with documents" don't provide enough signal
+
+### What Makes Skills Activate
+
+Claude activates a skill when it recognizes a match between:
+- **User's request language** → **Skill's description keywords**
+
+The more specific and explicit your description, the higher the activation rate.
+
+### Activation Rate by Approach
+
+| Approach | Success Rate | Notes |
+|----------|-------------|-------|
+| Basic description | ~20% | Passive, relies on Claude inference |
+| Specific trigger keywords | ~50% | Includes terms users actually say |
+| Explicit use cases | ~70% | "Use when..." clauses |
+| Forced evaluation hooks | ~84% | Hook forces explicit skill evaluation |
+
+### Quick Checklist for High-Activation Skills
+
+- [ ] **YAML frontmatter present** with `name` and `description` fields
+- [ ] **Description answers TWO questions**: What does it do? When should Claude use it?
+- [ ] **Trigger keywords match user language** (not technical jargon)
+- [ ] **"Use when..." clause** explicitly states activation scenarios
+- [ ] **Third person perspective** ("Extracts..." not "I extract...")
+- [ ] **Under 1024 characters** but specific enough to disambiguate
+
 ## Skills in This Repository
 
 This repository contains **74 specialized skills** organized by domain:
@@ -175,16 +210,57 @@ One skill should address a single capability. Create separate skills for distinc
 ❌ **Too broad**: "document-processing" (PDFs, Word, Excel, PowerPoint)
 ✅ **Focused**: "pdf-extraction", "excel-automation", "docx-generation"
 
-### 2. Write a Specific Description
+### 2. Write a High-Activation Description
 
-Include concrete trigger terms and use cases:
+The description field is **the most important part of your skill**. It determines whether Claude will ever load the skill.
 
+#### Description Formula
+
+```
+[What it does in 1-2 sentences] + [Specific domain terms] + "Use when [explicit triggers]."
+```
+
+#### Examples: Good vs Bad Descriptions
+
+**❌ Bad (won't activate):**
+```yaml
+description: Helps with documents
+```
+- Too vague, no trigger keywords, no use cases
+
+**❌ Mediocre (~20% activation):**
+```yaml
+description: Extract text from PDF files and process documents
+```
+- Better, but missing explicit "Use when..." clause
+
+**✅ Good (~50% activation):**
 ```yaml
 description: |
   Extract text and tables from PDFs, fill forms, merge documents.
   Use when working with PDF files or when the user mentions PDFs,
   forms, or document extraction.
 ```
+- Specific capabilities + explicit trigger scenarios
+
+**✅ Excellent (~70% activation):**
+```yaml
+description: |
+  Extract text, tables, and images from PDF files. Fill PDF forms
+  programmatically. Merge, split, and manipulate PDF documents.
+  Use when the user mentions: PDFs, PDF extraction, form filling,
+  document merging, PyPDF2, pdfplumber, or pdf-lib.
+```
+- Multiple specific capabilities
+- Explicit tool/library names users might mention
+- Clear "Use when" with concrete trigger terms
+
+#### Key Principles
+
+1. **Match user vocabulary**: If users say "dotfiles", include "dotfiles" (not just "configuration files")
+2. **Include tool names**: "pytest", "uv", "ripgrep" - users mention specific tools
+3. **List file extensions**: ".pdf", ".yml", "pyproject.toml" - specific file patterns trigger skills
+4. **Use third person**: "Extracts..." not "I extract..." or "Extract..."
 
 ### 3. Structure Instructions Clearly
 
@@ -194,13 +270,46 @@ Organize content into logical sections:
 - **Best Practices**: Patterns and anti-patterns
 - **Troubleshooting**: Common issues and solutions
 
-### 4. Add Supporting Documentation
+### 4. Add Supporting Documentation (Progressive Disclosure)
 
-Use `REFERENCE.md` for detailed information that would clutter the main skill:
-- API reference tables
-- Configuration options
-- Advanced patterns
-- Troubleshooting guides
+**Rule of thumb**: Keep SKILL.md under 500 lines. Move detailed content to supporting files.
+
+#### When to Split
+
+| Content Type | Keep in SKILL.md | Move to REFERENCE.md |
+|-------------|------------------|---------------------|
+| Core capabilities | ✓ | |
+| Common commands | ✓ | |
+| Quick reference | ✓ | |
+| Full API reference | | ✓ |
+| Advanced patterns | | ✓ |
+| Troubleshooting | | ✓ |
+| Edge cases | | ✓ |
+
+#### Recommended Structure
+
+```
+skill-name/
+├── SKILL.md              # Core guidance (always loaded when skill activates)
+├── REFERENCE.md          # Detailed reference (loaded on-demand)
+├── examples/             # Working code samples
+│   ├── basic.ext
+│   └── advanced.ext
+└── templates/            # Reusable templates
+    └── config.ext
+```
+
+#### Why Progressive Disclosure Matters
+
+- **Context efficiency**: Claude only loads what's needed (~5k tokens max per skill)
+- **Faster activation**: Smaller SKILL.md loads faster
+- **Better focus**: Core instructions aren't buried in reference material
+- **On-demand depth**: Reference files load when Claude needs them
+
+**Reference pattern in SKILL.md:**
+```markdown
+For advanced patterns, see [REFERENCE.md](REFERENCE.md).
+```
 
 ### 5. Test Activation Patterns
 
@@ -288,10 +397,21 @@ Official example skills are available at:
 
 ## Reference Documentation
 
-- **Official Skills Guide**: https://docs.claude.com/en/docs/claude-code/skills
+### Official Anthropic Resources
+- **Agent Skills Documentation**: https://code.claude.com/docs/en/skills
+- **Skill Authoring Best Practices**: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
 - **Example Skills Repository**: https://github.com/anthropics/skills/
+- **Claude Code Best Practices**: https://www.anthropic.com/engineering/claude-code-best-practices
+
+### Community Resources
+- **Making Skills Activate Reliably** (Scott Spence): https://scottspence.com/posts/how-to-make-claude-code-skills-activate-reliably
+- **Inside Claude Code Skills** (Mikhail Shilkov): https://mikhail.io/2025/10/claude-code-skills/
+- **Awesome Claude Skills** (Community): https://github.com/travisvn/awesome-claude-skills
+
+### Related Claude Code Docs
 - **Creating Slash Commands**: https://docs.claude.com/en/docs/claude-code/slash-commands
 - **MCP Servers**: https://docs.claude.com/en/docs/claude-code/mcp
+- **Hooks Configuration**: https://docs.claude.com/en/docs/claude-code/hooks
 
 ## Contributing Skills
 
@@ -309,6 +429,7 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 
 ---
 
-**Last updated**: 2025-11-27
-**Total skills**: 72
+**Last updated**: 2025-12-08
+**Total skills**: 96
 **Skill version format**: YAML frontmatter in SKILL.md
+**Key metric**: Skills with YAML frontmatter: 72/96 (75%) - fix remaining 25% for full activation
