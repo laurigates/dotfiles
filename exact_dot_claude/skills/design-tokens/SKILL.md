@@ -556,7 +556,7 @@ $spacing-md: 1rem;
 
 ## References
 
-- CSS Custom Properties: https://developer.mozilla.org/en-US/docs/Web/CSS/--*
+- CSS Custom Properties: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables
 - Design Tokens Format: https://design-tokens.github.io/community-group/format/
-- Style Dictionary: https://amzn.github.io/style-dictionary/
+- Style Dictionary: https://styledictionary.com/
 - Tailwind CSS: https://tailwindcss.com/docs/customizing-colors

@@ -566,5 +566,5 @@ yq --version
 
 - **Official Documentation**: https://mikefarah.gitbook.io/yq/
 - **GitHub Repository**: https://github.com/mikefarah/yq
-- **Online Playground**: https://mikefarah.gitbook.io/yq/usage/running-in-the-browser
-- **Cheat Sheet**: https://mikefarah.gitbook.io/yq/operators/
+- **Try with Docker**: `docker run --rm -i mikefarah/yq '.key' <<< 'key: value'`
+- **Operators Reference**: https://mikefarah.gitbook.io/yq/operators/
