@@ -1,6 +1,10 @@
 ---
-name: API Testing
-description: HTTP API testing for TypeScript (Supertest) and Python (httpx, pytest). Test REST APIs, GraphQL, request/response validation, authentication, and error handling.
+name: api-testing
+description: |
+  HTTP API testing for TypeScript (Supertest) and Python (httpx, pytest). Covers
+  REST APIs, GraphQL, request/response validation, authentication, and error handling.
+  Use when user mentions API testing, Supertest, httpx, REST testing, endpoint testing,
+  HTTP response validation, or testing API routes.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, TodoWrite
 ---
 

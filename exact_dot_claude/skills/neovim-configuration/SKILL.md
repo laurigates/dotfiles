@@ -1,6 +1,11 @@
 ---
-name: Neovim Configuration
-description: Modern Neovim configuration expertise including Lua scripting, plugin management with lazy.nvim, LSP setup with Mason, AI integration with CodeCompanion, and workflow optimization. Automatically assists with Neovim setup and customization.
+name: neovim-configuration
+description: |
+  Modern Neovim configuration expertise including Lua scripting, plugin management with
+  lazy.nvim, LSP setup with Mason, AI integration with CodeCompanion, and workflow
+  optimization. Covers keymaps, autocommands, and treesitter configuration.
+  Use when user mentions Neovim, nvim, lazy.nvim, Mason, init.lua, Lua config,
+  nvim plugins, or Neovim customization.
 allowed-tools: Glob, Grep, Read, Edit, Write
 ---
 

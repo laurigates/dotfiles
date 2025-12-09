@@ -1,6 +1,11 @@
 ---
-name: Chezmoi Expert
-description: Comprehensive chezmoi dotfiles management expertise including templates, cross-platform configuration, file naming conventions, and troubleshooting. Automatically assists with chezmoi operations, source directory management, and reproducible environment setup.
+name: chezmoi-expert
+description: |
+  Comprehensive chezmoi dotfiles management expertise including templates, cross-platform
+  configuration, file naming conventions, and troubleshooting. Covers source directory
+  management, reproducible environment setup, and chezmoi templating with Go templates.
+  Use when user mentions chezmoi, dotfiles, cross-platform config, chezmoi apply,
+  chezmoi diff, .chezmoidata, or managing configuration files across machines.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

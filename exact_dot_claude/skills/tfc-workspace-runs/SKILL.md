@@ -1,6 +1,10 @@
 ---
 name: tfc-workspace-runs
-description: Convenience wrapper for listing Terraform Cloud runs in Forum Virium Helsinki workspaces (github, sentry, gcp, onelogin, twingate). Use for quick access to infrastructure workspace run history. Requires TFE_TOKEN environment variable.
+description: |
+  Convenience wrapper for listing Terraform Cloud runs in Forum Virium Helsinki
+  workspaces (github, sentry, gcp, onelogin, twingate). Requires TFE_TOKEN.
+  Use when user mentions TFC runs, Terraform Cloud workspace, listing TFC runs,
+  infrastructure run history, or checking Terraform Cloud status.
 allowed-tools: Bash, Read
 ---
 

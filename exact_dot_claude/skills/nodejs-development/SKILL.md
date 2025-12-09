@@ -1,6 +1,10 @@
 ---
-name: Node.js Development
-description: Modern Node.js development with Bun, Vite, Vue 3, Pinia, and TypeScript. Automatically assists with JavaScript/TypeScript projects, high-performance tooling, and modern frameworks.
+name: nodejs-development
+description: |
+  Modern Node.js development with Bun, Vite, Vue 3, Pinia, and TypeScript. Covers
+  JavaScript/TypeScript projects, high-performance tooling, and modern frameworks.
+  Use when user mentions Node.js, Bun, Vite, Vue, Pinia, npm, pnpm, JavaScript runtime,
+  or building frontend/backend JS applications.
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite, WebFetch, WebSearch, BashOutput, KillShell, NotebookEdit
 ---
 

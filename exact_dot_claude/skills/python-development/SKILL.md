@@ -1,9 +1,11 @@
 ---
-name: Python Development
+name: python-development
 description: |
   Core Python development concepts, idioms, best practices, and language features.
-  Use for Python language fundamentals, design patterns, and Pythonic code.
+  Covers Python 3.10+ features, type hints, async/await, and Pythonic patterns.
   For running scripts, see uv-run. For project setup, see uv-project-management.
+  Use when user mentions Python, type hints, async Python, decorators, context managers,
+  or writing Pythonic code.
 allowed-tools: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, Edit, Write, NotebookEdit, Bash
 ---
 
