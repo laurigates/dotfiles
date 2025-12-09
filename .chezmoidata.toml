@@ -24,9 +24,8 @@
     ]
 
     # Git-based tools with special installation requirements
-    git_tools = [
-      { package = "zen-mcp-server", url = "git+https://github.com/BeehiveInnovations/zen-mcp-server" }
-    ]
+    # NOTE: pal-mcp-server is run via uvx at runtime, no global installation needed
+    git_tools = []
 
   [packages.completion_tools]
     # Tools that provide shell completions
@@ -246,7 +245,7 @@
   # By default, all servers are DISABLED to avoid bloating context in every repo.
   #
   # To install MCP servers for a specific project, use:
-  #   - /install-mcp command for interactive selection
+  #   - /configure:mcp command for interactive selection
   #   - MCP Management skill for automated installation based on project needs
   #
   # Note: The update-ai-tools.sh script only installs servers with enabled=true.
@@ -269,12 +268,12 @@
     description = "Semantic code search using embeddings"
     category = "search"
 
-  [mcp_servers.zen-mcp-server]
+  [mcp_servers.pal]
     enabled = false
     scope = "project"
     command = "uvx"
-    args = ["--from", "git+https://github.com/BeehiveInnovations/zen-mcp-server.git", "zen-mcp-server"]
-    description = "Zen productivity and focus tools"
+    args = ["--from", "git+https://github.com/BeehiveInnovations/pal-mcp-server.git", "pal-mcp-server"]
+    description = "PAL (Provider Abstraction Layer) - Multi-provider LLM integration"
     category = "productivity"
 
   [mcp_servers.playwright]
