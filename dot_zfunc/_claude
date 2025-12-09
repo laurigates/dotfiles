@@ -252,7 +252,7 @@ _claude_mcp_servers() {
             'playwright:Playwright MCP server'
             'context7:Context7 MCP server'
             'github:GitHub MCP server'
-            'zen-mcp-server:Zen MCP server'
+            'pal:PAL MCP server'
             'vectorcode:VectorCode MCP server'
             'graphiti-memory:Graphiti Memory MCP server'
             'sequential-thinking:Sequential Thinking MCP server'
