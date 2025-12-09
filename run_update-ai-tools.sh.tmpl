@@ -1,47 +1,8 @@
 #!/bin/sh
-# Update all AI tools
+# Update global AI CLI tools
 #
-# This script installs global AI tools (Claude Code, Gemini CLI).
-#
-# NOTE: MCP servers are now managed project-by-project:
-# - User-scoped MCP servers have been REMOVED to avoid context bloat
-# - All MCP servers in .chezmoidata.toml are disabled by default
-# - Use /configure:mcp command to install MCP servers per-project
-# - See MCP Management skill for intelligent server suggestions
-#
-# Legacy MCP server installation (if you enable servers in .chezmoidata.toml):
-# Configuration options in .chezmoidata.toml [mcp_servers] section:
-# - enabled: boolean - whether to include this server (true/false)
-# - scope: string - MCP scope ("user" or "project")
-# - command: string - the command to run
-# - args: array - command arguments
-# - transport: string - optional transport type ("http", "sse", "stdio")
-#
-# Example server configuration:
-#   [mcp_servers.my-server]
-#     enabled = true
-#     scope = "project"
-#     command = "npx"
-#     args = ["-y", "my-mcp-package"]
-#     transport = "stdio"  # optional
+# MCP servers are managed project-by-project via .mcp.json files.
+# See /configure:mcp command or MCP Management skill for details.
 
 bun install -g @anthropic-ai/claude-code
 bun install -g @google/gemini-cli
-
-# Add enabled MCP servers from .chezmoidata.toml configuration
-# Note: This only adds new servers, existing ones are left unchanged
-# to avoid disrupting active Claude sessions
-{{- range $name, $config := .mcp_servers }}
-{{- if $config.enabled }}
-# Add {{ $name }} if not already configured
-{{- if hasKey $config "transport" }}
-{{- if eq $config.transport "http" }}
-claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} {{ $config.command }} 2>/dev/null || echo "{{ $name }} already configured (skipped)"
-{{- else }}
-claude mcp add --scope={{ $config.scope }} --transport={{ $config.transport }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }} 2>/dev/null || echo "{{ $name }} already configured (skipped)"
-{{- end }}
-{{- else }}
-claude mcp add --scope={{ $config.scope }} {{ $name }} -- {{ $config.command }}{{ range $config.args }} {{ . }}{{ end }} 2>/dev/null || echo "{{ $name }} already configured (skipped)"
-{{- end }}
-{{- end }}
-{{- end }}
