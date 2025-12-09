@@ -1,3 +1,12 @@
+---
+name: vectorcode-init
+description: |
+  Initialize VectorCode with automatic configuration generation. Installs git hooks,
+  generates vectorcode.include and vectorcode.exclude patterns based on project type.
+  Use when user mentions "initialize VectorCode", "set up VectorCode", vectorcode.include,
+  vectorcode.exclude, or VectorCode configuration.
+---
+
 # VectorCode Initialization
 
 Automate VectorCode setup with intelligent repository analysis and configuration generation.

@@ -1,3 +1,12 @@
+---
+name: agent-coordination-patterns
+description: |
+  Coordinate multi-agent workflows: sequential, parallel, and iterative patterns.
+  Defines agent handoffs, dependencies, communication protocols, and integration.
+  Use when designing multi-agent workflows, coordinating agent handoffs,
+  planning agent dependencies, or building complex agent pipelines.
+---
+
 # Agent Coordination Patterns
 
 ## Description

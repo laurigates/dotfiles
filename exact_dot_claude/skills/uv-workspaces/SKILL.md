@@ -1,3 +1,12 @@
+---
+name: uv-workspaces
+description: |
+  Manage monorepo and multi-package Python projects with uv workspaces. Covers
+  workspace configuration, member dependencies, shared lockfiles, and building.
+  Use when user mentions uv workspaces, Python monorepo, multi-package projects,
+  workspace members, or shared dependencies across packages.
+---
+
 # UV Workspaces
 
 Quick reference for managing monorepo and multi-package projects with UV workspaces.

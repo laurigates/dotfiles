@@ -1,3 +1,12 @@
+---
+name: helm-debugging
+description: |
+  Debug and troubleshoot Helm deployment failures, template errors, and configuration
+  issues. Covers helm template, helm lint, dry-run, debugging YAML parse errors,
+  value type errors, and resource conflicts. Use when user mentions Helm errors,
+  debugging Helm, template rendering issues, or troubleshooting Helm deployments.
+---
+
 # Helm Debugging & Troubleshooting
 
 Comprehensive guidance for diagnosing and fixing Helm deployment failures, template errors, and configuration issues.

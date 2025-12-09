@@ -1,3 +1,12 @@
+---
+name: command-context-patterns
+description: |
+  Write safe context expressions in Claude Code slash command files. Covers
+  backtick expressions, find vs ls patterns, and commands that always exit 0.
+  Use when creating slash commands, writing context sections with backtick
+  expressions, or debugging command execution failures.
+---
+
 # Command Context Patterns
 
 Best practices for writing context expressions in Claude Code slash command files.

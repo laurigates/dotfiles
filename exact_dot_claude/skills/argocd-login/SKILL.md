@@ -1,3 +1,11 @@
+---
+name: argocd-login
+description: |
+  ArgoCD CLI authentication with SSO. Provides argocd login command, gRPC-Web
+  configuration, and post-login operations. Use when user mentions ArgoCD login,
+  argocd authentication, SSO auth, or accessing ArgoCD applications and clusters.
+---
+
 # ArgoCD CLI Login
 
 ArgoCD CLI authentication with SSO for the Data Portal cluster.

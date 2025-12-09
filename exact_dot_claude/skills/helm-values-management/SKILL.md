@@ -1,3 +1,12 @@
+---
+name: helm-values-management
+description: |
+  Manage Helm values across environments with override precedence, multi-environment
+  configurations, and secret management. Covers values files, --set, --set-string,
+  values schema validation. Use when user mentions Helm values, environment-specific
+  configs, values.yaml, --set overrides, or Helm configuration.
+---
+
 # Helm Values Management
 
 Comprehensive guidance for managing Helm values across environments, understanding override precedence, and advanced configuration strategies.

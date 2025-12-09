@@ -1,3 +1,12 @@
+---
+name: python-testing
+description: |
+  Python testing with pytest, coverage, fixtures, parametrization, and mocking.
+  Covers test organization, conftest.py, markers, async testing, and TDD workflows.
+  Use when user mentions pytest, unit tests, test coverage, fixtures, mocking,
+  or writing Python tests.
+---
+
 # Python Testing
 
 Quick reference for Python testing with pytest, coverage, fixtures, and best practices.

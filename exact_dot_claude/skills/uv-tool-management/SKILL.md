@@ -1,3 +1,12 @@
+---
+name: uv-tool-management
+description: |
+  Install and manage global Python CLI tools with uv (pipx alternative). Covers
+  uv tool install, uvx for ephemeral execution, tool isolation, and updates.
+  Use when user mentions uv tool, uvx, installing CLI tools globally, pipx
+  replacement, or running Python tools without installation.
+---
+
 # UV Tool Management
 
 Quick reference for installing and managing global Python tools with UV (pipx alternative).

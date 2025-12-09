@@ -1,3 +1,12 @@
+---
+name: go-feature-flag
+description: |
+  GO Feature Flag (GOFF) self-hosted feature flag solution with OpenFeature
+  integration. Covers flag configuration, relay proxy, targeting rules, rollouts.
+  Use when user mentions GO Feature Flag, GOFF, gofeatureflag, self-hosted
+  feature flags, or flags.goff.yaml configuration.
+---
+
 # GO Feature Flag
 
 Open-source feature flag solution with file-based configuration and OpenFeature integration. Use when setting up self-hosted feature flags, configuring flag files, or deploying the relay proxy.

@@ -1,3 +1,12 @@
+---
+name: python-packaging
+description: |
+  Build and publish Python packages with uv and modern build tools. Covers uv build,
+  uv publish, pyproject.toml, versioning, entry points, and PyPI publishing.
+  Use when user mentions building packages, publishing to PyPI, uv build, uv publish,
+  package distribution, or Python wheel/sdist creation.
+---
+
 # Python Packaging
 
 Quick reference for building and publishing Python packages with UV and modern build tools.

@@ -1,3 +1,12 @@
+---
+name: bun-lockfile-update
+description: |
+  Update Bun lockfiles (bun.lockb) with proper dependency management. Covers
+  bun update, bun install, lockfile regeneration, and security audits.
+  Use when user mentions bun lockfile, bun update, bun.lockb, updating Bun
+  dependencies, or resolving Bun lockfile conflicts.
+---
+
 # Bun Lockfile Update
 
 Comprehensive guidance for updating Bun lockfiles (`bun.lockb`) with proper dependency management practices.
