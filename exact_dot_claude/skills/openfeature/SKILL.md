@@ -1,3 +1,12 @@
+---
+name: openfeature
+description: |
+  OpenFeature vendor-agnostic feature flag SDK with standardized API across
+  languages. Covers SDK installation, flag evaluation, providers, and hooks.
+  Use when implementing feature flags, A/B testing, canary releases, or when
+  user mentions OpenFeature, feature toggles, or progressive rollouts.
+---
+
 # OpenFeature SDK Integration
 
 Vendor-agnostic feature flag SDK providing standardized API across languages and providers. Use when implementing feature flags, A/B testing, canary releases, or progressive rollouts with any feature flag backend.

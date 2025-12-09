@@ -1,6 +1,11 @@
 ---
-name: Ticket Drafting Guidelines
-description: Structured guidelines for drafting GitHub issues and technical tickets. Uses What/Why/How format with concise descriptions, markdown formatting, and positive framing without estimates or bold claims.
+name: ticket-drafting-guidelines
+description: |
+  Structured guidelines for drafting GitHub issues and technical tickets.
+  Uses What/Why/How format with concise descriptions, markdown formatting,
+  and positive framing without estimates or bold claims.
+  Use when user mentions creating issues, drafting tickets, writing bug reports,
+  GitHub issue templates, or structuring technical tickets.
 allowed-tools: Read, Grep, WebFetch
 ---
 

@@ -1,3 +1,12 @@
+---
+name: helm-release-management
+description: |
+  Manage Helm releases: install, upgrade, uninstall, list, and inspect releases.
+  Covers helm install, helm upgrade, helm list, helm status, release history.
+  Use when user mentions deploying Helm charts, upgrading releases, helm install,
+  helm upgrade, or managing Kubernetes deployments with Helm.
+---
+
 # Helm Release Management
 
 Comprehensive guidance for day-to-day Helm release operations including installation, upgrades, uninstallation, and release tracking.

@@ -1,3 +1,12 @@
+---
+name: uv-python-versions
+description: |
+  Install and manage Python interpreter versions with uv. Covers uv python install,
+  uv python list, uv python pin, version pinning with .python-version file.
+  Use when user mentions installing Python versions, switching Python versions,
+  .python-version, uv python, or managing CPython/PyPy interpreters.
+---
+
 # UV Python Version Management
 
 Quick reference for installing and managing Python interpreter versions with UV.

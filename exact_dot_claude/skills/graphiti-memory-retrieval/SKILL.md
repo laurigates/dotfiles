@@ -1,3 +1,12 @@
+---
+name: graphiti-memory-retrieval
+description: |
+  Search and retrieve information from Graphiti Memory graph database. Covers
+  search_memory_facts, search_memory_nodes, query construction, and group filtering.
+  Use when user mentions Graphiti search, memory retrieval, finding past work,
+  searching knowledge graph, or querying episodic memory.
+---
+
 # Graphiti Memory Retrieval
 
 ## Description

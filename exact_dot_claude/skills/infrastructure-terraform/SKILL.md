@@ -1,6 +1,11 @@
 ---
-name: Infrastructure Terraform
-description: Infrastructure as Code with Terraform including HCL configuration, state management, modular design, and plan-apply workflows. Automatically assists with cloud and on-prem resource provisioning.
+name: infrastructure-terraform
+description: |
+  Infrastructure as Code with Terraform including HCL configuration, state management,
+  modular design, and plan-apply workflows. Covers cloud and on-prem resource provisioning,
+  remote backends, and Terraform modules.
+  Use when user mentions Terraform, HCL, terraform plan, terraform apply, tfstate,
+  infrastructure as code, or IaC provisioning.
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite
 ---
 

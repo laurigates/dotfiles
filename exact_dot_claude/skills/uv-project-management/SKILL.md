@@ -1,3 +1,12 @@
+---
+name: uv-project-management
+description: |
+  Python project setup, dependencies, and lockfiles with uv package manager. Covers
+  uv init, uv add, uv remove, uv lock, uv sync, and pyproject.toml configuration.
+  Use when user mentions uv, creating Python projects, managing dependencies,
+  lockfiles, pyproject.toml, or Python packaging with uv.
+---
+
 # UV Project Management
 
 Quick reference for UV project setup, dependencies, and lockfiles.

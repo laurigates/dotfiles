@@ -1,6 +1,11 @@
 ---
-name: C++ Development
-description: Modern C/C++ development with CMake, Conan, Clang tools, C++20/23 standards, and cross-platform best practices. Automatically assists with high-performance systems programming and memory-safe design.
+name: cpp-development
+description: |
+  Modern C/C++ development with CMake, Conan, Clang tools, C++20/23 standards, and
+  cross-platform best practices. Covers high-performance systems programming, memory-safe
+  design, RAII patterns, and modern C++ idioms.
+  Use when user mentions C++, CMake, Conan, clang-format, clang-tidy, C++20, C++23,
+  systems programming, or compiling C/C++ code.
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite
 ---
 

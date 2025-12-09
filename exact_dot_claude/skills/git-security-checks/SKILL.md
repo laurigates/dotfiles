@@ -1,6 +1,11 @@
 ---
-name: Git Security Checks
-description: Pre-commit security validation and secret detection. Automatically runs detect-secrets scan and audit workflow, validates secrets baseline, and integrates with pre-commit hooks to prevent credential leaks.
+name: git-security-checks
+description: |
+  Pre-commit security validation and secret detection. Runs detect-secrets scan
+  and audit workflow, validates secrets baseline, and integrates with pre-commit
+  hooks to prevent credential leaks.
+  Use when user mentions scanning for secrets, detect-secrets, secret detection,
+  credential scanning, pre-commit security, or .secrets.baseline.
 allowed-tools: Bash, Read
 ---
 

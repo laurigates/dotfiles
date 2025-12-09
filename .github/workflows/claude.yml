@@ -53,7 +53,7 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Setup Python/uv for zen-mcp-server
+      - name: Setup Python/uv for pal-mcp-server
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'

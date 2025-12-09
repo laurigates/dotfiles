@@ -1,6 +1,11 @@
 ---
-name: Container Development
-description: Container development with Docker, Dockerfiles, 12-factor principles, multi-stage builds, and Skaffold workflows. Automatically assists with containerization, orchestration, and secure image construction.
+name: container-development
+description: |
+  Container development with Docker, Dockerfiles, 12-factor principles, multi-stage
+  builds, and Skaffold workflows. Covers containerization, orchestration, and secure
+  image construction with minimal base images and non-root users.
+  Use when user mentions Docker, Dockerfile, containers, docker-compose, multi-stage
+  builds, container images, or 12-factor app principles.
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite
 ---
 

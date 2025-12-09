@@ -1,6 +1,11 @@
 ---
-name: Git Commit Workflow
-description: Commit message conventions, staging practices, and commit best practices. Conventional commits, explicit staging workflow, logical change grouping, and humble fact-based communication style.
+name: git-commit-workflow
+description: |
+  Commit message conventions, staging practices, and commit best practices.
+  Covers conventional commits, explicit staging workflow, logical change grouping,
+  and humble fact-based communication style.
+  Use when user mentions committing changes, writing commit messages, git add,
+  git commit, staging files, or conventional commit format.
 allowed-tools: Bash, Read
 ---
 

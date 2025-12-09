@@ -88,7 +88,7 @@ Expert knowledge for managing Model Context Protocol (MCP) servers on a project-
 - **github**: GitHub API integration (issues, PRs, repos)
 
 ### Productivity
-- **zen-mcp-server**: Zen productivity and focus tools
+- **pal**: PAL (Provider Abstraction Layer) - Multi-provider LLM integration
 - **podio-mcp**: Podio project management integration
 
 ### Infrastructure & Monitoring
@@ -129,7 +129,7 @@ Example:
 2. playwright - Enhanced browser testing capabilities
 3. vectorcode - Semantic code navigation
 
-Would you like to install these? (Use /install-mcp command)
+Would you like to install these? (Use /configure:mcp command)
 ```
 
 ### 4. Create/Update .mcp.json
@@ -196,9 +196,9 @@ fi
     "args": ["vectorcode-mcp"],
     "env": { "VECTORCODE_INDEX_PATH": "${HOME}/.vectorcode" }
   },
-  "zen-mcp-server": {
+  "pal": {
     "command": "uvx",
-    "args": ["--from", "git+https://github.com/BeehiveInnovations/zen-mcp-server.git", "zen-mcp-server"]
+    "args": ["--from", "git+https://github.com/BeehiveInnovations/pal-mcp-server.git", "pal-mcp-server"]
   },
   "playwright": {
     "command": "bunx",
@@ -313,7 +313,7 @@ After installing MCP servers:
 
 ## Commands Integration
 
-Use `/install-mcp` command for interactive installation:
+Use `/configure:mcp` command for interactive installation:
 - Shows all available servers from registry
 - Guides through selection process
 - Creates/updates `.mcp.json` automatically
@@ -398,5 +398,5 @@ Use `/install-mcp` command for interactive installation:
 ## References
 
 - MCP registry: `~/.local/share/chezmoi/.chezmoidata.toml` (mcp_servers section)
-- Installation command: `/install-mcp`
+- Installation command: `/configure:mcp`
 - Claude Code MCP docs: https://docs.claude.com/claude-code/mcp

@@ -1,3 +1,12 @@
+---
+name: imagemagick-conversion
+description: |
+  Convert and manipulate images with ImageMagick. Covers format conversion,
+  resizing, batch processing, quality adjustment, and image transformations.
+  Use when user mentions image conversion, resizing images, ImageMagick,
+  magick command, batch image processing, or thumbnail generation.
+---
+
 # ImageMagick Image Conversion
 
 **Project:** Project-independent

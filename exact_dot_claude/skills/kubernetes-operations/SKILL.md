@@ -1,6 +1,10 @@
 ---
-name: Kubernetes Operations
-description: Kubernetes operations including deployment, management, troubleshooting, kubectl mastery, and cluster stability. Automatically assists with K8s workloads, networking, storage, and debugging.
+name: kubernetes-operations
+description: |
+  Kubernetes operations including deployment, management, troubleshooting, kubectl mastery,
+  and cluster stability. Covers K8s workloads, networking, storage, and debugging pods.
+  Use when user mentions Kubernetes, K8s, kubectl, pods, deployments, services, ingress,
+  ConfigMaps, Secrets, or cluster operations.
 allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite, WebFetch
 ---
 

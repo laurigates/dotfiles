@@ -1,3 +1,12 @@
+---
+name: helm-chart-development
+description: |
+  Create, test, and package Helm charts for Kubernetes. Covers helm create, Chart.yaml,
+  values.yaml, template development, chart dependencies, packaging, and repository publishing.
+  Use when user mentions Helm charts, helm create, Chart.yaml, values.yaml, helm lint,
+  helm template, helm package, or Kubernetes packaging.
+---
+
 # Helm Chart Development
 
 Comprehensive guidance for creating, testing, and packaging custom Helm charts with best practices for maintainability and reusability.

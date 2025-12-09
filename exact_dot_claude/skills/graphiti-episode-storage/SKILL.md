@@ -1,3 +1,12 @@
+---
+name: graphiti-episode-storage
+description: |
+  Store episodes in Graphiti Memory: agent executions, error resolutions, workflow
+  completions, technical decisions. Provides JSON schemas and storage patterns.
+  Use when user mentions storing in Graphiti, add_memory, episode storage,
+  building knowledge base, or documenting agent work.
+---
+
 # Graphiti Episode Storage
 
 ## Description

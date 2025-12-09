@@ -1,6 +1,11 @@
 ---
-name: Embedded Systems
-description: Embedded systems programming with ESP32/ESP-IDF, STM32, FreeRTOS, real-time systems, and hardware abstraction. Automatically assists with low-level embedded development and command-line workflows.
+name: embedded-systems
+description: |
+  Embedded systems programming with ESP32/ESP-IDF, STM32, FreeRTOS, real-time systems,
+  and hardware abstraction. Covers low-level development, RTOS patterns, peripheral
+  drivers, and firmware workflows.
+  Use when user mentions ESP32, ESP-IDF, STM32, FreeRTOS, embedded, microcontroller,
+  firmware, RTOS, or hardware programming.
 allowed-tools: Glob, Grep, Read, Edit, Write, Bash
 ---
 

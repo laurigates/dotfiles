@@ -48,8 +48,8 @@ Analyzes test results from any testing framework, uses Zen planner to create a s
    - Categorize issues by type and severity
    - Identify patterns and root causes
 
-2. **Plan Fixes with Zen Planner**
-   - Use `mcp__zen-mcp-server__planner` for systematic planning
+2. **Plan Fixes with PAL Planner**
+   - Use `mcp__pal__planner` for systematic planning
    - Break down complex fixes into actionable steps
    - Identify dependencies between fixes
    - Estimate effort and priority
@@ -99,7 +99,7 @@ The command produces:
    - Breakdown by category/severity
    - Top priorities
 
-2. **Fix Plan** (from Zen planner)
+2. **Fix Plan** (from PAL planner)
    - Step-by-step remediation strategy
    - Dependency graph
    - Effort estimates
@@ -154,9 +154,9 @@ Read the test result files from {{ARG1}} and extract:
 - Coverage gaps (if available)
 - Categorize by: severity (critical/high/medium/low), type (functional/security/performance/accessibility)
 
-**Step 2: Use Zen Planner**
+**Step 2: Use PAL Planner**
 
-Call `mcp__zen-mcp-server__planner` with model "gemini-2.5-pro" to create a systematic fix plan:
+Call `mcp__pal__planner` with model "gemini-2.5-pro" to create a systematic fix plan:
 - Step 1: Summarize findings and identify root causes
 - Step 2: Prioritize issues (impact × effort matrix)
 - Step 3: Break down fixes into actionable tasks
