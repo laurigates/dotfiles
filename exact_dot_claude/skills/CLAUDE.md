@@ -48,7 +48,7 @@ The more specific and explicit your description, the higher the activation rate.
 
 ## Skills in This Repository
 
-This repository contains **74 specialized skills** organized by domain:
+This repository contains **100+ specialized skills** organized by domain:
 
 ### Core Development Tools (9 skills)
 - **chezmoi-expert** - Comprehensive chezmoi guidance (templates, cross-platform configs, file naming)
@@ -430,6 +430,6 @@ Skills in `.claude/skills/` are automatically distributed to all team members wh
 ---
 
 **Last updated**: 2025-12-09
-**Total skills**: 96
+**Total skills**: 100+
 **Skill version format**: YAML frontmatter in SKILL.md
-**Key metric**: Skills with YAML frontmatter: 96/96 (100%) ✓
+**Key metric**: All skills have YAML frontmatter (100%) ✓

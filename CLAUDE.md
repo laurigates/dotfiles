@@ -20,6 +20,13 @@ This repository uses [chezmoi](https://www.chezmoi.io/) for dotfiles management.
 - **Auto-cleanup**: Orphaned skills/commands automatically removed (like Neovim plugins)
 - **Runtime protection**: Claude Code runtime directories (`projects/`, `session-env/`, `shell-snapshots/`) are preserved via `.chezmoiignore`
 
+**WARNING**: Do NOT create `.claude/` in the chezmoi source directory (`~/.local/share/chezmoi/.claude/`). This path is:
+- Gitignored to prevent confusion
+- A runtime directory that may be auto-created by Claude Code
+- NOT the managed configuration source
+
+Always use `exact_dot_claude/` for managed Claude Code configuration.
+
 **Benefits of exact_ approach:**
 - ✅ Atomic updates prevent race conditions with running Claude processes
 - ✅ Automatic removal of deleted/renamed skills and commands
@@ -32,7 +39,7 @@ alias ca-claude='chezmoi apply -v ~/.claude'
 ```
 
 ### Claude Code Skills & Plugins
-This repository includes **Skills** (96 total) - automatically discovered capabilities that Claude uses based on context:
+This repository includes **Skills** (100+ total) - automatically discovered capabilities that Claude uses based on context:
 
 **⚠️ Skill Activation**: Skills activate based on their YAML `description` field. See `.claude/skills/CLAUDE.md` for best practices on writing high-activation descriptions with specific trigger keywords.
 
@@ -109,7 +116,7 @@ All your favorite MCP servers are maintained in `.chezmoidata.toml` (disabled by
 - `graphiti-memory` - Graph-based memory and knowledge management
 - `context7` - Upstash context management
 - `consult7` - Consult large context window LLMs via OpenRouter for analyzing extensive codebases
-- `zen-mcp-server` - Zen productivity and focus tools
+- `pal` - PAL (Provider Abstraction Layer) - Multi-provider LLM integration
 - `podio-mcp` - Podio project management integration
 - `argocd-mcp` - ArgoCD GitOps deployment management
 - `sentry` - Sentry error tracking and monitoring
@@ -119,7 +126,7 @@ All your favorite MCP servers are maintained in `.chezmoidata.toml` (disabled by
 
 **Interactive Installation:**
 ```bash
-/install-mcp  # Claude command for guided installation
+/configure:mcp  # Claude command for guided installation
 ```
 
 **Manual Installation:**
@@ -205,7 +212,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 ### Claude Code Infrastructure
 - **`.claude/CLAUDE.md`** - High-level design principles, delegation strategy, and operational mandates for Claude Code
 - **`.claude/commands/CLAUDE.md`** - Comprehensive guide to slash commands, namespaces, and command creation
-- **`.claude/skills/CLAUDE.md`** - Skills system documentation: 96 skills by domain, activation best practices, description writing guide, and external resources
+- **`.claude/skills/CLAUDE.md`** - Skills system documentation, activation best practices, description writing guide, and external resources
 
 ### Configuration & Scripts
 - **`private_dot_config/CLAUDE.md`** - Application configuration management with chezmoi naming conventions and cross-platform templating
@@ -218,7 +225,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 | **Overall guidance** | `CLAUDE.md` (this file) | Repository overview, tools, security |
 | **Claude Code design** | `.claude/CLAUDE.md` | Delegation strategy, development principles |
 | **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
-| **Skills catalog** | `.claude/skills/CLAUDE.md` | 96 skills, activation best practices, trigger keyword guide |
+| **Skills catalog** | `.claude/skills/CLAUDE.md` | 100+ skills, activation best practices, trigger keyword guide |
 | **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
 | **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |
 
