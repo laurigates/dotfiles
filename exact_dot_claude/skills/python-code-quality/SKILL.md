@@ -1,3 +1,12 @@
+---
+name: python-code-quality
+description: |
+  Python code quality with ruff (linting & formatting) and mypy (type checking).
+  Covers pyproject.toml configuration, pre-commit hooks, and type hints.
+  Use when user mentions ruff, mypy, linting, formatting, type checking,
+  code style, or Python code quality.
+---
+
 # Python Code Quality
 
 Quick reference for Python code quality tools: ruff (linting & formatting), mypy (type checking).

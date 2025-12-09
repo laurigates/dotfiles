@@ -1,3 +1,12 @@
+---
+name: graphiti-learning-workflows
+description: |
+  Learn from historical data and build institutional knowledge with Graphiti Memory.
+  Integrates episode storage and retrieval into learning patterns across sessions.
+  Use when user mentions learning workflows, building knowledge over time,
+  analyzing past work patterns, or improving from historical data.
+---
+
 # Graphiti Learning Workflows
 
 ## Description

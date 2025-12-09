@@ -1,3 +1,12 @@
+---
+name: agent-file-coordination
+description: |
+  File-based context sharing for multi-agent workflows. Provides directory
+  organization, agent output templates, progress tracking, and inter-agent context.
+  Use when setting up multi-agent workflows, reading/writing agent context files,
+  or maintaining workflow transparency with file-based coordination.
+---
+
 # Agent File Coordination
 
 ## Description
