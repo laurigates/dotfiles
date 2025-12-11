@@ -15,14 +15,12 @@ An ADR is a document that captures an important architectural decision made alon
 | [0003](0003-skill-activation-trigger-keywords.md) | Skill Activation via Trigger Keywords | Accepted | 2024-12 |
 | [0004](0004-subagent-first-delegation-strategy.md) | Subagent-First Delegation Strategy | Accepted | 2024-12 |
 | [0005](0005-namespace-based-command-organization.md) | Namespace-Based Command Organization | Accepted | 2024-12 |
+| [0006](0006-documentation-first-development.md) | Documentation-First Development | Accepted | 2024-12 |
+| [0007](0007-layered-knowledge-distribution.md) | Layered Knowledge Distribution | Accepted | 2024-12 |
 
 ## Planned ADRs
 
 The following decisions have been identified for future documentation:
-
-### Stage 3: Development Culture
-- **ADR-0006**: Documentation-First Development
-- **ADR-0007**: Layered Knowledge Distribution (CLAUDE.md Architecture)
 
 ### Stage 4: Automation & Operations
 - **ADR-0008**: Project-Scoped MCP Servers
