@@ -17,15 +17,9 @@ An ADR is a document that captures an important architectural decision made alon
 | [0005](0005-namespace-based-command-organization.md) | Namespace-Based Command Organization | Accepted | 2024-12 |
 | [0006](0006-documentation-first-development.md) | Documentation-First Development | Accepted | 2024-12 |
 | [0007](0007-layered-knowledge-distribution.md) | Layered Knowledge Distribution | Accepted | 2024-12 |
-
-## Planned ADRs
-
-The following decisions have been identified for future documentation:
-
-### Stage 4: Automation & Operations
-- **ADR-0008**: Project-Scoped MCP Servers
-- **ADR-0009**: Conventional Commits + Release-Please Automation
-- **ADR-0010**: Tiered Test Execution with Specialized Agents
+| [0008](0008-project-scoped-mcp-servers.md) | Project-Scoped MCP Servers | Accepted | 2024-12 |
+| [0009](0009-conventional-commits-release-please.md) | Conventional Commits + Release-Please | Accepted | 2024-12 |
+| [0010](0010-tiered-test-execution.md) | Tiered Test Execution | Accepted | 2024-12 |
 
 ## ADR Format
 
