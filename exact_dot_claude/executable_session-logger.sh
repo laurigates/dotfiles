@@ -62,11 +62,18 @@ escape_csv() {
 # Build CSV line with proper escaping
 CSV_LINE="${TIMESTAMP},${SESSION_ID},${REASON},$(escape_csv "$PROJECT_NAME"),$(escape_csv "$PROJECT_DIR"),${IS_REMOTE},${TRANSCRIPT_LINES},${TOOL_CALLS},${USER_MESSAGES},${ASSISTANT_MESSAGES}"
 
-# Use flock to prevent race conditions when multiple sessions end simultaneously
-(
-    flock -x 200
-    echo "$CSV_LINE" >> "$CSV_FILE"
-) 200>"${CSV_FILE}.lock"
+# Use lockfile to prevent race conditions when multiple sessions end simultaneously
+# macOS-compatible locking using mkdir (atomic operation)
+LOCK_DIR="${CSV_FILE}.lock"
+while ! mkdir "$LOCK_DIR" 2>/dev/null; do
+    sleep 0.1
+done
+trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+
+echo "$CSV_LINE" >> "$CSV_FILE"
+
+rmdir "$LOCK_DIR" 2>/dev/null
+trap - EXIT
 
 # Exit successfully
 exit 0
