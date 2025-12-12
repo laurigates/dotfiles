@@ -165,6 +165,6 @@ AnotherError: Details
 
 ## References
 
-- [Official Docs](url)
-- [API Reference](url)
-- [GitHub - Relevant Issue](url)
+- [Official Docs](https://example.com/docs)
+- [API Reference](https://example.com/api)
+- [GitHub - Relevant Issue](https://example.com/issues/123)

@@ -194,8 +194,8 @@ VAR_NAME=value
 
 ## References
 
-- [Official Docs - Specific Section](url)
-- [Relevant GitHub Issue](url)
+- [Official Docs - Specific Section](https://example.com/docs)
+- [Relevant GitHub Issue](https://example.com/issues/123)
 ```
 
 ### 3.3 Quality Checks

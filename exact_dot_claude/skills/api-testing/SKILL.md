@@ -830,4 +830,4 @@ vi.mock('./slowService', () => ({
 - Supertest: https://github.com/ladjs/supertest
 - httpx: https://www.python-httpx.org/
 - FastAPI Testing: https://fastapi.tiangolo.com/tutorial/testing/
-- Express Testing: https://expressjs.com/en/advanced/best-practice-testing.html
+- Node.js Testing Best Practices: https://github.com/goldbergyoni/nodejs-testing-best-practices

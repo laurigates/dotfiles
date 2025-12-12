@@ -467,7 +467,7 @@ cd {frontend-dir}/
 
 ## Deployment
 
-See [deployment documentation](docs/deployment.md) for production setup.
+See project deployment documentation for production setup.
 
 ````
 

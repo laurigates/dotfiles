@@ -134,8 +134,8 @@ Use this template for new ai_docs entries:
 
 ## References
 
-- [Official Docs - Specific Section](url)
-- [GitHub Issue - Known Issue](url)
+- [Official Docs - Specific Section](https://example.com/docs)
+- [GitHub Issue - Known Issue](https://example.com/issue)
 ```
 
 ## Example Entry: Redis Connection Pooling
@@ -278,8 +278,8 @@ async def get_data(key: str, redis: Redis = Depends(get_redis)):
 
 ## References
 
-- [redis-py Connection Pools](https://redis-py.readthedocs.io/en/stable/connections.html#connection-pools)
-- [Redis Transactions](https://redis.io/docs/manual/transactions/)
+- [redis-py Connection Pools](https://redis.readthedocs.io/en/stable/connections.html)
+- [Redis Transactions](https://redis.io/docs/latest/develop/using-commands/transactions/)
 ```
 
 ## Maintenance
