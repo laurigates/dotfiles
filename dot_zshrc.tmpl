@@ -329,6 +329,49 @@ source <(fzf --zsh)
 
 
 #======================================================================
+# Custom Functions
+#======================================================================
+
+# Interactive PR merge with fzf preview (squash)
+ghsq() {
+  if [[ $# -eq 0 ]]; then
+    # No args: interactive fzf selection
+    local pr=$(gh pr list --limit 100 | \
+      fzf --ansi \
+          --preview 'gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
+          --preview-window right:65%:wrap \
+          --bind 'ctrl-/:toggle-preview' \
+          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+          --header '⏎ squash-merge | ^/ toggle preview | ^d/u scroll' | \
+      awk '{print $1}')
+    [[ -n "$pr" ]] && gh pr merge "$pr" --squash --delete-branch
+  else
+    # Args provided: pass through directly (preserves tab completion)
+    gh pr merge "$@" --squash --delete-branch
+  fi
+}
+
+# Interactive PR merge with fzf preview (rebase)
+ghrb() {
+  if [[ $# -eq 0 ]]; then
+    # No args: interactive fzf selection
+    local pr=$(gh pr list --limit 100 | \
+      fzf --ansi \
+          --preview 'gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
+          --preview-window right:65%:wrap \
+          --bind 'ctrl-/:toggle-preview' \
+          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+          --header '⏎ rebase-merge | ^/ toggle preview | ^d/u scroll' | \
+      awk '{print $1}')
+    [[ -n "$pr" ]] && gh pr merge "$pr" --rebase --delete-branch
+  else
+    # Args provided: pass through directly (preserves tab completion)
+    gh pr merge "$@" --rebase --delete-branch
+  fi
+}
+
+
+#======================================================================
 # Aliases
 #======================================================================
 
@@ -386,6 +429,10 @@ autoload -Uz compinit && compinit
 # Load completions that must run *after* compinit
 # Note: Completion definitions must be loaded AFTER compinit to ensure
 # they are properly registered with the zsh completion system
+
+# Enable completions for custom gh wrapper functions
+compdef ghsq='gh pr merge'
+compdef ghrb='gh pr merge'
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
