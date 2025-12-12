@@ -1,6 +1,6 @@
 ---
 description: Check and configure Skaffold for FVH standards
-allowed-tools: Glob, Grep, Read, Write, Edit, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix]"
 ---
 
@@ -15,6 +15,15 @@ This command validates Skaffold configuration for local Kubernetes development.
 **Skills referenced**: `fvh-skaffold`, `container-development`
 
 **Applicability**: Only for projects with Kubernetes deployment (k8s/, helm/ directories)
+
+## Version Checking
+
+**CRITICAL**: Before configuring Skaffold, verify latest versions:
+
+1. **Skaffold**: Check [skaffold.dev](https://skaffold.dev/) or [GitHub releases](https://github.com/GoogleContainerTools/skaffold/releases)
+2. **API version**: Verify recommended `apiVersion` for skaffold.yaml
+
+Use WebSearch or WebFetch to verify current Skaffold version and API version.
 
 ## Workflow
 

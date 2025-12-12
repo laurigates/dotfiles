@@ -1,6 +1,6 @@
 ---
 description: Check and configure modern package managers (uv for Python, bun for TypeScript)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--manager <uv|bun|npm|cargo>]"
 ---
 
@@ -17,6 +17,17 @@ This command validates package manager configuration and migrates to modern tool
 - **JavaScript/TypeScript**: bun (alternative to npm/yarn/pnpm) - significantly faster
 - **Rust**: cargo (standard, no alternatives needed)
 - **Go**: go mod (standard, no alternatives needed)
+
+## Version Checking
+
+**CRITICAL**: Before configuring package managers, verify latest versions:
+
+1. **uv**: Check [docs.astral.sh/uv](https://docs.astral.sh/uv/) or [GitHub releases](https://github.com/astral-sh/uv/releases)
+2. **bun**: Check [bun.sh](https://bun.sh/) or [GitHub releases](https://github.com/oven-sh/bun/releases)
+3. **npm**: Check [npm docs](https://docs.npmjs.com/) for latest version
+4. **Rust/cargo**: Check [Rust releases](https://releases.rs/)
+
+Use WebSearch or WebFetch to verify current versions before configuring package managers.
 
 ## Workflow
 

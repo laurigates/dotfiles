@@ -1,6 +1,6 @@
 ---
 description: Check and configure security scanning (dependency audits, SAST, secrets)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--type <dependencies|sast|secrets|all>]"
 ---
 
@@ -16,6 +16,19 @@ This command validates security scanning configuration and sets up automated sec
 1. **Dependency auditing** - Check for known vulnerabilities in dependencies
 2. **SAST (Static Application Security Testing)** - Analyze code for security issues
 3. **Secret detection** - Prevent committing secrets to version control
+
+## Version Checking
+
+**CRITICAL**: Before configuring security tools, verify latest versions:
+
+1. **Trivy**: Check [GitHub releases](https://github.com/aquasecurity/trivy/releases)
+2. **Grype**: Check [GitHub releases](https://github.com/anchore/grype/releases)
+3. **detect-secrets**: Check [GitHub releases](https://github.com/Yelp/detect-secrets/releases)
+4. **pip-audit**: Check [PyPI](https://pypi.org/project/pip-audit/)
+5. **cargo-audit**: Check [crates.io](https://crates.io/crates/cargo-audit)
+6. **CodeQL**: Check [GitHub releases](https://github.com/github/codeql-action/releases)
+
+Use WebSearch or WebFetch to verify current versions before configuring security tools.
 
 ## Workflow
 

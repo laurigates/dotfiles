@@ -1,6 +1,6 @@
 ---
 description: Check and configure code coverage thresholds and reporting
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--threshold <percentage>]"
 ---
 
@@ -19,6 +19,17 @@ This command validates coverage configuration and sets up reporting for CI/CD in
 - **Jest**: Built-in coverage with `--coverage`
 - **pytest**: `pytest-cov` plugin
 - **Rust**: `cargo-llvm-cov` or `cargo-tarpaulin`
+
+## Version Checking
+
+**CRITICAL**: Before configuring coverage tools, verify latest versions:
+
+1. **@vitest/coverage-v8**: Check [npm](https://www.npmjs.com/package/@vitest/coverage-v8)
+2. **pytest-cov**: Check [PyPI](https://pypi.org/project/pytest-cov/)
+3. **cargo-llvm-cov**: Check [crates.io](https://crates.io/crates/cargo-llvm-cov)
+4. **codecov**: Check [GitHub releases](https://github.com/codecov/codecov-action/releases)
+
+Use WebSearch or WebFetch to verify current versions before configuring coverage tools.
 
 ## Workflow
 

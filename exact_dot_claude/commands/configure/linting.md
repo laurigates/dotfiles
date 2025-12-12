@@ -1,6 +1,6 @@
 ---
 description: Check and configure linting tools (Biome, ESLint, Ruff, Clippy)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--linter <biome|eslint|ruff|clippy>]"
 ---
 
@@ -16,6 +16,17 @@ This command validates linting configuration and upgrades to modern tools.
 - **JavaScript/TypeScript**: Biome (preferred) or ESLint 9+ with flat config
 - **Python**: Ruff (replaces flake8, isort, pyupgrade)
 - **Rust**: Clippy with workspace lints
+
+## Version Checking
+
+**CRITICAL**: Before flagging outdated versions, verify latest releases:
+
+1. **Biome**: Check [biomejs.dev](https://biomejs.dev/) or [GitHub releases](https://github.com/biomejs/biome/releases)
+2. **ESLint**: Check [eslint.org](https://eslint.org/) or [npm](https://www.npmjs.com/package/eslint)
+3. **Ruff**: Check [docs.astral.sh/ruff](https://docs.astral.sh/ruff/) or [GitHub releases](https://github.com/astral-sh/ruff/releases)
+4. **Clippy**: Check [Rust releases](https://releases.rs/) for Clippy updates
+
+Use WebSearch or WebFetch to verify current versions before reporting outdated tools.
 
 ## Workflow
 

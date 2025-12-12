@@ -33,6 +33,7 @@ Execute each configure command in check-only mode:
 /configure:pre-commit --check-only
 /configure:release-please --check-only
 /configure:dockerfile --check-only
+/configure:container --check-only
 /configure:skaffold --check-only
 /configure:workflows --check-only
 /configure:sentry --check-only
@@ -70,6 +71,7 @@ Component Summary:
 │ Pre-commit      │ ⚠️ WARN  │ 2 outdated hooks                │
 │ Release-please  │ ✅ PASS  │ Fully compliant                 │
 │ Dockerfile      │ ❌ FAIL  │ Missing healthcheck             │
+│ Container       │ ⚠️ WARN  │ Missing vulnerability scan      │
 │ Skaffold        │ ✅ PASS  │ 3 profiles configured           │
 │ CI Workflows    │ ⚠️ WARN  │ Missing test workflow           │
 │ Sentry          │ ✅ PASS  │ SDK configured                  │
@@ -105,6 +107,7 @@ If `--fix` flag or user confirms:
    /configure:pre-commit --fix
    /configure:release-please --fix
    /configure:dockerfile --fix
+   /configure:container --fix
    /configure:skaffold --fix
    /configure:workflows --fix
    /configure:sentry --fix
@@ -137,6 +140,7 @@ components:
   pre-commit: "2025.1"
   release-please: "2025.1"
   dockerfile: "2025.1"
+  container: "2025.1"
   skaffold: "2025.1"
   workflows: "2025.1"
   sentry: "2025.1"
@@ -196,6 +200,7 @@ Not all components apply to all project types:
 | Pre-commit | ✅ | ✅ | ✅ | ✅ |
 | Release-please | ✅ | Optional | ✅ | ✅ |
 | Dockerfile | ✅ | ⏭️ SKIP | ✅ | ✅ |
+| Container | ✅ | ⏭️ SKIP | ✅ | ✅ |
 | Skaffold | If k8s/ | ⏭️ SKIP | If k8s/ | If k8s/ |
 | CI Workflows | ✅ | ✅ | ✅ | ✅ |
 | Sentry | ✅ | Optional | ✅ | Optional |
@@ -215,7 +220,8 @@ Not all components apply to all project types:
 - `/configure:status` - Quick read-only status overview
 - `/configure:pre-commit` - Pre-commit specific checks
 - `/configure:release-please` - Release automation checks
-- `/configure:dockerfile` - Container configuration checks
+- `/configure:dockerfile` - Dockerfile configuration checks
+- `/configure:container` - Comprehensive container infrastructure
 - `/configure:skaffold` - Kubernetes development checks
 - `/configure:workflows` - GitHub Actions checks
 - `/configure:sentry` - Sentry error tracking checks
