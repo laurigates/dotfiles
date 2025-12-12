@@ -431,8 +431,8 @@ autoload -Uz compinit && compinit
 # they are properly registered with the zsh completion system
 
 # Enable completions for custom gh wrapper functions
-compdef ghsq='gh pr merge'
-compdef ghrb='gh pr merge'
+compdef ghsq=gh
+compdef ghrb=gh
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
