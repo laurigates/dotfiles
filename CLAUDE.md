@@ -210,7 +210,8 @@ pre-commit run detect-secrets --all-files         # Run via pre-commit
 For detailed information about specific subdirectories, see the following CLAUDE.md files:
 
 ### Claude Code Infrastructure
-- **`.claude/CLAUDE.md`** - High-level design principles, delegation strategy, and operational mandates for Claude Code
+- **`.claude/CLAUDE.md`** - High-level design principles and directory management for Claude Code
+- **`.claude/rules/`** - Always-loaded project conventions (delegation, code quality, security, etc.)
 - **`.claude/commands/CLAUDE.md`** - Comprehensive guide to slash commands, namespaces, and command creation
 - **`.claude/skills/CLAUDE.md`** - Skills system documentation, activation best practices, description writing guide, and external resources
 
@@ -222,10 +223,11 @@ For detailed information about specific subdirectories, see the following CLAUDE
 
 | Topic | Documentation | Key Information |
 |-------|---------------|-----------------|
-| **Overall guidance** | `CLAUDE.md` (this file) | Repository overview, tools, security |
-| **Claude Code design** | `.claude/CLAUDE.md` | Delegation strategy, development principles |
+| **Overall guidance** | `CLAUDE.md` (this file) | Repository overview, tools, key files |
+| **Claude Code design** | `.claude/CLAUDE.md` | High-level design, directory structure |
+| **Project rules** | `.claude/rules/` | Delegation, code quality, security, TDD |
 | **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
-| **Skills catalog** | `.claude/skills/CLAUDE.md` | 100+ skills, activation best practices, trigger keyword guide |
+| **Skills catalog** | `.claude/skills/CLAUDE.md` | 100+ skills, activation best practices |
 | **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
 | **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |
 
@@ -247,147 +249,18 @@ For detailed information about specific subdirectories, see the following CLAUDE
 - **Neovim**: Editor with LSP, formatting, debugging
 - **Homebrew**: Cross-platform package management (bootstrap and system tools)
 
-## Documentation Requirements
-**ALWAYS check documentation before implementing changes or features.**
-
-### Implementation Checklist
-Before implementing any changes or features, complete this checklist:
-
-1. **Read relevant documentation sections thoroughly**
-2. **Verify syntax and parameters** in official documentation before coding
-3. **Check for breaking changes** and version compatibility requirements
-4. **Review best practices** and recommended patterns in the tool's documentation
-5. **Validate configuration options** against current documentation versions
-6. **Check for deprecated features** that should be avoided
-7. **Confirm implementation details match current best practices**
-
-### Critical Documentation Sources
-- Tool-specific documentation (mise, Fish, Neovim, Homebrew, chezmoi)
-- GitHub Actions documentation for workflow modifications
-- Platform-specific guides for cross-platform compatibility
-- Security documentation for secrets handling and API token management
-
 ## CI Pipeline
 
 Multi-platform testing (Ubuntu/macOS) with linting → build stages in `.github/workflows/smoke.yml`
 
-## Security
+## Security & Release Automation
 
+Security and release-please rules are now in `.claude/rules/`:
+- **Security**: See `.claude/rules/security.md` for API token management, secret scanning, and security practices
+- **Release-Please**: See `.claude/rules/release-please.md` for protected files and conventional commit workflow
+
+**Quick reference:**
 - API tokens in `~/.api_tokens` (not in repo)
 - Private files use `private_` prefix
-- No secrets committed
-- **detect-secrets** pre-commit hook prevents accidental secret commits
-- **TruffleHog** scans for leaked credentials in git history
-- Both tools run automatically on commit via pre-commit hooks
-
-## Release-Please Automation
-
-**CRITICAL RULE:** Never manually edit files managed by release-please automation.
-
-### Protected Files
-
-The following files are **automatically managed** by release-please and **must never be manually edited**:
-
-#### Hard Protection (Permission System Blocks)
-- `plugins/**/CHANGELOG.md` - Auto-generated from conventional commits
-- **Any** `CHANGELOG.md` file across all projects
-
-These files are **blocked** via Claude Code's permission system (`~/.claude/settings.json`). Attempts to edit them will fail with a clear explanation.
-
-#### Soft Protection (Skill Detection & Warning)
-- `plugins/**/.claude-plugin/plugin.json` - Version field only
-- `.claude-plugin/marketplace.json` - Version references
-- `package.json` - Version field in Node.js projects
-- `pyproject.toml` - Version field in Python projects
-- `Cargo.toml` - Version field in Rust projects
-
-The **release-please-protection skill** (`dot_claude/skills/release-please-protection/`) detects edits to version fields and provides warnings with proper workflow guidance.
-
-### Why This Matters
-
-Manual edits to these files cause:
-- 💥 **Merge conflicts** with automated release PRs
-- 🔢 **Version inconsistencies** across packages
-- 📝 **Duplicate or lost** CHANGELOG entries
-- 🚫 **Broken release workflows** requiring manual intervention
-
-### Proper Workflow
-
-Instead of manually editing version or changelog files:
-
-1. **Use conventional commit messages:**
-   ```bash
-   # For new features (minor version bump)
-   git commit -m "feat(auth): add OAuth2 support
-
-   Implements OAuth2 authentication with PKCE.
-   Includes refresh token rotation.
-
-   Refs: #42"
-
-   # For bug fixes (patch version bump)
-   git commit -m "fix(api): handle timeout edge case
-
-   Fixes race condition in token refresh.
-
-   Fixes: #123"
-
-   # For breaking changes (major version bump)
-   git commit -m "feat(api)!: redesign authentication
-
-   BREAKING CHANGE: Auth endpoint now requires OAuth2.
-   Migration guide: docs/migration/v2.md"
-   ```
-
-2. **Release-please automatically:**
-   - Analyzes conventional commits
-   - Determines semantic version bump
-   - Updates CHANGELOG.md with grouped entries
-   - Updates version fields in all manifests
-   - Creates a release PR for review
-
-3. **Review and merge the release PR:**
-   - Verify version bump is correct
-   - Check CHANGELOG entries are accurate
-   - Merge to trigger tagged release
-
-### Conventional Commit Types
-
-- `feat:` → Minor version bump (new features)
-- `fix:` → Patch version bump (bug fixes)
-- `feat!:` or `BREAKING CHANGE:` → Major version bump
-- `chore:`, `docs:`, `style:`, `refactor:` → No version bump
-
-### Emergency Override Procedure
-
-If you **absolutely must** manually edit protected files:
-
-```bash
-# 1. Temporarily disable protection
-vim ~/.claude/settings.json
-# Comment out CHANGELOG.md deny rules in permissions.deny
-
-# 2. Make your edits
-
-# 3. Re-enable protection
-# Uncomment the deny rules
-
-# 4. Sync with chezmoi if needed
-chezmoi apply
-```
-
-**Use this only for emergencies** - the automation exists to prevent errors.
-
-### Skill Integration
-
-The **release-please-protection skill** automatically:
-- Blocks CHANGELOG.md edits via permission system
-- Detects version field modifications before they happen
-- Suggests proper conventional commit messages
-- Provides workflow guidance and templates
-- Explains conflicts when automation fails
-
-See `dot_claude/skills/release-please-protection/` for full documentation:
-- `SKILL.md` - Skill behavior and response templates
-- `patterns.md` - Protected file patterns reference
-- `workflow.md` - Complete release-please workflow guide
+- Never manually edit `CHANGELOG.md` or version fields - use conventional commits
+- **detect-secrets** and **TruffleHog** run via pre-commit hooks
