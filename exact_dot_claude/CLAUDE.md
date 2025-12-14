@@ -40,8 +40,7 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 │   ├── code-quality.md     # SOLID, functional principles, fail-fast
 │   ├── tool-selection.md   # Decision framework for tools
 │   ├── security.md         # API tokens, secrets, scanning
-│   ├── release-please.md   # Protected files, conventional commits
-│   └── documentation-first.md  # Check docs before implementing
+│   └── release-please.md   # Protected files, conventional commits
 ├── skills/             # Context-dependent expertise (102 skills)
 ├── commands/           # Explicit user-invoked slash commands
 ├── agents/             # Subagent definitions
@@ -62,7 +61,7 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 ## Design Philosophy
 
 - **Delegate by default** - Use subagents for complex tasks (see `rules/delegation.md`)
-- **Documentation-first** - Research before implementing (see `rules/documentation-first.md`)
+- **Documentation-first** - Research before implementing (see `rules/development-process.md`)
 - **Test-driven** - RED → GREEN → REFACTOR (see `rules/development-process.md`)
 - **Fail fast** - Let errors surface clearly (see `rules/code-quality.md`)
 - **Humble communication** - Factual, concise, modest (see `rules/communication.md`)

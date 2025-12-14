@@ -1,4 +1,4 @@
-# ADR 0001: Migration to Claude Code Rules System
+# ADR 0011: Migration to Claude Code Rules System
 
 ## Status
 
@@ -36,12 +36,11 @@ Migrate universal operational rules from CLAUDE.md files to the new `.claude/rul
 |-----------|----------------------|---------|
 | `rules/delegation.md` | `exact_dot_claude/CLAUDE.md` | When to use subagents vs direct tools |
 | `rules/communication.md` | `exact_dot_claude/CLAUDE.md` | Tone, style, response formatting |
-| `rules/development-process.md` | `exact_dot_claude/CLAUDE.md` | TDD, documentation-first, git workflow |
+| `rules/development-process.md` | `exact_dot_claude/CLAUDE.md` + Root `CLAUDE.md` | TDD, documentation-first, git workflow |
 | `rules/code-quality.md` | `exact_dot_claude/CLAUDE.md` | SOLID, functional principles, fail-fast |
 | `rules/tool-selection.md` | `exact_dot_claude/CLAUDE.md` | Decision framework for tools |
 | `rules/security.md` | Root `CLAUDE.md` | API tokens, secrets, scanning |
 | `rules/release-please.md` | Root `CLAUDE.md` | Protected files, conventional commits |
-| `rules/documentation-first.md` | Root `CLAUDE.md` | Check docs before implementing |
 
 ### Content Kept in CLAUDE.md
 
@@ -68,7 +67,7 @@ All 102 skills remain as skills because they:
 
 ### Negative
 
-- **More files to manage**: 8 rule files instead of 2 large CLAUDE.md sections
+- **More files to manage**: 7 rule files instead of 2 large CLAUDE.md sections
 - **Learning curve**: Team members need to understand rules vs skills vs CLAUDE.md
 - **Chezmoi complexity**: Additional directory (`rules/`) under `exact_dot_claude/`
 
@@ -115,8 +114,7 @@ exact_dot_claude/
 │   ├── code-quality.md
 │   ├── tool-selection.md
 │   ├── security.md
-│   ├── release-please.md
-│   └── documentation-first.md
+│   └── release-please.md
 ├── skills/                # Unchanged: 102 skills
 ├── commands/              # Unchanged
 └── ...
@@ -138,6 +136,13 @@ Rules load in this order (lower number = loaded first, higher takes precedence):
 3. `./.claude/CLAUDE.md` + `./.claude/rules/**/*.md` - **Same level**
 4. `./.claude/CLAUDE.local.md` - Personal overrides
 5. `./src/CLAUDE.md` - Subdirectory context
+
+## Related Files
+
+- `.claude/rules/` - The rules directory this ADR introduces
+- `.claude/CLAUDE.md` - High-level design documentation updated to reference rules
+- `CLAUDE.md` (root) - Project overview updated with rules references
+- `docs/adr/0001-chezmoi-exact-directory-strategy.md` - Related decision on `exact_` prefix for `.claude/` management
 
 ## References
 
