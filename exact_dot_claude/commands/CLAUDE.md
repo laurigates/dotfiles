@@ -73,10 +73,11 @@ Commands are organized by namespace for clarity and discoverability:
 | `/configure:all` | Run all FVH compliance checks | Comprehensive infrastructure validation |
 | `/configure:status` | Quick read-only compliance overview | Pre-flight check without modifications |
 | `/configure:cache-busting` | Configure cache-busting strategies | Next.js and Vite asset hashing, CDN headers |
+| `/configure:container` | Configure container infrastructure | Builds, registry, scanning, devcontainer |
 | `/configure:coverage` | Configure code coverage | Thresholds, reporting, CI integration |
 | `/configure:dead-code` | Configure dead code detection | Knip, Vulture, cargo-machete |
 | `/configure:docs` | Configure documentation standards | TSDoc, JSDoc, pydoc, rustdoc with tests |
-| `/configure:dockerfile` | Validate container configuration | Multi-stage builds, healthchecks |
+| `/configure:dockerfile` | Validate Dockerfile | Minimal images, non-root, multi-stage |
 | `/configure:editor` | Configure editor/IDE settings | .editorconfig, VS Code, extensions |
 | `/configure:formatting` | Configure code formatters | Biome, Prettier, Ruff format, rustfmt |
 | `/configure:github-pages` | Configure GitHub Pages deployment | Documentation hosting workflow |
@@ -92,7 +93,7 @@ Commands are organized by namespace for clarity and discoverability:
 | `/configure:tests` | Configure testing frameworks | Vitest, pytest, cargo-nextest |
 | `/configure:ux-testing` | Configure UX testing infrastructure | Playwright, accessibility, visual regression |
 | `/configure:feature-flags` | Configure feature flag infrastructure | OpenFeature SDK, GO Feature Flag, flagd |
-| `/configure:workflows` | Validate GitHub Actions workflows | Action versions, permissions |
+| `/configure:workflows` | Configure GitHub Actions CI/CD workflows | Container builds, tests, releases |
 
 ### `deploy:` - Deployment Operations
 

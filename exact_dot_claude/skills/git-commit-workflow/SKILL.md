@@ -84,16 +84,18 @@ Fixes #123, #124"
 - Use imperative mood ("add feature" not "added feature")
 - Keep first line under 72 characters
 - Be concise and factual
-- Use GitHub keywords to auto-close issues: `Fixes #123`, `Closes #456`, `Resolves #789`
+- **ALWAYS reference related issues** - every commit should link to relevant issues
+- Use GitHub closing keywords: `Fixes #123`, `Closes #456`, `Resolves #789`
+- Use `Refs #N` for related issues that shouldn't auto-close
 - Use lowercase for type and scope
 - Be humble and modest
-- Reference related issues even without closing: `Refs #234`
 
 **DON'T:**
 - Use past tense ("added" or "fixed")
 - Include unnecessary details in subject line
 - Use vague descriptions ("update stuff", "fix bug")
-- Forget to reference related issues when applicable
+- **Omit issue references** - always link commits to their context
+- Use closing keywords (`Fixes`) when you only mean to reference (`Refs`)
 
 ### Scope Guidelines
 
@@ -344,26 +346,67 @@ feat(auth): add OAuth2 support
 # Use blank line between subject and body
 ```
 
-### GitHub Issue Linking Keywords
+### GitHub Issue References (Autolink Format)
 
-GitHub recognizes these keywords to automatically link and close issues when commits are merged to the default branch:
+**ALWAYS reference related GitHub issues in commit messages.** This creates traceability, enables project management, and provides context for future code archaeology.
+
+#### Autolink Reference Formats
+
+GitHub automatically converts these patterns into clickable links:
+
+| Format | Example | Use Case |
+|--------|---------|----------|
+| `#N` | `#123` | Same repository issue/PR |
+| `GH-N` | `GH-123` | Alternative same-repo format |
+| `owner/repo#N` | `octo-org/api#456` | Cross-repository reference |
+
+#### Closing Keywords
+
+GitHub recognizes **9 keywords** to automatically close issues when commits merge to the default branch:
 
 | Keyword | Variants | Effect |
 |---------|----------|--------|
-| close | close, closes, closed | Closes the issue |
-| fix | fix, fixes, fixed | Closes the issue |
-| resolve | resolve, resolves, resolved | Closes the issue |
+| close | `close`, `closes`, `closed` | Closes the issue |
+| fix | `fix`, `fixes`, `fixed` | Closes the issue |
+| resolve | `resolve`, `resolves`, `resolved` | Closes the issue |
 
-**Syntax patterns:**
-- **Same repository:** `KEYWORD #ISSUE-NUMBER` (e.g., `Fixes #123`)
-- **Cross-repository:** `KEYWORD OWNER/REPO#ISSUE-NUMBER` (e.g., `Fixes octo-org/octo-repo#100`)
-- **Multiple issues:** Use full syntax for each (e.g., `Fixes #123, fixes #456`)
+#### Reference Syntax Patterns
 
-**Formatting flexibility:**
-- Case insensitive: `FIXES #123`, `Fixes #123`, `fixes #123`
-- Optional colon: `Fixes: #123`, `Fixes #123`
+```bash
+# Close issue in same repository
+Fixes #123
+Closes #456
+Resolves #789
 
-**Important:** Keywords only work when merged to the **default branch**. PRs targeting other branches won't auto-close issues.
+# Close issue in different repository
+Fixes octo-org/octo-repo#100
+
+# Close multiple issues (use full keyword for each)
+Fixes #123, fixes #456, fixes #789
+
+# Reference without closing (for related context)
+Refs #234
+Related to #567
+See #890
+```
+
+#### Formatting Flexibility
+
+- **Case insensitive:** `FIXES #123`, `Fixes #123`, `fixes #123`
+- **Optional colon:** `Fixes: #123`, `Fixes #123`
+- **Whitespace:** `Fixes #123` or `Fixes#123` (space optional)
+
+#### When to Use Each Pattern
+
+| Scenario | Pattern | Example |
+|----------|---------|---------|
+| Bug fix that resolves an issue | `Fixes #N` | `Fixes #123` |
+| Feature that completes an issue | `Closes #N` | `Closes #456` |
+| Work related to but not completing issue | `Refs #N` | `Refs #789` |
+| Partial progress on larger issue | `Refs #N` | `Refs #101` |
+| Breaking change with migration guide | `See #N` | `See #202` |
+
+**Important:** Keywords only auto-close issues when merged to the **default branch**. PRs targeting other branches link but don't auto-close.
 
 ### Issue Reference Examples
 

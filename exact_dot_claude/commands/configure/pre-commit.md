@@ -1,6 +1,6 @@
 ---
 description: Check and configure pre-commit hooks for FVH standards
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--type <frontend|infrastructure|python>]"
 ---
 
@@ -13,6 +13,19 @@ Check and configure pre-commit hooks against FVH (Forum Virium Helsinki) standar
 This command validates `.pre-commit-config.yaml` against FVH standards and optionally applies fixes.
 
 **Skills referenced**: `fvh-pre-commit`
+
+## Version Checking
+
+**CRITICAL**: Before flagging outdated hook versions, verify latest releases:
+
+1. **pre-commit-hooks**: Check [GitHub releases](https://github.com/pre-commit/pre-commit-hooks/releases)
+2. **conventional-pre-commit**: Check [GitHub releases](https://github.com/compilerla/conventional-pre-commit/releases)
+3. **prettier**: Check [npm](https://www.npmjs.com/package/prettier)
+4. **eslint**: Check [npm](https://www.npmjs.com/package/eslint)
+5. **ruff-pre-commit**: Check [GitHub releases](https://github.com/astral-sh/ruff-pre-commit/releases)
+6. **detect-secrets**: Check [GitHub releases](https://github.com/Yelp/detect-secrets/releases)
+
+Use WebSearch or WebFetch to verify current versions before reporting outdated hooks.
 
 ## Workflow
 

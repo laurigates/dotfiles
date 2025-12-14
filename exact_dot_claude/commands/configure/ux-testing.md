@@ -1,6 +1,6 @@
 ---
 description: Check and configure UX testing infrastructure (Playwright, accessibility, visual regression)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--a11y] [--visual]"
 ---
 
@@ -17,6 +17,16 @@ This command validates UX testing setup and optionally configures Playwright wit
 - **axe-core** - Automated accessibility testing (WCAG compliance)
 - **Playwright screenshots** - Visual regression testing
 - **Playwright MCP** - Browser automation via MCP integration
+
+## Version Checking
+
+**CRITICAL**: Before configuring UX testing tools, verify latest versions:
+
+1. **@playwright/test**: Check [playwright.dev](https://playwright.dev/) or [npm](https://www.npmjs.com/package/@playwright/test)
+2. **@axe-core/playwright**: Check [npm](https://www.npmjs.com/package/@axe-core/playwright)
+3. **playwright MCP**: Check [npm](https://www.npmjs.com/package/@anthropic/mcp-server-playwright)
+
+Use WebSearch or WebFetch to verify current versions before configuring UX testing infrastructure.
 
 ## Workflow
 

@@ -1,18 +1,38 @@
 ---
-description: Check and configure Dockerfile for FVH standards
-allowed-tools: Glob, Grep, Read, Write, Edit, AskUserQuestion, TodoWrite
-argument-hint: "[--check-only] [--fix] [--type <frontend|python>]"
+description: Check and configure Dockerfile for FVH standards (minimal Alpine/slim, non-root, multi-stage)
+allowed-tools: Glob, Grep, Read, Write, Edit, AskUserQuestion, TodoWrite, WebSearch, WebFetch
+argument-hint: "[--check-only] [--fix] [--type <frontend|python|go|rust>]"
 ---
 
 # /configure:dockerfile
 
-Check and configure Dockerfile against FVH (Forum Virium Helsinki) standards.
+Check and configure Dockerfile against FVH (Forum Virium Helsinki) standards with emphasis on **minimal images**, **non-root users**, and **multi-stage builds**.
 
 ## Context
 
-This command validates Dockerfile configuration for Node.js frontend and Python service projects.
+This command validates Dockerfile configuration for Node.js frontend, Python, Go, and Rust service projects.
 
 **Skills referenced**: `container-development`
+
+## Version Checking
+
+**CRITICAL**: Before flagging outdated base images, verify latest versions:
+
+1. **Node.js Alpine**: Check [Docker Hub node](https://hub.docker.com/_/node) for latest LTS Alpine tags
+2. **Python slim**: Check [Docker Hub python](https://hub.docker.com/_/python) for latest slim tags
+3. **nginx Alpine**: Check [Docker Hub nginx](https://hub.docker.com/_/nginx) for latest Alpine tags
+4. **Go Alpine**: Check [Docker Hub golang](https://hub.docker.com/_/golang) for latest Alpine tags
+5. **Rust Alpine**: Check [Docker Hub rust](https://hub.docker.com/_/rust) for latest Alpine tags
+
+Use WebSearch or WebFetch to verify current base image versions before reporting outdated images.
+
+## Security Requirements
+
+**Non-negotiable security standards:**
+- **Non-root user**: ALL containers MUST run as non-root (FAIL if missing)
+- **Multi-stage builds**: Required to minimize attack surface (FAIL if missing)
+- **Minimal base images**: Alpine for Node.js/Go/Rust, slim for Python
+- **HEALTHCHECK**: Required for Kubernetes probes
 
 ## Workflow
 

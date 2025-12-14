@@ -1,6 +1,6 @@
 ---
 description: Check and configure feature flag infrastructure (OpenFeature + providers)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--provider <goff|flagd|launchdarkly|split>]"
 ---
 
@@ -20,6 +20,17 @@ This command validates feature flag setup and optionally configures OpenFeature 
 - **OpenFeature SDK** - Standardized API for all languages
 - **GO Feature Flag (GOFF)** - Open-source, file-based provider (preferred for self-hosted)
 - **flagd** - Lightweight daemon provider for cloud-native deployments
+
+## Version Checking
+
+**CRITICAL**: Before configuring feature flags, verify latest SDK and provider versions:
+
+1. **OpenFeature JS SDK**: Check [npm](https://www.npmjs.com/package/@openfeature/js-sdk)
+2. **OpenFeature Python SDK**: Check [PyPI](https://pypi.org/project/openfeature-sdk/)
+3. **GO Feature Flag**: Check [GitHub releases](https://github.com/thomaspoignant/go-feature-flag/releases)
+4. **flagd**: Check [GitHub releases](https://github.com/open-feature/flagd/releases)
+
+Use WebSearch or WebFetch to verify current SDK versions before configuring feature flags.
 
 ## Workflow
 

@@ -342,14 +342,27 @@ Brief description of changes
 ## Testing
 How changes were tested
 
+## Issue References
+<!-- Use GitHub autolink format - ALWAYS include relevant issues -->
 Closes #123
+<!-- Or use: Fixes #N, Resolves #N, Refs #N -->
 ```
+
+**Issue Reference Guidelines:**
+- Use `Closes #N` / `Fixes #N` / `Resolves #N` to auto-close issues on merge
+- Use `Refs #N` / `Related to #N` for context without auto-closing
+- Cross-repo: `Fixes owner/repo#N`
+- Multiple: `Fixes #1, fixes #2, fixes #3` (repeat keyword)
 
 ### PR Creation Best Practices
 
 - **One focus per PR** - Single logical change
 - **Small PRs** - Easier to review (< 400 lines preferred)
-- **Link issues** - Use "Closes #123" or "Fixes #456"
+- **ALWAYS link issues** - Use GitHub autolink format for traceability:
+  - Closing keywords: `Closes #123`, `Fixes #456`, `Resolves #789`
+  - Reference without closing: `Refs #234`, `Related to #567`
+  - Cross-repository: `Fixes owner/repo#123`
+  - Multiple issues: `Fixes #1, fixes #2` (repeat keyword for each)
 - **Add labels** - Use GitHub labels for categorization
 - **Request reviewers** - Tag specific reviewers when needed
 

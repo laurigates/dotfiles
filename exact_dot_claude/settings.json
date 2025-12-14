@@ -47,7 +47,7 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
-  "alwaysThinkingEnabled": false,
+  "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901
   }

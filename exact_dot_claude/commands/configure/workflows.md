@@ -1,18 +1,35 @@
 ---
-description: Check and configure GitHub Actions workflows for FVH standards
-allowed-tools: Glob, Grep, Read, Write, Edit, AskUserQuestion, TodoWrite
+description: Check and configure GitHub Actions CI/CD workflows (container builds, tests, releases)
+allowed-tools: Glob, Grep, Read, Write, Edit, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix]"
 ---
 
 # /configure:workflows
 
-Check and configure GitHub Actions workflows against FVH (Forum Virium Helsinki) standards.
+Check and configure GitHub Actions CI/CD workflows against FVH (Forum Virium Helsinki) standards.
 
 ## Context
 
-This command validates `.github/workflows/` configuration against FVH standards.
+This command validates `.github/workflows/` configuration against FVH standards including:
+- **Container build workflows** - Multi-platform builds, registry push, security scanning
+- **Test workflows** - Linting, type checking, test execution, coverage
+- **Release workflows** - release-please automation, semantic versioning
 
 **Skills referenced**: `fvh-ci-workflows`, `github-actions-auth-security`
+
+## Version Checking
+
+**CRITICAL**: Before flagging outdated actions, verify latest versions:
+
+1. **GitHub Actions**: Check release pages for latest versions
+   - `actions/checkout` - [releases](https://github.com/actions/checkout/releases)
+   - `actions/setup-node` - [releases](https://github.com/actions/setup-node/releases)
+   - `docker/build-push-action` - [releases](https://github.com/docker/build-push-action/releases)
+   - `docker/login-action` - [releases](https://github.com/docker/login-action/releases)
+   - `docker/metadata-action` - [releases](https://github.com/docker/metadata-action/releases)
+   - `google-github-actions/release-please-action` - [releases](https://github.com/google-github-actions/release-please-action/releases)
+
+Use WebSearch or WebFetch to verify current versions before reporting outdated actions.
 
 ## Workflow
 
@@ -201,6 +218,9 @@ jobs:
 
 ## See Also
 
+- `/configure:container` - Comprehensive container infrastructure (builds, registry, scanning)
+- `/configure:dockerfile` - Dockerfile configuration and security
 - `/configure:release-please` - Release automation specifics
 - `/configure:all` - Run all FVH compliance checks
 - `fvh-ci-workflows` skill - Workflow patterns
+- `github-actions-inspection` skill - Workflow debugging

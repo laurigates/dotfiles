@@ -1,6 +1,6 @@
 ---
 description: Check and configure testing frameworks and infrastructure
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--framework <vitest|jest|pytest|nextest>]"
 ---
 
@@ -16,6 +16,17 @@ This command validates testing infrastructure and optionally configures or upgra
 - **JavaScript/TypeScript**: Vitest (preferred) or Jest
 - **Python**: pytest with pytest-cov
 - **Rust**: cargo-nextest for improved performance
+
+## Version Checking
+
+**CRITICAL**: Before flagging outdated versions, verify latest releases:
+
+1. **Vitest**: Check [vitest.dev](https://vitest.dev/) or [GitHub releases](https://github.com/vitest-dev/vitest/releases)
+2. **Jest**: Check [jestjs.io](https://jestjs.io/) or [npm](https://www.npmjs.com/package/jest)
+3. **pytest**: Check [pytest.org](https://pytest.org/) or [PyPI](https://pypi.org/project/pytest/)
+4. **cargo-nextest**: Check [nexte.st](https://nexte.st/) or [GitHub releases](https://github.com/nextest-rs/nextest/releases)
+
+Use WebSearch or WebFetch to verify current versions before reporting outdated frameworks.
 
 ## Workflow
 

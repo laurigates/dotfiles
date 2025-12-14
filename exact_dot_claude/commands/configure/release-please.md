@@ -1,6 +1,6 @@
 ---
 description: Check and configure release-please workflow for FVH standards
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix]"
 ---
 
@@ -13,6 +13,15 @@ Check and configure release-please against FVH (Forum Virium Helsinki) standards
 This command validates release-please configuration and workflow against FVH standards.
 
 **Skills referenced**: `fvh-release-please`, `release-please-protection`
+
+## Version Checking
+
+**CRITICAL**: Before configuring release-please, verify latest action version:
+
+1. **release-please-action**: Check [GitHub releases](https://github.com/google-github-actions/release-please-action/releases)
+2. **release-please CLI**: Check [GitHub releases](https://github.com/googleapis/release-please/releases)
+
+Use WebSearch or WebFetch to verify current versions before configuring release-please.
 
 ## Workflow
 

@@ -1,6 +1,6 @@
 ---
 description: Check and configure dead code detection (Knip, Vulture, cargo-machete)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--tool <knip|vulture|deadcode|machete>]"
 ---
 
@@ -16,6 +16,16 @@ This command validates dead code detection configuration and sets up analysis to
 - **JavaScript/TypeScript**: Knip (finds unused files, exports, dependencies)
 - **Python**: Vulture or deadcode (finds unused code)
 - **Rust**: cargo-machete (finds unused dependencies)
+
+## Version Checking
+
+**CRITICAL**: Before configuring dead code detection tools, verify latest versions:
+
+1. **Knip**: Check [knip.dev](https://knip.dev/) or [npm](https://www.npmjs.com/package/knip)
+2. **Vulture**: Check [PyPI](https://pypi.org/project/vulture/)
+3. **cargo-machete**: Check [crates.io](https://crates.io/crates/cargo-machete)
+
+Use WebSearch or WebFetch to verify current versions before configuring dead code detection.
 
 ## Workflow
 

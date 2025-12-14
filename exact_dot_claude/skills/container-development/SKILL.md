@@ -2,16 +2,25 @@
 name: container-development
 description: |
   Container development with Docker, Dockerfiles, 12-factor principles, multi-stage
-  builds, and Skaffold workflows. Covers containerization, orchestration, and secure
-  image construction with minimal base images and non-root users.
+  builds, and Skaffold workflows. Enforces MANDATORY non-root users, minimal Alpine/slim
+  base images, and security hardening. Covers containerization, orchestration, and secure
+  image construction.
   Use when user mentions Docker, Dockerfile, containers, docker-compose, multi-stage
-  builds, container images, or 12-factor app principles.
-allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite
+  builds, container images, container security, or 12-factor app principles.
+allowed-tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite, WebSearch, WebFetch
 ---
 
 # Container Development
 
-Expert knowledge for containerization and orchestration with focus on lean, secure container images and 12-factor app methodology.
+Expert knowledge for containerization and orchestration with focus on **security-first**, lean container images and 12-factor app methodology.
+
+## Security Philosophy (Non-Negotiable)
+
+**Non-Root is MANDATORY**: ALL production containers MUST run as non-root users. This is not optional.
+
+**Minimal Base Images**: Use Alpine (~5MB) for Node.js/Go/Rust. Use slim (~50MB) for Python (musl compatibility issues with Alpine).
+
+**Multi-Stage Builds Required**: Separate build and runtime environments. Build tools should NOT be in production images.
 
 ## Core Expertise
 
@@ -46,34 +55,52 @@ Expert knowledge for containerization and orchestration with focus on lean, secu
 
 ## Best Practices
 
-**Multi-Stage Dockerfile Pattern**
+## Version Checking
+
+**CRITICAL**: Before using base images, verify latest versions:
+- **Node.js Alpine**: Check [Docker Hub node](https://hub.docker.com/_/node) for latest LTS
+- **Python slim**: Check [Docker Hub python](https://hub.docker.com/_/python) for latest
+- **nginx Alpine**: Check [Docker Hub nginx](https://hub.docker.com/_/nginx)
+
+Use WebSearch or WebFetch to verify current versions.
+
+**Multi-Stage Dockerfile Pattern (Node.js - Non-Root Alpine)**
 ```dockerfile
-# Build stage
-FROM node:20-alpine AS builder
+# Build stage - use Alpine for minimal size
+FROM node:24-alpine AS build
+
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-WORKDIR /app
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-USER nodejs
-EXPOSE 3000
-CMD ["node", "dist/main.js"]
+# Runtime stage - minimal nginx Alpine
+FROM nginx:1.27-alpine
+
+# Create non-root user BEFORE copying files
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Security: Make nginx dirs writable by non-root
+RUN chown -R appuser:appgroup /var/cache/nginx /var/run /var/log/nginx
+
+USER appuser
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 ```
 
-**Security Best Practices**
-- Use minimal base images (alpine, distroless)
-- Run containers as non-root user
-- Implement health checks for container reliability
-- Scan images for vulnerabilities regularly
-- Keep base images updated
+**Security Best Practices (Mandatory)**
+- **Non-root user**: REQUIRED - never run as root in production
+- **Minimal base images**: Alpine for Node/Go/Rust, slim for Python
+- **Multi-stage builds**: REQUIRED - keep build tools out of runtime
+- **HEALTHCHECK**: REQUIRED for Kubernetes probes
+- **Vulnerability scanning**: Use Trivy or Grype in CI
+- **Version pinning**: Always use specific tags, never `latest`
 
 **12-Factor App Principles**
 - Configuration via environment variables
@@ -88,3 +115,10 @@ CMD ["node", "dist/main.js"]
 - Production-like local environment
 
 For detailed Dockerfile optimization techniques, orchestration patterns, security hardening, and Skaffold configuration, see REFERENCE.md.
+
+## Related Commands
+
+- `/configure:container` - Comprehensive container infrastructure validation
+- `/configure:dockerfile` - Dockerfile-specific configuration
+- `/configure:workflows` - GitHub Actions including container builds
+- `/configure:skaffold` - Kubernetes development configuration

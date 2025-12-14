@@ -1931,7 +1931,7 @@ chezmoi apply  # If not using symlink
 
 **MCP Servers:**
 - GitHub MCP Server: https://github.com/github/github-mcp-server
-- Podio MCP Server: https://www.npmjs.com/package/podio-mcp-server
+- Podio MCP Server: (custom MCP server, see `.chezmoidata.toml` for configuration)
 
 **External APIs:**
 - GitHub REST API: https://docs.github.com/en/rest

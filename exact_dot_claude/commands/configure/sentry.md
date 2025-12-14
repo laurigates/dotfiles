@@ -1,6 +1,6 @@
 ---
 description: Check and configure Sentry error tracking for FVH standards
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--type <frontend|python|node>]"
 ---
 
@@ -13,6 +13,17 @@ Check and configure Sentry error tracking integration against FVH (Forum Virium 
 This command validates Sentry SDK integration and configuration against FVH standards.
 
 **Skills referenced**: `sentry` (MCP server for Sentry API)
+
+## Version Checking
+
+**CRITICAL**: Before configuring Sentry SDKs, verify latest versions:
+
+1. **@sentry/vue** / **@sentry/react**: Check [npm](https://www.npmjs.com/package/@sentry/vue)
+2. **@sentry/node**: Check [npm](https://www.npmjs.com/package/@sentry/node)
+3. **sentry-sdk** (Python): Check [PyPI](https://pypi.org/project/sentry-sdk/)
+4. **@sentry/vite-plugin**: Check [npm](https://www.npmjs.com/package/@sentry/vite-plugin)
+
+Use WebSearch or WebFetch to verify current SDK versions before configuring Sentry.
 
 ## Workflow
 

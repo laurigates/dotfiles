@@ -1,6 +1,6 @@
 ---
 description: Check and configure code formatting (Biome, Prettier, Ruff, rustfmt)
-allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Glob, Grep, Read, Write, Edit, Bash, AskUserQuestion, TodoWrite, WebSearch, WebFetch
 argument-hint: "[--check-only] [--fix] [--formatter <biome|prettier|ruff|rustfmt>]"
 ---
 
@@ -16,6 +16,17 @@ This command validates code formatting configuration and upgrades to modern tool
 - **JavaScript/TypeScript**: Biome (preferred) or Prettier
 - **Python**: Ruff format (replaces Black)
 - **Rust**: rustfmt (standard)
+
+## Version Checking
+
+**CRITICAL**: Before flagging outdated formatters, verify latest releases:
+
+1. **Biome**: Check [biomejs.dev](https://biomejs.dev/) or [GitHub releases](https://github.com/biomejs/biome/releases)
+2. **Prettier**: Check [prettier.io](https://prettier.io/) or [npm](https://www.npmjs.com/package/prettier)
+3. **Ruff**: Check [docs.astral.sh/ruff](https://docs.astral.sh/ruff/) or [GitHub releases](https://github.com/astral-sh/ruff/releases)
+4. **rustfmt**: Bundled with Rust toolchain - check [Rust releases](https://releases.rs/)
+
+Use WebSearch or WebFetch to verify current versions before reporting outdated formatters.
 
 ## Workflow
 

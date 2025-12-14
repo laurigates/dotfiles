@@ -440,5 +440,5 @@ cargo llvm-cov --doc --html
 
 - [cargo-llvm-cov documentation](https://github.com/taiki-e/cargo-llvm-cov)
 - [LLVM coverage mapping](https://llvm.org/docs/CoverageMappingFormat.html)
-- [Codecov Rust guide](https://docs.codecov.com/docs/rust)
-- [Coveralls Rust guide](https://docs.coveralls.io/rust)
+- [Codecov Rust](https://about.codecov.io/language/rust/)
+- [coveralls-api crate](https://docs.rs/coveralls-api)

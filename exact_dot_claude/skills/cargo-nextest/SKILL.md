@@ -334,6 +334,6 @@ failure-output = "immediate-final"
 ## References
 
 - [nextest documentation](https://nexte.st/)
-- [Configuration reference](https://nexte.st/book/configuration.html)
-- [Expression language](https://nexte.st/book/filter-expressions.html)
-- [GitHub Actions integration](https://nexte.st/book/ci-features.html)
+- [Configuration reference](https://nexte.st/docs/configuration/)
+- [Expression language](https://nexte.st/docs/running/)
+- [CI Features](https://nexte.st/docs/ci-features/archiving/)
