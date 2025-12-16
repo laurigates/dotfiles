@@ -21,9 +21,9 @@ help:
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Apply dotfiles configuration to system
-apply:
+apply target="":
     @echo "{{BLUE}}Applying dotfiles configuration...{{NORMAL}}"
-    chezmoi apply -v
+    chezmoi apply {{ if target != "" { target } else { "" } }} -v
 
 # Check what changes would be made (alias for status)
 check: status
@@ -51,35 +51,52 @@ verify:
 test: lint smoke
 
 # Run all linters as used in CI
-lint:
-    @echo "{{BLUE}}Running linters...{{NORMAL}}"
+lint: lint-shell lint-lua lint-actions lint-brew
+
+# Lint shell scripts with shellcheck
+lint-shell:
+    @echo "{{BLUE}}Running shellcheck...{{NORMAL}}"
     @if command -v shellcheck >/dev/null 2>&1; then \
-        echo "{{GREEN}}Running shellcheck...{{NORMAL}}"; \
         find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \; || echo "{{YELLOW}}Warning: shellcheck found issues{{NORMAL}}"; \
     else \
         echo "{{YELLOW}}Warning: shellcheck not installed{{NORMAL}}"; \
     fi
+
+# Lint Neovim Lua configuration
+lint-lua:
+    @echo "{{BLUE}}Running luacheck...{{NORMAL}}"
     @if command -v luacheck >/dev/null 2>&1; then \
-        echo "{{GREEN}}Running luacheck...{{NORMAL}}"; \
         luacheck private_dot_config/nvim/lua || echo "{{YELLOW}}Warning: luacheck found issues{{NORMAL}}"; \
     else \
         echo "{{YELLOW}}Warning: luacheck not installed{{NORMAL}}"; \
     fi
+
+# Lint GitHub Actions workflows
+lint-actions:
+    @echo "{{BLUE}}Running actionlint...{{NORMAL}}"
     @if command -v actionlint >/dev/null 2>&1; then \
-        echo "{{GREEN}}Running actionlint...{{NORMAL}}"; \
         actionlint || echo "{{YELLOW}}Warning: actionlint found issues{{NORMAL}}"; \
     else \
         echo "{{YELLOW}}Warning: actionlint not installed{{NORMAL}}"; \
     fi
+
+# Check Brewfile integrity
+lint-brew:
+    @echo "{{BLUE}}Checking Brewfile integrity...{{NORMAL}}"
     @if [ -f Brewfile ]; then \
-        echo "{{GREEN}}Checking Brewfile integrity...{{NORMAL}}"; \
         brew bundle check --file=Brewfile || echo "{{YELLOW}}Warning: Brewfile check failed{{NORMAL}}"; \
     else \
         echo "{{YELLOW}}Warning: Brewfile not found{{NORMAL}}"; \
     fi
 
-# Alias for smoke test (deprecated, use 'just smoke')
-docker: smoke
+# Run pre-commit hooks on all files
+pre-commit:
+    @echo "{{BLUE}}Running pre-commit hooks...{{NORMAL}}"
+    @if command -v pre-commit >/dev/null 2>&1; then \
+        pre-commit run --all-files; \
+    else \
+        echo "{{YELLOW}}Warning: pre-commit not installed{{NORMAL}}"; \
+    fi
 
 # Run full smoke test in Docker (reproduces CI)
 smoke:
@@ -143,13 +160,6 @@ setup-nvim:
     fi
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Quality Assurance
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Run quality assurance checks
-qa: lint check
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Documentation
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -160,10 +170,6 @@ docs:
     @echo "  CLAUDE.md - AI assistant guidance"
     @echo "  CONVENTIONS.md - Development conventions"
     @echo "  docs/ - Detailed documentation"
-
-# Serve documentation locally (if available)
-docs-serve:
-    @echo "{{YELLOW}}Documentation serving not implemented yet{{NORMAL}}"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Utilities
@@ -223,17 +229,25 @@ clean:
     @find . -name "*.tmp" -delete 2>/dev/null || true
     @find . -name ".DS_Store" -delete 2>/dev/null || true
 
-# Run security audit on configurations
-security-audit:
-    @echo "{{BLUE}}Running security audit...{{NORMAL}}"
-    @echo "{{GREEN}}Checking for secrets in files...{{NORMAL}}"
-    @if command -v rg >/dev/null 2>&1; then \
-        rg -i "password|secret|token|key" --type-not lock --type-not json . || echo "{{GREEN}}No obvious secrets found{{NORMAL}}"; \
+# Scan for secrets in repository
+secrets:
+    @echo "{{BLUE}}Scanning for secrets...{{NORMAL}}"
+    @if command -v detect-secrets >/dev/null 2>&1; then \
+        if [ -f .secrets.baseline ]; then \
+            detect-secrets scan --baseline .secrets.baseline; \
+            echo "{{GREEN}}Secret scan complete (baseline: .secrets.baseline){{NORMAL}}"; \
+        else \
+            detect-secrets scan; \
+        fi \
+    elif command -v rg >/dev/null 2>&1; then \
+        echo "{{YELLOW}}detect-secrets not installed, using ripgrep fallback{{NORMAL}}"; \
+        rg -i "password|secret|token|api.?key" --type-not lock --type-not json . || echo "{{GREEN}}No obvious secrets found{{NORMAL}}"; \
     else \
-        echo "{{YELLOW}}Warning: ripgrep not installed, cannot check for secrets{{NORMAL}}"; \
+        echo "{{YELLOW}}Warning: neither detect-secrets nor ripgrep installed{{NORMAL}}"; \
     fi
 
 # Display terminal color capabilities
+[private]
 colors:
     @echo "{{BLUE}}Displaying terminal colors...{{NORMAL}}"
     @awk -v term_cols="${width:-$(tput cols)}" 'BEGIN{ \
@@ -271,7 +285,6 @@ ci: lint
 # Start development environment
 dev: status
     @echo "{{BLUE}}Starting development environment...{{NORMAL}}"
-    @echo "{{GREEN}}Running initial checks...{{NORMAL}}"
     @echo "{{GREEN}}Development environment ready{{NORMAL}}"
     @echo "{{YELLOW}}Run 'just apply' to apply changes{{NORMAL}}"
 
@@ -304,3 +317,49 @@ info:
     @echo -n "nvim: "; nvim --version 2>/dev/null | head -1 || echo "not installed"
     @echo -n "git: "; git --version 2>/dev/null || echo "not installed"
     @echo -n "just: "; just --version 2>/dev/null || echo "not installed"
+
+# Diagnose common issues
+doctor:
+    @echo "{{BLUE}}Running diagnostics...{{NORMAL}}"
+    @echo ""
+    @echo "{{BLUE}}Required Tools:{{NORMAL}}"
+    @for tool in chezmoi git fish mise just; do \
+        if command -v $tool >/dev/null 2>&1; then \
+            echo "  {{GREEN}}✓{{NORMAL}} $tool"; \
+        else \
+            echo "  {{RED}}✗{{NORMAL}} $tool (not installed)"; \
+        fi \
+    done
+    @echo ""
+    @echo "{{BLUE}}Optional Tools:{{NORMAL}}"
+    @for tool in nvim brew shellcheck luacheck actionlint pre-commit detect-secrets rg fd; do \
+        if command -v $tool >/dev/null 2>&1; then \
+            echo "  {{GREEN}}✓{{NORMAL}} $tool"; \
+        else \
+            echo "  {{YELLOW}}○{{NORMAL}} $tool (not installed)"; \
+        fi \
+    done
+    @echo ""
+    @echo "{{BLUE}}Chezmoi Status:{{NORMAL}}"
+    @if chezmoi verify . 2>/dev/null; then \
+        echo "  {{GREEN}}✓{{NORMAL}} Configuration verified"; \
+    else \
+        echo "  {{YELLOW}}!{{NORMAL}} Configuration has uncommitted changes"; \
+    fi
+    @if [ -d ~/.local/share/chezmoi/.git ]; then \
+        echo "  {{GREEN}}✓{{NORMAL}} Source directory is a git repo"; \
+    else \
+        echo "  {{YELLOW}}!{{NORMAL}} Source directory is not a git repo"; \
+    fi
+    @echo ""
+    @echo "{{BLUE}}Environment:{{NORMAL}}"
+    @if [ -n "$MISE_SHELL" ]; then \
+        echo "  {{GREEN}}✓{{NORMAL}} mise is activated"; \
+    else \
+        echo "  {{YELLOW}}!{{NORMAL}} mise is not activated (run: eval \"\$(mise activate bash)\")"; \
+    fi
+    @if [ -f ~/.api_tokens ]; then \
+        echo "  {{GREEN}}✓{{NORMAL}} API tokens file exists"; \
+    else \
+        echo "  {{YELLOW}}○{{NORMAL}} No ~/.api_tokens file"; \
+    fi
