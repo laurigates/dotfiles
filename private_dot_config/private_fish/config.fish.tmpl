@@ -1,4 +1,8 @@
+{{- if eq .chezmoi.os "darwin" -}}
+set -x MAKEFLAGS "-j{{ output "sysctl" "-n" "hw.ncpu" | trim }}"
+{{- else -}}
 set -x MAKEFLAGS "-j{{ output "nproc" | trim }}"
+{{- end }}
 set -x BAT_THEME TwoDark
 
 set -x OLLAMA_ORIGINS "app://obsidian.md*"
