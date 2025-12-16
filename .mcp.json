@@ -36,21 +36,6 @@
         "-y",
         "@playwright/mcp@latest"
       ]
-    },
-    "serena": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--context",
-        "claude-code",
-        "--project",
-        "/Users/lgates/.local/share/chezmoi"
-      ],
-      "env": {}
     }
   }
 }
