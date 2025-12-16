@@ -71,6 +71,47 @@ jobs:
         run: |
           brew install chezmoi
 
+      - name: Install Claude CLI
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          echo "Claude CLI version: $(claude --version)"
+
+      - name: Cache Claude Plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.claude/plugins
+          key: claude-plugins-v1-${{ runner.os }}-lgates-claude-plugins
+          restore-keys: |
+            claude-plugins-v1-${{ runner.os }}-
+
+      - name: Add Claude Plugins Marketplace
+        run: |
+          # Add the laurigates/claude-plugins marketplace
+          claude /plugin marketplace add laurigates/claude-plugins
+
+          # Install essential plugins for this repository
+          claude /plugin install dotfiles-plugin@lgates-claude-plugins
+          claude /plugin install git-plugin@lgates-claude-plugins
+          claude /plugin install github-actions-plugin@lgates-claude-plugins
+          claude /plugin install code-quality-plugin@lgates-claude-plugins
+          claude /plugin install testing-plugin@lgates-claude-plugins
+          claude /plugin install tools-plugin@lgates-claude-plugins
+
+          # List installed plugins for verification
+          echo "## 🔌 Installed Claude Plugins" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Marketplace: \`lgates-claude-plugins\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Plugins installed:" >> $GITHUB_STEP_SUMMARY
+          echo "- dotfiles-plugin" >> $GITHUB_STEP_SUMMARY
+          echo "- git-plugin" >> $GITHUB_STEP_SUMMARY
+          echo "- github-actions-plugin" >> $GITHUB_STEP_SUMMARY
+          echo "- code-quality-plugin" >> $GITHUB_STEP_SUMMARY
+          echo "- testing-plugin" >> $GITHUB_STEP_SUMMARY
+          echo "- tools-plugin" >> $GITHUB_STEP_SUMMARY
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
       - name: Generate allowed tools configuration
         id: tools-config
         run: |
