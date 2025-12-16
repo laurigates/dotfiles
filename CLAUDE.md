@@ -239,11 +239,14 @@ For detailed information about specific subdirectories, see the following CLAUDE
 
 ## Tools
 
-- **mise**: Unified tool version management and task runner
+- **just**: Command runner for project-specific tasks
+  - Configuration: `justfile` in repository root
+  - Run `just` or `just --list` to see available recipes
+  - Cross-platform, simple syntax, colored output
+- **mise**: Unified tool version management
   - Configuration: `private_dot_config/mise/config.toml.tmpl`
   - Manages: Python, Node, Go, Rust, and CLI tools
   - Backends: `pipx:` (Python tools via uvx), `aqua:` (CLI tools with security checksums)
-  - Task runner: Replaces Makefile with cross-platform `mise run` tasks
   - Lockfile: `mise.lock` for reproducible builds
 - **Fish**: Primary shell with Starship prompt
 - **Neovim**: Editor with LSP, formatting, debugging

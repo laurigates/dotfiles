@@ -20,6 +20,8 @@ An ADR is a document that captures an important architectural decision made alon
 | [0008](0008-project-scoped-mcp-servers.md) | Project-Scoped MCP Servers | Accepted | 2024-12 |
 | [0009](0009-conventional-commits-release-please.md) | Conventional Commits + Release-Please | Accepted | 2024-12 |
 | [0010](0010-tiered-test-execution.md) | Tiered Test Execution | Accepted | 2024-12 |
+| [0011](0011-claude-rules-migration.md) | Claude Rules Migration | Accepted | 2025-12 |
+| [0012](0012-justfile-command-runner.md) | Justfile Command Runner | Accepted | 2025-12 |
 
 ## ADR Format
 
