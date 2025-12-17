@@ -3,6 +3,51 @@
 # Appends session summaries to CSV file on session end
 set -euo pipefail
 
+# Generate a brief summary of the session using Claude CLI
+generate_summary() {
+    local transcript_path="$1"
+
+    # Check if required CLIs are available
+    if ! command -v claude &>/dev/null; then
+        echo ""
+        return
+    fi
+    if ! command -v jq &>/dev/null; then
+        echo ""
+        return
+    fi
+
+    # Check if transcript exists and has content
+    if [[ ! -f "$transcript_path" || ! -s "$transcript_path" ]]; then
+        echo ""
+        return
+    fi
+
+    # Extract user messages from transcript (they contain the actual requests)
+    local user_content
+    user_content=$(jq -r '
+        select(.type == "user") |
+        .message.content[] |
+        select(.type == "text") |
+        .text
+    ' "$transcript_path" 2>/dev/null | head -c 4000)
+
+    if [[ -z "$user_content" ]]; then
+        echo ""
+        return
+    fi
+
+    # Generate summary with haiku (fast and cheap)
+    # Use here-string to avoid potential echo flag interpretation issues
+    # Use timeout to prevent network issues from blocking session end
+    local summary
+    summary=$(timeout 15s claude -p --model haiku \
+        "Summarize this Claude Code session in one brief sentence (max 100 chars). Focus on the main task accomplished. Output only the summary, nothing else." \
+        <<< "$user_content" 2>/dev/null | tr '\n' ' ' | head -c 150 | sed 's/[[:space:]]*$//')
+
+    echo "$summary"
+}
+
 # Read hook input from stdin
 INPUT=$(cat)
 
@@ -34,6 +79,12 @@ if [[ -n "$TRANSCRIPT_PATH" && -f "$TRANSCRIPT_PATH" ]]; then
     ASSISTANT_MESSAGES=$(grep -c '"role":"assistant"' "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
 fi
 
+# Generate session summary using Claude CLI with haiku (fast and cheap)
+SESSION_SUMMARY=""
+if [[ -n "$TRANSCRIPT_PATH" ]]; then
+    SESSION_SUMMARY=$(generate_summary "$TRANSCRIPT_PATH" || echo "")
+fi
+
 # Get project name from directory
 PROJECT_NAME=$(basename "$PROJECT_DIR")
 
@@ -45,7 +96,7 @@ mkdir -p "$(dirname "$CSV_FILE")"
 
 # Create CSV header if file doesn't exist
 if [[ ! -f "$CSV_FILE" ]]; then
-    echo "timestamp,session_id,exit_reason,project_name,project_dir,is_remote,transcript_lines,tool_calls,user_messages,assistant_messages" > "$CSV_FILE"
+    echo "timestamp,session_id,exit_reason,project_name,project_dir,is_remote,transcript_lines,tool_calls,user_messages,assistant_messages,summary" > "$CSV_FILE"
 fi
 
 # Escape CSV fields (handle commas and quotes in project paths)
@@ -60,7 +111,7 @@ escape_csv() {
 }
 
 # Build CSV line with proper escaping
-CSV_LINE="${TIMESTAMP},${SESSION_ID},${REASON},$(escape_csv "$PROJECT_NAME"),$(escape_csv "$PROJECT_DIR"),${IS_REMOTE},${TRANSCRIPT_LINES},${TOOL_CALLS},${USER_MESSAGES},${ASSISTANT_MESSAGES}"
+CSV_LINE="${TIMESTAMP},${SESSION_ID},${REASON},$(escape_csv "$PROJECT_NAME"),$(escape_csv "$PROJECT_DIR"),${IS_REMOTE},${TRANSCRIPT_LINES},${TOOL_CALLS},${USER_MESSAGES},${ASSISTANT_MESSAGES},$(escape_csv "$SESSION_SUMMARY")"
 
 # Use lockfile to prevent race conditions when multiple sessions end simultaneously
 # macOS-compatible locking using mkdir (atomic operation)
