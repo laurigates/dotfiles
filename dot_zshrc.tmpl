@@ -371,6 +371,112 @@ ghrb() {
 }
 
 
+{{ if eq .chezmoi.os "darwin" }}
+# Power usage monitor - shows top energy-consuming processes
+# Usage: power [-n COUNT] [--json] [--help]
+power() {
+  local count=15
+  local json_output=false
+  local sample_ms=5000
+
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -n)
+        count="$2"
+        shift 2
+        ;;
+      --json)
+        json_output=true
+        shift
+        ;;
+      -t)
+        sample_ms="$2"
+        shift 2
+        ;;
+      --help|-h)
+        cat <<'EOF'
+power - Monitor process energy consumption on macOS
+
+Usage: power [-n COUNT] [-t MS] [--json] [--help]
+
+Options:
+  -n COUNT    Number of processes to show (default: 15)
+  -t MS       Sample duration in milliseconds (default: 5000)
+  --json      Output as JSON instead of table
+  --help      Show this help message
+
+Examples:
+  power              # Show top 15 processes
+  power -n 20        # Show top 20 processes
+  power --json       # Output as JSON
+  power -t 10000     # Sample for 10 seconds
+
+Note: Requires sudo for powermetrics access.
+EOF
+        return 0
+        ;;
+      *)
+        echo "Unknown option: $1" >&2
+        return 1
+        ;;
+    esac
+  done
+
+  # Run powermetrics and parse output
+  local raw_output
+  raw_output=$(sudo powermetrics --samplers tasks --show-process-energy -n 1 -i "$sample_ms" 2>/dev/null)
+
+  if [[ $? -ne 0 ]]; then
+    echo "Error: Failed to run powermetrics. Make sure you have sudo access." >&2
+    return 1
+  fi
+
+  if $json_output; then
+    # JSON output
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    echo "$raw_output" | awk -v count="$count" -v ts="$timestamp" -v sample_ms="$sample_ms" '
+      BEGIN {
+        started = 0
+        idx = 0
+        printf "{\n  \"sample_duration_ms\": %s,\n  \"timestamp\": \"%s\",\n  \"processes\": [\n", sample_ms, ts
+      }
+      /^Name[[:space:]]+ID[[:space:]]+CPU/ { started = 1; next }
+      started && NF >= 6 && $1 !~ /^(DEAD_TASKS|ALL_TASKS|kernel_task)$/ {
+        if (idx >= count) exit
+        name = $1
+        pid = $2
+        cpu = $3
+        energy = $6
+        if (idx > 0) printf ",\n"
+        printf "    {\"name\": \"%s\", \"pid\": %s, \"cpu_ms_per_s\": %s, \"energy_impact\": %s}", name, pid, cpu, energy
+        idx++
+      }
+      END {
+        printf "\n  ]\n}\n"
+      }
+    '
+  else
+    # Table output
+    echo "Sampling for $(( sample_ms / 1000 )) seconds..."
+    echo ""
+    printf "%-30s %8s %12s %15s\n" "Process" "PID" "CPU ms/s" "Energy Impact"
+    printf "%-30s %8s %12s %15s\n" "──────────────────────────────" "────────" "────────────" "───────────────"
+
+    echo "$raw_output" | awk -v count="$count" '
+      /^Name[[:space:]]+ID[[:space:]]+CPU/ { started = 1; next }
+      started && NF >= 6 && $1 !~ /^(DEAD_TASKS|ALL_TASKS|kernel_task)$/ {
+        if (idx >= count) exit
+        printf "%-30s %8s %12s %15s\n", $1, $2, $3, $6
+        idx++
+      }
+    '
+  fi
+}
+{{ end }}
+
 #======================================================================
 # Aliases
 #======================================================================

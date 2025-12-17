@@ -150,6 +150,42 @@ Consult `test-architecture` agent when:
 - Use `tmp/` directory in the project root for temporary test outputs and command results. Ensure `tmp/` is added to `.git/info/exclude` to prevent tracking.
 - Prefer to stay in the repository root directory, specify paths as command arguments to maintain clarity and avoid directory context switching.
 
+**Codifying Recurring Operations:**
+
+Proactively identify and codify recurring operations into executable task runners:
+
+- **Consistency**: Same commands executed identically across environments
+- **Iteration**: Refine operations over time with version control
+- **Reuse**: Portable patterns across projects
+- **Documentation**: Self-documenting executable specifications
+- **Onboarding**: Discoverable operations via `--list`
+
+**Task Runner Hierarchy** (preference order):
+
+| Tool | When to Use | Key Advantage |
+|------|-------------|---------------|
+| **Justfile** | Cross-project standard | Simple syntax, no dependencies |
+| **mise tasks** | Project-specific + tool versions | Integrated tool management |
+| **Makefile** | Legacy, build systems | Universal availability |
+
+**Standard Recipes** (all task runners should provide):
+
+- `help` / `--list` - Display commands (default)
+- `test` - Run test suite
+- `lint` - Run linters
+- `format` - Format code
+- `build` - Build artifacts
+- `clean` - Remove generated files
+- `start` / `stop` - Service lifecycle (if applicable)
+- `dev` - Development mode with watch (if applicable)
+
+**When to Codify:**
+
+- Command executed more than twice
+- Command has flags/options to remember
+- Command sequence must run in order
+- Team members ask "how do I...?"
+
 ### Code Quality & Design
 
 **Convention Over Configuration:**
