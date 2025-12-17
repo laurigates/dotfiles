@@ -7,8 +7,12 @@ set -euo pipefail
 generate_summary() {
     local transcript_path="$1"
 
-    # Check if claude CLI is available
+    # Check if required CLIs are available
     if ! command -v claude &>/dev/null; then
+        echo ""
+        return
+    fi
+    if ! command -v jq &>/dev/null; then
         echo ""
         return
     fi
@@ -34,10 +38,12 @@ generate_summary() {
     fi
 
     # Generate summary with haiku (fast and cheap)
+    # Use here-string to avoid potential echo flag interpretation issues
+    # Use timeout to prevent network issues from blocking session end
     local summary
-    summary=$(echo "$user_content" | claude -p --model haiku \
+    summary=$(timeout 15s claude -p --model haiku \
         "Summarize this Claude Code session in one brief sentence (max 100 chars). Focus on the main task accomplished. Output only the summary, nothing else." \
-        2>/dev/null | tr '\n' ' ' | head -c 150 | sed 's/[[:space:]]*$//')
+        <<< "$user_content" 2>/dev/null | tr '\n' ' ' | head -c 150 | sed 's/[[:space:]]*$//')
 
     echo "$summary"
 }
