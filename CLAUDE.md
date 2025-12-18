@@ -84,10 +84,43 @@ This repository includes **Skills** (100+ total) - automatically discovered capa
 
 Skills are located in `.claude/skills/` and managed via chezmoi's `exact_dot_claude/` source directory. Run `chezmoi apply -v ~/.claude` after editing skills.
 
-This repository also provides **Plugins** - installable packages distributed via the Claude Code marketplace:
-- **Dotfiles Toolkit** - 14 specialized agents and 20+ commands for development workflows, code quality, and infrastructure operations
+## Claude Plugins (External Repository)
 
-Plugins are located in `plugins/` and can be installed via the marketplace system. See `plugins/README.md` for details.
+Plugins have been migrated to a dedicated repository: **[laurigates/claude-plugins](https://github.com/laurigates/claude-plugins)**
+
+This external repository contains **23 Claude Code plugins** organized by domain:
+
+| Category | Plugins |
+|----------|---------|
+| **Languages** | python-plugin, rust-plugin, typescript-plugin |
+| **Infrastructure** | kubernetes-plugin, terraform-plugin, container-plugin |
+| **Development** | git-plugin, github-actions-plugin, code-quality-plugin |
+| **AI & Agents** | agent-patterns-plugin, graphiti-plugin, blueprint-plugin |
+| **Tools** | tools-plugin, testing-plugin, documentation-plugin |
+| **Specialized** | dotfiles-plugin, bevy-plugin, accessibility-plugin |
+
+### Installing Plugins
+
+**Interactive (Terminal):**
+```bash
+# Add the marketplace
+claude /plugin marketplace add laurigates/claude-plugins
+
+# Install individual plugins
+claude /plugin install git-plugin@lgates-claude-plugins
+claude /plugin install python-plugin@lgates-claude-plugins
+```
+
+**In GitHub Actions:**
+The `claude.yml` workflow automatically installs essential plugins:
+- `dotfiles-plugin` - Dotfiles management and chezmoi integration
+- `git-plugin` - Git workflows and commit conventions
+- `github-actions-plugin` - CI/CD and workflow automation
+- `code-quality-plugin` - Code review and quality checks
+- `testing-plugin` - Test execution and coverage
+- `tools-plugin` - Tool configuration and integration
+
+See `.github/workflows/claude.yml` for the complete workflow configuration.
 
 ## MCP Server Management
 
@@ -228,6 +261,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 | **Project rules** | `.claude/rules/` | Delegation, code quality, security, TDD |
 | **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
 | **Skills catalog** | `.claude/skills/CLAUDE.md` | 100+ skills, activation best practices |
+| **Plugins (external)** | [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins) | 23 plugins for Claude Code marketplace |
 | **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
 | **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |
 
@@ -255,6 +289,14 @@ For detailed information about specific subdirectories, see the following CLAUDE
 ## CI Pipeline
 
 Multi-platform testing (Ubuntu/macOS) with linting → build stages in `.github/workflows/smoke.yml`
+
+### Claude Code Workflow
+
+The `claude.yml` workflow enables AI-assisted development with:
+- Automatic plugin installation from [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins)
+- MCP server integration via `.mcp.json`
+- Plugin caching for faster CI runs
+- Configurable tool permissions via `.github/claude-tools-config.json`
 
 ## Security & Release Automation
 
