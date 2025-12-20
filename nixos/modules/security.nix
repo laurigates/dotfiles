@@ -74,10 +74,14 @@
   };
 
   # Automatic security updates (optional)
+  # To enable, set 'enable = true' and update the flake path to match your setup.
+  # The flake path should point to your NixOS configuration directory.
+  # Example: "/home/<username>/.config/nixos#<configuration-name>"
   system.autoUpgrade = {
-    enable = false; # Set to true for automatic updates
+    enable = false;
     allowReboot = false;
     dates = "04:00";
-    flake = "/home/lgates/.config/nixos#workstation";
+    # Flake path - update this to match your username and configuration
+    # flake = "/home/lgates/.config/nixos#workstation";
   };
 }

@@ -93,7 +93,9 @@
   xdg.configFile."nvim/init.lua".text = ''
     -- Bootstrap lazy.nvim
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-    if not vim.loop.fs_stat(lazypath) then
+    -- vim.uv is the new API in Neovim 0.10+; vim.loop is deprecated
+    local uv = vim.uv or vim.loop
+    if not uv.fs_stat(lazypath) then
       vim.fn.system({
         "git",
         "clone",
@@ -425,7 +427,9 @@
       end,
     })
 
-    -- Enable language servers (from dotfiles LSP config)
+    -- Enable language servers using Neovim 0.11+ native LSP API
+    -- This replaces nvim-lspconfig for simpler configuration
+    -- See: https://gpanders.com/blog/whats-new-in-neovim-0-11/
     vim.lsp.enable({
       "nil_ls",       -- Nix
       "lua_ls",       -- Lua

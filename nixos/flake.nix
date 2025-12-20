@@ -152,8 +152,18 @@
 
       # Home Manager standalone configurations (for non-NixOS)
       homeConfigurations = {
+        # x86_64 Linux
         "${user.name}@linux" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
+          extraSpecialArgs = { inherit inputs user; };
+          modules = [
+            { nixpkgs.overlays = overlays; }
+            ./home.nix
+          ];
+        };
+        # aarch64 Linux (Raspberry Pi, ARM servers, etc.)
+        "${user.name}@linux-arm64" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.aarch64-linux;
           extraSpecialArgs = { inherit inputs user; };
           modules = [
             { nixpkgs.overlays = overlays; }

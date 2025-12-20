@@ -181,7 +181,7 @@
     gh             # GitHub CLI
     glab           # GitLab CLI
     lazygit        # Git TUI
-    delta          # Diff viewer
+    # delta is declared above in Core CLI Tools
     git-crypt      # Encrypt files in git
 
     # === Data & Text Processing ===

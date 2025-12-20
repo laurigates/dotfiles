@@ -45,6 +45,9 @@
     keyMap = "us";
   };
 
+  # Create plugdev group for USB device access
+  users.groups.plugdev = {};
+
   # User account
   users.users.${user.name} = {
     isNormalUser = true;
@@ -186,17 +189,19 @@
         platformio-core  # Arduino/ESP32 USB access
         android-udev-rules
       ];
+      # Use group-based permissions (more secure than MODE="0666")
+      # User must be in 'plugdev' group (configured in extraGroups above)
       extraRules = ''
-        # ESP32/ESP8266 USB access
-        SUBSYSTEM=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="ea60", MODE="0666"
-        SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666"
+        # ESP32/ESP8266 USB access (Silicon Labs CP210x and CH340/CH341)
+        SUBSYSTEM=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="ea60", GROUP="plugdev", MODE="0660"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", GROUP="plugdev", MODE="0660"
 
         # Arduino USB access
-        SUBSYSTEM=="usb", ATTR{idVendor}=="2341", MODE="0666"
-        SUBSYSTEM=="usb", ATTR{idVendor}=="1b4f", MODE="0666"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="2341", GROUP="plugdev", MODE="0660"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="1b4f", GROUP="plugdev", MODE="0660"
 
         # STM32 DFU mode
-        SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="df11", MODE="0666"
+        SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="df11", GROUP="plugdev", MODE="0660"
       '';
     };
 
