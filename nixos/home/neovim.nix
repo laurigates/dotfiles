@@ -49,7 +49,7 @@
       nodePackages.prettier # JS/TS/JSON/etc
       prettierd             # Prettier daemon
       shfmt                  # Shell
-      ruff                   # Python
+      # ruff already declared above as linter
       black                  # Python
       isort                  # Python imports
       gofumpt               # Go

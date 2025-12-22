@@ -8,6 +8,8 @@
     autoPrune = {
       enable = true;
       dates = "weekly";
+      # WARNING: --volumes removes ALL unused volumes including named volumes with data.
+      # Remove --volumes if you want to preserve data in unused volumes.
       flags = [ "--all" "--volumes" ];
     };
     # Use overlay2 storage driver
