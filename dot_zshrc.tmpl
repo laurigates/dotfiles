@@ -490,6 +490,11 @@ EOF
 # Environment Variables & Path
 #======================================================================
 
+# Android SDK (for Tauri Android development)
+export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
+export NDK_HOME="$ANDROID_HOME/ndk/26.1.10909125"
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
+
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
