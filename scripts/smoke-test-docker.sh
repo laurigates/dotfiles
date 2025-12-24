@@ -32,14 +32,12 @@ ensure_dependencies() {
     # Check for pre-commit
     if ! command -v pre-commit &> /dev/null; then
         log_warning "pre-commit not found, attempting to install..."
-        if command -v uvx &> /dev/null; then
-            log_info "Installing pre-commit via uvx..."
-            # uvx runs tools directly, we need to install it properly
-            if command -v uv &> /dev/null; then
-                uv tool install pre-commit
-                # Add uv tools to PATH for this session
-                export PATH="$HOME/.local/bin:$PATH"
-            fi
+        # Check for uv first (uvx is just an alias for 'uv tool run')
+        if command -v uv &> /dev/null; then
+            log_info "Installing pre-commit via uv..."
+            uv tool install pre-commit
+            # Add uv tools to PATH for this session
+            export PATH="$HOME/.local/bin:$PATH"
         elif command -v pip3 &> /dev/null; then
             log_info "Installing pre-commit via pip3..."
             pip3 install --user pre-commit
