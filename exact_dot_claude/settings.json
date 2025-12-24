@@ -148,7 +148,8 @@
     "playwright@claude-plugins-official": true,
     "sentry@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
-    "terraform-plugin@lgates-claude-plugins": true
+    "terraform-plugin@lgates-claude-plugins": true,
+    "rust-plugin@lgates-claude-plugins": true
   },
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901

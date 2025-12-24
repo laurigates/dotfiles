@@ -21,7 +21,7 @@ bun = "latest"
 
 # Systems programming
 go = "1.23"
-rust = "stable"
+rust = "latest"
 
 # ============================================================================
 # Python Tools (via pipx backend - automatically uses uvx if uv is installed)
@@ -50,7 +50,7 @@ rust = "stable"
 
 # AI & Machine Learning
 "pipx:huggingface-hub" = "latest"
-"pipx:mlx-lm" = "latest"
+"pipx:mlx-lm" = { version = "latest", uvx_args = "--prerelease allow" }
 
 # Text Processing & Templating
 "pipx:jinjanator" = "latest"
@@ -106,6 +106,7 @@ rust = "stable"
 # Development Tools
 "aqua:cli/cli" = "latest"                     # gh (GitHub CLI)
 neovim = "nightly"
+just = "latest"
 
 # ============================================================================
 # Environment Variables
