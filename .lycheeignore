@@ -1,0 +1,16 @@
+# Lychee link checker ignore file
+# See: https://lychee.cli.rs/recipes/excluding-links/
+
+# NPM package pages return 403 for automated tools (bot protection)
+# These are valid links but npmjs.com blocks link checkers
+https://www\.npmjs\.com/package/.*
+
+# Sites with aggressive bot protection or slow response times
+# allaboutcircuits uses Cloudflare bot protection
+https://www\.allaboutcircuits\.com/.*
+
+# biomejs.dev occasionally has connection issues from CI runners
+https://biomejs\.dev/.*
+
+# ST Microelectronics site is slow and often times out
+https://www\.st\.com/.*

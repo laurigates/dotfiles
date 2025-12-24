@@ -248,5 +248,5 @@ Replace with individual shell scripts.
 
 - just documentation: https://just.systems/man/en/
 - just GitHub: https://github.com/casey/just
-- just vs Make: https://just.systems/man/en/chapter_18.html
+- just vs Make: https://just.systems/man/en/what-are-the-idiosyncrasies-of-make-that-just-avoids.html
 - Configuration: `justfile` in repository root
