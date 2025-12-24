@@ -29,6 +29,10 @@ log_section() { echo -e "\n${BLUE}━━━━━━━━━━━━━━━�
 ensure_dependencies() {
     log_section "Dependency Check"
 
+    # Ensure ~/.local/bin is in PATH for all tool installations
+    # Set once at the start to avoid redundant PATH modifications
+    export PATH="$HOME/.local/bin:$PATH"
+
     # Check for pre-commit
     if ! command -v pre-commit &> /dev/null; then
         log_warning "pre-commit not found, attempting to install..."
@@ -36,16 +40,12 @@ ensure_dependencies() {
         if command -v uv &> /dev/null; then
             log_info "Installing pre-commit via uv..."
             uv tool install pre-commit
-            # Add uv tools to PATH for this session
-            export PATH="$HOME/.local/bin:$PATH"
         elif command -v pip3 &> /dev/null; then
             log_info "Installing pre-commit via pip3..."
             pip3 install --user pre-commit
-            export PATH="$HOME/.local/bin:$PATH"
         elif command -v pip &> /dev/null; then
             log_info "Installing pre-commit via pip..."
             pip install --user pre-commit
-            export PATH="$HOME/.local/bin:$PATH"
         else
             log_error "Cannot install pre-commit: no suitable package manager found"
             log_info "Please install pre-commit manually: pip install pre-commit"
@@ -71,7 +71,6 @@ ensure_dependencies() {
         else
             log_info "Installing chezmoi via official installer..."
             sh -c "$(curl -fsSL https://www.chezmoi.io/get)" -- -b "$HOME/.local/bin"
-            export PATH="$HOME/.local/bin:$PATH"
         fi
         # Verify installation
         if command -v chezmoi &> /dev/null; then
