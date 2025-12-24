@@ -17,3 +17,6 @@ settings.local.json
 .claude/
 
 tmp/
+
+# Serena AI local directory
+.serena/
