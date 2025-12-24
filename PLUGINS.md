@@ -186,8 +186,8 @@ If you've cloned this repository and want to use the plugin locally:
 
 ## More Information
 
-- **Commands**: See [exact_dot_claude/commands/CLAUDE.md](./exact_dot_claude/commands/CLAUDE.md)
-- **Skills**: See [exact_dot_claude/skills/CLAUDE.md](./exact_dot_claude/skills/CLAUDE.md)
+- **Commands & Skills**: See [CLAUDE.md](./CLAUDE.md) for the complete catalog
+- **Plugins Repository**: See [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins) for the external plugin collection
 - **Claude Code Plugins**: [Official Announcement](https://www.anthropic.com/news/claude-code-plugins)
 
 ## Migrating from Direct Configuration

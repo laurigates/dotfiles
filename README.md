@@ -137,7 +137,7 @@ Full guide: See [PLUGINS.md](./PLUGINS.md) and [CLAUDE.md](./CLAUDE.md)
 - **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform, embedded-systems
 - **Agent/Memory**: agent-coordination-patterns, agent-file-coordination, multi-agent-workflows, graphiti-episode-storage, graphiti-learning-workflows, graphiti-memory-retrieval
 
-Skills activate automatically based on your work context. See [exact_dot_claude/skills/CLAUDE.md](./exact_dot_claude/skills/CLAUDE.md)
+Skills activate automatically based on your work context. See [CLAUDE.md](./CLAUDE.md) for the skills catalog.
 
 ## Further Documentation
 
