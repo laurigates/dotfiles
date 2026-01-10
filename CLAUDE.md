@@ -153,6 +153,7 @@ All your favorite MCP servers are maintained in `.chezmoidata.toml` (disabled by
 - `podio-mcp` - Podio project management integration
 - `argocd-mcp` - ArgoCD GitOps deployment management
 - `sentry` - Sentry error tracking and monitoring
+- `serena` - AI-powered code understanding and refactoring assistant
 - `sequential-thinking` - Enhanced reasoning with sequential thinking
 
 ### Installing MCP Servers
