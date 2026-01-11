@@ -329,6 +329,14 @@
     category = "infrastructure"
     env_vars = ["ARGOCD_SERVER", "ARGOCD_AUTH_TOKEN"]
 
+  [mcp_servers.serena]
+    enabled = false
+    scope = "project"
+    command = "uvx"
+    args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "claude-code", "--project", "${PWD##*/}"]
+    description = "Serena - AI-powered code understanding and refactoring assistant"
+    category = "ai"
+
   [mcp_servers.sequential-thinking]
     enabled = false
     scope = "project"
