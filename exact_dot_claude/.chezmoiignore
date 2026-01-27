@@ -1,4 +1,6 @@
 # Runtime directories created by Claude Code - don't manage or remove these
+cache/
+paste-cache/
 plans/
 projects/
 session-env/

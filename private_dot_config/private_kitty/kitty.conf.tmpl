@@ -945,6 +945,9 @@ map opt+left send_text all \x1bb
 map opt+right send_text all \x1bf
 # backward-kill-word
 map opt+backspace send_text all \x1b\x7f
+# workaround for [BUG] Ctrl-Z (SIGTSTP) no longer backgrounds Claude Code in 2.1.1
+# https://github.com/anthropics/claude-code/issues/16727
+map ctrl+z send_text all \x1a
 {{- end }}
 
 # # endregion
