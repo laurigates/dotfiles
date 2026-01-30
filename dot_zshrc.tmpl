@@ -336,6 +336,64 @@ source <(fzf --zsh)
 # Custom Functions
 #======================================================================
 
+# GitHub Issues → Claude: select issue and process with git:issue skill
+ghi() {
+  local selection
+  selection=$(gh issue list --json number,title,labels,updatedAt \
+    --jq '.[] | [
+      "#\(.number)",
+      (if (.labels | length) > 0 then (.labels | map(.name) | join(","))[:20] else "-" end),
+      (.updatedAt | fromdateiso8601 | strftime("%Y-%m-%d")),
+      .title[:60]
+    ] | @tsv' | \
+    column -t -s $'\t' | \
+    fzf --ansi \
+        --header '#       Labels               Updated     Title' \
+        --preview 'gh issue view {1}' \
+        --preview-window right:60%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
+
+  [[ -z "$selection" ]] && return 0
+
+  local issue_num="${${selection##*#}%% *}"
+  echo "Processing issue #$issue_num with Claude..."
+  claude "/git-plugin:git:issue $issue_num"
+}
+
+# GitHub PRs → Claude: select PR and address workflow/review feedback
+ghpc() {
+  local selection
+  selection=$(gh pr list --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
+    --jq '.[] | [
+      "#\(.number)",
+      (if .isDraft then "draft" else "ready" end),
+      (if (.statusCheckRollup | length) == 0 then "⏳CI"
+       elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
+       elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
+       else "⏳CI" end),
+      (if .reviewDecision == "APPROVED" then "✓rev"
+       elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
+       elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
+       else "-rev" end),
+      .headRefName[:25],
+      .title[:45]
+    ] | @tsv' | \
+    column -t -s $'\t' | \
+    fzf --ansi \
+        --header '#       State  CI    Review  Branch                    Title' \
+        --preview 'gh pr view {1} && echo && echo "--- Checks ---" && gh pr checks {1}' \
+        --preview-window right:60%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
+
+  [[ -z "$selection" ]] && return 0
+
+  local pr_num="${${selection##*#}%% *}"
+  echo "Addressing PR #$pr_num feedback with Claude..."
+  claude "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
+}
+
 # Interactive PR merge with fzf preview (squash)
 ghsq() {
   if [[ $# -eq 0 ]]; then
@@ -548,6 +606,8 @@ autoload -Uz compinit && compinit
 # Enable completions for custom gh wrapper functions
 compdef ghsq=gh
 compdef ghrb=gh
+compdef ghi=gh
+compdef ghpc=gh
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
