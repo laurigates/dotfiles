@@ -233,6 +233,9 @@ chpwd() {
 # Zsh Options (setopt)
 #======================================================================
 
+# Customize the partial line indicator (shown when output doesn't end with newline)
+PROMPT_EOL_MARK='%B%F{red}⮒%f%b'
+
 setopt auto_cd              # change directories without cd
 setopt complete_in_word
 setopt always_to_end
