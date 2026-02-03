@@ -352,7 +352,7 @@ ghi() {
     column -t -s $'\t' | \
     fzf --ansi \
         --header '#       Labels               Updated     Title' \
-        --preview 'gh issue view {1}' \
+        --preview 'GH_FORCE_TTY=1 gh issue view {1}' \
         --preview-window right:60%:wrap \
         --bind 'ctrl-/:toggle-preview' \
         --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
@@ -385,7 +385,7 @@ ghpc() {
     column -t -s $'\t' | \
     fzf --ansi \
         --header '#       State  CI    Review  Branch                    Title' \
-        --preview 'gh pr view {1} && echo && echo "--- Checks ---" && gh pr checks {1}' \
+        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks {1}' \
         --preview-window right:60%:wrap \
         --bind 'ctrl-/:toggle-preview' \
         --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
@@ -403,7 +403,7 @@ ghsq() {
     # No args: interactive fzf selection
     local pr=$(gh pr list --limit 100 | \
       fzf --ansi \
-          --preview 'gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
+          --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
           --preview-window right:65%:wrap \
           --bind 'ctrl-/:toggle-preview' \
           --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
@@ -422,7 +422,7 @@ ghrb() {
     # No args: interactive fzf selection
     local pr=$(gh pr list --limit 100 | \
       fzf --ansi \
-          --preview 'gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
+          --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
           --preview-window right:65%:wrap \
           --bind 'ctrl-/:toggle-preview' \
           --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \

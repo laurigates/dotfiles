@@ -14,6 +14,3 @@ CLAUDE.md
 /**/__pycache__/
 plugins/
 .mcp.json
-.claude/stats-cache.json
-.claude/telemetry/
-.claude/plugins/

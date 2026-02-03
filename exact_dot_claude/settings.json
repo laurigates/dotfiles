@@ -85,27 +85,10 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
-  "enabledPlugins": {
-    "accessibility-plugin@laurigates-plugins": true,
-    "agent-patterns-plugin@laurigates-plugins": true,
-    "agents-plugin@laurigates-plugins": true,
-    "api-plugin@laurigates-plugins": true,
-    "blueprint-plugin@laurigates-plugins": true,
-    "code-quality-plugin@laurigates-plugins": true,
-    "configure-plugin@laurigates-plugins": true,
-    "container-plugin@laurigates-plugins": true,
-    "documentation-plugin@laurigates-plugins": true,
-    "git-plugin@laurigates-plugins": true,
-    "github-actions-plugin@laurigates-plugins": true,
-    "hooks-plugin@laurigates-plugins": true,
-    "kubernetes-plugin@laurigates-plugins": true,
-    "project-plugin@laurigates-plugins": true,
-    "python-plugin@laurigates-plugins": true,
-    "testing-plugin@laurigates-plugins": true,
-    "tools-plugin@laurigates-plugins": true
-  },
+  "enabledPlugins": {},
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "promptSuggestionEnabled": false
 }

@@ -1,26 +1,22 @@
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
+file-history/
 paste-cache/
 plans/
+plugins/
 projects/
 session-env/
 shell-snapshots/
+tasks/
+telemetry/
 
 # Runtime files created by Claude Code
 .update.lock
 debug
 history.jsonl
+stats-cache.json
 statsig
 todos
 
-# Session logging runtime data
-session-logs.csv
-session-logs.csv.lock
-
 # Local settings override - not managed by chezmoi
 settings.local.json
-
-# Nested .claude directories (runtime artifacts)
-agents/.claude/
-commands/.claude/
-.claude/
