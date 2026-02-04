@@ -87,7 +87,20 @@ sketchybar --add item clock right \
            --subscribe volume volume_change \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change
+           --subscribe battery system_woke power_source_change \
+           --add item github_repos right \
+           --set github_repos \
+               update_freq=300 \
+               icon.drawing=off \
+               script="$PLUGIN_DIR/github_repos.sh" \
+               click_script="sketchybar --set github_repos popup.drawing=toggle" \
+               popup.align=right \
+               popup.height=25 \
+               popup.background.color=0xc0000000 \
+               popup.background.corner_radius=10 \
+               popup.background.border_width=2 \
+               popup.background.border_color=0xff444444 \
+           --subscribe github_repos mouse.clicked mouse.exited.global
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update

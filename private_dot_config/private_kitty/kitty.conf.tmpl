@@ -855,7 +855,7 @@ map kitty_mod+p>h kitten hints --type hash --program -
 map kitty_mod+f11    toggle_fullscreen
 map kitty_mod+u      kitten unicode_input
 map kitty_mod+f2     edit_config_file
-# map kitty_mod+f5     reload_config_file
+map kitty_mod+f5     reload_config_file
 map kitty_mod+escape kitty_shell window
 
 #: Open the kitty shell in a new window/tab/overlay/os_window to
@@ -937,8 +937,12 @@ map opt+f send_text all \x1bf
 map opt+d send_text all \x1bd
 # capitalize-word / custom binding (like fzf-cd-widget)
 map opt+c send_text all \x1bc
-# Send ESC+h (e.g., for Neovim M-h)
+# Send ESC+h/i/j/k/l for Neovim Alt key support (M-h, M-i, etc.)
 map opt+h send_text all \x1bh
+map opt+i send_text all \x1bi
+map opt+j send_text all \x1bj
+map opt+k send_text all \x1bk
+map opt+l send_text all \x1bl
 # backward-word (alt+arrow)
 map opt+left send_text all \x1bb
 # forward-word (alt+arrow)
