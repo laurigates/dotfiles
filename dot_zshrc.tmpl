@@ -411,8 +411,8 @@ ghsq() {
       awk '{print $1}')
     [[ -n "$pr" ]] && gh pr merge "$pr" --squash --delete-branch
   else
-    # Args provided: pass through directly (preserves tab completion)
-    gh pr merge "$@" --squash --delete-branch
+    # Args provided: strip completion suffix (e.g. "123[branch]" -> "123")
+    gh pr merge "${1%%\[*}" --squash --delete-branch
   fi
 }
 
@@ -430,8 +430,8 @@ ghrb() {
       awk '{print $1}')
     [[ -n "$pr" ]] && gh pr merge "$pr" --rebase --delete-branch
   else
-    # Args provided: pass through directly (preserves tab completion)
-    gh pr merge "$@" --rebase --delete-branch
+    # Args provided: strip completion suffix (e.g. "123[branch]" -> "123")
+    gh pr merge "${1%%\[*}" --rebase --delete-branch
   fi
 }
 
@@ -606,9 +606,25 @@ autoload -Uz compinit && compinit
 # Note: Completion definitions must be loaded AFTER compinit to ensure
 # they are properly registered with the zsh completion system
 
-# Enable completions for custom gh wrapper functions
-compdef ghsq=gh
-compdef ghrb=gh
+# Custom completion for gh PR merge wrappers (ghsq, ghrb)
+# Lists open PRs with fzf-tab preview of PR details
+_gh_pr_merge_complete() {
+  local -a prs
+  # Fetch open PRs: number, title, branch, state
+  prs=("${(@f)$(gh pr list --limit 100 --json number,title,headRefName,author --template '{{range .}}{{.number}}[{{.headRefName}}] {{.title}} ({{.author.login}}){{"\n"}}{{end}}' 2>/dev/null)}")
+  [[ ${#prs} -eq 0 ]] && return
+  _describe -t prs 'pull request' prs
+}
+
+compdef _gh_pr_merge_complete ghsq ghrb
+
+# fzf-tab preview for ghsq/ghrb: show PR details on hover
+zstyle ':fzf-tab:complete:ghsq:*' fzf-preview \
+  'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
+zstyle ':fzf-tab:complete:ghrb:*' fzf-preview \
+  'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
+
+# Enable completions for other custom gh wrapper functions
 compdef ghi=gh
 compdef ghpc=gh
 
