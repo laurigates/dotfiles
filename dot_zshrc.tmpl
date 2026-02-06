@@ -341,58 +341,72 @@ source <(fzf --zsh)
 
 # GitHub Issues → Claude: select issue and process with git:issue skill
 ghi() {
-  local selection
-  selection=$(gh issue list --json number,title,labels,updatedAt \
-    --jq '.[] | [
-      "#\(.number)",
-      (if (.labels | length) > 0 then (.labels | map(.name) | join(","))[:20] else "-" end),
-      (.updatedAt | fromdateiso8601 | strftime("%Y-%m-%d")),
-      .title[:60]
-    ] | @tsv' | \
-    column -t -s $'\t' | \
-    fzf --ansi \
-        --header '#       Labels               Updated     Title' \
-        --preview 'GH_FORCE_TTY=1 gh issue view {1}' \
-        --preview-window right:60%:wrap \
-        --bind 'ctrl-/:toggle-preview' \
-        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
+  local issue_num
+  if [[ $# -eq 0 ]]; then
+    # No args: interactive fzf selection
+    local selection
+    selection=$(gh issue list --json number,title,labels,updatedAt \
+      --jq '.[] | [
+        "#\(.number)",
+        (if (.labels | length) > 0 then (.labels | map(.name) | join(","))[:20] else "-" end),
+        (.updatedAt | fromdateiso8601 | strftime("%Y-%m-%d")),
+        .title[:60]
+      ] | @tsv' | \
+      column -t -s $'\t' | \
+      fzf --ansi \
+          --header '#       Labels               Updated     Title' \
+          --preview 'GH_FORCE_TTY=1 gh issue view {1}' \
+          --preview-window right:60%:wrap \
+          --bind 'ctrl-/:toggle-preview' \
+          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
 
-  [[ -z "$selection" ]] && return 0
+    [[ -z "$selection" ]] && return 0
+    issue_num="${${selection##*#}%% *}"
+  else
+    # Args provided: strip completion suffix (e.g. "123[title]" -> "123")
+    issue_num="${1%%\[*}"
+  fi
 
-  local issue_num="${${selection##*#}%% *}"
   echo "Processing issue #$issue_num with Claude..."
   claude "/git-plugin:git:issue $issue_num"
 }
 
 # GitHub PRs → Claude: select PR and address workflow/review feedback
 ghpc() {
-  local selection
-  selection=$(gh pr list --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
-    --jq '.[] | [
-      "#\(.number)",
-      (if .isDraft then "draft" else "ready" end),
-      (if (.statusCheckRollup | length) == 0 then "⏳CI"
-       elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
-       elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
-       else "⏳CI" end),
-      (if .reviewDecision == "APPROVED" then "✓rev"
-       elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
-       elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
-       else "-rev" end),
-      .headRefName[:25],
-      .title[:45]
-    ] | @tsv' | \
-    column -t -s $'\t' | \
-    fzf --ansi \
-        --header '#       State  CI    Review  Branch                    Title' \
-        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks {1}' \
-        --preview-window right:60%:wrap \
-        --bind 'ctrl-/:toggle-preview' \
-        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
+  local pr_num
+  if [[ $# -eq 0 ]]; then
+    # No args: interactive fzf selection
+    local selection
+    selection=$(gh pr list --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
+      --jq '.[] | [
+        "#\(.number)",
+        (if .isDraft then "draft" else "ready" end),
+        (if (.statusCheckRollup | length) == 0 then "⏳CI"
+         elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
+         elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
+         else "⏳CI" end),
+        (if .reviewDecision == "APPROVED" then "✓rev"
+         elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
+         elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
+         else "-rev" end),
+        .headRefName[:25],
+        .title[:45]
+      ] | @tsv' | \
+      column -t -s $'\t' | \
+      fzf --ansi \
+          --header '#       State  CI    Review  Branch                    Title' \
+          --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks {1}' \
+          --preview-window right:60%:wrap \
+          --bind 'ctrl-/:toggle-preview' \
+          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
 
-  [[ -z "$selection" ]] && return 0
+    [[ -z "$selection" ]] && return 0
+    pr_num="${${selection##*#}%% *}"
+  else
+    # Args provided: strip completion suffix (e.g. "123[branch]" -> "123")
+    pr_num="${1%%\[*}"
+  fi
 
-  local pr_num="${${selection##*#}%% *}"
   echo "Addressing PR #$pr_num feedback with Claude..."
   claude "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
 }
@@ -611,22 +625,42 @@ autoload -Uz compinit && compinit
 _gh_pr_merge_complete() {
   local -a prs
   # Fetch open PRs: number, title, branch, state
-  prs=("${(@f)$(gh pr list --limit 100 --json number,title,headRefName,author --template '{{range .}}{{.number}}[{{.headRefName}}] {{.title}} ({{.author.login}}){{"\n"}}{{end}}' 2>/dev/null)}")
+  prs=("${(@f)$(gh pr list --limit 100 --json number,title,headRefName,author --template '{{ "{{" }}range .{{ "}}" }}{{ "{{" }}.number{{ "}}" }}[{{ "{{" }}.headRefName{{ "}}" }}] {{ "{{" }}.title{{ "}}" }} ({{ "{{" }}.author.login{{ "}}" }}){{ "{{" }}"\n"{{ "}}" }}{{ "{{" }}end{{ "}}" }}' 2>/dev/null)}")
   [[ ${#prs} -eq 0 ]] && return
   _describe -t prs 'pull request' prs
 }
 
 compdef _gh_pr_merge_complete ghsq ghrb
 
-# fzf-tab preview for ghsq/ghrb: show PR details on hover
+# Custom completion for ghpc (PR feedback)
+_gh_pr_feedback_complete() {
+  local -a prs
+  prs=("${(@f)$(gh pr list --limit 100 --json number,title,headRefName,author --template '{{ "{{" }}range .{{ "}}" }}{{ "{{" }}.number{{ "}}" }}[{{ "{{" }}.headRefName{{ "}}" }}] {{ "{{" }}.title{{ "}}" }} ({{ "{{" }}.author.login{{ "}}" }}){{ "{{" }}"\n"{{ "}}" }}{{ "{{" }}end{{ "}}" }}' 2>/dev/null)}")
+  [[ ${#prs} -eq 0 ]] && return
+  _describe -t prs 'pull request' prs
+}
+
+compdef _gh_pr_feedback_complete ghpc
+
+# Custom completion for ghi (GitHub issues)
+_gh_issue_complete() {
+  local -a issues
+  issues=("${(@f)$(gh issue list --limit 100 --json number,title,author --template '{{ "{{" }}range .{{ "}}" }}{{ "{{" }}.number{{ "}}" }}[{{ "{{" }}.title{{ "}}" }}] {{ "{{" }}.title{{ "}}" }} ({{ "{{" }}.author.login{{ "}}" }}){{ "{{" }}"\n"{{ "}}" }}{{ "{{" }}end{{ "}}" }}' 2>/dev/null)}")
+  [[ ${#issues} -eq 0 ]] && return
+  _describe -t issues 'issue' issues
+}
+
+compdef _gh_issue_complete ghi
+
+# fzf-tab previews for gh wrapper functions
 zstyle ':fzf-tab:complete:ghsq:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
 zstyle ':fzf-tab:complete:ghrb:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
-
-# Enable completions for other custom gh wrapper functions
-compdef ghi=gh
-compdef ghpc=gh
+zstyle ':fzf-tab:complete:ghpc:*' fzf-preview \
+  'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks ${word%%\[*} 2>/dev/null'
+zstyle ':fzf-tab:complete:ghi:*' fzf-preview \
+  'GH_FORCE_TTY=1 gh issue view ${word%%\[*} 2>/dev/null'
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
