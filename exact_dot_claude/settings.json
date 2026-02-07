@@ -1,13 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "env": {},
-  "extraKnownMarketplaces": {
-    "lgates-claude-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "laurigates/claude-plugins"
-      }
-    }
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": 1
   },
   "permissions": {
     "allow": [
@@ -69,9 +63,6 @@
       "mcp__argocd-mcp__get_application_workload_logs",
       "mcp__argocd-mcp__list_applications",
       "mcp__context7",
-      "mcp__github",
-      "mcp__pal",
-      "mcp__playwright",
       "mcp__sequential-thinking"
     ],
     "deny": [
@@ -97,24 +88,24 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "dotfiles-plugin@lgates-claude-plugins": true,
-    "git-plugin@lgates-claude-plugins": true,
-    "github-actions-plugin@lgates-claude-plugins": true,
-    "code-quality-plugin@lgates-claude-plugins": true,
-    "testing-plugin@lgates-claude-plugins": true,
-    "tools-plugin@lgates-claude-plugins": true,
-    "python-plugin@lgates-claude-plugins": true,
-    "rust-plugin@lgates-claude-plugins": true,
-    "typescript-plugin@lgates-claude-plugins": true,
-    "kubernetes-plugin@lgates-claude-plugins": true,
-    "terraform-plugin@lgates-claude-plugins": true,
-    "container-plugin@lgates-claude-plugins": true,
-    "documentation-plugin@lgates-claude-plugins": true,
-    "agent-patterns-plugin@lgates-claude-plugins": true
-  },
-  "feedbackSurveyState": {
-    "lastShownTime": 1754075292901
+    "agent-patterns-plugin@laurigates-claude-plugins": true,
+    "agents-plugin@laurigates-claude-plugins": true,
+    "code-quality-plugin@laurigates-claude-plugins": true,
+    "documentation-plugin@laurigates-claude-plugins": true,
+    "git-plugin@laurigates-claude-plugins": true,
+    "github-actions-plugin@laurigates-claude-plugins": true,
+    "health-plugin@laurigates-claude-plugins": true,
+    "testing-plugin@laurigates-claude-plugins": true,
+    "tools-plugin@laurigates-claude-plugins": true,
+    "command-analytics-plugin@laurigates-claude-plugins": true,
+    "communication-plugin@laurigates-claude-plugins": true,
+    "component-patterns-plugin@laurigates-claude-plugins": true,
+    "configure-plugin@laurigates-claude-plugins": true,
+    "sync-plugin@laurigates-claude-plugins": true
   },
   "alwaysThinkingEnabled": true,
-  "promptSuggestionEnabled": false
+  "promptSuggestionEnabled": false,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754075292901
+  }
 }
