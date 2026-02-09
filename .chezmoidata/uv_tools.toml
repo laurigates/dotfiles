@@ -1,0 +1,26 @@
+# Python tools managed by uv tool
+[packages.uv_tools]
+  tools = [
+    "ansible",
+    "argcomplete",
+    "asciinema",
+    "cookiecutter",
+    "devpi-server",
+    "esptool",
+    "glances",
+    "huggingface-hub",
+    "jinjanator",
+    "mlx-lm",
+    "pdm",
+    "pre-commit",
+    "ranger-fm",
+    "ruff",
+    "telegram-send",
+    "trafilatura",
+    "vectorcode[mcp,cli]",
+    "yamllint",
+  ]
+
+  # Git-based tools with special installation requirements
+  # NOTE: pal-mcp-server is run via uvx at runtime, no global installation needed
+  git_tools = []

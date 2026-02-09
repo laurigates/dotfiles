@@ -1,3 +1,13 @@
+{{- /* Profile selection — core always installs; others are opt-in */}}
+{{- $p_dev       := promptBoolOnce . "profiles.dev"       "Install dev CLI tools (ast-grep, httpie, pandoc, etc.)?" true -}}
+{{- $p_dev_build := promptBoolOnce . "profiles.dev_build" "Install build tools (cmake, ninja, maven)?" false -}}
+{{- $p_infra     := promptBoolOnce . "profiles.infra"     "Install K8s/IaC tools (kubectl, helm, terraform)?" true -}}
+{{- $p_security  := promptBoolOnce . "profiles.security"  "Install security tools (nmap, wireshark, etc.)?" false -}}
+{{- $p_embedded  := promptBoolOnce . "profiles.embedded"  "Install embedded/IoT tools (arduino, platformio)?" false -}}
+{{- $p_services  := promptBoolOnce . "profiles.services"  "Install services (postgres, mosquitto, ollama)?" false -}}
+{{- $p_media     := promptBoolOnce . "profiles.media"     "Install media tools (ffmpeg, blender)?" false -}}
+{{- $p_gui       := promptBoolOnce . "profiles.gui"       "Install GUI apps (casks, MAS apps)?" true -}}
+
 {{- $cpuCores := 4 }}
 {{- $cpuThreads := 8 }}
 {{- /* CPU detection disabled in CI environments to avoid permission issues */}}
@@ -38,6 +48,17 @@ command = "nvim"
         {{- else if eq .chezmoi.os "linux" }}
             prefix = "/home/linuxbrew/.linuxbrew"
         {{- end }}
+
+    # Package profiles (core is always on)
+    [data.profiles]
+        dev       = {{ $p_dev }}
+        dev_build = {{ $p_dev_build }}
+        infra     = {{ $p_infra }}
+        security  = {{ $p_security }}
+        embedded  = {{ $p_embedded }}
+        services  = {{ $p_services }}
+        media     = {{ $p_media }}
+        gui       = {{ $p_gui }}
 
 [merge]
     command = "nvim"

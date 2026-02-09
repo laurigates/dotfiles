@@ -1,0 +1,211 @@
+# Profile-based package registry
+# Packages are organized by profile. "core" always installs; others are opt-in.
+# Manager sub-keys: brew, brew_darwin, brew_linux, mise, cask, mas, vscode
+# mise entries are documentary only (managed by mise config, not installed by brew script)
+
+[packages.taps]
+  common = ["knqyf263/pet", "norwoodj/tap"]
+  darwin = ["felixkratz/formulae", "hudochenkov/sshpass", "koekeishiya/formulae"]
+  linux  = ["redpanda-data/tap"]
+
+# ---------- core (always installed) ----------
+[packages.profiles.core]
+  brew = [
+    { name = "chezmoi",         pkg = "chezmoi",         desc = "Dotfile manager" },
+    { name = "coreutils",       pkg = "coreutils",       desc = "GNU core utilities" },
+    { name = "curl",            pkg = "curl",            desc = "HTTP client" },
+    { name = "fish",            pkg = "fish",            desc = "Friendly shell" },
+    { name = "fzf",             pkg = "fzf",             desc = "Fuzzy finder" },
+    { name = "git",             pkg = "git",             desc = "Version control" },
+    { name = "git-lfs",         pkg = "git-lfs",         desc = "Git large file storage" },
+    { name = "mise",            pkg = "mise",            desc = "Tool version manager" },
+    { name = "starship",        pkg = "starship",        desc = "Cross-shell prompt" },
+    { name = "uv",              pkg = "uv",              desc = "Python package manager" },
+    { name = "zsh-completions", pkg = "zsh-completions", desc = "Zsh completion definitions" },
+  ]
+  mise = [
+    { name = "atuin",     pkg = "aqua:atuinsh/atuin",       desc = "Shell history manager" },
+    { name = "bat",       pkg = "aqua:sharkdp/bat",         desc = "Cat with syntax highlighting" },
+    { name = "fd",        pkg = "aqua:sharkdp/fd",          desc = "Fast file finder" },
+    { name = "gh",        pkg = "aqua:cli/cli",             desc = "GitHub CLI" },
+    { name = "git-delta", pkg = "aqua:dandavison/delta",    desc = "Git diff pager" },
+    { name = "jq",        pkg = "aqua:jqlang/jq",           desc = "JSON processor" },
+    { name = "lazygit",   pkg = "aqua:jesseduffield/lazygit", desc = "Git TUI" },
+    { name = "lsd",       pkg = "aqua:lsd-rs/lsd",          desc = "Modern ls replacement" },
+    { name = "ripgrep",   pkg = "aqua:BurntSushi/ripgrep",  desc = "Fast regex search" },
+    { name = "yq",        pkg = "aqua:mikefarah/yq",        desc = "YAML processor" },
+    { name = "zoxide",    pkg = "aqua:ajeetdsouza/zoxide",  desc = "Smarter cd command" },
+  ]
+
+# ---------- dev (daily CLI tools) ----------
+[packages.profiles.dev]
+  brew = [
+    { name = "ast-grep",        pkg = "ast-grep",        desc = "AST-based code search" },
+    { name = "fswatch",         pkg = "fswatch",         desc = "File change monitor" },
+    { name = "git-filter-repo", pkg = "git-filter-repo", desc = "Git history rewriter" },
+    { name = "groff",           pkg = "groff",           desc = "Document formatting" },
+    { name = "helm-docs",       pkg = "norwoodj/tap/helm-docs", desc = "Helm chart documentation" },
+    { name = "help2man",        pkg = "help2man",        desc = "Man page generator" },
+    { name = "httpie",          pkg = "httpie",          desc = "HTTP client for humans" },
+    { name = "imagemagick",     pkg = "imagemagick",     desc = "Image manipulation tools" },
+    { name = "jd",              pkg = "jd",              desc = "JSON diff and patch" },
+    { name = "mermaid-cli",     pkg = "mermaid-cli",     desc = "Mermaid diagram renderer" },
+    { name = "nushell",         pkg = "nushell",         desc = "Structured data shell" },
+    { name = "pandoc",          pkg = "pandoc",          desc = "Document converter" },
+    { name = "parallel",        pkg = "parallel",        desc = "GNU parallel execution" },
+    { name = "pet",             pkg = "knqyf263/pet/pet", desc = "Snippet manager" },
+    { name = "ranger",          pkg = "ranger",          desc = "Console file manager" },
+    { name = "shellspec",       pkg = "shellspec",       desc = "Shell script testing" },
+    { name = "so",              pkg = "so",              desc = "StackOverflow search" },
+    { name = "tldr",            pkg = "tldr",            desc = "Simplified man pages" },
+    { name = "watch",           pkg = "watch",           desc = "Execute command periodically" },
+  ]
+  mise = [
+    { name = "actionlint", pkg = "aqua:rhysd/actionlint", desc = "GitHub Actions linter" },
+  ]
+
+# ---------- dev_build (compilers, build systems) ----------
+[packages.profiles.dev_build]
+  brew = [
+    { name = "autoconf",  pkg = "autoconf",  desc = "Autoconf build system" },
+    { name = "cmake",     pkg = "cmake",     desc = "Cross-platform build system" },
+    { name = "luarocks",  pkg = "luarocks",  desc = "Lua package manager" },
+    { name = "maven",     pkg = "maven",     desc = "Java build tool" },
+    { name = "ninja",     pkg = "ninja",     desc = "Small build system" },
+  ]
+
+# ---------- infra (Kubernetes, IaC) ----------
+[packages.profiles.infra]
+  brew = [
+    { name = "argocd-vault-plugin", pkg = "argocd-vault-plugin", desc = "ArgoCD secrets injection" },
+    { name = "dbmate",              pkg = "dbmate",              desc = "Database migration tool" },
+    { name = "tflint",              pkg = "tflint",              desc = "Terraform linter" },
+  ]
+  mise = [
+    { name = "argocd",    pkg = "aqua:argoproj/argo-cd",        desc = "GitOps CD for Kubernetes" },
+    { name = "ctlptl",    pkg = "aqua:tilt-dev/ctlptl",         desc = "Local cluster manager" },
+    { name = "helm",      pkg = "aqua:helm/helm",               desc = "Kubernetes package manager" },
+    { name = "k9s",       pkg = "aqua:derailed/k9s",            desc = "Kubernetes TUI" },
+    { name = "kind",      pkg = "aqua:kubernetes-sigs/kind",    desc = "Kubernetes in Docker" },
+    { name = "kubectl",   pkg = "aqua:kubernetes/kubectl",      desc = "Kubernetes CLI" },
+    { name = "kubectx",   pkg = "aqua:ahmetb/kubectx",          desc = "Kubernetes context switcher" },
+    { name = "skaffold",  pkg = "aqua:GoogleContainerTools/skaffold", desc = "K8s dev workflow" },
+    { name = "terraform", pkg = "aqua:hashicorp/terraform",     desc = "Infrastructure as Code" },
+  ]
+
+# ---------- security ----------
+[packages.profiles.security]
+  brew = [
+    { name = "binwalk",    pkg = "binwalk",    desc = "Firmware analysis" },
+    { name = "ettercap",   pkg = "ettercap",   desc = "Network sniffer/interceptor" },
+    { name = "gobuster",   pkg = "gobuster",   desc = "Directory/DNS brute-forcer" },
+    { name = "iperf3",     pkg = "iperf3",     desc = "Network bandwidth measurement" },
+    { name = "netcat",     pkg = "netcat",     desc = "Network utility" },
+    { name = "nmap",       pkg = "nmap",       desc = "Network scanner" },
+    { name = "trufflehog", pkg = "trufflehog", desc = "Secret scanner" },
+    { name = "wireshark",  pkg = "wireshark",  desc = "Network protocol analyzer" },
+  ]
+  brew_darwin = [
+    { name = "sshpass", pkg = "hudochenkov/sshpass/sshpass", desc = "Non-interactive SSH auth" },
+    { name = "unbound", pkg = "unbound",                     desc = "DNS resolver" },
+  ]
+
+# ---------- embedded (IoT, firmware) ----------
+[packages.profiles.embedded]
+  brew = [
+    { name = "arduino-cli", pkg = "arduino-cli",  desc = "Arduino command line" },
+    { name = "dfu-util",    pkg = "dfu-util",      desc = "USB firmware flashing" },
+    { name = "platformio",  pkg = "platformio",    desc = "Embedded development platform" },
+    { name = "qemu",        pkg = "qemu",          desc = "Machine emulator" },
+  ]
+  brew_darwin = [
+    { name = "lsusb", pkg = "lsusb", desc = "List USB devices" },
+  ]
+
+# ---------- services (databases, message brokers) ----------
+[packages.profiles.services]
+  brew = [
+    { name = "mosquitto", pkg = "mosquitto", desc = "MQTT message broker" },
+    { name = "ollama",    pkg = "ollama",    desc = "Local LLM runner" },
+  ]
+  brew_darwin = [
+    { name = "lldpd",         pkg = "lldpd",         desc = "LLDP daemon", restart = "changed" },
+    { name = "postgresql@16", pkg = "postgresql@16",  desc = "PostgreSQL 16 database" },
+  ]
+  brew_linux = [
+    { name = "redpanda", pkg = "redpanda-data/tap/redpanda", desc = "Kafka-compatible streaming" },
+  ]
+
+# ---------- media ----------
+[packages.profiles.media]
+  brew = [
+    { name = "ffmpeg", pkg = "ffmpeg", desc = "Audio/video processing" },
+  ]
+  cask = [
+    { name = "Blender", pkg = "blender", desc = "3D creation suite" },
+  ]
+
+# ---------- gui (casks, macOS apps, VS Code) ----------
+[packages.profiles.gui]
+  cask = [
+    { name = "Android Platform Tools", pkg = "android-platform-tools", desc = "Android ADB/fastboot" },
+    { name = "Android CLI Tools",      pkg = "android-commandlinetools", desc = "Android SDK manager" },
+    { name = "Arduino IDE",            pkg = "arduino-ide",           desc = "Arduino development" },
+    { name = "BlueSnoose",             pkg = "bluesnooze",            desc = "Bluetooth sleep fix" },
+    { name = "Deskflow",               pkg = "deskflow",              desc = "KVM software" },
+    { name = "Font Hack Nerd",         pkg = "font-hack-nerd-font",  desc = "Nerd Font patched Hack" },
+    { name = "GCloud CLI",             pkg = "gcloud-cli",            desc = "Google Cloud SDK" },
+    { name = "Ghostty",                pkg = "ghostty",               desc = "GPU-accelerated terminal" },
+    { name = "KeyCastr",               pkg = "keycastr",              desc = "Keystroke visualizer" },
+    { name = "Keyman",                 pkg = "keyman",                desc = "Multilingual keyboard" },
+    { name = "KiCad",                  pkg = "kicad",                 desc = "EDA suite" },
+    { name = "Kitty",                  pkg = "kitty",                 desc = "GPU terminal emulator" },
+    { name = "Krita",                  pkg = "krita",                 desc = "Digital painting" },
+    { name = "Mac Mouse Fix",          pkg = "mac-mouse-fix",         desc = "Mouse enhancement" },
+    { name = "mitmproxy",              pkg = "mitmproxy",             desc = "HTTPS proxy" },
+    { name = "Obsidian",               pkg = "obsidian",              desc = "Knowledge base" },
+    { name = "OpenLens",               pkg = "openlens",              desc = "Kubernetes IDE" },
+    { name = "OrbStack",               pkg = "orbstack",              desc = "Docker/Linux on macOS" },
+    { name = "Postman",                pkg = "postman",               desc = "API development" },
+    { name = "Shortcat",               pkg = "shortcat",              desc = "Keyboard-driven UI" },
+    { name = "Spotify",                pkg = "spotify",               desc = "Music streaming" },
+    { name = "Telegram Desktop",       pkg = "telegram-desktop",      desc = "Messaging" },
+    { name = "Temurin",                pkg = "temurin",               desc = "Eclipse JDK" },
+    { name = "Visual Studio Code",     pkg = "visual-studio-code",    desc = "Code editor" },
+    { name = "VLC",                    pkg = "vlc",                   desc = "Media player" },
+    { name = "XQuartz",                pkg = "xquartz",               desc = "X11 for macOS" },
+  ]
+  brew_darwin = [
+    { name = "SketchyBar", pkg = "felixkratz/formulae/sketchybar", desc = "macOS status bar" },
+    { name = "skhd",       pkg = "koekeishiya/formulae/skhd",      desc = "Hotkey daemon" },
+    { name = "mas",        pkg = "mas",                             desc = "Mac App Store CLI" },
+  ]
+  mas = [
+    { name = "GarageBand", id = 682658836 },
+    { name = "iMovie",     id = 408981434 },
+    { name = "Keynote",    id = 409183694 },
+    { name = "Numbers",    id = 409203825 },
+    { name = "Pages",      id = 409201541 },
+    { name = "WireGuard",  id = 1451685025 },
+    { name = "Xcode",      id = 497799835 },
+  ]
+  vscode = [
+    { name = "Neovim",                  pkg = "asvetliakov.vscode-neovim" },
+    { name = "Copilot",                 pkg = "github.copilot" },
+    { name = "Copilot Chat",            pkg = "github.copilot-chat" },
+    { name = "Gemini Code Assist",      pkg = "google.geminicodeassist" },
+    { name = "Cloud Code",              pkg = "googlecloudtools.cloudcode" },
+    { name = "Terraform",               pkg = "hashicorp.terraform" },
+    { name = "Kubernetes Tools",        pkg = "ms-kubernetes-tools.vscode-kubernetes-tools" },
+    { name = "Python Debugger",         pkg = "ms-python.debugpy" },
+    { name = "Python",                  pkg = "ms-python.python" },
+    { name = "Pylance",                 pkg = "ms-python.vscode-pylance" },
+    { name = "Remote Containers",       pkg = "ms-vscode-remote.remote-containers" },
+    { name = "CMake Tools",             pkg = "ms-vscode.cmake-tools" },
+    { name = "C/C++",                   pkg = "ms-vscode.cpptools" },
+    { name = "C/C++ Extension Pack",    pkg = "ms-vscode.cpptools-extension-pack" },
+    { name = "C/C++ Themes",            pkg = "ms-vscode.cpptools-themes" },
+    { name = "PlatformIO",              pkg = "platformio.platformio-ide" },
+    { name = "YAML",                    pkg = "redhat.vscode-yaml" },
+    { name = "CMake",                   pkg = "twxs.cmake" },
+  ]

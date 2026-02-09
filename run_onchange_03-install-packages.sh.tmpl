@@ -1,0 +1,246 @@
+{{- /* Profile defaults — core always on; others default to false before chezmoi init */ -}}
+{{- $dev       := dig "profiles" "dev"       false . -}}
+{{- $dev_build := dig "profiles" "dev_build" false . -}}
+{{- $infra     := dig "profiles" "infra"     false . -}}
+{{- $security  := dig "profiles" "security"  false . -}}
+{{- $embedded  := dig "profiles" "embedded"  false . -}}
+{{- $services  := dig "profiles" "services"  false . -}}
+{{- $media     := dig "profiles" "media"     false . -}}
+{{- $gui       := dig "profiles" "gui"       false . -}}
+#!/bin/bash
+# Install packages from profile-based registry (.chezmoidata/packages.toml)
+# Re-runs when packages.toml changes
+# Hash: {{ include ".chezmoidata/packages.toml" | sha256sum }}
+
+set -euo pipefail
+
+echo "Starting package installation..."
+
+# Determine brew command based on OS
+{{- if eq .chezmoi.os "darwin" }}
+BREW_CMD="brew"
+{{- else if eq .chezmoi.os "linux" }}
+BREW_CMD="/home/linuxbrew/.linuxbrew/bin/brew"
+{{- end }}
+
+# Check if brew is installed
+if ! command -v $BREW_CMD &> /dev/null; then
+    echo "Homebrew is not installed. Please install it first."
+    {{- if eq .chezmoi.os "darwin" }}
+    echo "Visit: https://brew.sh for installation instructions"
+    {{- else }}
+    echo "Run: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+    {{- end }}
+    exit 1
+fi
+
+FAILED_PACKAGES=()
+
+install_formula() {
+    local pkg="$1"
+    if ! $BREW_CMD list --formula "$pkg" &>/dev/null; then
+        echo "  Installing: $pkg"
+        if ! $BREW_CMD install "$pkg"; then
+            echo "    Failed: $pkg"
+            FAILED_PACKAGES+=("$pkg")
+        fi
+    else
+        echo "  OK: $pkg"
+    fi
+}
+
+install_cask() {
+    local pkg="$1"
+    if ! $BREW_CMD list --cask "$pkg" &>/dev/null; then
+        echo "  Installing cask: $pkg"
+        if ! $BREW_CMD install --cask "$pkg"; then
+            echo "    Failed: $pkg"
+            FAILED_PACKAGES+=("cask:$pkg")
+        fi
+    else
+        echo "  OK: $pkg"
+    fi
+}
+
+# --- Taps ---
+echo "Installing taps..."
+{{- range .packages.taps.common }}
+$BREW_CMD tap {{ . }} 2>/dev/null || true
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- range .packages.taps.darwin }}
+$BREW_CMD tap {{ . }} 2>/dev/null || true
+{{- end }}
+{{- else if eq .chezmoi.os "linux" }}
+{{- range .packages.taps.linux }}
+$BREW_CMD tap {{ . }} 2>/dev/null || true
+{{- end }}
+{{- end }}
+
+# --- Core (always installed) ---
+echo "Installing core packages..."
+{{- range .packages.profiles.core.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+
+# --- Dev ---
+{{- if $dev }}
+echo "Installing dev packages..."
+{{- range .packages.profiles.dev.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+
+# --- Dev Build ---
+{{- if $dev_build }}
+echo "Installing build tools..."
+{{- range .packages.profiles.dev_build.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+
+# --- Infra ---
+{{- if $infra }}
+echo "Installing infra packages..."
+{{- range .packages.profiles.infra.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+
+# --- Security ---
+{{- if $security }}
+echo "Installing security packages..."
+{{- range .packages.profiles.security.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- if .packages.profiles.security.brew_darwin }}
+{{- range .packages.profiles.security.brew_darwin }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+# --- Embedded ---
+{{- if $embedded }}
+echo "Installing embedded packages..."
+{{- range .packages.profiles.embedded.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- if .packages.profiles.embedded.brew_darwin }}
+{{- range .packages.profiles.embedded.brew_darwin }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+# --- Services ---
+{{- if $services }}
+echo "Installing services..."
+{{- range .packages.profiles.services.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- if .packages.profiles.services.brew_darwin }}
+{{- range .packages.profiles.services.brew_darwin }}
+install_formula "{{ .pkg }}"
+{{- if hasKey . "restart" }}
+{{- if eq .restart "changed" }}
+echo "  Starting service: {{ .pkg }}"
+$BREW_CMD services restart {{ .pkg }} 2>/dev/null || echo "    Service setup may require sudo"
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if eq .chezmoi.os "linux" }}
+{{- if .packages.profiles.services.brew_linux }}
+{{- range .packages.profiles.services.brew_linux }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+# --- Media ---
+{{- if $media }}
+echo "Installing media packages..."
+{{- range .packages.profiles.media.brew }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- if .packages.profiles.media.cask }}
+{{- range .packages.profiles.media.cask }}
+install_cask "{{ .pkg }}"
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+# --- GUI (macOS only) ---
+{{- if eq .chezmoi.os "darwin" }}
+{{- if $gui }}
+echo "Installing GUI apps..."
+
+# Casks
+{{- range .packages.profiles.gui.cask }}
+install_cask "{{ .pkg }}"
+{{- end }}
+
+# macOS-only brew formulae
+{{- if .packages.profiles.gui.brew_darwin }}
+{{- range .packages.profiles.gui.brew_darwin }}
+install_formula "{{ .pkg }}"
+{{- end }}
+{{- end }}
+
+# Mac App Store apps
+if command -v mas &>/dev/null; then
+    echo "Installing Mac App Store apps..."
+    {{- range .packages.profiles.gui.mas }}
+    if ! mas list | grep -q "^{{ .id }}"; then
+        echo "  Installing: {{ .name }} ({{ .id }})"
+        mas install {{ .id }} || { echo "    Failed: {{ .name }}"; FAILED_PACKAGES+=("mas:{{ .name }}"); }
+    else
+        echo "  OK: {{ .name }}"
+    fi
+    {{- end }}
+else
+    echo "mas not installed, skipping Mac App Store apps"
+fi
+
+# VS Code extensions
+if command -v code &>/dev/null; then
+    echo "Installing VS Code extensions..."
+    {{- range .packages.profiles.gui.vscode }}
+    if ! code --list-extensions | grep -qi "^{{ .pkg }}$"; then
+        echo "  Installing: {{ .pkg }}"
+        code --install-extension {{ .pkg }} --force || { echo "    Failed: {{ .pkg }}"; FAILED_PACKAGES+=("vscode:{{ .pkg }}"); }
+    else
+        echo "  OK: {{ .pkg }}"
+    fi
+    {{- end }}
+else
+    echo "VS Code not found, skipping extensions"
+fi
+{{- end }}
+{{- end }}
+
+# Clean up
+echo "Running brew cleanup..."
+$BREW_CMD cleanup
+
+# Report results
+echo ""
+echo "Installation summary:"
+if [ ${#FAILED_PACKAGES[@]} -eq 0 ]; then
+    echo "All packages installed successfully."
+else
+    echo "Failed packages:"
+    for pkg in "${FAILED_PACKAGES[@]}"; do
+        echo "  - $pkg"
+    done
+fi

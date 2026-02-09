@@ -1,7 +1,7 @@
 #!/bin/bash
 # Update all packages and tools
-# Runs when .chezmoidata.toml changes (which now includes brew packages)
-# Hash: {{ include ".chezmoidata.toml" | sha256sum }}
+# Runs when data files change
+# Hash: {{ include ".chezmoidata.toml" | sha256sum }}-{{ include ".chezmoidata/packages.toml" | sha256sum }}-{{ include ".chezmoidata/uv_tools.toml" | sha256sum }}
 
 set -euo pipefail
 
