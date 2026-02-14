@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal configuration for Claude Code. Specific skills and workflows are provided by plugins.
+Personal configuration for Claude Code. Domain-specific skills and workflows are provided by plugins.
 
 ## Communication Style
 
@@ -9,17 +9,21 @@ Personal configuration for Claude Code. Specific skills and workflows are provid
 - Avoid standalone agreement openers ("You're absolutely right")
 - Frame instructions positively (what to do, not what to avoid)
 
-## Core Principles
+## Git Workflow
 
-**Documentation-first**: Research relevant documentation (context7, web search) before implementation. Verify against official docs.
+- Never push directly to the main branch. Always create a feature branch and open a PR.
+- Use conventional commit messages for all commits.
+- If a pre-commit hook rejects a message, fix the message format rather than bypassing the hook (unless it's a merge commit that requires --no-verify).
+- Commit early and often—conventional commits drive release-please automation.
+- Run security checks before staging files.
 
-**Test-driven**: RED → GREEN → REFACTOR. Write tests before implementation.
+## Debugging
 
-**Simplicity**: Prioritize readability over cleverness. Convention over configuration. Don't over-engineer.
+When debugging issues, do not assume the root cause without evidence. Verify hypotheses against logs, timestamps, and user-provided context before proposing fixes. If the user corrects your diagnosis, fully re-investigate rather than patching the original theory.
 
-**Fail fast**: Let failures surface immediately. Avoid error swallowing that masks problems.
+## PR Reviews
 
-**Boy Scout Rule**: Leave code cleaner than you found it.
+When a PR review comment suggests a code change, verify the suggestion against official documentation or source code before applying it. Do not blindly accept review feedback as correct.
 
 ## Tool Installation Priority
 
@@ -47,27 +51,8 @@ When installing new tools, prefer earlier options:
 - **Dotfiles**: chezmoi — always edit source at `~/.local/share/chezmoi/`, never target files
 - **API tokens**: `~/.api_tokens` (sourced by mise), never committed
 
-## Tool Preferences
-
-Use specialized skills from plugins rather than ad-hoc commands. Key plugins:
-
-| Need                      | Plugin                            |
-| ------------------------- | --------------------------------- |
-| File finding, code search | `tools-plugin` (fd, rg, ast-grep) |
-| Git & GitHub workflows    | `git-plugin`                      |
-| Testing strategies        | `testing-plugin`                  |
-| Agent orchestration       | `agent-patterns-plugin`           |
-| PRD/ADR workflow          | `blueprint-plugin`                |
-| Task runners              | `tools-plugin` (justfile-expert)  |
-
-## Parallel Work
-
-When tasks decompose into independent subtasks, launch multiple subagents simultaneously. Consolidate results after parallel execution completes.
-
 ## Development Notes
 
 - Prefer `just <recipe>` for project tasks; run `just --list` to discover recipes
 - Use `tmp/` in project root for temporary outputs (ensure it's in `.git/info/exclude`)
 - Stay in repository root; specify paths as arguments rather than changing directories
-- Commit early and often with conventional commits (drives release-please automation)
-- Run security checks before staging files

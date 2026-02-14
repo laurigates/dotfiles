@@ -41,14 +41,28 @@ This repository now includes **Claude Code plugins** for easy installation and m
 ### Quick Start
 
 ```bash
-# Add this repository as a plugin marketplace
-/plugin marketplace add laurigates/dotfiles
+# Add the marketplace
+claude /plugin marketplace add laurigates/claude-plugins
 
-# Install the dotfiles toolkit plugin
-/plugin install dotfiles-toolkit
+# Install and enable all plugins via justfile
+just plugins-install
+just plugins-enable
 ```
 
-**What you get**: 30+ specialized agents and 20+ slash commands for development, infrastructure, documentation, and more.
+Or install individually:
+```bash
+claude /plugin install git-plugin@lgates-claude-plugins
+```
+
+### Bulk Plugin Management
+
+```bash
+just plugins-install     # Install all plugins from marketplace
+just plugins-enable      # Enable all installed plugins
+just plugins-update      # Update all plugins to latest
+just plugins-reinstall   # Full cycle: uninstall → install → enable
+just plugins-list        # Show installed plugins and status
+```
 
 📖 **Full guide**: See [PLUGINS.md](./PLUGINS.md) for complete documentation.
 

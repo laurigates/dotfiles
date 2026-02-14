@@ -25,25 +25,33 @@ The `dotfiles-toolkit` plugin provides:
 
 ## Plugin Management
 
-### Enable/Disable Plugins
+### Bulk Management via Justfile (Recommended)
 
 ```bash
-# Disable the plugin temporarily
+just plugins-install     # Install all plugins from marketplace
+just plugins-enable      # Enable all installed plugins
+just plugins-disable     # Disable all installed plugins
+just plugins-update      # Update all plugins to latest
+just plugins-uninstall   # Uninstall all plugins
+just plugins-reinstall   # Full cycle: uninstall → install → enable
+just plugins-list        # Show installed plugins and status
+just plugins-json        # JSON output for scripting
+```
+
+Recipes dynamically fetch plugin names from the [marketplace JSON](https://raw.githubusercontent.com/laurigates/claude-plugins/refs/heads/main/.claude-plugin/marketplace.json) and filter installed plugins by marketplace suffix.
+
+### Individual Plugin Management
+
+```bash
+# Disable a plugin temporarily
 /plugin disable dotfiles-toolkit
 
 # Re-enable it
 /plugin enable dotfiles-toolkit
-```
 
-### List Installed Plugins
-
-```bash
+# List installed plugins
 /plugin list
-```
 
-### Update Plugins
-
-```bash
 # Update all plugins from marketplaces
 /plugin update
 ```

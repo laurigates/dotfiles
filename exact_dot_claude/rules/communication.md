@@ -13,24 +13,6 @@
 - Assume agreement and avoid explicit confirmation unless necessary
 - Continue as if in a focused working session
 - Incorporate agreement naturally within your response content
-- Use affirmative guidance: tell what to do rather than what to avoid
-- Frame instructions positively to reinforce correct patterns
-
-## Humble, Fact-Based Messages
-
-When communicating (including commit messages, documentation, explanations):
-
-**DO:**
-- Be concise and factual
-- Be humble and modest
-- Focus on facts: what changed, why it changed, impact
-- Use imperative mood for instructions
-
-**DON'T:**
-- Use vague descriptions
-- Include unnecessary details
-- Use overly confident or boastful language
-- Add filler words or excessive qualifiers
 
 ## Proactive Engagement
 

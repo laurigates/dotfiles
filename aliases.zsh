@@ -1,15 +1,14 @@
 alias ccc='claude --continue'
 
-# Smartcommit variations
-alias csc='claude --print /git:smartcommit'          # Default: new branch, print mode
-alias csci='claude /git:smartcommit'                 # Default: new branch, interactive
-alias cscd='claude /git:smartcommit --direct'        # Direct to current branch
-alias cscp='claude /git:smartcommit --push'          # With auto-push
+alias csc='claude "/git:commit-push-pr"'
+alias cscp='claude "/git:commit-push-pr --push"'
+alias cscd='claude "/git:commit-push-pr --direct"'
+alias cpr='claude "/git:commit-push-pr --pr"'
+alias cprd='claude "/git:commit-push-pr --pr --draft"'
 
-# QuickPR variations
-alias cpr='claude /github:quickpr'                   # Full PR workflow
-alias cprd='claude /github:quickpr --draft'          # Create draft PR
-alias cpri='claude /github:quickpr --issue'          # Link to issue
+# These would be kind of convenient. Unless there's a simpler way
+# just --justfile="$HOME/repos/justfile" --working-directory=. claude-setup
+# just --justfile="$HOME/justfile" --list
 
 alias chap='chezmoi apply'
 alias ccd='chezmoi cd'
@@ -41,16 +40,16 @@ alias icat="kitty +kitten icat"
 
 alias s="kitty +kitten ssh"
 
-# Claude voice notification management
-alias voice-config='cd ~/.claude/hooks/voice-notify && uv run python config.py'
-alias voice-test='cd ~/.claude/hooks/voice-notify && uv run python notify.py'
-
 # Configure these aliases unless in Claude code
 # Otherwise it will be confused when the standard command is different from the norm
 [ ! $CLAUDECODE ] && type lsd >/dev/null 2>&1 && \
   alias ls='lsd -A' \
   alias tree='lsd --tree' && \
   alias ll='lsd --long --almost-all'
+
+### GitHub aliases
+alias prls='gh pr ls'
+alias ils='gh issue ls'
 
 ### Git aliases
 # Mostly cherry-picked from the oh-my-zsh git plugin:

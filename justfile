@@ -4,6 +4,9 @@
 
 set shell := ["bash", "-uc"]
 
+marketplace := "laurigates-claude-plugins"
+marketplace_url := "https://raw.githubusercontent.com/laurigates/claude-plugins/refs/heads/main/.claude-plugin/marketplace.json"
+
 # Default recipe - show help
 [default]
 help:
@@ -268,6 +271,80 @@ colors:
         printf "\033[9mstrikethrough\033[0m\n"; \
         printf "\033[31mred text\033[0m\n"; \
     }'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Claude Plugins
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Fetch plugin names from marketplace
+[private]
+plugin-names:
+    @curl -s "{{marketplace_url}}" | jq -r '.plugins[].name'
+
+# List installed plugins and their status
+plugins-list:
+    @echo "{{BLUE}}Installed Claude plugins:{{NORMAL}}"
+    @CLAUDECODE= claude plugin list
+
+# List installed plugins as JSON
+plugins-json:
+    @CLAUDECODE= claude plugin list --json
+
+# Install all plugins from marketplace
+plugins-install:
+    @echo "{{BLUE}}Installing all plugins from {{marketplace}}...{{NORMAL}}"
+    @for p in $(curl -s "{{marketplace_url}}" | jq -r '.plugins[].name'); do \
+        echo "  Installing $p..."; \
+        CLAUDECODE= claude plugin install "${p}@{{marketplace}}" 2>&1 | tail -1; \
+    done
+    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# Enable all installed plugins from marketplace
+plugins-enable:
+    @echo "{{BLUE}}Enabling all plugins from {{marketplace}}...{{NORMAL}}"
+    @CLAUDECODE= claude plugin list --json \
+        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | select(.enabled == false) | .id' \
+        | while read -r p; do \
+            echo "  Enabling $p..."; \
+            CLAUDECODE= claude plugin enable "$p" 2>&1 | tail -1; \
+        done
+    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# Disable all installed plugins from marketplace
+plugins-disable:
+    @echo "{{BLUE}}Disabling all plugins from {{marketplace}}...{{NORMAL}}"
+    @CLAUDECODE= claude plugin list --json \
+        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | select(.enabled == true) | .id' \
+        | while read -r p; do \
+            echo "  Disabling $p..."; \
+            CLAUDECODE= claude plugin disable "$p" 2>&1 | tail -1; \
+        done
+    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# Update all installed plugins from marketplace
+plugins-update:
+    @echo "{{BLUE}}Updating all plugins from {{marketplace}}...{{NORMAL}}"
+    @CLAUDECODE= claude plugin list --json \
+        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | .id' \
+        | while read -r p; do \
+            echo "  Updating $p..."; \
+            CLAUDECODE= claude plugin update "$p" 2>&1 | tail -1; \
+        done
+    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# Uninstall all plugins from marketplace
+plugins-uninstall:
+    @echo "{{BLUE}}Uninstalling all plugins from {{marketplace}}...{{NORMAL}}"
+    @CLAUDECODE= claude plugin list --json \
+        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | .id' \
+        | while read -r p; do \
+            echo "  Uninstalling $p..."; \
+            CLAUDECODE= claude plugin uninstall "$p" 2>&1 | tail -1; \
+        done
+    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# Reinstall all plugins (uninstall → install → enable)
+plugins-reinstall: plugins-uninstall plugins-install plugins-enable
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CI/CD Integration

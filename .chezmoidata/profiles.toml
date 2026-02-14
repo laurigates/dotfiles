@@ -1,0 +1,13 @@
+# Package installation profiles
+# "core" always installs; set others to true/false as needed.
+# Edit these values to control which package groups are installed.
+
+[profiles]
+  dev       = true   # Dev CLI tools (ast-grep, httpie, pandoc, etc.)
+  dev_build = false  # Build tools (cmake, ninja, maven)
+  infra     = true   # K8s/IaC tools (kubectl, helm, terraform)
+  security  = false  # Security tools (nmap, wireshark, etc.)
+  embedded  = false  # Embedded/IoT tools (arduino, platformio)
+  services  = false  # Services (postgres, mosquitto, ollama)
+  media     = false  # Media tools (ffmpeg, blender)
+  gui       = true   # GUI apps (casks, MAS apps)

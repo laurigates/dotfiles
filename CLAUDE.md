@@ -101,6 +101,19 @@ This external repository contains **23 Claude Code plugins** organized by domain
 
 ### Installing Plugins
 
+**Bulk management via justfile (recommended):**
+```bash
+just plugins-install     # Install all plugins from marketplace
+just plugins-enable      # Enable all installed plugins
+just plugins-disable     # Disable all installed plugins
+just plugins-update      # Update all plugins to latest
+just plugins-uninstall   # Uninstall all plugins
+just plugins-reinstall   # Full cycle: uninstall → install → enable
+just plugins-list        # Show installed plugins and status
+```
+
+Recipes dynamically fetch plugin names from the marketplace JSON and filter installed plugins by marketplace suffix. Variables `marketplace` and `marketplace_url` in the justfile control the source.
+
 **Interactive (Terminal):**
 ```bash
 # Add the marketplace

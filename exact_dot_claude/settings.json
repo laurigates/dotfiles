@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": 1
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
     "allow": [
@@ -88,24 +88,43 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
+    "bevy-plugin@laurigates-claude-plugins": true,
+    "blog-plugin@laurigates-claude-plugins": true,
+    "finops-plugin@laurigates-claude-plugins": true,
+    "home-assistant-plugin@laurigates-claude-plugins": true,
+    "langchain-plugin@laurigates-claude-plugins": true,
+    "networking-plugin@laurigates-claude-plugins": true,
+    "python-plugin@laurigates-claude-plugins": true,
+    "rust-plugin@laurigates-claude-plugins": true,
+    "terraform-plugin@laurigates-claude-plugins": true,
+    "accessibility-plugin@laurigates-claude-plugins": true,
     "agent-patterns-plugin@laurigates-claude-plugins": true,
     "agents-plugin@laurigates-claude-plugins": true,
+    "api-plugin@laurigates-claude-plugins": true,
+    "blueprint-plugin@laurigates-claude-plugins": true,
     "code-quality-plugin@laurigates-claude-plugins": true,
-    "documentation-plugin@laurigates-claude-plugins": true,
-    "git-plugin@laurigates-claude-plugins": true,
-    "github-actions-plugin@laurigates-claude-plugins": true,
-    "health-plugin@laurigates-claude-plugins": true,
-    "testing-plugin@laurigates-claude-plugins": true,
-    "tools-plugin@laurigates-claude-plugins": true,
     "command-analytics-plugin@laurigates-claude-plugins": true,
     "communication-plugin@laurigates-claude-plugins": true,
     "component-patterns-plugin@laurigates-claude-plugins": true,
     "configure-plugin@laurigates-claude-plugins": true,
-    "sync-plugin@laurigates-claude-plugins": true
+    "container-plugin@laurigates-claude-plugins": true,
+    "documentation-plugin@laurigates-claude-plugins": true,
+    "git-plugin@laurigates-claude-plugins": true,
+    "github-actions-plugin@laurigates-claude-plugins": true,
+    "health-plugin@laurigates-claude-plugins": true,
+    "hooks-plugin@laurigates-claude-plugins": true,
+    "kubernetes-plugin@laurigates-claude-plugins": true,
+    "project-plugin@laurigates-claude-plugins": true,
+    "testing-plugin@laurigates-claude-plugins": true,
+    "tools-plugin@laurigates-claude-plugins": true,
+    "typescript-plugin@laurigates-claude-plugins": true,
+    "workflow-orchestration-plugin@laurigates-claude-plugins": true
   },
   "alwaysThinkingEnabled": true,
   "promptSuggestionEnabled": false,
+  "autoUpdatesChannel": "latest",
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901
-  }
+  },
+  "effortLevel": "low"
 }
