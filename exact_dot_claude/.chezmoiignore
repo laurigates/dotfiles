@@ -10,6 +10,7 @@ shell-snapshots/
 tasks/
 telemetry/
 usage_date/
+teams/
 
 # Runtime files created by Claude Code
 .update.lock
