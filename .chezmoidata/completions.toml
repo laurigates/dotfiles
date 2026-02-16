@@ -31,3 +31,4 @@
   vectorcode = "vectorcode -s zsh"
   bun = "bun completions"
   just = "just --completions zsh"
+  ruff = "ruff generate-shell-completion zsh"
