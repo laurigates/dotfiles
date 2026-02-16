@@ -9,6 +9,7 @@ session-env/
 shell-snapshots/
 tasks/
 telemetry/
+usage_date/
 
 # Runtime files created by Claude Code
 .update.lock
