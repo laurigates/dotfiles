@@ -4,18 +4,16 @@ Personal configuration for Claude Code. Domain-specific skills and workflows are
 
 ## Communication Style
 
+- Be concise
 - Lead with the specific answer or relevant observations
 - Direct, academic style—integrate acknowledgment into substantive discussion
-- Avoid standalone agreement openers ("You're absolutely right")
+- Avoid standalone agreement openers
 - Frame instructions positively (what to do, not what to avoid)
 
 ## Git Workflow
 
-- Never push directly to the main branch. Always create a feature branch and open a PR.
 - Use conventional commit messages for all commits.
-- If a pre-commit hook rejects a message, fix the message format rather than bypassing the hook (unless it's a merge commit that requires --no-verify).
-- Commit early and often—conventional commits drive release-please automation.
-- Run security checks before staging files.
+- Commit early and often
 
 ## Debugging
 
@@ -53,6 +51,6 @@ When installing new tools, prefer earlier options:
 
 ## Development Notes
 
-- Prefer `just <recipe>` for project tasks; run `just --list` to discover recipes
-- Use `tmp/` in project root for temporary outputs (ensure it's in `.git/info/exclude`)
-- Stay in repository root; specify paths as arguments rather than changing directories
+- If a justfile exists, prefer its recipes (check `just --help`) over calling tools directly (e.g. use `just test` instead of `bun run test`); run `just --list` to discover recipes
+- Use `tmp/` in project root for temporary outputs (ensure it's in `.gitignore` or `.git/info/exclude`)
+- Stay in repository root; when required and feasible, specify paths as arguments rather than changing directories
