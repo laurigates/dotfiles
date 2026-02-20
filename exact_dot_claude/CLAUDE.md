@@ -14,6 +14,7 @@ Personal configuration for Claude Code. Domain-specific skills and workflows are
 
 - Use conventional commit messages for all commits.
 - Commit early and often
+- When creating PRs that require post-merge follow-up actions (e.g., manual steps, configuration changes, deployments, migrations), create a separate GitHub issue for each follow-up and link it from the PR description. Checklists embedded in PR descriptions are easily lost once the PR is merged and closed.
 
 ## Debugging
 
