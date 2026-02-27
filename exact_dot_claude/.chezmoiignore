@@ -8,8 +8,10 @@ projects/
 session-env/
 shell-snapshots/
 tasks/
+backups/
+ide/
 telemetry/
-usage_date/
+usage-data/
 teams/
 
 # Runtime files created by Claude Code
