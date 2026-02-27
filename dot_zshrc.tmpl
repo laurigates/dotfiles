@@ -372,8 +372,19 @@ ghi() {
 }
 
 # GitHub PRs → Claude: select PR and address workflow/review feedback
+# Flags: -w/--worktree (isolated worktree), -r/--resume (resume linked session via --from-pr)
 ghpc() {
-  local pr_num
+  local pr_num worktree=false resume=false
+
+  # Parse flags before positional arg
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -w|--worktree) worktree=true; shift ;;
+      -r|--resume)   resume=true; shift ;;
+      *) break ;;
+    esac
+  done
+
   if [[ $# -eq 0 ]]; then
     # No args: interactive fzf selection
     local selection
@@ -407,8 +418,16 @@ ghpc() {
     pr_num="${1%%\[*}"
   fi
 
-  echo "Addressing PR #$pr_num feedback with Claude..."
-  claude "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
+  if $resume; then
+    echo "Resuming PR #$pr_num session with Claude..."
+    claude --from-pr "$pr_num"
+  elif $worktree; then
+    echo "Addressing PR #$pr_num feedback with Claude in worktree..."
+    claude --worktree "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
+  else
+    echo "Addressing PR #$pr_num feedback with Claude..."
+    claude "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
+  fi
 }
 
 # Interactive PR merge with fzf preview (squash)
