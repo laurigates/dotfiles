@@ -10,39 +10,65 @@ _claude() {
     typeset -A opt_args
 
     commands=(
+        'agents:List configured agents'
+        'auth:Manage authentication'
         'doctor:Check the health of your Claude Code auto-updater'
-        'install:Install Claude Code native build. Use [target] to specify version'
+        'install:Install Claude Code native build. Use to specify version (stable, latest, or specific version)'
         'mcp:Configure and manage MCP servers'
-        'migrate-installer:Migrate from global npm installation to local installation'
         'plugin:Manage Claude Code plugins'
         'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
-        'update:Check for updates and install if available'
+        'update|upgrade:Check for updates and install if available'
     )
 
     _arguments -C \
-        '(-d --debug)'{-d,--debug}'[Enable debug mode]' \
-        '--verbose[Override verbose mode setting from config]' \
-        '(-p --print)'{-p,--print}'[Print response and exit (useful for pipes)]' \
-        '--output-format[Output format for --print]:format:(text json stream-json)' \
-        '--input-format[Input format for --print]:format:(text stream-json)' \
-        '--mcp-debug[DEPRECATED. Use --debug instead. Enable MCP debug mode]' \
-        '--dangerously-skip-permissions[Bypass all permission checks]' \
-        '--allowedTools[Comma or space-separated list of tool names to allow]:tools:' \
-        '--disallowedTools[Comma or space-separated list of tool names to deny]:tools:' \
-        '--mcp-config[Load MCP servers from JSON files or strings]:configs:_files' \
-        '--append-system-prompt[Append a system prompt to the default system prompt]:prompt:' \
-        '--permission-mode[Permission mode to use for the session]:mode:(acceptEdits bypassPermissions default plan)' \
-        '(-c --continue)'{-c,--continue}'[Continue the most recent conversation]' \
-        '(-r --resume)'{-r,--resume}'[Resume a conversation]:sessionId:' \
-        '--model[Model for the current session]:model:_claude_models' \
-        '--fallback-model[Enable automatic fallback to specified model]:model:_claude_models' \
-        '--settings[Path to a settings JSON file or a JSON string]:file:_files' \
         '--add-dir[Additional directories to allow tool access to]:directories:_files -/' \
-        '--ide[Automatically connect to IDE on startup if exactly one valid IDE is available]' \
-        '--strict-mcp-config[Only use MCP servers from --mcp-config]' \
-        '--session-id[Use a specific session ID for the conversation]:uuid:' \
-        '(-v --version)'{-v,--version}'[Output the version number]' \
+        '--agent[Agent for the current session]:agent:' \
+        '--agents[JSON object defining custom agents]:json:' \
+        '--allow-dangerously-skip-permissions[Enable bypassing permissions as an option without it being default]' \
+        '--allowedTools[Comma or space-separated list of tool names to allow]:tools:' \
+        '--allowed-tools[Comma or space-separated list of tool names to allow]:tools:' \
+        '--append-system-prompt[Append a system prompt to the default system prompt]:prompt:' \
+        '--betas[Beta headers to include in API requests (API key users only)]:betas:' \
+        '--chrome[Enable Claude in Chrome integration]' \
+        '(-c --continue)'{-c,--continue}'[Continue the most recent conversation]' \
+        '--dangerously-skip-permissions[Bypass all permission checks]' \
+        '(-d --debug)'{-d,--debug}'[Enable debug mode with optional category filter]:filter:' \
+        '--debug-file[Write debug logs to a specific file path]:path:_files' \
+        '--disable-slash-commands[Disable all skills]' \
+        '--disallowedTools[Comma or space-separated list of tool names to deny]:tools:' \
+        '--disallowed-tools[Comma or space-separated list of tool names to deny]:tools:' \
+        '--effort[Effort level for the current session]:level:(low medium high)' \
+        '--fallback-model[Enable automatic fallback to specified model (only with --print)]:model:_claude_models' \
+        '--file[File resources to download at startup (file_id:relative_path)]:specs:' \
+        '--fork-session[When resuming, create a new session ID instead of reusing the original]' \
+        '--from-pr[Resume a session linked to a PR by PR number/URL, or open interactive picker]:pr:' \
         '(-h --help)'{-h,--help}'[Display help for command]' \
+        '--ide[Automatically connect to IDE on startup if exactly one valid IDE is available]' \
+        '--include-partial-messages[Include partial message chunks as they arrive (--print --output-format=stream-json only)]' \
+        '--input-format[Input format (only with --print)]:format:(text stream-json)' \
+        '--json-schema[JSON Schema for structured output validation]:schema:' \
+        '--max-budget-usd[Maximum dollar amount to spend on API calls (only with --print)]:amount:' \
+        '--mcp-config[Load MCP servers from JSON files or strings]:configs:_files' \
+        '--mcp-debug[DEPRECATED. Use --debug instead. Enable MCP debug mode]' \
+        '--model[Model for the current session]:model:_claude_models' \
+        '--no-chrome[Disable Claude in Chrome integration]' \
+        '--no-session-persistence[Disable session persistence (only with --print)]' \
+        '--output-format[Output format (only with --print)]:format:(text json stream-json)' \
+        '--permission-mode[Permission mode to use for the session]:mode:(acceptEdits bypassPermissions default dontAsk plan)' \
+        '--plugin-dir[Load plugins from directories for this session only]:paths:_files -/' \
+        '(-p --print)'{-p,--print}'[Print response and exit (useful for pipes)]' \
+        '--replay-user-messages[Re-emit user messages from stdin back on stdout (stream-json only)]' \
+        '(-r --resume)'{-r,--resume}'[Resume a conversation by session ID, or open interactive picker]:sessionId:' \
+        '--session-id[Use a specific session ID for the conversation]:uuid:' \
+        '--setting-sources[Comma-separated list of setting sources to load]:sources:' \
+        '--settings[Path to a settings JSON file or a JSON string]:file:_files' \
+        '--strict-mcp-config[Only use MCP servers from --mcp-config]' \
+        '--system-prompt[System prompt to use for the session]:prompt:' \
+        '--tmux[Create a tmux session for the worktree (requires --worktree)]' \
+        '--tools[Specify available tools from the built-in set]:tools:' \
+        '--verbose[Override verbose mode setting from config]' \
+        '(-v --version)'{-v,--version}'[Output the version number]' \
+        '(-w --worktree)'{-w,--worktree}'[Create a new git worktree for this session]:name:' \
         '1: :->command' \
         '*: :->args' && return 0
 
@@ -52,11 +78,11 @@ _claude() {
             ;;
         args)
             case $words[1] in
+                config)
+                    _claude_config
+                    ;;
                 mcp)
                     _claude_mcp
-                    ;;
-                plugin)
-                    _claude_plugin
                     ;;
                 install)
                     _claude_install
@@ -69,16 +95,17 @@ _claude() {
     esac
 }
 
-_claude_plugin() {
-    local -a plugin_commands
-    plugin_commands=(
-        'validate:Validate a plugin or marketplace manifest'
-        'marketplace:Manage Claude Code marketplaces'
-        'install:Install a plugin from available marketplaces'
-        'uninstall:Uninstall an installed plugin'
-        'enable:Enable a disabled plugin'
-        'disable:Disable an enabled plugin'
-        'help:Display help for command'
+_claude_config() {
+    local -a config_commands
+    config_commands=(
+        'agents:List configured agents'
+        'auth:Manage authentication'
+        'doctor:Check the health of your Claude Code auto-updater'
+        'install:Install Claude Code native build. Use to specify version (stable, latest, or specific version)'
+        'mcp:Configure and manage MCP servers'
+        'plugin:Manage Claude Code plugins'
+        'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
+        'update|upgrade:Check for updates and install if available'
     )
 
     _arguments -C \
@@ -88,21 +115,36 @@ _claude_plugin() {
 
     case $state in
         subcommand)
-            _describe -t plugin-commands 'plugin commands' plugin_commands
+            _describe -t config-commands 'config commands' config_commands
             ;;
         args)
             case $words[2] in
-                validate)
-                    _arguments '1:path:_files'
+                get)
+                    _arguments \
+                        '(-g --global)'{-g,--global}'[Use global config]' \
+                        '1:key:_claude_config_keys'
                     ;;
-                install|i)
-                    _arguments '1:plugin:'
+                set)
+                    _arguments \
+                        '(-g --global)'{-g,--global}'[Use global config]' \
+                        '1:key:_claude_config_keys' \
+                        '2:value:'
                     ;;
-                uninstall|remove)
-                    _arguments '1:plugin:'
+                remove|rm)
+                    _arguments \
+                        '(-g --global)'{-g,--global}'[Use global config]' \
+                        '1:key:_claude_config_keys' \
+                        '*:values:'
                     ;;
-                enable|disable)
-                    _arguments '1:plugin:'
+                list|ls)
+                    _arguments \
+                        '(-g --global)'{-g,--global}'[Use global config]'
+                    ;;
+                add)
+                    _arguments \
+                        '(-g --global)'{-g,--global}'[Use global config]' \
+                        '1:key:_claude_config_keys' \
+                        '*:values:'
                     ;;
             esac
             ;;
@@ -200,12 +242,30 @@ _claude_models() {
         'sonnet:Latest Sonnet model'
         'opus:Latest Opus model'
         'haiku:Latest Haiku model'
+        'claude-sonnet-4-6:Claude Sonnet 4.6'
+        'claude-opus-4-6:Claude Opus 4.6'
+        'claude-haiku-4-5-20251001:Claude Haiku 4.5'
         'claude-sonnet-4-20250514:Claude Sonnet 4'
         'claude-3-5-sonnet-20241022:Claude 3.5 Sonnet'
         'claude-3-5-haiku-20241022:Claude 3.5 Haiku'
-        'claude-3-opus-20240229:Claude 3 Opus'
     )
     _describe -t models 'claude models' models
+}
+
+# Helper function to complete config keys
+_claude_config_keys() {
+    local -a config_keys
+    config_keys=(
+        'theme:UI theme setting'
+        'allowedTools:Allowed tool names'
+        'disallowedTools:Disallowed tool names'
+        'hasTrustDialogAccepted:Trust dialog acceptance status'
+        'hasCompletedProjectOnboarding:Project onboarding status'
+        'permissionMode:Default permission mode'
+        'model:Default model'
+        'fallbackModel:Fallback model'
+    )
+    _describe -t config-keys 'config keys' config_keys
 }
 
 # Helper function to complete MCP server names

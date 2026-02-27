@@ -88,29 +88,54 @@ cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
     )
 
     _arguments -C \
-        '(-d --debug)'{-d,--debug}'[Enable debug mode]' \
-        '--verbose[Override verbose mode setting from config]' \
-        '(-p --print)'{-p,--print}'[Print response and exit (useful for pipes)]' \
-        '--output-format[Output format for --print]:format:(text json stream-json)' \
-        '--input-format[Input format for --print]:format:(text stream-json)' \
-        '--mcp-debug[DEPRECATED. Use --debug instead. Enable MCP debug mode]' \
-        '--dangerously-skip-permissions[Bypass all permission checks]' \
-        '--allowedTools[Comma or space-separated list of tool names to allow]:tools:' \
-        '--disallowedTools[Comma or space-separated list of tool names to deny]:tools:' \
-        '--mcp-config[Load MCP servers from JSON files or strings]:configs:_files' \
-        '--append-system-prompt[Append a system prompt to the default system prompt]:prompt:' \
-        '--permission-mode[Permission mode to use for the session]:mode:(acceptEdits bypassPermissions default plan)' \
-        '(-c --continue)'{-c,--continue}'[Continue the most recent conversation]' \
-        '(-r --resume)'{-r,--resume}'[Resume a conversation]:sessionId:' \
-        '--model[Model for the current session]:model:_claude_models' \
-        '--fallback-model[Enable automatic fallback to specified model]:model:_claude_models' \
-        '--settings[Path to a settings JSON file or a JSON string]:file:_files' \
         '--add-dir[Additional directories to allow tool access to]:directories:_files -/' \
-        '--ide[Automatically connect to IDE on startup if exactly one valid IDE is available]' \
-        '--strict-mcp-config[Only use MCP servers from --mcp-config]' \
-        '--session-id[Use a specific session ID for the conversation]:uuid:' \
-        '(-v --version)'{-v,--version}'[Output the version number]' \
+        '--agent[Agent for the current session]:agent:' \
+        '--agents[JSON object defining custom agents]:json:' \
+        '--allow-dangerously-skip-permissions[Enable bypassing permissions as an option without it being default]' \
+        '--allowedTools[Comma or space-separated list of tool names to allow]:tools:' \
+        '--allowed-tools[Comma or space-separated list of tool names to allow]:tools:' \
+        '--append-system-prompt[Append a system prompt to the default system prompt]:prompt:' \
+        '--betas[Beta headers to include in API requests (API key users only)]:betas:' \
+        '--chrome[Enable Claude in Chrome integration]' \
+        '(-c --continue)'{-c,--continue}'[Continue the most recent conversation]' \
+        '--dangerously-skip-permissions[Bypass all permission checks]' \
+        '(-d --debug)'{-d,--debug}'[Enable debug mode with optional category filter]:filter:' \
+        '--debug-file[Write debug logs to a specific file path]:path:_files' \
+        '--disable-slash-commands[Disable all skills]' \
+        '--disallowedTools[Comma or space-separated list of tool names to deny]:tools:' \
+        '--disallowed-tools[Comma or space-separated list of tool names to deny]:tools:' \
+        '--effort[Effort level for the current session]:level:(low medium high)' \
+        '--fallback-model[Enable automatic fallback to specified model (only with --print)]:model:_claude_models' \
+        '--file[File resources to download at startup (file_id:relative_path)]:specs:' \
+        '--fork-session[When resuming, create a new session ID instead of reusing the original]' \
+        '--from-pr[Resume a session linked to a PR by PR number/URL, or open interactive picker]:pr:' \
         '(-h --help)'{-h,--help}'[Display help for command]' \
+        '--ide[Automatically connect to IDE on startup if exactly one valid IDE is available]' \
+        '--include-partial-messages[Include partial message chunks as they arrive (--print --output-format=stream-json only)]' \
+        '--input-format[Input format (only with --print)]:format:(text stream-json)' \
+        '--json-schema[JSON Schema for structured output validation]:schema:' \
+        '--max-budget-usd[Maximum dollar amount to spend on API calls (only with --print)]:amount:' \
+        '--mcp-config[Load MCP servers from JSON files or strings]:configs:_files' \
+        '--mcp-debug[DEPRECATED. Use --debug instead. Enable MCP debug mode]' \
+        '--model[Model for the current session]:model:_claude_models' \
+        '--no-chrome[Disable Claude in Chrome integration]' \
+        '--no-session-persistence[Disable session persistence (only with --print)]' \
+        '--output-format[Output format (only with --print)]:format:(text json stream-json)' \
+        '--permission-mode[Permission mode to use for the session]:mode:(acceptEdits bypassPermissions default dontAsk plan)' \
+        '--plugin-dir[Load plugins from directories for this session only]:paths:_files -/' \
+        '(-p --print)'{-p,--print}'[Print response and exit (useful for pipes)]' \
+        '--replay-user-messages[Re-emit user messages from stdin back on stdout (stream-json only)]' \
+        '(-r --resume)'{-r,--resume}'[Resume a conversation by session ID, or open interactive picker]:sessionId:' \
+        '--session-id[Use a specific session ID for the conversation]:uuid:' \
+        '--setting-sources[Comma-separated list of setting sources to load]:sources:' \
+        '--settings[Path to a settings JSON file or a JSON string]:file:_files' \
+        '--strict-mcp-config[Only use MCP servers from --mcp-config]' \
+        '--system-prompt[System prompt to use for the session]:prompt:' \
+        '--tmux[Create a tmux session for the worktree (requires --worktree)]' \
+        '--tools[Specify available tools from the built-in set]:tools:' \
+        '--verbose[Override verbose mode setting from config]' \
+        '(-v --version)'{-v,--version}'[Output the version number]' \
+        '(-w --worktree)'{-w,--worktree}'[Create a new git worktree for this session]:name:' \
         '1: :->command' \
         '*: :->args' && return 0
 
@@ -279,10 +304,12 @@ _claude_models() {
         'sonnet:Latest Sonnet model'
         'opus:Latest Opus model'
         'haiku:Latest Haiku model'
+        'claude-sonnet-4-6:Claude Sonnet 4.6'
+        'claude-opus-4-6:Claude Opus 4.6'
+        'claude-haiku-4-5-20251001:Claude Haiku 4.5'
         'claude-sonnet-4-20250514:Claude Sonnet 4'
         'claude-3-5-sonnet-20241022:Claude 3.5 Sonnet'
         'claude-3-5-haiku-20241022:Claude 3.5 Haiku'
-        'claude-3-opus-20240229:Claude 3 Opus'
     )
     _describe -t models 'claude models' models
 }
