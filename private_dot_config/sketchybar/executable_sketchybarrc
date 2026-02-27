@@ -52,7 +52,6 @@ do
     background.height=25
     label.drawing=off
     script="$PLUGIN_DIR/space.sh"
-    click_script="yabai -m space --focus $sid"
   )
   sketchybar --add space space."$sid" left --set space."$sid" "${space[@]}"
 done
@@ -65,9 +64,7 @@ sketchybar --add item chevron left \
            --set chevron icon= label.drawing=off \
            --add item front_app left \
            --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
-           --subscribe front_app front_app_switched \
-           --add item k8s left \
-           --set k8s script="$PLUGIN_DIR/k8s.sh" update_freq=30
+           --subscribe front_app front_app_switched
 
 ##### Adding Right Items #####
 # In the same way as the left items we can add items to the right side.
