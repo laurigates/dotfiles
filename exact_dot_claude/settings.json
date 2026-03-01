@@ -166,7 +166,11 @@
     "css-plugin@laurigates-claude-plugins": true,
     "feedback-plugin@laurigates-claude-plugins": true,
     "migration-patterns-plugin@laurigates-claude-plugins": true,
-    "prose-plugin@laurigates-claude-plugins": true
+    "prose-plugin@laurigates-claude-plugins": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "promptSuggestionEnabled": false,

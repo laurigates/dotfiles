@@ -2,6 +2,10 @@
 
 Personal configuration for Claude Code. Domain-specific skills and workflows are provided by plugins.
 
+## Core
+
+- Use Skills proactively
+
 ## Communication Style
 
 - Be concise
