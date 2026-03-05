@@ -62,7 +62,7 @@ alias gla='git pull --autostash'
 alias gp='git push'
 alias gpf='git push --force-with-lease'
 
-alias gb='git branch'
+alias gb='lazygit branch'
 alias gba='git branch -a'
 alias gbd='git branch -d'
 alias gbD='git branch -D'
@@ -73,19 +73,7 @@ alias gdsw='git diff --staged --word-diff'
 
 alias gfap='git fetch --all --prune'
 
-alias glg='git log --stat'
-alias glgp='git log --stat -p'
-alias glgg='git log --graph'
-alias glgga='git log --graph --decorate --all'
-alias glgm='git log --graph --max-count=10'
-alias glo='git log --oneline --decorate'
-alias glol="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'"
-alias glols="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset' --stat"
-alias glod="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset'"
-alias glods="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' --date=short"
-alias glola="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset' --all"
-alias glog='git log --oneline --decorate --graph'
-alias gloga='git log --oneline --decorate --graph --all'
+alias glog='lazygit log'
 
 alias gm='git merge'
 alias gmm='git merge main'
