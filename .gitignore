@@ -20,3 +20,12 @@ tmp/
 
 # Serena AI local directory
 .serena/
+
+# Security: prevent accidental commit of secrets/credentials
+.env
+.env.*
+.env.local
+*.pem
+*.key
+.api_tokens
+credentials*
