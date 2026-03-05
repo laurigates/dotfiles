@@ -1,0 +1,9 @@
+# ShellCheck configuration for chezmoi dotfiles repository
+#
+# Allow sourcing files from paths that may not exist at analysis time
+external-sources=true
+
+# Disable warnings that conflict with chezmoi template syntax
+# SC1091: Not following sourced file (can't follow chezmoi templates)
+# SC2154: Referenced but not assigned (chezmoi template variables)
+disable=SC1091,SC2154
