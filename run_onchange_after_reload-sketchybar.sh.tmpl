@@ -1,0 +1,19 @@
+#!/bin/bash
+# Reload sketchybar when its configuration changes
+# sketchybarrc hash: {{ include "private_dot_config/sketchybar/executable_sketchybarrc" | sha256sum }}
+# plugin hashes:
+# battery: {{ include "private_dot_config/sketchybar/plugins/executable_battery.sh" | sha256sum }}
+# clock: {{ include "private_dot_config/sketchybar/plugins/executable_clock.sh" | sha256sum }}
+# front_app: {{ include "private_dot_config/sketchybar/plugins/executable_front_app.sh" | sha256sum }}
+# github_repos: {{ include "private_dot_config/sketchybar/plugins/executable_github_repos.sh" | sha256sum }}
+# space: {{ include "private_dot_config/sketchybar/plugins/executable_space.sh" | sha256sum }}
+# volume: {{ include "private_dot_config/sketchybar/plugins/executable_volume.sh" | sha256sum }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
+if command -v sketchybar &>/dev/null && pgrep -q sketchybar; then
+  echo "Reloading sketchybar..."
+  sketchybar --reload
+fi
+
+{{- end }}
