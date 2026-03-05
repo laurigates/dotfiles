@@ -1,0 +1,14 @@
+# Gitleaks configuration for dotfiles repository
+# Suppresses known false positives from historical commits
+
+title = "dotfiles gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known false positives"
+paths = [
+    '''\.secrets\.baseline$''',
+    '''SKILL\.md$''',
+]
