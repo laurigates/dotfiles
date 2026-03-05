@@ -1,0 +1,43 @@
+{
+  "snapshots": [
+    {
+      "date": "2026-03-05",
+      "overall_score": 68,
+      "grade": "D",
+      "category_scores": {
+        "docs": 15,
+        "tests": 13,
+        "security": 16,
+        "quality": 4,
+        "ci": 20
+      },
+      "adjusted_scores": {
+        "quality": 14,
+        "security": 18,
+        "notes": "Quality underreported: linters/formatters exist in pre-commit, justfile, mise tasks. Security: Renovate replaces Dependabot."
+      },
+      "fixed_count": 4,
+      "fixed_items": [
+        "Added defensive .gitignore patterns for secrets",
+        "Created .shellcheckrc for chezmoi template compatibility",
+        "Created .luacheckrc with Neovim globals",
+        "Created .gitleaks.toml to suppress historical false positives"
+      ],
+      "remaining_count": 12,
+      "remaining_items": [
+        "Missing LICENSE file",
+        "Skill count mismatch in documentation (claims 32-103+, only 3 exist)",
+        "curl|sh in claude.yml should use setup-uv action",
+        "PLUGINS.md describes non-existent local plugin structure",
+        "GitHub Actions not digest-pinned",
+        "Stale ~/dotfiles/ aliases in aliases.zsh",
+        "Justfile/mise task duplication",
+        "nvim update command duplicated 7 times",
+        "Duplicate Further Documentation header in README.md",
+        "vim.loop deprecated in Neovim 0.10+",
+        "docker-compose V1 in justfile",
+        "Unconditional source ~/.api_tokens in dot_zshenv.tmpl"
+      ]
+    }
+  ]
+}
