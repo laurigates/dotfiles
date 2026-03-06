@@ -59,7 +59,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v4
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -98,17 +98,19 @@ jobs:
           claude /plugin install tools-plugin@lgates-claude-plugins
 
           # List installed plugins for verification
-          echo "## 🔌 Installed Claude Plugins" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Marketplace: \`lgates-claude-plugins\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Plugins installed:" >> $GITHUB_STEP_SUMMARY
-          echo "- dotfiles-plugin" >> $GITHUB_STEP_SUMMARY
-          echo "- git-plugin" >> $GITHUB_STEP_SUMMARY
-          echo "- github-actions-plugin" >> $GITHUB_STEP_SUMMARY
-          echo "- code-quality-plugin" >> $GITHUB_STEP_SUMMARY
-          echo "- testing-plugin" >> $GITHUB_STEP_SUMMARY
-          echo "- tools-plugin" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🔌 Installed Claude Plugins"
+            echo ""
+            echo "Marketplace: \`lgates-claude-plugins\`"
+            echo ""
+            echo "Plugins installed:"
+            echo "- dotfiles-plugin"
+            echo "- git-plugin"
+            echo "- github-actions-plugin"
+            echo "- code-quality-plugin"
+            echo "- testing-plugin"
+            echo "- tools-plugin"
+          } >> "$GITHUB_STEP_SUMMARY"
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
@@ -122,18 +124,20 @@ jobs:
           ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json full_access)
 
           # Export to GitHub output
-          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+          echo "allowed_tools=$ALLOWED_TOOLS" >> "$GITHUB_OUTPUT"
 
           # Show in summary for debugging
-          echo "## 🔧 Allowed Tools Configuration" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Preset: \`full_access\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Tools count: $(echo "$ALLOWED_TOOLS" | tr ',' '\n' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🔧 Allowed Tools Configuration"
+            echo ""
+            echo "Preset: \`full_access\`"
+            echo ""
+            echo "Tools count: $(echo "$ALLOWED_TOOLS" | tr ',' '\n' | wc -l)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record start time
         id: timing
-        run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+        run: echo "start_time=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Run Claude Code with MCP Integration
         id: claude
@@ -157,24 +161,26 @@ jobs:
         if: always()
         run: |
           END_TIME=$(date +%s)
-          START_TIME=${{ steps.timing.outputs.start_time }}
+          START_TIME="${{ steps.timing.outputs.start_time }}"
           DURATION=$((END_TIME - START_TIME))
 
           # Create metrics summary
-          echo "## 📊 Workflow Metrics" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Duration** | ${DURATION}s |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Trigger** | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Actor** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Run ID** | [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Status** | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 📊 Workflow Metrics"
+            echo ""
+            echo "| Metric | Value |"
+            echo "|--------|-------|"
+            echo "| **Duration** | ${DURATION}s |"
+            echo "| **Trigger** | \`${{ github.event_name }}\` |"
+            echo "| **Actor** | @${{ github.actor }} |"
+            echo "| **Run ID** | [\`${{ github.run_id }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |"
+            echo "| **Status** | ${{ job.status }} |"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
 
           # Save metrics to file
           mkdir -p .github/metrics
-          cat > .github/metrics/claude-workflow-${{ github.run_id }}.json <<EOF
+          cat > ".github/metrics/claude-workflow-${{ github.run_id }}.json" <<EOF
           {
             "run_id": "${{ github.run_id }}",
             "run_number": "${{ github.run_number }}",
@@ -210,7 +216,7 @@ jobs:
 
           # Create error notification file
           mkdir -p .github/errors
-          cat > .github/errors/failure-${{ github.run_id }}.md <<EOF
+          cat > ".github/errors/failure-${{ github.run_id }}.md" <<EOF
           # Workflow Failure Report
 
           **Run ID**: ${{ github.run_id }}
@@ -248,9 +254,9 @@ jobs:
           </details>"
 
           if [ "${{ github.event_name }}" = "issue_comment" ]; then
-            gh issue comment ${{ github.event.issue.number }} --body "$COMMENT_BODY"
+            gh issue comment "${{ github.event.issue.number }}" --body "$COMMENT_BODY"
           elif [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
-            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+            gh pr comment "${{ github.event.pull_request.number }}" --body "$COMMENT_BODY"
           fi
         env:
           GH_TOKEN: ${{ github.token }}
