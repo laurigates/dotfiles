@@ -104,27 +104,27 @@ pre-commit:
 # Run full smoke test in Docker (reproduces CI)
 smoke:
     @echo "{{BLUE}}Running smoke test in Docker...{{NORMAL}}"
-    docker-compose up --build smoke
+    docker compose up --build smoke
 
 # Run lint stage only in Docker
 smoke-lint:
     @echo "{{BLUE}}Running lint stage in Docker...{{NORMAL}}"
-    docker-compose run --rm smoke lint
+    docker compose run --rm smoke lint
 
 # Run build stage only in Docker
 smoke-build:
     @echo "{{BLUE}}Running build stage in Docker...{{NORMAL}}"
-    docker-compose run --rm smoke build
+    docker compose run --rm smoke build
 
 # Start interactive shell for debugging smoke test failures
 smoke-shell:
     @echo "{{BLUE}}Starting interactive smoke test shell...{{NORMAL}}"
-    docker-compose run --rm smoke-shell
+    docker compose run --rm smoke-shell
 
 # Clean up smoke test Docker resources
 smoke-clean:
     @echo "{{BLUE}}Cleaning up smoke test containers...{{NORMAL}}"
-    docker-compose down --rmi local --volumes --remove-orphans
+    docker compose down --rmi local --volumes --remove-orphans
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Environment Setup
