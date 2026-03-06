@@ -17,14 +17,6 @@ type nvim >/dev/null 2>&1 && alias vim="nvim"
 
 alias cb='kitty +kitten clipboard /dev/stdin'
 
-# Easy vimrc, zshrc and zshenv editing
-# Switch to dotfiles directory so that other configs can be edited easily if
-# needed and committed to git
-alias vimrc='nvim --cmd "cd ~/dotfiles" ~/dotfiles/neovim/init.lua'
-alias zshrc='nvim --cmd "cd ~/dotfiles" ~/dotfiles/zsh/zshrc'
-alias zshenv='nvim --cmd "cd ~/dotfiles" ~/dotfiles/zsh/zshenv'
-# alias edit_zsh='nvim --cmd "cd ~/dotfiles" "+edit ./zsh/zshenv" "+edit ./zsh/zshrc"'
-alias edit_aliases='nvim ~/dotfiles/zsh/aliases.zsh && source ~/dotfiles/zsh/aliases.zsh'
 alias reload="exec zsh"
 
 
