@@ -38,49 +38,14 @@ Always use `exact_dot_claude/` for managed Claude Code configuration.
 alias ca-claude='chezmoi apply -v ~/.claude'
 ```
 
-### Claude Code Skills & Plugins
-This repository includes **Skills** (100+ total) - automatically discovered capabilities that Claude uses based on context:
+### Claude Code Skills
+This repository includes auto-discovered skills that Claude uses based on context:
 
-**⚠️ Skill Activation**: Skills activate based on their YAML `description` field. See `.claude/skills/CLAUDE.md` for best practices on writing high-activation descriptions with specific trigger keywords.
-
-**Core Development Tools:**
 - **Chezmoi Expert** - Comprehensive chezmoi guidance (file management, templates, cross-platform configs)
-- **Shell Expert** - Shell scripting, CLI tools, automation, and cross-platform scripting
-- **fd File Finding** - Fast file search with smart defaults and gitignore awareness
-- **rg Code Search** - Blazingly fast code search with ripgrep and regex patterns
-- **jq JSON Processing** - JSON querying, filtering, and transformation with jq command-line tool
-- **yq YAML Processing** - YAML querying, filtering, and transformation with yq (v4+) command-line tool
-- **AST Grep Search** - AST-based code search for structural pattern matching
-- **VectorCode Search** - Semantic code search using embeddings for concept-based discovery
-
-**Version Control & Release:**
-- **Git Branch PR Workflow** - Branch management, pull request workflows, and GitHub integration
-- **Git Commit Workflow** - Commit message conventions, staging, and commit best practices
-- **Git Security Checks** - Pre-commit security validation and secret detection
-- **Git Repo Detection** - Extract GitHub repository owner/name from git remotes
-- **Release-Please Protection** - Prevents manual edits to automated release files (CHANGELOG.md, version fields)
-
-**GitHub Actions Integration:**
-- **Claude Code GitHub Workflows** - Workflow design, PR reviews, issue triage, and CI auto-fix
-- **GitHub Actions MCP Configuration** - MCP server setup, tool permissions, and multi-server coordination
-- **GitHub Actions Auth & Security** - Authentication methods, secrets management, and security best practices
-- **GitHub Actions Inspection** - Inspect workflow runs, analyze logs, debug CI/CD failures
-
-**Editor & Languages:**
 - **Neovim Configuration** - Lua configuration, plugin management, LSP setup, and AI integration
-- **Python Development** - Modern Python with uv, ruff, pytest, and type hints
-- **Rust Development** - Memory-safe systems programming with cargo and modern tooling
-- **Node.js Development** - JavaScript/TypeScript with Bun, Vite, Vue 3, and Pinia
-- **C++ Development** - Modern C++20/23 with CMake, Conan, and Clang tools
+- **Obsidian Bases** - Obsidian Bases database feature for YAML-based interactive note views
 
-**Infrastructure & DevOps:**
-- **Container Development** - Docker, multi-stage builds, and 12-factor apps
-- **Kubernetes Operations** - K8s cluster management and debugging
-- **Infrastructure Terraform** - Infrastructure as Code with HCL and state management
-- **Embedded Systems** - ESP32/ESP-IDF, STM32, FreeRTOS, and real-time systems
-
-**MCP Server Management:**
-- **MCP Management** - Intelligent MCP server installation and project-based configuration
+Skills activate based on their YAML `description` field. See `.claude/skills/CLAUDE.md` for best practices on writing high-activation descriptions with specific trigger keywords.
 
 Skills are located in `.claude/skills/` and managed via chezmoi's `exact_dot_claude/` source directory. Run `chezmoi apply -v ~/.claude` after editing skills.
 
@@ -274,7 +239,7 @@ For detailed information about specific subdirectories, see the following CLAUDE
 | **Claude Code design** | `.claude/CLAUDE.md` | High-level design, directory structure |
 | **Project rules** | `.claude/rules/` | Delegation, code quality, security, TDD |
 | **Slash commands** | `.claude/commands/CLAUDE.md` | 13 namespaces, command creation guide |
-| **Skills catalog** | `.claude/skills/CLAUDE.md` | 100+ skills, activation best practices |
+| **Skills catalog** | `.claude/skills/CLAUDE.md` | 3 skills, activation best practices |
 | **Plugins (external)** | [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins) | 23 plugins for Claude Code marketplace |
 | **Configuration files** | `private_dot_config/CLAUDE.md` | Chezmoi naming, templates, cross-platform |
 | **Maintenance scripts** | `scripts/CLAUDE.md` | CLI completions, command migration |

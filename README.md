@@ -64,7 +64,7 @@ just plugins-reinstall   # Full cycle: uninstall → install → enable
 just plugins-list        # Show installed plugins and status
 ```
 
-📖 **Full guide**: See [PLUGINS.md](./PLUGINS.md) for complete documentation.
+📖 **Full guide**: See [CLAUDE.md](./CLAUDE.md) for complete documentation.
 
 ## AI Tools & MCP Configuration
 
@@ -139,32 +139,20 @@ chezmoi apply -v ~/.claude  # Or use alias: ca-claude
 **Why `exact_dot_claude/` instead of symlink?**
 The `.claude` directory uses chezmoi's `exact_` prefix for atomic updates and auto-cleanup of orphaned files. This prevents race conditions with running Claude processes and ensures predictable state. Run `chezmoi apply -v ~/.claude` after editing skills or commands.
 
-Full guide: See [PLUGINS.md](./PLUGINS.md) and [CLAUDE.md](./CLAUDE.md)
+Full guide: See [CLAUDE.md](./CLAUDE.md)
 
 ### Skills
 
-32 auto-discovered skills provide contextual guidance:
-- **Core Tools**: chezmoi-expert, shell-expert, fd-file-finding, rg-code-search, jq-json-processing, yq-yaml-processing, ast-grep-search, vectorcode-search
-- **Version Control**: git-branch-pr-workflow, git-commit-workflow, git-security-checks, git-repo-detection, release-please-protection
-- **GitHub Actions**: claude-code-github-workflows, github-actions-mcp-config, github-actions-auth-security, github-actions-inspection
-- **Languages**: python-development, rust-development, nodejs-development, cpp-development, neovim-configuration
-- **Infrastructure**: container-development, kubernetes-operations, infrastructure-terraform, embedded-systems
-- **Agent/Memory**: agent-coordination-patterns, agent-file-coordination, multi-agent-workflows, graphiti-episode-storage, graphiti-learning-workflows, graphiti-memory-retrieval
+Auto-discovered skills provide contextual guidance:
+- **chezmoi-expert** - Dotfiles management, templates, cross-platform configs
+- **neovim-configuration** - Lua config, plugin management, LSP setup
+- **obsidian-bases** - Obsidian Bases database feature for YAML-based views
 
-Skills activate automatically based on your work context. See [CLAUDE.md](./CLAUDE.md) for the skills catalog.
+Skills activate automatically based on your work context. See [CLAUDE.md](./CLAUDE.md) for details.
 
 ## Further Documentation
 
-## Components Overview
-
-For a detailed breakdown of the tools and components managed by these dotfiles (like chezmoi, mise, Zsh plugins, Neovim setup, etc.), see:
-
-- [Components and Workflow Tools](./docs/components.md)
-
-## Further Documentation
-
-For more specific guides, see the following documents:
-
+- [Components and Workflow Tools](./docs/components.md) - Detailed breakdown of tools and components
 - [Platform Specific Notes](./docs/platform_specific.md)
 - [Container Testing](./docs/container_testing.md)
 - [Debugging Guide](./docs/debugging.md)
