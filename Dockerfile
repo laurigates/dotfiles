@@ -15,6 +15,7 @@ ENV TERM=xterm-256color
 # Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    ca-certificates \
     curl \
     file \
     git \
@@ -40,10 +41,11 @@ ENV HOME=/home/tester
 WORKDIR /home/tester
 
 # Install Homebrew (Linux)
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Add Homebrew to PATH
+# Add Homebrew to PATH (must match installer output)
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+RUN brew --version
 ENV HOMEBREW_NO_AUTO_UPDATE=1
 ENV HOMEBREW_NO_ANALYTICS=1
 
@@ -54,9 +56,8 @@ RUN brew install chezmoi neovim
 RUN curl https://mise.run | sh
 ENV PATH="/home/tester/.local/bin:${PATH}"
 
-# Install Python and pre-commit for linting stage
-RUN brew install python@3.12
-RUN pip3 install --user pre-commit
+# Install pre-commit for linting stage
+RUN brew install pre-commit
 
 # Copy dotfiles source
 COPY --chown=tester:tester . /tmp/dotfiles

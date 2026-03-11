@@ -15,7 +15,7 @@ _claude() {
         'doctor:Check the health of your Claude Code auto-updater'
         'install:Install Claude Code native build. Use to specify version (stable, latest, or specific version)'
         'mcp:Configure and manage MCP servers'
-        'plugin:Manage Claude Code plugins'
+        'plugin|plugins:Manage Claude Code plugins'
         'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
         'update|upgrade:Check for updates and install if available'
     )
@@ -103,7 +103,7 @@ _claude_config() {
         'doctor:Check the health of your Claude Code auto-updater'
         'install:Install Claude Code native build. Use to specify version (stable, latest, or specific version)'
         'mcp:Configure and manage MCP servers'
-        'plugin:Manage Claude Code plugins'
+        'plugin|plugins:Manage Claude Code plugins'
         'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
         'update|upgrade:Check for updates and install if available'
     )

@@ -90,6 +90,13 @@ ensure_dependencies() {
 run_lint() {
     log_section "Stage: LINT"
 
+    # pre-commit requires a git repo; COPY'd files may not be in one
+    if ! git rev-parse --git-dir &>/dev/null; then
+        log_info "Initializing temporary git repo for pre-commit..."
+        git init -q
+        git add -A
+    fi
+
     log_info "Running pre-commit hooks..."
     if pre-commit run --all-files; then
         log_success "pre-commit passed"
