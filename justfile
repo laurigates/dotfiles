@@ -16,7 +16,7 @@ help:
     @echo "  • Chezmoi scripts: run_* files for automatic execution"
     @echo "  • Package management via Brewfile and mise"
     @echo "  • Neovim configuration in private_dot_config/nvim/"
-    @echo "  • Shell configuration for Fish in private_dot_config/fish/"
+    @echo "  • Shell configuration: Zsh (primary), Fish (experimental)"
     @echo "  • CI/CD pipeline in .github/workflows/smoke.yml"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -171,7 +171,6 @@ docs:
     @echo "{{BLUE}}Available documentation:{{NORMAL}}"
     @echo "  README.md - Repository overview"
     @echo "  CLAUDE.md - AI assistant guidance"
-    @echo "  CONVENTIONS.md - Development conventions"
     @echo "  docs/ - Detailed documentation"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -400,7 +399,7 @@ doctor:
     @echo "{{BLUE}}Running diagnostics...{{NORMAL}}"
     @echo ""
     @echo "{{BLUE}}Required Tools:{{NORMAL}}"
-    @for tool in chezmoi git fish mise just; do \
+    @for tool in chezmoi git zsh mise just; do \
         if command -v $tool >/dev/null 2>&1; then \
             echo "  {{GREEN}}✓{{NORMAL}} $tool"; \
         else \
@@ -409,7 +408,7 @@ doctor:
     done
     @echo ""
     @echo "{{BLUE}}Optional Tools:{{NORMAL}}"
-    @for tool in nvim brew shellcheck luacheck actionlint pre-commit detect-secrets rg fd; do \
+    @for tool in nvim brew fish shellcheck luacheck actionlint pre-commit detect-secrets rg fd; do \
         if command -v $tool >/dev/null 2>&1; then \
             echo "  {{GREEN}}✓{{NORMAL}} $tool"; \
         else \

@@ -36,7 +36,7 @@ This setup uses [mise-en-place](https://mise.jdx.dev/) (formerly `rtx`) to manag
 
 ## Claude Code Plugins 🔌
 
-This repository now includes **Claude Code plugins** for easy installation and management of AI agents and slash commands!
+This repository includes **Claude Code plugins** for easy installation and management of AI agents and slash commands.
 
 ### Quick Start
 
@@ -102,42 +102,9 @@ Example configuration:
 
 ## Claude Code Configuration
 
-### Plugins
+Plugins are managed externally in [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins). See the [Claude Code Plugins](#claude-code-plugins-) section above for installation.
 
-The repository provides three Claude Code plugins via a local marketplace for instant development feedback:
-
-```bash
-# Plugins auto-load from: ~/.local/share/chezmoi/plugins/
-# Check available plugins:
-/plugin list
-```
-
-**Available plugins:**
-- **dotfiles-core**: Essential development workflows (git, code review, testing, docs, CI/CD)
-- **dotfiles-experimental**: Testing new automation features (devloop, modernization) - can disable if unstable
-- **dotfiles-fvh**: Work-specific Podio integrations - disable for personal projects
-
-**Enable/Disable in settings:**
-```json
-"enabledPlugins": {
-  "dotfiles-core@dotfiles": true,
-  "dotfiles-experimental@dotfiles": true,  // Set to false to disable
-  "dotfiles-fvh@dotfiles": false           // Disabled for personal use
-}
-```
-
-**Development workflow:**
-```bash
-# Edit plugin/skill files directly in source directory
-vim ~/.local/share/chezmoi/.claude/skills/python-development/SKILL.md
-vim ~/.local/share/chezmoi/plugins/dotfiles-core/commands/git/git:commit.md
-
-# Apply changes to ~/.claude after editing
-chezmoi apply -v ~/.claude  # Or use alias: ca-claude
-```
-
-**Why `exact_dot_claude/` instead of symlink?**
-The `.claude` directory uses chezmoi's `exact_` prefix for atomic updates and auto-cleanup of orphaned files. This prevents race conditions with running Claude processes and ensures predictable state. Run `chezmoi apply -v ~/.claude` after editing skills or commands.
+The `.claude` directory is managed via `exact_dot_claude/` with chezmoi's exact-match semantics (orphaned files auto-removed). Run `chezmoi apply -v ~/.claude` after editing skills or commands.
 
 Full guide: See [CLAUDE.md](./CLAUDE.md)
 
