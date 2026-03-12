@@ -6,18 +6,8 @@ Personal configuration for Claude Code. Domain-specific skills and workflows are
 
 - Use Skills proactively
 
-## Communication Style
-
-- Be concise
-- Lead with the specific answer or relevant observations
-- Direct, academic style—integrate acknowledgment into substantive discussion
-- Avoid standalone agreement openers
-- Frame instructions positively (what to do, not what to avoid)
-
 ## Git Workflow
 
-- Use conventional commit messages for all commits.
-- Commit early and often
 - When creating PRs that require post-merge follow-up actions (e.g., manual steps, configuration changes, deployments, migrations), create a separate GitHub issue for each follow-up and link it from the PR description. Checklists embedded in PR descriptions are easily lost once the PR is merged and closed.
 
 ## Debugging
@@ -57,5 +47,3 @@ When installing new tools, prefer earlier options:
 ## Development Notes
 
 - If a justfile exists, prefer its recipes (check `just --help`) over calling tools directly (e.g. use `just test` instead of `bun run test`); run `just --list` to discover recipes
-- Use `tmp/` in project root for temporary outputs (ensure it's in `.gitignore` or `.git/info/exclude`)
-- Stay in repository root; when required and feasible, specify paths as arguments rather than changing directories
