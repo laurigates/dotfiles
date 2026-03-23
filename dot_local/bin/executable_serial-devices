@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""List connected MCU/serial USB devices with vendor identification.
+
+Parses macOS IOKit registry for USB devices, identifies known MCU vendors,
+and correlates with serial ports. Requires macOS (uses ioreg).
+"""
+
+import argparse
+import plistlib
+import subprocess
+import sys
+
+KNOWN_VENDORS = {
+    0x303A: "Espressif",  # ESP32-S2/S3/C3/C6
+    0x10C4: "Silicon Labs",  # CP2102/CP2104
+    0x1A86: "QinHeng",  # CH340/CH341
+    0x0403: "FTDI",  # FT232/FT2232
+    0x2341: "Arduino",  # Official Arduino boards
+    0x2E8A: "Raspberry Pi",  # RP2040/RP2350
+    0x1B4F: "SparkFun",
+    0x239A: "Adafruit",
+    0x0483: "STMicroelectronics",
+    0x1D50: "OpenMoko",  # Black Magic Probe, etc.
+    0x16C0: "Teensy",  # PJRC Teensy
+    0x1EAF: "Leaflabs",  # Maple/STM32duino
+    0x0D28: "ARM DAPLink",  # CMSIS-DAP debuggers
+}
+
+
+def get_usb_serial_ports():
+    """Get all USB serial ports from IOSerialBSDClient registry."""
+    try:
+        raw = subprocess.check_output(
+            ["ioreg", "-r", "-c", "IOSerialBSDClient", "-a"],
+            stderr=subprocess.DEVNULL,
+        )
+        data = plistlib.loads(raw)
+    except Exception:
+        return {}
+
+    ports = {}
+    for node in data:
+        callout = node.get("IOCalloutDevice", "")
+        dialin = node.get("IODialinDevice", "")
+        if not callout and not dialin:
+            continue
+        port = callout or dialin
+        if "usb" not in port.lower():
+            continue
+        port_id = (
+            port.rsplit("-", 1)[-1] if "-" in port else port.rsplit("modem", 1)[-1]
+        )
+        ports[port_id] = callout or dialin.replace("tty.", "cu.")
+
+    return ports
+
+
+def parse_vid_pid(value):
+    """Parse vendor/product ID from ioreg (may be int or hex string)."""
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and value.startswith("0x"):
+        return int(value, 16)
+    return 0
+
+
+def collect_devices(nodes):
+    """Recursively collect USB device info from ioreg plist."""
+    devices = []
+    for node in nodes:
+        vid = parse_vid_pid(node.get("idVendor", 0))
+        pid = parse_vid_pid(node.get("idProduct", 0))
+        if vid == 0:
+            children = node.get("IORegistryEntryChildren", [])
+            devices.extend(collect_devices(children))
+            continue
+
+        name = node.get("USB Product Name", node.get("kUSBProductString", ""))
+        serial = node.get("USB Serial Number", node.get("kUSBSerialNumberString", ""))
+        vendor_name = KNOWN_VENDORS.get(vid, "")
+
+        devices.append(
+            {
+                "vid": vid,
+                "pid": pid,
+                "name": name,
+                "serial": serial,
+                "vendor": vendor_name,
+            }
+        )
+
+        children = node.get("IORegistryEntryChildren", [])
+        devices.extend(collect_devices(children))
+
+    return devices
+
+
+def main():
+    parser = argparse.ArgumentParser(description="List connected MCU/serial USB devices")
+    parser.add_argument(
+        "--port-only",
+        action="store_true",
+        help="Print only port paths, one per line (for scripting)",
+    )
+    args = parser.parse_args()
+
+    if sys.platform != "darwin":
+        print("Error: serial-devices requires macOS (uses ioreg)", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        raw = subprocess.check_output(
+            ["ioreg", "-r", "-c", "IOUSBHostDevice", "-a"],
+            stderr=subprocess.DEVNULL,
+        )
+        data = plistlib.loads(raw)
+    except Exception as e:
+        print(f"Error reading USB registry: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    devices = collect_devices(data)
+    serial_ports = get_usb_serial_ports()
+
+    # Deduplicate by VID:PID:serial
+    seen = set()
+    unique = []
+    for d in devices:
+        key = (d["vid"], d["pid"], d["serial"])
+        if key not in seen:
+            seen.add(key)
+            unique.append(d)
+
+    # Filter to known MCU/serial vendors
+    relevant = [d for d in unique if d["vendor"]]
+
+    # Also include any device whose serial matches a USB serial port
+    for d in unique:
+        if d not in relevant and d["serial"] in serial_ports:
+            relevant.append(d)
+
+    # Match devices to serial ports by serial number
+    for d in relevant:
+        d["port"] = serial_ports.get(d["serial"], "")
+
+    # Collect all matched ports
+    matched_serials = {d["serial"] for d in relevant if d["port"]}
+    unmatched_ports = {
+        pid: port for pid, port in serial_ports.items() if pid not in matched_serials
+    }
+
+    # Gather all port paths for --port-only mode
+    all_ports = [d["port"] for d in relevant if d["port"]]
+    all_ports.extend(unmatched_ports.values())
+
+    if args.port_only:
+        if not all_ports:
+            sys.exit(1)
+        for port in all_ports:
+            print(port)
+        sys.exit(0)
+
+    if not relevant and not unmatched_ports:
+        if serial_ports:
+            print("USB serial ports detected (unknown vendor):")
+            for port in serial_ports.values():
+                print(f"  {port}")
+        else:
+            print("No MCU or USB-serial devices found")
+        sys.exit(0)
+
+    print(f"{'Device':<40} {'VID:PID':<14} {'Port':<28} {'Serial'}")
+    print(f"{'─' * 40} {'─' * 14} {'─' * 28} {'─' * 20}")
+
+    for d in relevant:
+        label = d["name"] or d["vendor"] or "Unknown"
+        if d["vendor"] and d["name"] and d["vendor"] not in d["name"]:
+            label = f"{d['vendor']} {d['name']}"
+        elif d["vendor"] and not d["name"]:
+            label = d["vendor"]
+
+        vid_pid = f"0x{d['vid']:04X}:0x{d['pid']:04X}"
+        port_str = d["port"] or "(no serial port)"
+        serial = d["serial"] or ""
+
+        print(f"{label:<40} {vid_pid:<14} {port_str:<28} {serial}")
+
+    for port_id, port in unmatched_ports.items():
+        print(f"{'(unmatched serial port)':<40} {'':14} {port:<28} {port_id}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# Serial monitor with auto-detection, fzf selection, and reconnection.
+# Uses pyserial via uvx — no permanent install needed.
+# Usage: serial-monitor [port] [-b baud] [--no-reset] [--no-reconnect]
+
+set -euo pipefail
+
+baud=115200
+reset=1
+reconnect=1
+port=""
+
+usage() {
+    cat <<'EOF'
+Usage: serial-monitor [OPTIONS] [PORT]
+
+Connect to a serial device for monitoring MCU output.
+
+Arguments:
+  PORT                    Serial port (e.g. /dev/cu.usbmodem1101)
+                          Auto-detects if omitted; uses fzf when multiple found
+
+Options:
+  -b, --baud RATE         Baud rate (default: 115200)
+  --no-reset              Skip DTR/RTS reset sequence
+  --no-reconnect          Exit on disconnect instead of waiting
+  -h, --help              Show this help
+
+Examples:
+  serial-monitor                          # Auto-detect and connect
+  serial-monitor /dev/cu.usbserial-0001   # Specific port
+  serial-monitor -b 9600                  # Custom baud rate
+EOF
+    exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -b|--baud) baud="$2"; shift 2 ;;
+        --no-reset) reset=0; shift ;;
+        --no-reconnect) reconnect=0; shift ;;
+        -h|--help) usage ;;
+        -*) echo "Unknown option: $1" >&2; exit 1 ;;
+        *) port="$1"; shift ;;
+    esac
+done
+
+# Auto-detect port if not specified
+if [[ -z "$port" ]]; then
+    if ! command -v serial-devices &>/dev/null; then
+        echo "Error: serial-devices not found on PATH" >&2
+        exit 1
+    fi
+
+    mapfile -t ports < <(serial-devices --port-only 2>/dev/null)
+
+    if [[ ${#ports[@]} -eq 0 ]]; then
+        echo "No serial devices found. Connect a board and try again." >&2
+        exit 1
+    elif [[ ${#ports[@]} -eq 1 ]]; then
+        port="${ports[0]}"
+        echo "Auto-detected: $port"
+    else
+        if command -v fzf &>/dev/null; then
+            port=$(printf '%s\n' "${ports[@]}" | fzf --prompt="Select serial port: " --height=10)
+        else
+            echo "Multiple devices found:" >&2
+            printf '  %s\n' "${ports[@]}" >&2
+            echo "Specify a port: serial-monitor /dev/cu...." >&2
+            exit 1
+        fi
+    fi
+fi
+
+if ! command -v uvx &>/dev/null; then
+    echo "Error: uvx not found. Install uv: https://docs.astral.sh/uv/" >&2
+    exit 1
+fi
+
+echo "Monitoring $port @ ${baud} baud — Ctrl-C to stop"
+
+export SERIAL_PORT="$port"
+export SERIAL_BAUD="$baud"
+export SERIAL_RESET="$reset"
+export SERIAL_RECONNECT="$reconnect"
+
+uvx --from pyserial python3 -c '
+import serial, sys, signal, time, os
+
+port = os.environ["SERIAL_PORT"]
+baud = int(os.environ["SERIAL_BAUD"])
+do_reset = os.environ.get("SERIAL_RESET", "1") == "1"
+reconnect = os.environ.get("SERIAL_RECONNECT", "1") == "1"
+
+signal.signal(signal.SIGINT, lambda *a: sys.exit(0))
+
+while True:
+    try:
+        s = serial.Serial(port, baud, timeout=1)
+        if do_reset:
+            s.dtr = False; s.rts = True; time.sleep(0.1)
+            s.rts = False; s.dtr = True; time.sleep(0.1)
+            s.dtr = False
+        while True:
+            data = s.read(4096)
+            if data:
+                sys.stdout.buffer.write(data)
+                sys.stdout.buffer.flush()
+    except serial.SerialException:
+        print("\nDevice disconnected", file=sys.stderr)
+        if not reconnect:
+            break
+        print("Waiting for reconnection...", file=sys.stderr)
+        while True:
+            time.sleep(2)
+            if os.path.exists(port):
+                print("Reconnected!", file=sys.stderr)
+                time.sleep(0.5)
+                break
+'
