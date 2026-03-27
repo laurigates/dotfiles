@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "0"
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
   },
   "permissions": {
     "allow": [
@@ -174,11 +174,17 @@
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true
+    "gopls-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true,
+    "codebase-attributes-plugin@laurigates-claude-plugins": true,
+    "evaluate-plugin@laurigates-claude-plugins": true,
+    "obsidian-plugin@laurigates-claude-plugins": true
   },
   "alwaysThinkingEnabled": true,
   "promptSuggestionEnabled": false,
   "autoUpdatesChannel": "latest",
+  "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901
   }
