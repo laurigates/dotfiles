@@ -709,25 +709,14 @@ fi
 # Keybindings
 #======================================================================
 
-# Unbind problematic bindings
-# bindkey -r "^[" # Example: Unbind Alt key if needed
+# Use emacs keymap for standard Ctrl+C/D/L behavior (EDITOR=nvim triggers vi mode)
+bindkey -e
 
-# Alt+c for fzf-cd-widget (Mapped in kitty.conf to send ESC+c)
+# Alt+c for fzf-cd-widget (overrides emacs capitalize-word; mapped in kitty.conf to send ESC+c)
 bindkey '\ec' fzf-cd-widget
 
-# macos specific binds that make it possible to use option+left/right to move by word.
-# This also allows partial completion of suggestions by zsh-autosuggestions.
-bindkey '\x1bb' backward-word
-bindkey '\x1bf' forward-word
-
 # Add a PC-like bind for pipe on macos (Command + <)
-# This sequence "^[[60;9u" might be specific to your terminal/setup
 bindkey -s "^[[60;9u" "|"
-
-# Example zkbd usage (uncomment and configure if needed)
-# source ~/.zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
-# [[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
-# [[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
 
 
 #======================================================================
