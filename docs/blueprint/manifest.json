@@ -7,7 +7,14 @@
   },
   "project": {
     "name": "chezmoi",
-    "detected_stack": ["zsh", "lua", "shell", "mise", "chezmoi", "neovim"]
+    "detected_stack": [
+      "zsh",
+      "lua",
+      "shell",
+      "mise",
+      "chezmoi",
+      "neovim"
+    ]
   },
   "structure": {
     "has_prds": true,
@@ -32,10 +39,13 @@
     "derive-prd": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": null,
-      "last_result": null,
+      "last_completed_at": "2026-04-07T00:00:00Z",
+      "last_result": "success",
       "schedule": "on-demand",
-      "stats": {},
+      "stats": {
+        "runs_total": 1,
+        "items_created": 1
+      },
       "context": {}
     },
     "derive-plans": {
@@ -110,5 +120,17 @@
       "stats": {},
       "context": {}
     }
+  },
+  "id_registry": {
+    "last_prd": 1,
+    "documents": {
+      "PRD-001": {
+        "path": "docs/prds/project-overview.md",
+        "title": "Dotfiles",
+        "github_issues": [],
+        "created": "2026-04-07"
+      }
+    },
+    "github_issues": {}
   }
 }
