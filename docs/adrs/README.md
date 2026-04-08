@@ -23,6 +23,9 @@ An ADR is a document that captures an important architectural decision made alon
 | [0011](0011-claude-rules-migration.md) | Claude Rules Migration | Accepted | 2025-12 |
 | [0012](0012-justfile-command-runner.md) | Justfile Command Runner | Accepted | 2025-12 |
 | [0013](0013-nixos-declarative-system-configuration.md) | NixOS Declarative System Configuration | Accepted | 2025-12 |
+| [0014](0014-profile-based-package-registry.md) | Profile-Based Package Registry | Accepted | 2026-04 |
+| [0015](0015-gitleaks-secret-detection.md) | Gitleaks for Secret Detection | Accepted | 2026-04 |
+| [0016](0016-shell-completion-auto-generation.md) | Shell Completion Auto-Generation Pattern | Accepted | 2026-04 |
 
 ## ADR Format
 

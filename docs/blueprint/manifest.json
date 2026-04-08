@@ -1,7 +1,7 @@
 {
   "format_version": "3.2.0",
   "created_at": "2026-04-07T00:00:00Z",
-  "updated_at": "2026-04-07T00:00:00Z",
+  "updated_at": "2026-04-08T00:00:00Z",
   "created_by": {
     "blueprint_plugin": "3.2.0"
   },
@@ -51,11 +51,18 @@
     "derive-plans": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": null,
-      "last_result": null,
+      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_result": "success",
       "schedule": "weekly",
-      "stats": {},
-      "context": {}
+      "stats": {
+        "runs_total": 1,
+        "items_processed": 200,
+        "items_created": 6
+      },
+      "context": {
+        "commits_analyzed_up_to": "afaec005957568bd34ddb0ffd2daa7b4a98a70c8",
+        "commits_analyzed_count": 200
+      }
     },
     "derive-rules": {
       "enabled": true,
@@ -123,12 +130,31 @@
   },
   "id_registry": {
     "last_prd": 1,
+    "last_prp": 3,
     "documents": {
       "PRD-001": {
         "path": "docs/prds/project-overview.md",
-        "title": "Dotfiles",
+        "title": "Dotfiles — Product Requirements Document",
         "github_issues": [],
         "created": "2026-04-07"
+      },
+      "PRP-001": {
+        "path": "docs/prps/fish-shell-migration.md",
+        "title": "Fish Shell Migration",
+        "github_issues": [],
+        "created": "2026-04-08"
+      },
+      "PRP-002": {
+        "path": "docs/prps/nixos-implementation.md",
+        "title": "NixOS Implementation",
+        "github_issues": [],
+        "created": "2026-04-08"
+      },
+      "PRP-003": {
+        "path": "docs/prps/sketchybar-integration.md",
+        "title": "Sketchybar macOS Integration",
+        "github_issues": [],
+        "created": "2026-04-08"
       }
     },
     "github_issues": {}
