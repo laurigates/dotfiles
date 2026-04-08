@@ -1,0 +1,170 @@
+{
+  "format_version": "3.2.0",
+  "created_at": "2026-04-07T00:00:00Z",
+  "updated_at": "2026-04-08T00:00:00Z",
+  "created_by": {
+    "blueprint_plugin": "3.2.0"
+  },
+  "project": {
+    "name": "chezmoi",
+    "detected_stack": [
+      "zsh",
+      "lua",
+      "shell",
+      "mise",
+      "chezmoi",
+      "neovim"
+    ]
+  },
+  "structure": {
+    "has_prds": true,
+    "has_adrs": true,
+    "has_prps": true,
+    "has_work_orders": true,
+    "has_ai_docs": false,
+    "has_modular_rules": true,
+    "has_feature_tracker": false,
+    "has_document_detection": true,
+    "claude_md_mode": "both"
+  },
+  "generated": {
+    "rules": {},
+    "commands": {}
+  },
+  "custom_overrides": {
+    "skills": [],
+    "commands": []
+  },
+  "task_registry": {
+    "derive-prd": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": "2026-04-07T00:00:00Z",
+      "last_result": "success",
+      "schedule": "on-demand",
+      "stats": {
+        "runs_total": 1,
+        "items_created": 1
+      },
+      "context": {}
+    },
+    "derive-plans": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_result": "success",
+      "schedule": "weekly",
+      "stats": {
+        "runs_total": 1,
+        "items_processed": 200,
+        "items_created": 6
+      },
+      "context": {
+        "commits_analyzed_up_to": "afaec005957568bd34ddb0ffd2daa7b4a98a70c8",
+        "commits_analyzed_count": 200
+      }
+    },
+    "derive-rules": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_result": "success",
+      "schedule": "weekly",
+      "stats": {
+        "runs_total": 1,
+        "items_processed": 200,
+        "items_created": 2
+      },
+      "context": {
+        "commits_analyzed_up_to": "e21bb5b"
+      }
+    },
+    "generate-rules": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": null,
+      "last_result": null,
+      "schedule": "on-change",
+      "stats": {},
+      "context": {}
+    },
+    "adr-validate": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": null,
+      "last_result": null,
+      "schedule": "weekly",
+      "stats": {},
+      "context": {}
+    },
+    "feature-tracker-sync": {
+      "enabled": false,
+      "auto_run": false,
+      "last_completed_at": null,
+      "last_result": null,
+      "schedule": "daily",
+      "stats": {},
+      "context": {}
+    },
+    "sync-ids": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": null,
+      "last_result": null,
+      "schedule": "on-change",
+      "stats": {},
+      "context": {}
+    },
+    "claude-md": {
+      "enabled": true,
+      "auto_run": false,
+      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_result": "success",
+      "schedule": "on-change",
+      "stats": {
+        "runs_total": 1
+      },
+      "context": {}
+    },
+    "curate-docs": {
+      "enabled": false,
+      "auto_run": false,
+      "last_completed_at": null,
+      "last_result": null,
+      "schedule": "on-demand",
+      "stats": {},
+      "context": {}
+    }
+  },
+  "id_registry": {
+    "last_prd": 1,
+    "last_prp": 3,
+    "documents": {
+      "PRD-001": {
+        "path": "docs/prds/project-overview.md",
+        "title": "Dotfiles — Product Requirements Document",
+        "github_issues": [],
+        "created": "2026-04-07"
+      },
+      "PRP-001": {
+        "path": "docs/prps/fish-shell-migration.md",
+        "title": "Fish Shell Migration",
+        "github_issues": [],
+        "created": "2026-04-08"
+      },
+      "PRP-002": {
+        "path": "docs/prps/nixos-implementation.md",
+        "title": "NixOS Implementation",
+        "github_issues": [],
+        "created": "2026-04-08"
+      },
+      "PRP-003": {
+        "path": "docs/prps/sketchybar-integration.md",
+        "title": "Sketchybar macOS Integration",
+        "github_issues": [],
+        "created": "2026-04-08"
+      }
+    },
+    "github_issues": {}
+  }
+}

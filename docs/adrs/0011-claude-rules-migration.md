@@ -142,7 +142,7 @@ Rules load in this order (lower number = loaded first, higher takes precedence):
 - `.claude/rules/` - The rules directory this ADR introduces
 - `.claude/CLAUDE.md` - High-level design documentation updated to reference rules
 - `CLAUDE.md` (root) - Project overview updated with rules references
-- `docs/adr/0001-chezmoi-exact-directory-strategy.md` - Related decision on `exact_` prefix for `.claude/` management
+- `docs/adrs/0001-chezmoi-exact-directory-strategy.md` - Related decision on `exact_` prefix for `.claude/` management
 
 ## References
 

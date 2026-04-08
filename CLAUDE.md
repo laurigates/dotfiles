@@ -72,6 +72,16 @@ pre-commit run detect-secrets --all-files
 - **smoke.yml** — Multi-platform (Ubuntu/macOS) linting and build
 - **claude.yml** — AI-assisted dev with auto plugin install from [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins)
 
+## Blueprint Documentation
+
+Blueprint v3.2.0 manages project documentation and rules.
+
+- **PRD**: `docs/prds/project-overview.md` — Feature requirements and scope
+- **ADRs**: `docs/adrs/` — 16 Architecture Decision Records ([index](docs/adrs/README.md))
+- **PRPs**: `docs/prps/` — Implementation plans (fish, NixOS, sketchybar)
+- **Manifest**: `docs/blueprint/manifest.json` — Configuration and task registry
+- **Commands**: `/blueprint:status`, `/blueprint:execute`, `/blueprint:derive-plans`
+
 ## Sub-documentation
 
 - `exact_dot_claude/CLAUDE.md` — Claude Code design and directory structure
@@ -80,6 +90,7 @@ pre-commit run detect-secrets --all-files
 - `private_dot_config/CLAUDE.md` — Application configuration
 - `private_dot_config/nvim/CLAUDE.md` — Neovim configuration
 - `scripts/CLAUDE.md` — Maintenance scripts
+- `docs/blueprint/README.md` — Blueprint structure overview
 
 ## Security & Release
 
