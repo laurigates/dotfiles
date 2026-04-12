@@ -282,5 +282,5 @@ See `.claude/skills/` for details.
 ## Further Reading
 
 - [Complete Workflow Guide](workflow.md)
-- [Claude Code Skills Documentation](https://docs.claude.com/en/docs/claude-code/customization/skills)
-- [Claude Code Commands Documentation](https://docs.claude.com/en/docs/claude-code/customization/commands)
+- [Claude Code Skills Documentation](https://docs.anthropic.com/en/docs/claude-code/skills)
+- [Claude Code Commands Documentation](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
