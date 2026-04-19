@@ -101,6 +101,21 @@ jobs:
 
           echo "nvim_mean=$NVIM_MEAN" >> $GITHUB_OUTPUT
 
+      - name: Aggregate benchmark results for github-action-benchmark
+        run: |
+          jq -n \
+            --argjson chezmoi "$(jq '.results[0].mean' chezmoi-bench.json)" \
+            --argjson zsh "$(jq '.results[0].mean' shell-bench.json)" \
+            --argjson bash "$(jq '.results[1].mean' shell-bench.json)" \
+            --argjson nvim "$(jq '.results[0].mean' nvim-bench.json)" \
+            '[
+              {name: "chezmoi apply --dry-run", unit: "s", value: $chezmoi},
+              {name: "zsh startup",              unit: "s", value: $zsh},
+              {name: "bash startup",             unit: "s", value: $bash},
+              {name: "nvim startup",             unit: "s", value: $nvim}
+            ]' > benchmark-results.json
+          cat benchmark-results.json
+
       - name: Store benchmark results
         uses: benchmark-action/github-action-benchmark@v1
         with:
