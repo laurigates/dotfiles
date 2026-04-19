@@ -105,10 +105,12 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run chezmoi apply
-        # --exclude=scripts: skip run_once_/run_onchange_ scripts on CI. They
-        # install brew packages, sync nvim plugins, etc. — stateful work that
-        # is meaningful on user machines but not in ephemeral runners.
-        run: chezmoi apply -v --exclude=scripts
+        # --source=.: chezmoi defaults to ~/.local/share/chezmoi which doesn't
+        # exist on a fresh runner; point it at the workspace checkout.
+        # --exclude=scripts: skip run_once_/run_onchange_ scripts. They install
+        # brew packages, sync nvim plugins, etc. — stateful work that is
+        # meaningful on user machines but not in ephemeral runners.
+        run: chezmoi apply -v --source=. --exclude=scripts
 
       - name: Test zsh shell initialization
         run: |
