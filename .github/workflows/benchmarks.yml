@@ -117,14 +117,15 @@ jobs:
           cat benchmark-results.json
 
       - name: Store benchmark results
+        # github-action-benchmark requires a gh-pages branch that may not exist
+        # on forks/PRs. Only run on pushes to main, which matches auto-push.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: 'customSmallerIsBetter'
           output-file-path: benchmark-results.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          # Avoid failing on PRs where the gh-pages branch may not exist yet.
-          skip-fetch-gh-pages: ${{ github.event_name != 'push' || github.ref != 'refs/heads/main' }}
+          auto-push: true
           alert-threshold: '150%'
           comment-on-alert: true
           fail-on-alert: false
