@@ -22,14 +22,14 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Install dependencies
         run: |
           brew install chezmoi neovim zsh hyperfine
 
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@v4
 
       - name: Benchmark chezmoi apply
         id: chezmoi-bench
@@ -37,8 +37,11 @@ jobs:
           echo "## ⚡ Chezmoi Apply Performance" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Run hyperfine benchmark
-          hyperfine --warmup 1 --runs 3 --export-json chezmoi-bench.json \
+          # --ignore-failure: chezmoi apply --dry-run may exit non-zero in CI due
+          # to missing external dependencies; we still want to measure timing.
+          # --show-output: surface errors for debugging.
+          hyperfine --warmup 1 --runs 3 --ignore-failure --show-output \
+            --export-json chezmoi-bench.json \
             'chezmoi apply --dry-run'
 
           # Extract results
