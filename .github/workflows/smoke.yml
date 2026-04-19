@@ -31,7 +31,9 @@ jobs:
         run: pre-commit run --all-files
 
       - name: Run chezmoi verify
-        run: chezmoi verify .
+        # No target arg: `chezmoi verify .` resolves `.` to the repo workspace,
+        # which is outside $HOME, so chezmoi errors "not in destination directory".
+        run: chezmoi verify
 
   build:
     name: Build (Ubuntu)
