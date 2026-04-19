@@ -105,8 +105,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run chezmoi apply
-        # Use -v for verbose output, useful for debugging CI failures
-        run: chezmoi apply -v
+        # --exclude=scripts: skip run_once_/run_onchange_ scripts on CI. They
+        # install brew packages, sync nvim plugins, etc. — stateful work that
+        # is meaningful on user machines but not in ephemeral runners.
+        run: chezmoi apply -v --exclude=scripts
 
       - name: Test zsh shell initialization
         run: |
