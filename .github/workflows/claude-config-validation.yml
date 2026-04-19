@@ -47,7 +47,7 @@ jobs:
         run: |
           chmod +x .github/scripts/generate-allowed-tools.sh
           ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json config_validation)
-          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+          echo "allowed_tools=$ALLOWED_TOOLS" >> "$GITHUB_OUTPUT"
 
       - name: Run Claude Config Validation
         id: claude
@@ -151,11 +151,13 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          echo "## 🔍 Claude Config Validation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Run ID** | \`${{ github.run_id }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Trigger** | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Dry Run** | \`${{ inputs.dry_run || 'false' }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Status** | \`${{ job.status }}\` |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🔍 Claude Config Validation"
+            echo ""
+            echo "| Detail | Value |"
+            echo "|--------|-------|"
+            echo "| **Run ID** | \`${{ github.run_id }}\` |"
+            echo "| **Trigger** | \`${{ github.event_name }}\` |"
+            echo "| **Dry Run** | \`${{ inputs.dry_run || 'false' }}\` |"
+            echo "| **Status** | \`${{ job.status }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
