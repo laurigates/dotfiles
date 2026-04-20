@@ -3,7 +3,6 @@
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "ENABLE_TOOL_SEARCH": "1"
   },
   "permissions": {
