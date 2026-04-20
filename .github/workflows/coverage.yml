@@ -36,7 +36,7 @@ jobs:
 
           if [ -z "$SHELL_SCRIPTS" ]; then
             echo "No shell scripts found"
-            echo "total_scripts=0" >> $GITHUB_OUTPUT
+            echo "total_scripts=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 

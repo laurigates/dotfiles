@@ -25,6 +25,8 @@ jobs:
 
       - name: Create labeling summary
         run: |
-          echo "## 🏷️ Auto-labeling Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Labels have been automatically applied based on changed files." >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🏷️ Auto-labeling Complete"
+            echo ""
+            echo "Labels have been automatically applied based on changed files."
+          } >> "$GITHUB_STEP_SUMMARY"

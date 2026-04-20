@@ -41,7 +41,7 @@ jobs:
         run: |
           chmod +x .github/scripts/generate-allowed-tools.sh
           ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json pr_review)
-          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+          echo "allowed_tools=$ALLOWED_TOOLS" >> "$GITHUB_OUTPUT"
 
       - name: Run Claude Code Review
         id: claude-review

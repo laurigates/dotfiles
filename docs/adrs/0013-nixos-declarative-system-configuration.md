@@ -235,6 +235,6 @@ Users can choose their integration level:
 
 - NixOS Manual: https://nixos.org/manual/nixos/stable/
 - Home Manager: https://nix-community.github.io/home-manager/
-- Nix Flakes: https://nixos.wiki/wiki/Flakes
+- Nix Flakes: https://wiki.nixos.org/wiki/Flakes
 - Configuration: `nixos/` directory
 - Usage guide: `nixos/README.md`

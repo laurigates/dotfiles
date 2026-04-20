@@ -43,8 +43,8 @@ jobs:
             echo "ERROR: No PR number found in workflow_run event"
             exit 1
           fi
-          echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
-          echo "base_branch=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+          echo "pr_number=$PR_NUM" >> "$GITHUB_OUTPUT"
+          echo "base_branch=${{ github.event.workflow_run.head_branch }}" >> "$GITHUB_OUTPUT"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,7 +66,7 @@ jobs:
           SANITIZED_BRANCH="${SANITIZED_BRANCH//\//-}"
           BRANCH_NAME="claude-auto-fix-ci-${SANITIZED_BRANCH}-${{ github.run_id }}"
           git checkout -b "$BRANCH_NAME"
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Get CI failure details
         id: failure_details
