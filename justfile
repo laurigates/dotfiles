@@ -345,6 +345,16 @@ plugins-uninstall:
 # Reinstall all plugins (uninstall → install → enable)
 plugins-reinstall: plugins-uninstall plugins-install plugins-enable
 
+# Configure current repository to use laurigates/claude-plugins marketplace (writes .claude/settings.json and workflows)
+plugins-setup-repo:
+    @echo "{{BLUE}}Configuring Claude plugins for repository at $(pwd)...{{NORMAL}}"
+    CLAUDECODE= claude -p "/configure:claude-plugins --fix" --permission-mode acceptEdits
+
+# Report current repository's Claude plugin configuration without changes
+plugins-check-repo:
+    @echo "{{BLUE}}Checking Claude plugin configuration for repository at $(pwd)...{{NORMAL}}"
+    CLAUDECODE= claude -p "/configure:claude-plugins --check-only"
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CI/CD Integration
 # ─────────────────────────────────────────────────────────────────────────────
