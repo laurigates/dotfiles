@@ -35,6 +35,17 @@ When approving a targeted fix:
 - **No preventative changes** — additional error handling only at system boundaries
 - **Minimal diff** — clearest demonstration that the bug is fixed
 
+## Committing
+
+Commit proactively when a coherent unit of work is done — no need to pause and ask first. Overrides the system-prompt default ("Only create commits when requested by the user").
+
+- **Commit at natural checkpoints** — tests green, feature tracker updated, working tree contains exactly one theme of change
+- **Conventional-commit subject** — `type(scope): short imperative summary`; body explains the why, not the what
+- **Still do not push** — pushes remain explicit-ask only (shared state, visible to others)
+- **Still do not amend or rebase** others' commits — always a new commit
+- **Split when concerns diverge** — two themes → two commits; don't bundle drift-audit bookkeeping with a feature slice just because both are in the tree
+- Rationale: the default "ask before every commit" is needless friction when a wave of work wraps cleanly. Push / force-push / rebase / destructive ops still need confirmation — only the commit itself is autonomous.
+
 ## Adding New Defaults
 
 When a decision pattern repeats across multiple sessions, propose a new default entry here. Document:
