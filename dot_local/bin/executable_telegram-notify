@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# telegram-notify — fire-and-forget notification to Telegram.
+#
+# Usage:
+#   telegram-notify "Build finished"
+#   echo "stdout" | telegram-notify              # piped input
+#   telegram-notify -m "*bold* _italic_"         # MarkdownV2
+#   telegram-notify -s "Silent ping"             # disable_notification
+#
+# Exit codes:
+#   0 — sent
+#   2 — usage / config error
+#
+# Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID. For interactive
+# (send-and-wait-for-reply) flows, use telegram-ask instead.
+
+set -euo pipefail
+
+PARSE_MODE=""
+SILENT="false"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -m|--markdown) PARSE_MODE="MarkdownV2"; shift ;;
+    -H|--html) PARSE_MODE="HTML"; shift ;;
+    -s|--silent) SILENT="true"; shift ;;
+    -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+    --) shift; break ;;
+    -*) echo "telegram-notify: unknown flag: $1" >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
+
+if [[ $# -gt 0 ]]; then
+  TEXT="$*"
+elif [[ ! -t 0 ]]; then
+  TEXT="$(cat)"
+else
+  echo "telegram-notify: no message (pass as args or via stdin)" >&2
+  exit 2
+fi
+
+: "${TELEGRAM_BOT_TOKEN:?telegram-notify: TELEGRAM_BOT_TOKEN not set (check ~/.api_tokens)}"
+: "${TELEGRAM_CHAT_ID:?telegram-notify: TELEGRAM_CHAT_ID not set (check ~/.api_tokens)}"
+
+args=(
+  -d "chat_id=${TELEGRAM_CHAT_ID}"
+  --data-urlencode "text=${TEXT}"
+  -d "disable_notification=${SILENT}"
+)
+[[ -n "$PARSE_MODE" ]] && args+=(-d "parse_mode=${PARSE_MODE}")
+
+curl -fsS -X POST \
+  "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  "${args[@]}" >/dev/null
