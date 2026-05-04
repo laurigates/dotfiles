@@ -308,7 +308,6 @@ rationalise-dot() {
   fi
 }
 zle -N rationalise-dot
-bindkey . rationalise-dot
 
 
 #======================================================================
@@ -711,6 +710,9 @@ fi
 
 # Use emacs keymap for standard Ctrl+C/D/L behavior (EDITOR=nvim triggers vi mode)
 bindkey -e
+
+# `.` expands to `../` after `..` (must come after `bindkey -e`, which rebuilds main keymap)
+bindkey . rationalise-dot
 
 # Alt+c for fzf-cd-widget (overrides emacs capitalize-word; mapped in kitty.conf to send ESC+c)
 bindkey '\ec' fzf-cd-widget
