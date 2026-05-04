@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""Snapshot active kitty tabs to a session file for crash recovery.
+
+Invoked periodically by launchd (com.lgates.kitty-snapshot). On a freeze
+or hard reboot, the most recent snapshot at ~/.config/kitty/last-session.session
+can be replayed with: kitty --session ~/.config/kitty/last-session.session
+"""
+import glob
+import json
+import os
+import shlex
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+OUT = Path.home() / ".config/kitty/last-session.session"
+SOCKET_GLOB = "/tmp/mykitty-*"
+KITTEN = "/Applications/kitty.app/Contents/MacOS/kitten"
+
+
+def detect_command(foreground_processes):
+    """Return a launch line for the window's foreground program, or '' for plain shell."""
+    for proc in foreground_processes:
+        argv = proc.get("cmdline") or []
+        if not argv:
+            continue
+        exe = os.path.basename(argv[0])
+        if exe == "claude":
+            return "claude --continue"
+    return ""
+
+
+def sanitize_title(title):
+    cleaned = "".join(c if c.isalnum() or c in "-_." else "_" for c in title.strip())
+    return cleaned[:40] or "tab"
+
+
+def main():
+    sockets = glob.glob(SOCKET_GLOB)
+    if not sockets:
+        return 0
+
+    socket = f"unix:{sockets[0]}"
+    try:
+        result = subprocess.run(
+            [KITTEN, "@", "--to", socket, "ls"],
+            capture_output=True, text=True, check=True, timeout=10,
+        )
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as e:
+        print(f"kitten @ ls failed: {e}", file=sys.stderr)
+        return 1
+
+    try:
+        os_windows = json.loads(result.stdout)
+    except json.JSONDecodeError as e:
+        print(f"JSON parse failed: {e}", file=sys.stderr)
+        return 1
+
+    lines = [
+        "# kitty session snapshot",
+        f"# saved: {datetime.now().isoformat(timespec='seconds')}",
+        f"# restore: kitty --session {OUT}",
+        "",
+    ]
+
+    wrote_any = False
+    for i, os_window in enumerate(os_windows):
+        if i > 0:
+            lines.extend(["new_os_window", ""])
+        for tab in os_window.get("tabs", []):
+            windows = tab.get("windows", [])
+            if not windows:
+                continue
+            primary = windows[0]
+            cwd = primary.get("cwd") or str(Path.home())
+            cmd = detect_command(primary.get("foreground_processes", []))
+            title = sanitize_title(tab.get("title") or "tab")
+
+            lines.append(f"new_tab {title}")
+            lines.append(f"cd {shlex.quote(cwd)}")
+            if cmd:
+                lines.append(f"launch {cmd}")
+            lines.append("")
+            wrote_any = True
+
+    if not wrote_any:
+        return 0
+
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    tmp = OUT.with_suffix(OUT.suffix + ".tmp")
+    tmp.write_text("\n".join(lines))
+    tmp.replace(OUT)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
