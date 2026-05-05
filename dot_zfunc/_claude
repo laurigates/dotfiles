@@ -10,14 +10,16 @@ _claude() {
     typeset -A opt_args
 
     commands=(
-        'agents:List configured agents'
+        'agents:Manage background and configured agents'
         'auth:Manage authentication'
         'auto-mode:Inspect auto mode classifier configuration'
         'doctor:Check the health of your Claude Code auto-updater. Note: The workspace trust dialog is skipped and stdio servers from .mcp.json are spawned for health checks. Only use this command in directories you trust.'
         'install:Install Claude Code native build. Use to specify version (stable, latest, or specific version)'
         'mcp:Configure and manage MCP servers'
         'plugin|plugins:Manage Claude Code plugins'
+        'project:Manage Claude Code project state'
         'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
+        'ultrareview:Run a cloud-hosted multi-agent code review of the current branch (or a PR number / base branch) and print the findings'
         'update|upgrade:Check for updates and install if available'
     )
 
@@ -99,14 +101,16 @@ _claude() {
 _claude_config() {
     local -a config_commands
     config_commands=(
-        'agents:List configured agents'
+        'agents:Manage background and configured agents'
         'auth:Manage authentication'
         'auto-mode:Inspect auto mode classifier configuration'
         'doctor:Check the health of your Claude Code auto-updater. Note: The workspace trust dialog is skipped and stdio servers from .mcp.json are spawned for health checks. Only use this command in directories you trust.'
         'install:Install Claude Code native build. Use to specify version (stable, latest, or specific version)'
         'mcp:Configure and manage MCP servers'
         'plugin|plugins:Manage Claude Code plugins'
+        'project:Manage Claude Code project state'
         'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
+        'ultrareview:Run a cloud-hosted multi-agent code review of the current branch (or a PR number / base branch) and print the findings'
         'update|upgrade:Check for updates and install if available'
     )
 
