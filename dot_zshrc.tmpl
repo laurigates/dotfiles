@@ -325,13 +325,33 @@ zle -N rationalise-dot
 [ -f ~/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh ] && \
   source ~/zsh/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 
+# zsh-vi-mode (jeffreytse) — preserves Ctrl+C/D/L in insert mode, so we don't
+# need `bindkey -e`. Customizations and bindings that vi-mode would clobber
+# go in zvm_after_init below.
+[ -f ~/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh ] && \
+  source ~/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
+
 
 #======================================================================
 # FZF Sourcing (keybindings & completions)
 #======================================================================
 
-# Source fzf keybindings and completions
-source <(fzf --zsh)
+# zsh-vi-mode re-inits the main keymap after this file finishes, so any
+# binding we want to keep must be inside zvm_after_init. fzf's keybindings
+# (Ctrl+T, Ctrl+R, Alt+C) and our custom binds belong there too — see the
+# Keybindings section below.
+function zvm_after_init() {
+  source <(fzf --zsh)
+
+  # `.` expands to `../` after `..`
+  bindkey . rationalise-dot
+
+  # Alt+c for fzf-cd-widget (mapped in kitty.conf to send ESC+c)
+  bindkey '\ec' fzf-cd-widget
+
+  # PC-like bind for pipe on macOS (Command + <)
+  bindkey -s "^[[60;9u" "|"
+}
 
 
 #======================================================================
@@ -708,17 +728,8 @@ fi
 # Keybindings
 #======================================================================
 
-# Use emacs keymap for standard Ctrl+C/D/L behavior (EDITOR=nvim triggers vi mode)
-bindkey -e
-
-# `.` expands to `../` after `..` (must come after `bindkey -e`, which rebuilds main keymap)
-bindkey . rationalise-dot
-
-# Alt+c for fzf-cd-widget (overrides emacs capitalize-word; mapped in kitty.conf to send ESC+c)
-bindkey '\ec' fzf-cd-widget
-
-# Add a PC-like bind for pipe on macos (Command + <)
-bindkey -s "^[[60;9u" "|"
+# Custom bindings live in zvm_after_init (see "FZF Sourcing" section above)
+# so they survive zsh-vi-mode's main-keymap re-init.
 
 
 #======================================================================
