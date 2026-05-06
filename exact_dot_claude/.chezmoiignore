@@ -13,6 +13,9 @@ ide/
 telemetry/
 usage-data/
 teams/
+chrome/
+scheduled-tasks/
+sessions/
 
 # Runtime files created by Claude Code
 .update.lock
@@ -21,6 +24,7 @@ history.jsonl
 stats-cache.json
 statsig
 todos
+mcp-needs-auth-cache.json
 
 # Local settings override - not managed by chezmoi
 settings.local.json
