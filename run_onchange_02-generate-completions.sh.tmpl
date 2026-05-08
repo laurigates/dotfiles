@@ -17,11 +17,11 @@ if command -v {{ $tool }} >/dev/null 2>&1; then
     echo "📝 Generating completion for {{ $tool }}..."
     {{ $cmd }} > "${COMP_DIR}/_{{ $tool }}" 2>/dev/null || echo "⚠️  Failed to generate {{ $tool }} completion"
     if [[ -f "${COMP_DIR}/_{{ $tool }}" ]]; then
-        ((generated++))
+        generated=$((generated + 1))
     fi
 else
     echo "⏭️  {{ $tool }} not found, skipping completion"
-    ((skipped++))
+    skipped=$((skipped + 1))
 fi
 {{- end }}
 
