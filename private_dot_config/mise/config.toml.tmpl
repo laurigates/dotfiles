@@ -29,7 +29,11 @@ go = "1.23"
 rust = "latest"
 
 # ============================================================================
-# Python Tools (via pipx backend - automatically uses uvx if uv is installed)
+# Python Tools (via pipx backend, routed through uvx)
+# mise's pipx backend falls back to uvx only when uv is itself mise-managed
+# (see jdx/mise#7477 — system-PATH uv is not detected). uv is registered as
+# a managed tool below; pipx.uvx = true under [settings] makes the routing
+# explicit so it doesn't break if that detection logic changes.
 # ============================================================================
 # NOTE: During migration, some tools are defined in both .chezmoidata.toml (uv_tools)
 # and here (pipx backend). This temporary duplication ensures backward compatibility.
@@ -546,6 +550,10 @@ legacy_version_file = true
 
 # Enable experimental features
 experimental = true
+
+# Always route the pipx backend through uvx (see comment above the
+# Python Tools section). Belt-and-suspenders for jdx/mise#7477.
+pipx.uvx = true
 
 # ============================================================================
 # Hooks
