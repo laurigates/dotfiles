@@ -16,7 +16,12 @@
 python = ["3.11", "3.13"]
 
 # Node.js ecosystem
+{{- /* node 26+ binaries link against libatomic.so.1, which is absent on
+       TrueNAS appliances (apt disabled). Gate node + npm-backed tools to
+       macOS where the prebuilt binary works out of the box. */}}
+{{- if eq .chezmoi.os "darwin" }}
 node = "latest"
+{{- end }}
 bun = "latest"
 
 # Systems programming
@@ -113,10 +118,14 @@ opentofu = "1.11.2"
 d2 = "latest"
 "aqua:tmux/tmux-builds" = "latest"
 "aqua:gitleaks/gitleaks" = "latest"
+{{- if eq .chezmoi.os "darwin" }}
 "npm:pyright" = "latest"
 "npm:typescript-language-server" = "latest"
+{{- end }}
 "go:golang.org/x/tools/gopls" = "latest"
 chezmoi = "latest"
+usage = "latest"
+uv = "latest"
 
 # ============================================================================
 # Environment Variables
