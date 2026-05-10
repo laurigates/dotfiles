@@ -324,6 +324,20 @@ inactive_tab_font_style normal
 
 #: Tab bar colors and styles
 
+tab_title_template "{(tab.active_oldest_wd or '').rsplit('/', 1)[-1] or '~'}{f' · {title}' if title else ''}"
+
+#: Show the cwd basename as a directory prefix in the tab title. Claude
+#: Code sets the title via process.title (not OSC 2), so {title} stays
+#: empty for Claude tabs — the cwd basename is the useful signal there.
+#: For tabs running vim/ssh/etc. that DO emit OSC 0/2, append " · {title}"
+#: after the cwd. tab.active_oldest_wd uses proc_pidinfo on macOS — a
+#: live per-render syscall, but cheaper than tab.active_wd.
+
+tab_title_max_length 50
+
+#: Hard cap on rendered tab title cells. The cwd prefix sits at the
+#: front so it survives truncation when {title} is long.
+
 #: # endregion
 
 #: Color scheme # region
