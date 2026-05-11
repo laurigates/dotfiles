@@ -14,4 +14,11 @@ path+="/Applications/Obsidian.app/Contents/MacOS"
 export PATH
 
 source ~/.api_tokens
+
+{{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | contains "truenas") }}
+# TrueNAS: /tmp is mounted noexec, breaking chezmoi's run_* scripts.
+# Redirect TMPDIR to an exec-allowed dataset.
+export TMPDIR="$HOME/tmp"
+[ -d "$TMPDIR" ] || mkdir -p "$TMPDIR"
+{{- end }}
 # vim:ft=sh
