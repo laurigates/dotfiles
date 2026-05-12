@@ -128,13 +128,26 @@
     "ask": [],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [
-      "~/Documents/FVH Vault",
+      "~/Documents/LakuVault",
       "~/repos/ForumViriumHelsinki/infrastructure.wiki"
     ]
   },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/session-wrap-nudge.sh"
+          }
+        ]
+      }
+    ]
   },
   "enabledPlugins": {
     "bevy-plugin@laurigates-claude-plugins": false,
