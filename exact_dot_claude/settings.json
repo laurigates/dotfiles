@@ -137,6 +137,17 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/session-spinup-nudge.sh"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",

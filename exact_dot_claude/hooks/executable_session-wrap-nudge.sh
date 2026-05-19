@@ -32,15 +32,21 @@ state_file="$state_dir/$session_id"
 user_turns=$(grep -c '"role":"user"' "$transcript" 2>/dev/null || echo 0)
 [ "$user_turns" -lt 6 ] && exit 0
 
+# Read the git origin once — used for both FVH detection and the
+# GitHub-issue follow-up gate below
+origin=""
+if [ -d "$cwd" ]; then
+    origin=$(git -C "$cwd" config --get remote.origin.url 2>/dev/null || true)
+fi
+
 # FVH context detection: cwd path, git remote, or active taskwarrior project
 fvh=0
 case "$cwd" in
-    *ForumVirium*|*forumvirium*|*ForumViriumHelsinki*) fvh=1 ;;
+    *ForumVirium*|*forumvirium*) fvh=1 ;;
 esac
 
-if [ "$fvh" = 0 ] && [ -d "$cwd" ]; then
-    remote=$(git -C "$cwd" config --get remote.origin.url 2>/dev/null || true)
-    case "$remote" in
+if [ "$fvh" = 0 ]; then
+    case "$origin" in
         *ForumVirium*|*forumvirium*) fvh=1 ;;
     esac
 fi
@@ -55,6 +61,14 @@ fi
 
 [ "$fvh" = 0 ] && exit 0
 
+# Only mention GitHub follow-up issues when the cwd is a git repo with a
+# github.com origin — skips the suggestion for non-git sessions and for
+# local-only / self-hosted-remote repos where it'd be a confusing prompt
+has_github=0
+case "$origin" in
+    *github.com*) has_github=1 ;;
+esac
+
 # Wind-down signal in the last 3 user messages. Recent messages are at the
 # end of the transcript, so tail is enough — no need for tac/portability hacks.
 recent=$(grep '"role":"user"' "$transcript" 2>/dev/null | tail -3 || true)
@@ -66,6 +80,11 @@ fi
 # so the agent will produce one more response — a /session-wrap suggestion.
 touch "$state_file"
 
-reason="The user is wrapping up an FVH-scoped session. Before letting the session end, briefly offer to run /session-wrap — it captures loose threads (PRs awaiting review, decisions deferred, manual follow-ups) to taskwarrior plus the FVH Obsidian daily note. Apply the skill's signal filter aggressively: if nothing follow-up-worthy actually surfaced, just acknowledge the wrap and end. Do not run /session-wrap without user confirmation."
+followup_dests="taskwarrior plus the FVH Obsidian daily note"
+if [ "$has_github" = 1 ]; then
+    followup_dests="taskwarrior, the FVH Obsidian daily note, and a separate GitHub issue for each post-merge follow-up (linked from the PR description, per ~/.claude/CLAUDE.md)"
+fi
+
+reason="The user is wrapping up an FVH-scoped session. Before letting the session end, briefly offer to run /session-wrap — it captures loose threads (PRs awaiting review, decisions deferred, manual follow-ups) to ${followup_dests}. Apply the skill's signal filter aggressively: if nothing follow-up-worthy actually surfaced, just acknowledge the wrap and end. Do not run /session-wrap without user confirmation."
 
 jq -nc --arg r "$reason" '{decision: "block", reason: $r}'
