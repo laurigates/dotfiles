@@ -60,7 +60,7 @@ lint: lint-shell lint-lua lint-actions lint-brew
 lint-shell:
     @echo "{{BLUE}}Running shellcheck...{{NORMAL}}"
     @if command -v shellcheck >/dev/null 2>&1; then \
-        find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} \; || echo "{{YELLOW}}Warning: shellcheck found issues{{NORMAL}}"; \
+        find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} +; \
     else \
         echo "{{YELLOW}}Warning: shellcheck not installed{{NORMAL}}"; \
     fi
@@ -69,7 +69,7 @@ lint-shell:
 lint-lua:
     @echo "{{BLUE}}Running luacheck...{{NORMAL}}"
     @if command -v luacheck >/dev/null 2>&1; then \
-        luacheck private_dot_config/nvim/lua || echo "{{YELLOW}}Warning: luacheck found issues{{NORMAL}}"; \
+        luacheck private_dot_config/nvim/lua; \
     else \
         echo "{{YELLOW}}Warning: luacheck not installed{{NORMAL}}"; \
     fi
@@ -78,7 +78,7 @@ lint-lua:
 lint-actions:
     @echo "{{BLUE}}Running actionlint...{{NORMAL}}"
     @if command -v actionlint >/dev/null 2>&1; then \
-        actionlint || echo "{{YELLOW}}Warning: actionlint found issues{{NORMAL}}"; \
+        actionlint; \
     else \
         echo "{{YELLOW}}Warning: actionlint not installed{{NORMAL}}"; \
     fi
@@ -87,7 +87,7 @@ lint-actions:
 lint-brew:
     @echo "{{BLUE}}Checking Brewfile integrity...{{NORMAL}}"
     @if [ -f Brewfile ]; then \
-        brew bundle check --file=Brewfile || echo "{{YELLOW}}Warning: Brewfile check failed{{NORMAL}}"; \
+        brew bundle check --file=Brewfile; \
     else \
         echo "{{YELLOW}}Warning: Brewfile not found{{NORMAL}}"; \
     fi
