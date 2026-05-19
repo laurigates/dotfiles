@@ -13,15 +13,18 @@ skill prevents: useful follow-up work gets agreed in conversation,
 the session ends, and a week later the user can't remember what was
 left hanging.
 
-Two destinations, picked by context:
+Three destinations, picked by context:
 
 | Destination | When | What goes there |
 |---|---|---|
 | **taskwarrior** | Every wrap | Mark completed tasks done; annotate in-flight tasks with PR / blocker / current state; add new tasks for surfaced threads |
 | **FVH Obsidian daily note** | Only when session is FVH-scoped | Narrative `## Log` entry; actionable `## Todo` items the user will want tomorrow |
+| **GitHub issues** | Only when cwd is a git repo with a `github.com` origin AND a PR was merged this session (or is about to be) with post-merge follow-ups | One issue per follow-up, linked from the PR description (per `~/.claude/CLAUDE.md` — checklists in PR bodies vanish after merge) |
 
 Non-FVH sessions (immeral, claude-plugins, dotfiles, personal projects)
-get **only** the taskwarrior pass — the FVH daily note stays clean.
+get **only** the taskwarrior pass (plus GitHub issues if applicable) —
+the FVH daily note stays clean. Sessions outside any git repo, or in a
+repo without a github.com origin, skip the GitHub-issue pass entirely.
 
 ## Detecting FVH scope
 
@@ -106,6 +109,7 @@ For each candidate item, classify as one of:
 | In-flight, untracked | Either add a new taskwarrior task **or** a daily-note Todo (not both) |
 | Loose thread, FVH | Daily note `## Log` (narrative) or `## Todo` (action) |
 | Loose thread, non-FVH | Taskwarrior only, with `project:<name>` |
+| Post-merge follow-up (GitHub repo) | One `gh issue create` per follow-up; link each from the just-merged PR description. Skip if cwd has no github.com origin |
 | Noise (per filter above) | Skip silently |
 
 ### 3. Preview
