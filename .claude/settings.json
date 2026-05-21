@@ -1,0 +1,83 @@
+{
+  "env": {
+    "CLAUDE_HOOKS_DISABLE_BRANCH_PROTECTION": 1
+  },
+  "permissions": {
+    "allow": [
+      "mcp__sentry__search_issues",
+      "mcp__sentry__get_sentry_resource",
+      "mcp__sentry__find_projects",
+      "mcp__sentry__search_events",
+      "mcp__sentry__whoami",
+      "mcp__sentry__find_organizations",
+      "Bash(log show *)",
+      "Bash(brew list *)",
+      "Bash(brew list)",
+      "Bash(gh label list *)",
+      "Bash(git fetch *)",
+      "Bash(git fetch)",
+      "Bash(kubectl get *)",
+      "Bash(chezmoi diff *)",
+      "Bash(chezmoi diff)"
+    ],
+    "additionalDirectories": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/chezmoi-workflow-nudge.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "accessibility-plugin@laurigates-claude-plugins": false,
+    "agent-patterns-plugin@laurigates-claude-plugins": true,
+    "agents-plugin@laurigates-claude-plugins": true,
+    "api-plugin@laurigates-claude-plugins": false,
+    "bevy-plugin@laurigates-claude-plugins": false,
+    "blog-plugin@laurigates-claude-plugins": false,
+    "blueprint-plugin@laurigates-claude-plugins": true,
+    "code-quality-plugin@laurigates-claude-plugins": true,
+    "codebase-attributes-plugin@laurigates-claude-plugins": false,
+    "communication-plugin@laurigates-claude-plugins": true,
+    "component-patterns-plugin@laurigates-claude-plugins": false,
+    "configure-plugin@laurigates-claude-plugins": true,
+    "container-plugin@laurigates-claude-plugins": true,
+    "css-plugin@laurigates-claude-plugins": false,
+    "documentation-plugin@laurigates-claude-plugins": true,
+    "evaluate-plugin@laurigates-claude-plugins": true,
+    "feedback-plugin@laurigates-claude-plugins": true,
+    "finops-plugin@laurigates-claude-plugins": false,
+    "git-plugin@laurigates-claude-plugins": true,
+    "github-actions-plugin@laurigates-claude-plugins": true,
+    "health-plugin@laurigates-claude-plugins": true,
+    "home-assistant-plugin@laurigates-claude-plugins": false,
+    "hooks-plugin@laurigates-claude-plugins": true,
+    "kubernetes-plugin@laurigates-claude-plugins": false,
+    "langchain-plugin@laurigates-claude-plugins": false,
+    "macos-plugin@laurigates-claude-plugins": true,
+    "migration-patterns-plugin@laurigates-claude-plugins": false,
+    "networking-plugin@laurigates-claude-plugins": false,
+    "obsidian-plugin@laurigates-claude-plugins": true,
+    "project-plugin@laurigates-claude-plugins": false,
+    "prompt-engineering-plugin@laurigates-claude-plugins": true,
+    "prose-plugin@laurigates-claude-plugins": true,
+    "python-plugin@laurigates-claude-plugins": true,
+    "rust-plugin@laurigates-claude-plugins": false,
+    "taskwarrior-plugin@laurigates-claude-plugins": true,
+    "terraform-plugin@laurigates-claude-plugins": false,
+    "testing-plugin@laurigates-claude-plugins": true,
+    "tools-plugin@laurigates-claude-plugins": true,
+    "typescript-plugin@laurigates-claude-plugins": false,
+    "upstream-pr-plugin@laurigates-claude-plugins": false,
+    "workflow-orchestration-plugin@laurigates-claude-plugins": true
+  }
+}
