@@ -12,9 +12,15 @@ FILE_COPY_SUMMARY.md
 # Claude Local settings
 settings.local.json
 
-# .claude/ is a runtime directory - managed config goes in exact_dot_claude/
-# This gets regenerated when chezmoi applies and by Claude Code at runtime
-.claude/
+# .claude/ is a mixed source/runtime directory for this repo:
+#   - settings.json, skills/, commands/, agents/, hooks/ are project-shared and tracked
+#   - sessions/, projects/, todos/, settings.local.json, credentials are per-machine runtime
+.claude/sessions/
+.claude/projects/
+.claude/todos/
+.claude/statsig/
+.claude/.credentials*
+.claude/ide/
 
 tmp/
 
