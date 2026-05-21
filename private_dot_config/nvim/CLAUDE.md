@@ -26,7 +26,6 @@ Modern Neovim configuration using Lua with lazy.nvim plugin management.
 - **UI**: tokyonight, lualine, noice.nvim
 - **Testing**: neotest
 - **Debugging**: nvim-dap
-- **AI**: VectorCode
 
 ## LSP Approach
 

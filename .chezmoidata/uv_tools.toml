@@ -17,7 +17,6 @@
     "ruff",
     "telegram-send",
     "trafilatura",
-    "vectorcode[mcp,cli]",
     "yamllint",
   ]
 
