@@ -38,6 +38,81 @@ in CLAUDE.md when one machine has a small root and a big data disk:
 export HF_HOME=/mnt/big-disk/hf-cache
 ```
 
+## Token location with HF_HOME
+
+`hf auth login` writes the token to the **fixed path**
+`~/.cache/huggingface/token`. But the SDK and CLI, when `HF_HOME` is
+set, read their token from `$HF_HOME/token` instead. The two paths
+diverge silently: every gated download under `HF_HOME=…` 401s with
+`GatedRepoError`, even though `hf auth whoami` works fine (because
+whoami reads `~/.cache/huggingface/token`).
+
+After `hf auth login`, copy the token into the HF_HOME location:
+
+```sh
+cp ~/.cache/huggingface/token "$HF_HOME/token"
+```
+
+Or set both env vars at session start:
+
+```sh
+export HF_HOME=/big/disk/hf-cache
+export HF_TOKEN="$(cat ~/.cache/huggingface/token)"
+```
+
+`HF_TOKEN` is read directly, bypassing the file-location lookup, and
+works regardless of `HF_HOME`. Prefer this for ephemeral shells; copy
+the token file for persistent setups.
+
+Symptom signature: `model_info()` calls succeed (metadata is public),
+LICENSE.md fetches return 200, but `*.safetensors` fetches under the
+same auth return 401. That's the HF_HOME-vs-token mismatch.
+
+## Gated repos
+
+Three independent things must all be true to download a gated file:
+
+1. The HF account has clicked "Agree and access repository" on the
+   repo's web page.
+2. The token in use belongs to that same account.
+3. The token was issued **after** (or refreshed after) the access was
+   granted. Tokens cache permissions at issue time on some HF setups;
+   pre-existing tokens may not pick up newly-granted gated access.
+
+Diagnostic at https://huggingface.co/settings/gated-repos — lists
+every gated repo the **logged-in account** has touched, with status
+(`Accepted` / `Pending` / `Rejected`). If the repo isn't listed, the
+"Agree" click landed on the wrong account.
+
+`api.model_info(<gated-repo>)` is **not** a reliable access probe —
+it returns repo metadata regardless of whether the token can download
+the actual files. To check real download access, HEAD the file URL
+with the token:
+
+```sh
+python -c "
+import urllib.request
+from huggingface_hub import HfFolder
+token = HfFolder.get_token()
+url = 'https://huggingface.co/<repo>/resolve/main/<file>'
+req = urllib.request.Request(url, method='HEAD')
+req.add_header('Authorization', f'Bearer {token}')
+try:
+    with urllib.request.urlopen(req, timeout=30) as r:
+        print(f'{r.status} {int(r.headers.get(\"Content-Length\",0))/1e9:.2f} GB')
+except urllib.error.HTTPError as e:
+    print(f'{e.code} {e.reason}')
+"
+```
+
+If gating page shows `Accepted` but the HEAD returns 401 / 403, the
+token is stale. Fix: regenerate at
+https://huggingface.co/settings/tokens, then `hf auth login` with the
+new token (and copy to `$HF_HOME/token` if HF_HOME is set, per above).
+
+`gated: auto` in the API just means the gate auto-approves on click
+— it does **not** mean the gate has been approved for **you**.
+
 ## Two-stage download pattern
 
 ```sh
