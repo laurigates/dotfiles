@@ -20,9 +20,9 @@ Derived from git history patterns (1404 commits, 2018–2026).
 
 ## Directory Semantics
 
-- `exact_dot_claude/` — Orphaned files auto-removed on `chezmoi apply`; critical for keeping `.claude/` clean
-- `private_dot_config/` — Secret-adjacent configs; mode 0600
-- Never create a `.claude/` directory in the chezmoi source — it's gitignored and used as a runtime directory
+- `exact_dot_claude/` — chezmoi source for the user-global `~/.claude/`; orphaned files auto-removed on `chezmoi apply`
+- `private_dot_config/` — secret-adjacent configs; mode 0600
+- A repo-root `.claude/` *inside* the chezmoi source dir is fine — it's the project-scoped Claude Code config for working in the dotfiles repo (`settings.json`, pinned plugins, hooks, project skills). The chezmoi source repo narrows its `.gitignore` so this is trackable while per-machine runtime state (`sessions/`, `projects/`, `todos/`, `.credentials*`) stays ignored. Do NOT confuse it with `exact_dot_claude/` — that one is the source for `~/.claude/`, not for the chezmoi source repo's `.claude/`.
 
 ## Source vs Target
 

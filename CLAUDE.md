@@ -9,9 +9,12 @@ Chezmoi dotfiles repository with cross-platform development environment configur
 - **Essential commands**: `chezmoi diff`, `chezmoi apply --dry-run`, `chezmoi apply`
 - **Cross-platform**: Templates handle OS/arch differences; Chezmoi Expert skill provides guidance
 
-### Claude Code Directory (exact_dot_claude/)
+### Claude Code Directories
 
-The `.claude` directory is managed via `exact_dot_claude/` with exact-match semantics (orphaned files auto-removed). Run `chezmoi apply -v ~/.claude` after changes. Do NOT create `.claude/` in the chezmoi source directory — it's gitignored and used as a runtime directory.
+Two distinct `.claude/`-shaped directories exist here:
+
+- `exact_dot_claude/` — chezmoi source for the user-global `~/.claude/` tree (exact-match semantics; orphaned files auto-removed). Edit source here, then run `chezmoi apply -v ~/.claude` to sync. A PostToolUse hook (`exact_dot_claude/hooks/chezmoi-workflow-nudge.sh`) reminds you to apply after edits under this path.
+- `.claude/` at the repo root — project-scoped Claude Code config for working inside *this* repo: `settings.json` (permissions allowlist, pinned plugins, hooks), `skills/`, `commands/`, `agents/`, `hooks/`. Tracked in git. Only per-machine runtime state (`sessions/`, `projects/`, `todos/`, `.credentials*`) is gitignored.
 
 ## Plugins
 
