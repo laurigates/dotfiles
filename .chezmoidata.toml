@@ -41,14 +41,6 @@
     description = "Graph-based memory and knowledge management"
     category = "memory"
 
-  [mcp_servers.vectorcode]
-    enabled = false
-    scope = "project"
-    command = "vectorcode-mcp-server"
-    args = []
-    description = "Semantic code search using embeddings"
-    category = "search"
-
   [mcp_servers.pal]
     enabled = false
     scope = "project"
