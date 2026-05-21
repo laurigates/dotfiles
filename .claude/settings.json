@@ -1,6 +1,6 @@
 {
   "env": {
-    "CLAUDE_HOOKS_DISABLE_BRANCH_PROTECTION": 1
+    "CLAUDE_HOOKS_DISABLE_BRANCH_PROTECTION": "1"
   },
   "permissions": {
     "allow": [
@@ -67,7 +67,7 @@
     "migration-patterns-plugin@laurigates-claude-plugins": false,
     "networking-plugin@laurigates-claude-plugins": false,
     "obsidian-plugin@laurigates-claude-plugins": true,
-    "project-plugin@laurigates-claude-plugins": false,
+    "project-plugin@laurigates-claude-plugins": true,
     "prompt-engineering-plugin@laurigates-claude-plugins": true,
     "prose-plugin@laurigates-claude-plugins": true,
     "python-plugin@laurigates-claude-plugins": true,
