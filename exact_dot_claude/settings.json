@@ -1,9 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "skillListingBudgetFraction": 0.1,
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "ENABLE_TOOL_SEARCH": "1"
+    "ENABLE_TOOL_SEARCH": "1",
+    "CLAUDE_HOOKS_ENABLE_BASH_ANTIPATTERNS_TEACH": "1",
+    "CLAUDE_HOOKS_ENABLE_CALENDAR_ESTIMATES": "1"
   },
   "permissions": {
     "allow": [
@@ -132,10 +135,6 @@
       "~/repos/ForumViriumHelsinki/infrastructure.wiki"
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
-  },
   "hooks": {
     "SessionStart": [
       {
@@ -159,6 +158,10 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "bevy-plugin@laurigates-claude-plugins": false,
@@ -198,7 +201,7 @@
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": false,
     "rust-analyzer-lsp@claude-plugins-official": false,
-    "gopls-lsp@claude-plugins-official": false,
+    "gopls-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": false,
     "clangd-lsp@claude-plugins-official": false,
     "codebase-attributes-plugin@laurigates-claude-plugins": false,
@@ -230,11 +233,12 @@
   "verbose": false,
   "autoCompactEnabled": false,
   "teammateMode": "tmux",
-  "remoteControlAtStartup": false,
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754075292901
-  }
+  },
+  "remoteControlAtStartup": true
 }
