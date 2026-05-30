@@ -22,6 +22,13 @@ transcript=$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null || echo "
 [ -z "$transcript" ] && exit 0
 [ ! -f "$transcript" ] && exit 0
 
+# Skip if session-wrap is already in progress (user is awaiting y/n confirmation).
+# Check for signature phrases from the skill's Step 3 preview.
+last_assistant=$(grep '"role":"assistant"' "$transcript" 2>/dev/null | tail -1 || true)
+if echo "$last_assistant" | grep -qE 'About to wrap:|Apply\? \(y/n\)'; then
+    exit 0
+fi
+
 # At most one nudge per session
 state_dir="${HOME}/.cache/claude-session-wrap-nudge"
 mkdir -p "$state_dir"
