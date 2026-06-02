@@ -6,7 +6,11 @@ repos:
     rev: v5.0.0 # Use a recent version
     hooks:
       - id: trailing-whitespace
+        # Skill signature blobs must keep their exact bytes or signature
+        # verification breaks.
+        exclude: '\.oms\.sig$'
       - id: end-of-file-fixer
+        exclude: '\.oms\.sig$'
       - id: check-yaml
       - id: check-json
       - id: check-merge-conflict
