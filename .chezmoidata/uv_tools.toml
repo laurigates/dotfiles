@@ -21,5 +21,9 @@
   ]
 
   # Git-based tools with special installation requirements
-  # NOTE: pal-mcp-server is run via uvx at runtime, no global installation needed
-  git_tools = []
+  # Each entry: { package = "<name in `uv tool list`>", url = "git+https://…", with = ["extra-dep", …] }
+  # (`with` is optional). pal-mcp-server is installed globally so MCP configs can
+  # invoke the bare `pal-mcp-server` command instead of re-resolving git via uvx on every launch.
+  git_tools = [
+    { package = "pal-mcp-server", url = "git+https://github.com/laurigates/pal-mcp-server" },
+  ]
