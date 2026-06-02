@@ -862,6 +862,82 @@ _gh_run_complete() {
 
 compdef _gh_run_complete ghr ghw
 
+# ---- Command-name completion for the gh* wrappers themselves ---------
+# When you type `gh<TAB>`, zsh's built-in command/function completion lists
+# these wrapper functions with no descriptions. The table below is the single
+# source of truth feeding BOTH the inline description column and the fzf-tab
+# preview pane, so each wrapper is documented exactly once.
+#   _GH_WRAPPER_DESC[name] = what it expands to (short, shown inline)
+#   _GH_WRAPPER_DOC[name]  = one-line explanation (shown in the preview pane)
+typeset -gA _GH_WRAPPER_DESC _GH_WRAPPER_DOC
+_GH_WRAPPER_DESC=(
+  ghv  'gh pr view'
+  ghd  'gh pr diff'
+  ghco 'gh pr checkout'
+  ghck 'gh pr checks'
+  ghiv 'gh issue view'
+  ghr  'gh run view'
+  ghw  'gh run watch'
+  ghsq 'gh pr merge --squash --delete-branch (multi)'
+  ghrb 'gh pr merge --rebase --delete-branch (multi)'
+  ghrp 'release-please merge across repos/orgs'
+  ghpc 'gh pr → Claude feedback'
+  ghi  'gh issue → Claude'
+)
+_GH_WRAPPER_DOC=(
+  ghv  'fzf-pick a PR, then view it.'
+  ghd  'fzf-pick a PR, then show its diff.'
+  ghco 'fzf-pick a PR, then check it out locally.'
+  ghck 'fzf-pick a PR, then show its CI checks.'
+  ghiv 'fzf-pick an issue, then view it (plain; cf. ghi → Claude).'
+  ghr  'fzf-pick a workflow run, then view it.'
+  ghw  'fzf-pick a workflow run, then watch it live.'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches.'
+  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches.'
+  ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge.'
+  ghpc 'Pick an open PR and hand its feedback to Claude.'
+  ghi  'Pick a GitHub issue and hand it to Claude.'
+)
+
+# Inline description column: inject the wrappers (with descriptions) at the
+# command position, then fall through (return 1) so real commands still
+# complete. Identical bare matches added later by _complete are de-duplicated
+# by zsh, so the described copy wins.
+_gh_wrapper_names_complete() {
+  [[ $CURRENT -eq 1 ]] || return 1
+  local -a described k
+  for k in ${(ok)_GH_WRAPPER_DESC}; do
+    described+=( "$k:${_GH_WRAPPER_DESC[$k]}" )
+  done
+  _describe -t gh-wrappers 'gh wrapper' described
+  return 1
+}
+zstyle ':completion:*' completer _gh_wrapper_names_complete _complete
+# Belt-and-suspenders: also hide the bare wrapper names from the default
+# `functions` group in command position, in case de-dup ever doesn't apply.
+zstyle ':completion:*:-command-:*:functions' ignored-patterns \
+  '(ghv|ghd|ghco|ghck|ghiv|ghr|ghw|ghsq|ghrb|ghrp|ghpc|ghi)'
+
+# Preview pane (fzf-tab) for `gh<TAB>`: fzf runs the preview in a child shell
+# that never sourced this file, so it can't call a function defined here — it
+# only inherits $word. Build a self-contained `case` statement from the tables
+# above (single source of truth) and hand that static string to fzf-tab. The
+# default branch (whatis + type -a) handles any non-wrapper command.
+() {
+  local _pv='case "$word" in' k expand doc
+  for k in ${(ok)_GH_WRAPPER_DESC}; do
+    expand="$k → ${_GH_WRAPPER_DESC[$k]}"
+    doc="${_GH_WRAPPER_DOC[$k]}"
+    _pv+=" ${k}) printf '%s\n\n%s\n' ${(qq)expand} ${(qq)doc} ;;"
+  done
+  # Default branch (any non-wrapper command): a man-page one-liner headline
+  # (whatis, filtered to the exact name since macOS whatis matches keywords),
+  # then the full `type -a` output (all aliases/functions/binaries for $word).
+  local _def='*) _desc=; while IFS= read -r _l; do [[ ${_l%%\(*} == "$word" ]] && { _desc=$_l; break; }; done < <(whatis "$word" 2>/dev/null); [[ -n $_desc ]] && { print -r -- "$_desc"; print; }; type -a -- "$word" 2>/dev/null ;; esac'
+  _pv+=" $_def"
+  zstyle ':fzf-tab:complete:-command-:*' fzf-preview "$_pv"
+}
+
 # fzf-tab previews for gh wrapper functions
 zstyle ':fzf-tab:complete:ghsq:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
