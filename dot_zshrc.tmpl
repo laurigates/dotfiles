@@ -449,42 +449,203 @@ ghpc() {
   fi
 }
 
-# Interactive PR merge with fzf preview (squash)
+# ---- shared multi-merge engine (ghsq / ghrb / ghrp) -----------------
+# GitHub recomputes a repo's other open PRs' mergeability after each merge and
+# refuses to merge a PR while its status is UNKNOWN. So merge sequentially and,
+# per PR, poll until mergeability settles, then merge.
+#   _gh_poll_merge <repo|""> <num> <merge-flags...>   ("" repo = current repo)
+_gh_poll_merge() {
+  local repo="$1" num="$2"; shift 2
+  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
+  local state tries=0
+  while (( tries < 20 )); do
+    state=$(gh pr view "$num" "${repo_flag[@]}" --json mergeable --jq '.mergeable' </dev/null 2>/dev/null)
+    [[ -n "$state" && "$state" != UNKNOWN ]] && break
+    (( tries == 0 )) && print -r -- "  … waiting for ${id} mergeability to settle"
+    sleep 2; (( tries++ ))
+  done
+  if [[ "$state" == CONFLICTING ]]; then
+    print -r -- "  ✗ ${id}: conflicting — skipped"; return 1
+  fi
+  if gh pr merge "$num" "${repo_flag[@]}" "$@" </dev/null; then
+    print -r -- "  ✓ merged ${id}"
+  else
+    print -r -- "  ✗ ${id}: merge failed (left open — re-run to retry)"; return 1
+  fi
+}
+
+# Confirm a selected set, then merge sequentially in selection order.
+# y = this · N/other = skip · a = all remaining · q = stop.
+#   _gh_batch_merge "<repo\tnum\ttitle lines>" <merge-flags...>
+_gh_batch_merge() {
+  local blob="$1"; shift
+  local -a flags=("$@") repos nums titles
+  local line r n t
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    IFS=$'\t' read -r r n t <<< "$line"
+    [[ "$n" == <-> ]] || continue   # num must be digits; skip any misparse
+    repos+=("$r"); nums+=("$n"); titles+=("$t")
+  done <<< "$blob"
+  local count=${#nums}
+  (( count == 0 )) && { print -r -- "Nothing selected."; return 0 }
+
+  local i lbl
+  print -r -- "Selected $count PR(s) — will merge (${flags[*]}) in this order:"
+  for (( i = 1; i <= count; i++ )); do
+    [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
+    print -r -- "  $i. ${lbl}  ${titles[$i]}"
+  done
+  print
+
+  local all=false ans
+  for (( i = 1; i <= count; i++ )); do
+    [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
+    if ! $all; then
+      read -k 1 "ans?Merge ${lbl}? [y/N/a=all/q=quit] "; print
+      case "$ans" in
+        a|A) all=true ;;
+        y|Y) ;;
+        q|Q) print -r -- "Stopped — remaining left unmerged."; break ;;
+        *)   print -r -- "  – skipped ${lbl}"; continue ;;
+      esac
+    fi
+    _gh_poll_merge "${repos[$i]}" "${nums[$i]}" "${flags[@]}"
+  done
+}
+
+# fzf multi-select over current-repo PRs → TSV "<tab>num<tab>title" lines for
+# the batch engine (empty repo field = current repo). $1 = header verb.
+_gh_pr_multi_select() {
+  local repo
+  repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  gh pr list --limit 100 | \
+    fzf --ansi --multi \
+        --header "Tab mark · ^a all · ⏎ confirm ${1}-merge · ^/ preview · ^d/u scroll" \
+        --bind 'tab:toggle+down,btab:toggle+up' \
+        --bind 'ctrl-a:select-all' \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
+        --preview-window right:65%:wrap | \
+    awk -F'\t' -v repo="$repo" '{printf "%s\t%s\t%s\n", repo, $1, $2}'
+}
+
+# Interactive PR merge (squash). No args → multi-select picker (Tab to mark
+# several) → sequential squash-merge in selection order. Arg form (ghsq 123,
+# via completion) merges that single PR directly.
 ghsq() {
   if [[ $# -eq 0 ]]; then
-    # No args: interactive fzf selection
-    local pr=$(gh pr list --limit 100 | \
-      fzf --ansi \
-          --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
-          --preview-window right:65%:wrap \
-          --bind 'ctrl-/:toggle-preview' \
-          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
-          --header '⏎ squash-merge | ^/ toggle preview | ^d/u scroll' | \
-      awk '{print $1}')
-    [[ -n "$pr" ]] && gh pr merge "$pr" --squash --delete-branch
+    local tsv; tsv=$(_gh_pr_multi_select squash)
+    [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --squash --delete-branch
   else
-    # Args provided: strip completion suffix (e.g. "123[branch]" -> "123")
     gh pr merge "${1%%\[*}" --squash --delete-branch
   fi
 }
 
-# Interactive PR merge with fzf preview (rebase)
+# Interactive PR merge (rebase) — multi-select twin of ghsq.
 ghrb() {
   if [[ $# -eq 0 ]]; then
-    # No args: interactive fzf selection
-    local pr=$(gh pr list --limit 100 | \
-      fzf --ansi \
-          --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
-          --preview-window right:65%:wrap \
-          --bind 'ctrl-/:toggle-preview' \
-          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
-          --header '⏎ rebase-merge | ^/ toggle preview | ^d/u scroll' | \
-      awk '{print $1}')
-    [[ -n "$pr" ]] && gh pr merge "$pr" --rebase --delete-branch
+    local tsv; tsv=$(_gh_pr_multi_select rebase)
+    [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --rebase --delete-branch
   else
-    # Args provided: strip completion suffix (e.g. "123[branch]" -> "123")
     gh pr merge "${1%%\[*}" --rebase --delete-branch
   fi
+}
+
+# ---- Read-only gh wrappers (view/diff/checkout/checks/run) -----------
+# Shared pickers print the selected number/ID (empty string if cancelled).
+# Each wrapper: no arg → interactive picker; arg → strip "123[label]" → "123".
+
+# Pick an open PR; prints its number.
+_gh_pr_pick() {
+  gh pr list --limit 100 | \
+    fzf --ansi \
+        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
+        --preview-window right:65%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+        --header '⏎ select PR | ^/ toggle preview | ^d/u scroll' | \
+    awk '{print $1}'
+}
+
+# Pick an open issue; prints its number.
+_gh_issue_pick() {
+  gh issue list --limit 100 | \
+    fzf --ansi \
+        --preview 'GH_FORCE_TTY=1 gh issue view {1}' \
+        --preview-window right:60%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+        --header '⏎ select issue | ^/ toggle preview | ^d/u scroll' | \
+    awk '{print $1}'
+}
+
+# Pick a recent workflow run; prints its databaseId (ID is field 1).
+_gh_run_pick() {
+  gh run list --limit 50 --json databaseId,status,workflowName,headBranch,displayTitle \
+    --jq '.[] | "\(.databaseId)  \(.status)  \(.workflowName)  \(.headBranch)  \(.displayTitle)"' 2>/dev/null | \
+    fzf --ansi \
+        --preview 'GH_FORCE_TTY=1 gh run view {1}' \
+        --preview-window right:65%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+        --header '⏎ select run | ^/ toggle preview | ^d/u scroll' | \
+    awk '{print $1}'
+}
+
+# Resolve a wrapper's target: $1 = picker fn, $2 = optional CLI arg.
+_gh_pick_arg() { if [[ -z "$2" ]]; then "$1"; else print -r -- "${2%%\[*}"; fi }
+
+ghv()  { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr view "$p"; }       # gh pr view
+ghd()  { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr diff "$p"; }       # gh pr diff
+ghco() { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr checkout "$p"; }   # gh pr checkout
+ghck() { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr checks "$p"; }     # gh pr checks
+ghiv() { local p=$(_gh_pick_arg _gh_issue_pick "$1"); [[ -n "$p" ]] && gh issue view "$p"; }    # gh issue view (cf. ghi → Claude)
+ghr()  { local p=$(_gh_pick_arg _gh_run_pick   "$1"); [[ -n "$p" ]] && gh run view "$p"; }      # gh run view
+ghw()  { local p=$(_gh_pick_arg _gh_run_pick   "$1"); [[ -n "$p" ]] && gh run watch "$p"; }     # gh run watch
+
+# release-please across your repos + orgs: list open release PRs (label
+# 'autorelease: pending' — release-please's own marker, precise across the
+# different release bots), preview the release notes (PR body), multi-select
+# with Tab, then squash-merge sequentially in selection order. Extra args add
+# --owner scopes.
+ghrp() {
+  local -a owners owner_args
+  local o
+  for o in "${(@f)$(gh api user --jq '.login' 2>/dev/null)}" \
+           "${(@f)$(gh api user/orgs --jq '.[].login' 2>/dev/null)}" "$@"; do
+    [[ -n "$o" ]] && { owners+=("$o"); owner_args+=(--owner "$o") }
+  done
+
+  local list
+  list=$(gh search prs --state open --label 'autorelease: pending' \
+           "${owner_args[@]}" --limit 100 \
+           --json repository,number,title \
+           --jq '.[] | [.repository.nameWithOwner, (.number|tostring), .title] | @tsv' 2>/dev/null)
+  if [[ -z "$list" ]]; then
+    echo "No open release-please PRs found in: ${(j:, :)owners}"
+    return 0
+  fi
+
+  local selections
+  selections=$(print -r -- "$list" | column -t -s $'\t' | \
+      fzf --ansi --multi \
+          --header 'Tab mark · ^a all · ⏎ confirm squash-merge · ^/ preview · ^d/u scroll' \
+          --bind 'tab:toggle+down,btab:toggle+up' \
+          --bind 'ctrl-a:select-all' \
+          --bind 'ctrl-/:toggle-preview' \
+          --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+          --preview 'GH_FORCE_TTY=1 gh pr view {2} --repo {1}' \
+          --preview-window right:60%:wrap)
+  [[ -z "$selections" ]] && { print -r -- "Nothing selected."; return 0 }
+
+  # columned selection → "repo<TAB>num<TAB>title" for the batch engine
+  local tsv
+  tsv=$(print -r -- "$selections" | \
+    awk '{repo=$1; num=$2; $1=$2=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}')
+  _gh_batch_merge "$tsv" --squash
 }
 
 
@@ -668,7 +829,7 @@ _gh_pr_merge_complete() {
   _describe -t prs 'pull request' prs
 }
 
-compdef _gh_pr_merge_complete ghsq ghrb
+compdef _gh_pr_merge_complete ghsq ghrb ghv ghd ghco ghck
 
 # Custom completion for ghpc (PR feedback)
 _gh_pr_feedback_complete() {
@@ -688,7 +849,18 @@ _gh_issue_complete() {
   _describe -t issues 'issue' issues
 }
 
-compdef _gh_issue_complete ghi
+compdef _gh_issue_complete ghi ghiv
+
+# Custom completion for gh run wrappers (ghr, ghw)
+# Lists recent workflow runs by databaseId with fzf-tab preview of run details
+_gh_run_complete() {
+  local -a runs
+  runs=("${(@f)$(gh run list --limit 50 --json databaseId,workflowName,headBranch,displayTitle --jq '.[] | "\(.databaseId)[\(.workflowName) \(.headBranch)] \(.displayTitle)"' 2>/dev/null)}")
+  [[ ${#runs} -eq 0 ]] && return
+  _describe -t runs 'workflow run' runs
+}
+
+compdef _gh_run_complete ghr ghw
 
 # fzf-tab previews for gh wrapper functions
 zstyle ':fzf-tab:complete:ghsq:*' fzf-preview \
@@ -699,6 +871,12 @@ zstyle ':fzf-tab:complete:ghpc:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks ${word%%\[*} 2>/dev/null'
 zstyle ':fzf-tab:complete:ghi:*' fzf-preview \
   'GH_FORCE_TTY=1 gh issue view ${word%%\[*} 2>/dev/null'
+zstyle ':fzf-tab:complete:(ghv|ghd|ghco|ghck):*' fzf-preview \
+  'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
+zstyle ':fzf-tab:complete:ghiv:*' fzf-preview \
+  'GH_FORCE_TTY=1 gh issue view ${word%%\[*} 2>/dev/null'
+zstyle ':fzf-tab:complete:(ghr|ghw):*' fzf-preview \
+  'GH_FORCE_TTY=1 gh run view ${word%%\[*} 2>/dev/null'
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
