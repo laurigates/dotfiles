@@ -44,8 +44,8 @@
   [mcp_servers.pal]
     enabled = false
     scope = "project"
-    command = "uvx"
-    args = ["--from", "git+https://github.com/BeehiveInnovations/pal-mcp-server.git", "pal-mcp-server"]
+    command = "pal-mcp-server"
+    args = []
     description = "PAL (Provider Abstraction Layer) - Multi-provider LLM integration"
     category = "productivity"
 
