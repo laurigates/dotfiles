@@ -14,3 +14,6 @@ https://biomejs\.dev/.*
 
 # ST Microelectronics site is slow and often times out
 https://www\.st\.com/.*
+
+# date-fns.org occasionally returns 509 errors from CI runners
+https://date-fns\.org/.*
