@@ -1,10 +1,21 @@
 {
-  "format_version": "3.2.0",
+  "format_version": "3.3.0",
   "created_at": "2026-04-07T00:00:00Z",
-  "updated_at": "2026-04-08T00:00:00Z",
+  "updated_at": "2026-06-03T00:00:00Z",
   "created_by": {
     "blueprint_plugin": "3.2.0"
   },
+  "upgrade_history": [
+    {
+      "from": "3.2.0",
+      "to": "3.3.0",
+      "date": "2026-06-03T00:00:00Z",
+      "changes": [
+        "Added workspaces support for monorepo blueprints (standalone project: no workspaces block needed)",
+        "Enabled cross-workspace cross-references (`<path>/ADR-NNN`, `/ADR-NNN`)"
+      ]
+    }
+  ],
   "project": {
     "name": "chezmoi",
     "detected_stack": [

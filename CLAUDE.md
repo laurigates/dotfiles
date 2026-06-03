@@ -77,7 +77,7 @@ pre-commit run detect-secrets --all-files
 
 ## Blueprint Documentation
 
-Blueprint v3.2.0 manages project documentation and rules.
+Blueprint v3.3.0 manages project documentation and rules.
 
 - **PRD**: `docs/prds/project-overview.md` — Feature requirements and scope
 - **ADRs**: `docs/adrs/` — 16 Architecture Decision Records ([index](docs/adrs/README.md))
