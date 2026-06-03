@@ -380,14 +380,14 @@ ghi() {
           --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
 
     [[ -z "$selection" ]] && return 0
-    issue_num="${${selection##*#}%% *}"
+    issue_num="${${selection#\#}%% *}"
   else
     # Args provided: strip completion suffix (e.g. "123[title]" -> "123")
     issue_num="${1%%\[*}"
   fi
 
   echo "Processing issue #$issue_num with Claude..."
-  claude "/git-plugin:git:issue $issue_num"
+  claude "/git-issue $issue_num"
 }
 
 # GitHub PRs → Claude: select PR and address workflow/review feedback
