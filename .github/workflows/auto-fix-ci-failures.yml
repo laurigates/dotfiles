@@ -10,6 +10,7 @@ permissions:
   contents: write
   pull-requests: write
   actions: read
+  id-token: write # Required for Claude Code Action OIDC authentication
   # issues: write removed - not used in workflow
 
 concurrency:
