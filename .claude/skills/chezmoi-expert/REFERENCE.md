@@ -32,6 +32,26 @@ chezmoi state dump
 chezmoi state reset
 ```
 
+### Changing Source Attributes (`chattr`)
+
+Change a managed file's attributes — template, private, executable, etc. —
+**without manually renaming the source file**. `chattr` renames the source
+entry for you to encode the new prefix/suffix, and it takes **target** paths.
+
+```bash
+chezmoi chattr +template ~/.bashrc      # plain source → add .tmpl suffix
+chezmoi chattr +private,+template ~/.netrc  # add private_ prefix AND .tmpl
+chezmoi chattr +encrypted ~/.ssh/id_ed25519 # mark for encryption
+chezmoi chattr +executable ~/bin/foo.sh # add executable_ prefix (mode 0755)
+chezmoi chattr -- -executable ~/bin/foo.sh  # remove it (-- guards the leading -)
+chezmoi chattr +exact ~/.config/app     # exact_ on a directory (prune orphans)
+```
+
+Attribute words: `template`, `private`, `readonly`, `executable`, `empty`,
+`encrypted`, `exact`, `remove`. Prefix with `+`/`-` (or `no` form). Manually
+renaming `foo` → `private_dot_foo.tmpl` works too, but `chattr` won't
+fat-finger the prefix order (`private_` before `dot_`, `.tmpl` last).
+
 ### External Files
 
 ```toml
@@ -290,6 +310,14 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
 ```
 
 ## Debugging Checklist
+
+0. **Environment / setup broken?**
+   - Run `chezmoi doctor` first — checks chezmoi version, the source dir,
+     git, `$EDITOR`, the configured diff/merge/pager commands, and any
+     encryption tool (age/gpg) or password manager referenced by templates.
+   - Each row is `ok` / `warning` / `error`; fix `error` rows before
+     chasing apply/template symptoms below — a missing `age` or unset
+     recipient surfaces here, not in `apply` output.
 
 1. **File not updating?**
    - Check if managed: `chezmoi managed | grep <file>`

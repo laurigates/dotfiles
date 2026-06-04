@@ -31,9 +31,33 @@ Expert knowledge for managing dotfiles with chezmoi, including templates, cross-
 3. `chezmoi apply -v <path>` - Apply specific paths first
 4. Let user review before full `chezmoi apply`
 
+## Finding the Source File — Don't Translate Prefixes by Hand
+
+When you know a **target** path and need the **source**, ask chezmoi instead
+of mentally translating `dot_`/`private_`/`exact_`/`.tmpl`/`encrypted_`.
+Stacked prefixes make manual guessing error-prone, and a wrong guess points
+at a nonexistent path.
+
+```bash
+chezmoi source-path ~/.zshrc                 # → .../dot_zshrc.tmpl
+chezmoi source-path ~/.config/mise/config.toml  # → .../private_dot_config/mise/config.toml.tmpl
+chezmoi target-path <source-file>            # inverse: source → target
+```
+
+Canonical edit loop: **`chezmoi source-path <target>` → `Read` it → `Edit`
+it → `chezmoi apply`**. `source-path` exits non-zero when the target is not
+managed — check the exit code; if it errors, use `chezmoi unmanaged <path>`
+or `chezmoi managed <path>` to confirm whether the file is unmanaged vs.
+ignored (`chezmoi ignored`).
+
 ## Essential Commands
 
 ```bash
+# Find the source / target for a path (let chezmoi compute prefixes)
+chezmoi source-path ~/.zshrc    # Target → source (exits non-zero if unmanaged)
+chezmoi target-path <src-file>  # Source → target (inverse)
+chezmoi unmanaged ~/.config     # Home-dir files NOT managed by chezmoi
+
 # Check differences
 chezmoi diff                    # All pending changes
 chezmoi status                  # Quick status overview
@@ -48,11 +72,11 @@ chezmoi apply -v                # Apply all after review
 chezmoi add ~/.bashrc           # Start managing file
 chezmoi re-add ~/.bashrc        # Update from modified target
 chezmoi managed                 # List managed files
-chezmoi verify                  # Verify target matches source
+chezmoi verify                  # Verify target matches source (exit 0 = clean)
 
 # Templates
 chezmoi data                    # Show template variables
-chezmoi dump ~/.config/file     # Preview rendered output
+chezmoi cat ~/.config/file      # Preview rendered target content (renders .tmpl, decrypts)
 chezmoi execute-template < file # Test template
 ```
 

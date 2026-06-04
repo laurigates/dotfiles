@@ -31,6 +31,41 @@ Derived from git history patterns (1404 commits, 2018–2026).
 - After modifying `exact_dot_claude/rules/`, run `chezmoi apply --force ~/.claude`
 - Use `chezmoi diff` to preview changes before applying
 
+## Finding the Source File — Ask Chezmoi, Don't Translate
+
+When you know a **target** path and need to read or edit its **source**, do
+not hand-translate the `dot_` / `private_` / `exact_` / `.tmpl` /
+`encrypted_` prefixes — let chezmoi compute it. Stacked prefixes
+(`private_dot_config/private_fish/...`) make manual translation error-prone,
+and a wrong guess silently points at a path that doesn't exist.
+
+```
+chezmoi source-path ~/.zshrc
+# → ~/.local/share/chezmoi/dot_zshrc.tmpl
+
+chezmoi source-path ~/.claude/rules/security.md
+# → ~/.local/share/chezmoi/exact_dot_claude/rules/security.md
+
+chezmoi source-path ~/.config/mise/config.toml
+# → ~/.local/share/chezmoi/private_dot_config/mise/config.toml.tmpl
+```
+
+The canonical edit workflow becomes: **`chezmoi source-path <target>` →
+`Read` that path → `Edit` it → `chezmoi apply`**. This is the same in any
+chezmoi-managed repo, so it works regardless of the project's specific
+naming layout.
+
+| Need | Command | Notes |
+|---|---|---|
+| Source path for a target | `chezmoi source-path <target>` | Exits non-zero if the target is **not managed** — check the exit code before reading the result |
+| Target path for a source file | `chezmoi target-path <source>` | Inverse direction; useful when browsing the source tree |
+| Is this home-dir file managed at all? | `chezmoi unmanaged <path>` / `chezmoi managed <path>` | When `source-path` errors, confirm whether the file is unmanaged vs. ignored (`chezmoi ignored`) |
+| Preview rendered target content | `chezmoi cat <target>` | Renders `.tmpl` and decrypts `encrypted_` in memory — reading the raw source shows template syntax, not the result |
+
+`--source-path` is also a global flag: `chezmoi diff --source-path
+<source-file>` lets commands take source paths directly when you already
+have one.
+
 ## Runtime Drift (Claude Code's `settings.json`)
 
 Some target files are mutated by the application at runtime, not just by `chezmoi apply`. Claude Code writes to `~/.claude/settings.json` when the user toggles plugins, dismisses surveys, changes editor mode, enables features, or modifies anything via `/config` or `/plugin`. The chezmoi source has no idea those mutations happened.
