@@ -71,6 +71,13 @@ surface only what the user would otherwise miss when they sit down.
 - **Tasks pending for weeks with no recent annotation** — they're not
   this session's signal; let `/task-status` handle the cross-project
   rot sweep
+- **`+ACTIVE` tasks from a different project than the cwd** — do not
+  show these in the taskwarrior, git, or next-moves sections.  They
+  represent a stale lock from a previous session on a different project;
+  they must not redefine scope.  At most, append a single line at the
+  very bottom of the briefing: e.g. `note: +ACTIVE lock on
+  project:claude-plugins from previous session — run /session-wrap to
+  close it if done.`
 
 Same 3-6 items target as wrap. 10+ means the filter is too loose —
 trim to what the user would actually want to act on this session.
@@ -79,15 +86,27 @@ trim to what the user would actually want to act on this session.
 
 ### 1. Detect
 
-Infer the active project from:
+Infer the active project using this tiered precedence:
 
-- `cwd` — `repos/ForumViriumHelsinki/infrastructure` → `infrastructure`;
-  `.local/share/chezmoi` → `dotfiles`; `repos/laurigates/claude-plugins`
-  → `claude-plugins`
-- `git remote get-url origin` — falls back to repo name when cwd is
-  ambiguous
-- Any taskwarrior task currently `+ACTIVE` — its `project:` wins over
-  cwd-inferred name (the user was mid-task)
+1. **cwd → git remote (unambiguous)** — when the working directory maps
+   cleanly to a project (e.g. `repos/ForumViriumHelsinki/infrastructure`
+   → `infrastructure`; `.local/share/chezmoi` → `dotfiles`;
+   `repos/laurigates/claude-plugins` → `claude-plugins`), that project
+   scopes the briefing.  A `+ACTIVE` task from a **different** project
+   does **not** override this — it is a cross-project stale lock and must
+   not hijack the scope (see "DO NOT SURFACE" below).
+2. **`+ACTIVE` task project (cwd is ambiguous)** — when cwd does not
+   resolve to a clear project (generic home dir, `/tmp`, no git remote),
+   fall back to the project of any `+ACTIVE` taskwarrior task.
+3. **`git remote get-url origin`** — repo name as last resort when cwd
+   alone is ambiguous and no `+ACTIVE` task is present.
+
+| Situation | Scope winner |
+|---|---|
+| cwd → unambiguous project, `+ACTIVE` is same project | cwd project |
+| cwd → unambiguous project, `+ACTIVE` is a **different** project | cwd project; cross-project `+ACTIVE` shown only as a footnote |
+| cwd → ambiguous, `+ACTIVE` present | `+ACTIVE` task's project |
+| cwd → ambiguous, no `+ACTIVE` | git remote repo name |
 
 If multiple projects are detectable (monorepo, multi-package), survey
 each in its own section.
@@ -130,7 +149,14 @@ done
 ### 3. Present
 
 Compact briefing, one section per source. No mutating actions in this
-phase — spinup is read-only. Example:
+phase — spinup is read-only.
+
+Scope is always set by the **cwd project** (tier 1 from Detect); a
+cross-project `+ACTIVE` lock must not appear in the taskwarrior,
+git-state, or next-moves sections — only as a single footnote line after
+the next-moves block if one exists.
+
+Example:
 
 ```
 Spin-up — project: fvh.cost-attribution (cwd: repos/ForumViriumHelsinki/infrastructure)
