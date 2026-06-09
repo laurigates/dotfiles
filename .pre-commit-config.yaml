@@ -13,6 +13,9 @@ repos:
         exclude: '\.oms\.sig$'
       - id: check-yaml
       - id: check-json
+        # chezmoi modify_ scripts target *.json files but are executable
+        # scripts (shell + jq), not JSON documents.
+        exclude: '(^|/)modify_.*\.json$'
       - id: check-merge-conflict
       - id: check-symlinks
       - id: check-toml
