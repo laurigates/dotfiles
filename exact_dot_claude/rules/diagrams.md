@@ -55,9 +55,11 @@ result, not passed to the terminal. So:
    diagram belongs in the repo, e.g. `docs/diagrams/<name>.d2`).
 2. Render with `d2 /tmp/<name>.d2 /tmp/<name>.svg` (or `.png` if the user
    needs a raster).
-3. Tell the user the path, and — when on kitty — suggest they run
+3. Tell the user the path, and — when on kitty (`$KITTY_WINDOW_ID` is set;
+   confirm with `kitten icat --detect-support`) — suggest they run
    `! kitty +kitten icat /tmp/<name>.png` so the `!`-prefix executes in
-   *their* shell where the graphics protocol works.
+   *their* shell where the graphics protocol works. See
+   `kitty-agent-interaction.md` for the broader kitty toolset.
 4. For diagrams that live in a repo, commit `<name>.d2` + `<name>.svg`
    together so the source and the rendered artifact stay in sync.
 
