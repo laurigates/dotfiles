@@ -54,8 +54,36 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(echo *)",
       "Bash(fd *)",
       "Bash(find *)",
-      "Bash(gh:*)",
-      "Bash(git:*)",
+      "Bash(gh api *)",
+      "Bash(gh issue *)",
+      "Bash(gh label *)",
+      "Bash(gh pr *)",
+      "Bash(gh project *)",
+      "Bash(gh release *)",
+      "Bash(gh repo *)",
+      "Bash(gh run *)",
+      "Bash(gh search *)",
+      "Bash(gh workflow *)",
+      "Bash(git add *)",
+      "Bash(git branch *)",
+      "Bash(git check-ignore *)",
+      "Bash(git checkout *)",
+      "Bash(git commit *)",
+      "Bash(git diff *)",
+      "Bash(git fetch *)",
+      "Bash(git log *)",
+      "Bash(git ls-remote *)",
+      "Bash(git ls-tree *)",
+      "Bash(git merge-base *)",
+      "Bash(git mv *)",
+      "Bash(git pull *)",
+      "Bash(git push *)",
+      "Bash(git remote get-url *)",
+      "Bash(git rev-parse *)",
+      "Bash(git show *)",
+      "Bash(git status *)",
+      "Bash(git switch *)",
+      "Bash(git tag *)",
       "Bash(gitleaks:*)",
       "Bash(grep *)",
       "Bash(helm lint *)",
@@ -74,8 +102,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(mise *)",
       "Bash(mkdir *)",
       "Bash(mv *)",
-      "Bash(pre-commit:*)",
-      "Bash(python3:*)",
+      "Bash(pre-commit run *)",
       "Bash(rg *)",
       "Bash(sort *)",
       "Bash(terraform fmt *)",
@@ -120,10 +147,6 @@ read -r -d '' overlay <<'OVERLAY' || true
       "mcp__argocd-mcp__list_applications",
       "mcp__context7",
       "mcp__github",
-      "mcp__github__add_reply_to_pull_request_comment",
-      "mcp__github__create_pull_request",
-      "mcp__github__get_file_contents",
-      "mcp__github__issue_read",
       "mcp__sequential-thinking"
     ],
     "deny": [
@@ -142,6 +165,26 @@ read -r -d '' overlay <<'OVERLAY' || true
     "additionalDirectories": [
       "~/Documents/LakuVault",
       "~/repos/ForumViriumHelsinki/infrastructure.wiki"
+    ]
+  },
+  "autoMode": {
+    "environment": [
+      "$defaults",
+      "The entries below EXTEND AND OVERRIDE the default 'None configured' / 'no additional orgs' lines above: they add trusted infrastructure. They widen which destinations are in-boundary; they do NOT relax the default Data Exfiltration, Create Public Surface, Credential Leakage, or Irreversible Local Destruction rules, which still apply in full.",
+      "Organization: personal tooling under github.com/laurigates (dotfiles, claude-plugins, ComfyUI node packs) and Forum Virium Helsinki under github.com/ForumViriumHelsinki. Primary use: infrastructure automation, dotfiles maintenance, and AI/ComfyUI tooling.",
+      "Source control: pushing a repository to its OWN configured remote under github.com/laurigates or github.com/ForumViriumHelsinki is a normal in-boundary operation. This does NOT authorize copying one repo's contents into a different repo, moving Forum Virium private contents into a laurigates repo, or bulk-relocating an entire tree to a new remote. Note that several github.com/laurigates repos (dotfiles, claude-plugins, ComfyUI node packs) are PUBLIC, so pushing private FVH content there is exfiltration to a public surface.",
+      "Container registry: ghcr.io images namespaced under laurigates/* and ForumViriumHelsinki/* are trusted push/pull targets and not exfiltration. This does NOT clear the Credential Leakage rule: never bake secrets into images, build args, or layers even for these registries.",
+      "Local trusted paths: ~/Documents/LakuVault and ~/repos/ForumViriumHelsinki/infrastructure.wiki are trusted working directories; routine reads and writes within them are Local Operations. Destructive deletion or overwrite of pre-existing files there still falls under Irreversible Local Destruction.",
+      "Production convention: treat any Kubernetes namespace or infrastructure target whose name contains 'prod', 'production', or 'live' as production, AND treat any target whose production status is ambiguous or unknown as production. Only clearly-named dev, staging, test, and ephemeral targets are non-production."
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Never apply changes to Forum Virium production infrastructure without an explicit user message naming the exact target and approving the apply, and only when a plan/diff/dry-run for that target is already visible earlier in the transcript. This covers `terraform apply`/`terraform destroy`/`terraform import`, `tofu apply`/`tofu destroy`, `argocd app sync`/`argocd app rollback`, and equivalent `helm upgrade`/`helm install`/`helm uninstall` and `kubectl rollout restart` operations against a production target.",
+      "Never modify a Kubernetes resource in a production namespace (per the production convention in Environment) via `kubectl apply`/`kubectl edit`/`kubectl delete`/`kubectl patch`/`kubectl scale` without explicit user approval naming the resource and namespace."
+    ],
+    "hard_deny": [
+      "$defaults",
+      "Never transmit Forum Virium Helsinki repository contents, secrets, terraform state, or kubernetes manifests to any destination OUTSIDE the trust boundary defined in Environment above. Transmission to the trusted destinations listed there is in-boundary and not blocked by this rule; transmission to a public repository (including public github.com/laurigates repos) is outside the boundary and blocked."
     ]
   },
   "hooks": {
