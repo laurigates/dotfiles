@@ -66,6 +66,40 @@ fat-finger the prefix order (`private_` before `dot_`, `.tmpl` last).
   url = "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 ```
 
+### Scripted Targets (`run_*` and `modify_`)
+
+| Prefix | When it runs | stdin | stdout |
+|---|---|---|---|
+| `run_once_<name>` | first apply only (hash tracked) | — | — |
+| `run_onchange_<name>` | when the script's contents/hash change | — | — |
+| `modify_<target>` | every apply/diff | **current target contents** | **becomes the new target** |
+
+A `modify_` script is the tool for a **partially-managed file** — one the
+application rewrites at runtime, where a static source perpetually drifts.
+chezmoi feeds the current target on stdin; the script emits the desired
+contents. The idiomatic pattern is a `jq` deep-merge of a managed overlay over
+the live file, so named keys are pinned and everything else passes through:
+
+```bash
+#!/usr/bin/env bash
+# modify_settings.json  -> ~/.claude/settings.json   (chmod +x)
+set -euo pipefail
+current="$(cat)"; [ -z "$current" ] && current='{}'
+read -r -d '' overlay <<'OVERLAY' || true
+{ "permissions": { "defaultMode": "auto" } }
+OVERLAY
+jq -n --argjson cur "$current" --argjson ov "$overlay" '$cur * $ov'
+```
+
+- `jq` `*` merges objects recursively but **replaces arrays** — overlay arrays
+  win wholesale (authoritative allow/deny lists, etc.).
+- The script must be **executable**. A `modify_*.json` source is a script, not
+  JSON — exclude it from any `check-json` pre-commit hook:
+  `exclude: '(^|/)modify_.*\.json$'`.
+- Confirm idempotency with an empty `chezmoi diff` after apply.
+- `modify_` and a static source for the same target conflict
+  (`inconsistent state`) — `git rm` the static file when converting.
+
 ## Template Functions
 
 ### Built-in Functions
