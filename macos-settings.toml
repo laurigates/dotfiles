@@ -7,11 +7,14 @@ config_version = "1.0.0"
 last_updated = "2024-08-30"
 
 [keyboard_shortcuts]
-# Mission Control space navigation shortcuts (disabled for terminal use)
-disable_ctrl_left_arrow = true      # ID 79: Ctrl+Left Arrow
-disable_ctrl_right_arrow = true     # ID 81: Ctrl+Right Arrow
-disable_ctrl_shift_left = true      # ID 80: Ctrl+Shift+Left Arrow
-disable_ctrl_shift_right = true     # ID 82: Ctrl+Shift+Right Arrow
+# Mission Control shortcuts disabled so ctrl+arrow reaches the terminal
+# (kitty neighboring_window / tmux pane navigation) instead of macOS.
+disable_ctrl_left_arrow = true      # ID 79: Ctrl+Left Arrow (Move left a space)
+disable_ctrl_right_arrow = true     # ID 81: Ctrl+Right Arrow (Move right a space)
+disable_ctrl_shift_left = true      # ID 80: Ctrl+Shift+Left Arrow (Move window left a space)
+disable_ctrl_shift_right = true     # ID 82: Ctrl+Shift+Right Arrow (Move window right a space)
+disable_ctrl_up_arrow = true        # ID 32: Ctrl+Up Arrow (Mission Control)
+disable_ctrl_down_arrow = true      # ID 33: Ctrl+Down Arrow (Application windows / App Exposé)
 
 [finder]
 show_hidden_files = true

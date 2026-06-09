@@ -16,11 +16,14 @@ echo "🍎 Configuring macOS settings..."
 echo "⌨️  Configuring keyboard shortcuts..."
 
 # Disable Mission Control shortcuts that interfere with development tools
-echo "  Disabling Mission Control space navigation shortcuts..."
+# (ctrl+arrow must reach the terminal for kitty/tmux pane navigation).
+echo "  Disabling Mission Control shortcuts that clash with ctrl+arrow..."
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 "{enabled = 0; value = { parameters = (65535, 123, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Left shortcut"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 "{enabled = 0; value = { parameters = (65535, 123, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Left shortcut"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 "{enabled = 0; value = { parameters = (65535, 124, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Right shortcut"
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 "{enabled = 0; value = { parameters = (65535, 124, 8781824); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Shift+Right shortcut"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 32 "{enabled = 0; value = { parameters = (65535, 126, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Up shortcut (Mission Control)"
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 33 "{enabled = 0; value = { parameters = (65535, 125, 8650752); type = standard;};}" || echo "    ⚠️  Failed to disable Ctrl+Down shortcut (Application windows)"
 
 # =============================================================================
 # FINDER SETTINGS

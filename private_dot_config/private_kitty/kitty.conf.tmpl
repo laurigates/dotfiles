@@ -789,11 +789,16 @@ map shift+down move_window down
 # map ctrl+shift+right layout_action move_to_screen_edge right
 # map ctrl+shift+down layout_action move_to_screen_edge bottom
 
-# Switch focus to the neighboring window in the indicated direction
-map ctrl+left neighboring_window left
-map ctrl+right neighboring_window right
-map ctrl+up neighboring_window up
-map ctrl+down neighboring_window down
+# Switch focus to the neighboring window in the indicated direction.
+# Routed through the custom kitten (the `kitten` keyword + .py file) rather
+# than kitty's built-in `neighboring_window` action, so it can be tmux-aware:
+# arg1 is the direction (used for kitty windows); arg2 is the key forwarded
+# into the child when it's tmux, so the same ctrl+arrow keypress moves tmux
+# panes (via tmux's `bind -n M-* select-pane` in ~/.tmux.conf).
+map ctrl+left kitten neighboring_window.py left alt+left
+map ctrl+right kitten neighboring_window.py right alt+right
+map ctrl+up kitten neighboring_window.py up alt+up
+map ctrl+down kitten neighboring_window.py down alt+down
 #: You can also create shortcuts to switch to specific layouts::
 
 #:     map ctrl+alt+t goto_layout tall
