@@ -89,6 +89,26 @@ In headless environments (Claude Code agent sessions, CI), the TTY prompt errors
 
 Applies equally to any other tool that writes to its own chezmoi-managed config: `~/.config/gh/config.yml`, `~/.config/mise/config.toml` when mise mutates it, etc. Check `chezmoi diff` before applying.
 
+### Durable fix: manage the file with a `modify_` script
+
+The reconcile dance above is a per-apply chore. For a file the app rewrites *constantly* (Claude Code's `settings.json` is the worst offender — interactive toggles, schema changes across versions, auto-formatting), stop fighting it: convert the static source to a chezmoi **`modify_` script**. chezmoi pipes the *current* target to the script on stdin; the script's stdout becomes the new target. A `jq` deep-merge pins only the keys you manage and lets everything else pass through:
+
+```bash
+# exact_dot_claude/modify_settings.json  (must be executable)
+current="$(cat)"; [ -z "$current" ] && current='{}'
+read -r -d '' overlay <<'OVERLAY' || true
+{ "permissions": { "defaultMode": "auto" }, "teammateMode": "auto" }
+OVERLAY
+jq -n --argjson cur "$current" --argjson ov "$overlay" '$cur * $ov'
+```
+
+- Keys named in the overlay are **pinned**; keys you omit (`effortLevel`, `feedbackSurveyState`, any new key a future version adds) **pass through untouched** — drift stops being a problem.
+- `jq`'s `*` **replaces arrays**, so `permissions.allow`/`deny` become authoritative: an interactive grant is reverted on the next apply unless promoted into the overlay (good hygiene — keeps project-specific noise out).
+- The source is named `modify_<target>` (`modify_settings.json` → `~/.claude/settings.json`), must be **executable**, and — because it ends in `.json` but is a script — must be **excluded from the `check-json` pre-commit hook**: `exclude: '(^|/)modify_.*\.json$'`.
+- Verify idempotency: `chezmoi diff` is empty after `chezmoi apply`.
+
+See the `chezmoi-expert` skill REFERENCE for the general `modify_` mechanics. For the permission-key specifics of a Claude Code settings overlay, see `claude-code-auto-mode.md`.
+
 ## Script Conventions
 
 - `run_onchange_*` scripts execute when their template hash changes
