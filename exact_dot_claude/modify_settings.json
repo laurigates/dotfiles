@@ -1,3 +1,28 @@
+#!/usr/bin/env bash
+# modify_ script for ~/.claude/settings.json
+#
+# chezmoi pipes the CURRENT target file to this script on stdin; our stdout
+# becomes the new target. We deep-merge a managed "overlay" over the live
+# file (overlay wins on conflicts), so any key NOT named in the overlay
+# passes through untouched. That is how we pin the keys we care about while
+# letting Claude Code own the volatile ones it constantly rewrites:
+#
+#   - PASSED THROUGH (omitted from overlay): effortLevel, feedbackSurveyState,
+#     and any new key a future Claude Code version introduces.
+#   - PINNED (in overlay): env, permissions, hooks, statusLine, plugins,
+#     marketplaces, and the deliberate mode/feature flags.
+#
+# jq's '*' operator merges objects recursively but REPLACES arrays. So
+# permissions.allow / permissions.deny are authoritative: an interactive
+# "always allow" grant made in a session is wiped on the next `chezmoi apply`
+# unless it is promoted into the overlay below. That keeps project-specific
+# permission noise out of the global config by design.
+set -euo pipefail
+
+current="$(cat)"
+[ -z "$current" ] && current='{}'
+
+read -r -d '' overlay <<'OVERLAY' || true
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "skillListingBudgetFraction": 0.1,
@@ -6,8 +31,7 @@
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
     "ENABLE_TOOL_SEARCH": "1",
     "CLAUDE_HOOKS_ENABLE_BASH_ANTIPATTERNS_TEACH": "1",
-    "CLAUDE_HOOKS_ENABLE_CALENDAR_ESTIMATES": "1",
-    "CLAUDE_CODE_NEW_INIT": "1"
+    "CLAUDE_HOOKS_ENABLE_CALENDAR_ESTIMATES": "1"
   },
   "permissions": {
     "allow": [
@@ -30,35 +54,9 @@
       "Bash(echo *)",
       "Bash(fd *)",
       "Bash(find *)",
-      "Bash(gh api *)",
-      "Bash(gh issue *)",
-      "Bash(gh label *)",
-      "Bash(gh pr *)",
-      "Bash(gh release *)",
-      "Bash(gh repo *)",
-      "Bash(gh run *)",
-      "Bash(gh search *)",
-      "Bash(gh workflow *)",
-      "Bash(git add *)",
-      "Bash(git branch *)",
-      "Bash(git check-ignore *)",
-      "Bash(git checkout *)",
-      "Bash(git commit *)",
-      "Bash(git diff *)",
-      "Bash(git fetch *)",
-      "Bash(git log *)",
-      "Bash(git ls-remote *)",
-      "Bash(git ls-tree *)",
-      "Bash(git merge-base *)",
-      "Bash(git mv *)",
-      "Bash(git pull *)",
-      "Bash(git push *)",
-      "Bash(git remote get-url *)",
-      "Bash(git rev-parse *)",
-      "Bash(git show *)",
-      "Bash(git status *)",
-      "Bash(git switch *)",
-      "Bash(git tag *)",
+      "Bash(gh:*)",
+      "Bash(git:*)",
+      "Bash(gitleaks:*)",
       "Bash(grep *)",
       "Bash(helm lint *)",
       "Bash(helm repo *)",
@@ -76,9 +74,12 @@
       "Bash(mise *)",
       "Bash(mkdir *)",
       "Bash(mv *)",
-      "Bash(pre-commit run *)",
+      "Bash(pre-commit:*)",
+      "Bash(python3:*)",
       "Bash(rg *)",
       "Bash(sort *)",
+      "Bash(terraform fmt *)",
+      "Bash(tflint)",
       "Bash(wc *)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:argo-cd.readthedocs.io)",
@@ -109,6 +110,8 @@
       "WebFetch(domain:stackoverflow.com)",
       "WebFetch(domain:www.npmjs.com)",
       "WebSearch",
+      "Skill(git-plugin:git-commit)",
+      "Skill(git-pr)",
       "mcp__argocd-mcp__get_application",
       "mcp__argocd-mcp__get_application_events",
       "mcp__argocd-mcp__get_application_managed_resources",
@@ -116,6 +119,11 @@
       "mcp__argocd-mcp__get_application_workload_logs",
       "mcp__argocd-mcp__list_applications",
       "mcp__context7",
+      "mcp__github",
+      "mcp__github__add_reply_to_pull_request_comment",
+      "mcp__github__create_pull_request",
+      "mcp__github__get_file_contents",
+      "mcp__github__issue_read",
       "mcp__sequential-thinking"
     ],
     "deny": [
@@ -130,7 +138,7 @@
       "Write(**/CHANGELOG.md)"
     ],
     "ask": [],
-    "defaultMode": "acceptEdits",
+    "defaultMode": "auto",
     "additionalDirectories": [
       "~/Documents/LakuVault",
       "~/repos/ForumViriumHelsinki/infrastructure.wiki"
@@ -165,6 +173,7 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
+    "comfyui-plugin@laurigates-claude-plugins": true,
     "bevy-plugin@laurigates-claude-plugins": false,
     "blog-plugin@laurigates-claude-plugins": false,
     "finops-plugin@laurigates-claude-plugins": false,
@@ -200,7 +209,7 @@
     "migration-patterns-plugin@laurigates-claude-plugins": false,
     "prose-plugin@laurigates-claude-plugins": true,
     "pyright-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": false,
+    "typescript-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": false,
     "gopls-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": false,
@@ -211,7 +220,7 @@
     "prompt-engineering-plugin@laurigates-claude-plugins": true,
     "taskwarrior-plugin@laurigates-claude-plugins": true,
     "macos-plugin@laurigates-claude-plugins": true,
-    "upstream-pr-plugin@laurigates-claude-plugins": true
+    "upstream-pr-plugin@laurigates-claude-plugins": false
   },
   "extraKnownMarketplaces": {
     "laurigates-claude-plugins": {
@@ -222,7 +231,6 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
   "promptSuggestionEnabled": false,
   "showClearContextOnPlanAccept": true,
   "autoUpdatesChannel": "latest",
@@ -233,13 +241,15 @@
   "editorMode": "vim",
   "verbose": false,
   "autoCompactEnabled": false,
-  "teammateMode": "tmux",
+  "teammateMode": "auto",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "fileCheckpointingEnabled": false,
   "voiceEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754075292901
-  },
   "remoteControlAtStartup": true
 }
+OVERLAY
+
+jq -n --argjson cur "$current" --argjson ov "$overlay" '$cur * $ov'
