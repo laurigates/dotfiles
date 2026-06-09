@@ -13,6 +13,33 @@ Derived from git history patterns (tooling decisions across 1404 commits).
 4. **cargo install** / **go install** — When not available via aqua
 5. **brew install** — Last resort for CLI tools; primary for system packages and GUI apps
 
+## Running With a Specific Version — `mise exec`, Not `mise use`
+
+When a command needs a *specific* version of a mise-provided runtime (Python,
+Node, Go, Rust, Bun, or anything else mise installs) for one invocation, run it
+through `mise exec <tool>@<version> --` instead of switching the default with
+`mise use`.
+
+```
+mise exec python@3.14 -- uv run script.py
+mise exec node@22 -- npm ci
+mise exec go@1.23 -- go build ./...
+```
+
+Why `exec` over `use`:
+
+- **`mise use` clobbers the default.** It writes the version into the active
+  `mise.toml` / `.tool-versions`, so it persists and silently changes the
+  runtime for everything else relying on the current default. `mise exec`
+  scopes the version to the single command and leaves the default untouched.
+- **One streamlined line.** No "switch version → run → switch back" dance, and
+  no risk of forgetting the revert.
+- **Composes with `uv`/`npm`/etc.** Put `mise exec …@… --` in front of the
+  normal command; everything after `--` runs under the pinned runtime.
+
+Reach for `mise use` only when you genuinely want to *change* the project's or
+shell's default version going forward — not for a one-off run.
+
 ## Homebrew Package Profiles
 
 Packages are managed through `.chezmoidata/packages.toml` with profile activation in `.chezmoidata/profiles.toml`:
