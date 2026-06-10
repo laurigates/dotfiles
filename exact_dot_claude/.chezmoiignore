@@ -1,3 +1,16 @@
+# Friction-learner weekly baseline reports (written by the reduce-friction
+# scheduled task; moved out of rules/ so they don't load into every session).
+# MUST stay ignored: ~/.claude is an exact_ dir, so an unlisted top-level
+# entry is DELETED on chezmoi apply.
+friction-reports/
+
+# Vendored third-party skill, installed and updated by `notebooklm skill
+# install` (ships with the notebooklm-py package). Not chezmoi-managed so
+# tool updates don't fight chezmoi apply. Re-run the install after every
+# `uv tool upgrade notebooklm-py` — upgrading the package alone does not
+# refresh the skill file.
+skills/notebooklm/
+
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
 file-history/
