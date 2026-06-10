@@ -31,6 +31,46 @@ Derived from git history patterns (1404 commits, 2018–2026).
 - After modifying `exact_dot_claude/rules/`, run `chezmoi apply --force ~/.claude`
 - Use `chezmoi diff` to preview changes before applying
 
+## exact_ Dirs DELETE Unmanaged Files — Check `chezmoi status` Before Apply
+
+An `exact_` source dir (notably `exact_dot_claude/` → `~/.claude/`) makes
+apply **remove every target entry** that is in neither the source nor a
+`.chezmoiignore`. With `--force` (required in headless sessions) the removal
+is **silent** — no prompt, no warning. This deleted a freshly created
+`~/.claude/friction-reports/` (10 files, ~150 KB) on 2026-06-10; it was
+recovered only because the contents happened to survive in session
+transcripts and context.
+
+Two traps stack here:
+
+1. **Path-scoped `chezmoi diff <target>` does NOT show pending deletions of
+   unmanaged files** (verified: a canary file in `~/.claude` produced empty
+   `chezmoi diff ~/.claude` output). The "diff before apply" habit alone
+   cannot catch this. Only `chezmoi status` (` D <path>` lines) or the
+   *unrestricted* `chezmoi diff` (`deleted file mode` hunks) reveal them.
+2. **`--force` only suppresses the prompt; it adds no safety.** The check
+   has to happen before the apply, not be delegated to the prompt.
+
+**The rule:**
+
+- **Before any `chezmoi apply` that touches an exact_ tree**, run
+  `chezmoi status <target-tree>` and treat every ` D` line as a stop
+  signal: either it's an intended removal, or the file must first be
+  registered (below). Never apply over an unexplained ` D`.
+- **Creating or moving files INTO a chezmoi-managed target tree requires
+  registering them in the same change** — `chezmoi add <target>` if it
+  should be managed, or a `.chezmoiignore` entry (with a comment saying
+  who owns it) if intentionally unmanaged. A new top-level entry in an
+  exact_ dir that is neither is one apply away from deletion.
+- `.chezmoiignore` placement: the file inside the exact_ source dir
+  (`exact_dot_claude/.chezmoiignore`) with patterns relative to that
+  target (`friction-reports/`, `skills/notebooklm/`).
+- exact_ semantics apply **per directory level**: only the dir carrying the
+  `exact_` prefix purges unmanaged entries; its non-`exact_` subdirs (e.g.
+  `rules/`, `skills/` under `exact_dot_claude/`) tolerate unmanaged files.
+  That asymmetry is why damage can look partial — and why "it survived last
+  time" proves nothing about a sibling path.
+
 ## Finding the Source File — Ask Chezmoi, Don't Translate
 
 When you know a **target** path and need to read or edit its **source**, do
