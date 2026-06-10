@@ -188,28 +188,9 @@ read -r -d '' overlay <<'OVERLAY' || true
     ]
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/session-spinup-nudge.sh"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/session-wrap-nudge.sh"
-          }
-        ]
-      }
-    ]
+    "//": "Session spinup/end nudges are provided by session-plugin (auto-registered via its plugin.json SessionStart/Stop hooks). These arrays are kept empty to force-clear the retired user-level nudge hooks from the live target, since the modify_ overlay replaces arrays on merge.",
+    "SessionStart": [],
+    "Stop": []
   },
   "statusLine": {
     "type": "command",
@@ -263,6 +244,7 @@ read -r -d '' overlay <<'OVERLAY' || true
     "prompt-engineering-plugin@laurigates-claude-plugins": true,
     "taskwarrior-plugin@laurigates-claude-plugins": true,
     "macos-plugin@laurigates-claude-plugins": true,
+    "session-plugin@laurigates-claude-plugins": true,
     "upstream-pr-plugin@laurigates-claude-plugins": false
   },
   "extraKnownMarketplaces": {
