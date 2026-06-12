@@ -44,3 +44,15 @@ Rationale: a subagent's output feeds back into the main loop as a tool result,
 so a weaker delegate quietly degrades everything downstream. Opus-low is both
 better and cheaper than Sonnet-high, which makes "save tokens with Sonnet" a
 false economy.
+
+### Sanctioned exception: cold-read gates run on Haiku
+
+The `agent-patterns-plugin:cold-read-gate` pattern deliberately uses
+`model: "haiku"` for its isolated fresh-reader critics. That agent is not a
+delegate producing work — it is the **measurement instrument**: the test is
+"can a low-context, low-capability reader act on this text alone?", and a
+stronger model would answer a different, easier question. Do not "fix" haiku
+cold readers to Opus. The exception applies only to readers whose entire job
+is to report what confuses them about a single artifact; any agent that
+edits, verifies facts, or returns analysis the main loop builds on stays on
+Opus.
