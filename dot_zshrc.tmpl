@@ -141,6 +141,14 @@ export BAT_STYLE=plain
 export OLLAMA_ORIGINS="app://obsidian.md*"
 export HOMEBREW_BUNDLE_FILE="~/Brewfile"
 
+# Use system git for Homebrew's own operations. The Linuxbrew git bottle on
+# TrueNAS is built against a newer glibc than the host provides, so it fails
+# with "GLIBC_2.38 not found". System git (>= 2.7.0) satisfies brew's minimum.
+export HOMEBREW_GIT_PATH=/usr/bin/git
+
+# Redirect TMPDIR to a home-pool location (host /tmp is small/noexec on TrueNAS).
+export TMPDIR="$HOME/tmp/"
+
 # Remove "/" from WORDCHARS so that Ctrl+W doesn't kill directory paths.
 WORDCHARS="${WORDCHARS//[\/]}"
 
