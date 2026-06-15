@@ -338,6 +338,14 @@ tab_title_max_length 50
 #: Hard cap on rendered tab title cells. The cwd prefix sits at the
 #: front so it survives truncation when {title} is long.
 
+watcher os_window_title.py
+
+#: Mirror the tab's "{cwd} · {title}" format into the macOS titlebar.
+#: kitty has no os_window_title_template, so a watcher reasserts a
+#: cwd-prefixed OS window title on focus/title/cmd events. The tab title
+#: stays pull-based (tab.active_oldest_wd) for live cwd; this enriches
+#: only the titlebar. See os_window_title.py.
+
 #: # endregion
 
 #: Color scheme # region
