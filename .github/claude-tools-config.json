@@ -5,7 +5,6 @@
   "categories": {
     "core": [
       "Edit",
-      "MultiEdit",
       "Write",
       "Read",
       "Glob",

@@ -165,7 +165,6 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(git push -f *)",
       "Bash(kubectl config use-context *)",
       "Edit(**/CHANGELOG.md)",
-      "MultiEdit(**/CHANGELOG.md)",
       "Write(**/CHANGELOG.md)"
     ],
     "ask": [],
