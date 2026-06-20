@@ -13,6 +13,7 @@ skills/notebooklm/
 
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
+downloads/
 file-history/
 paste-cache/
 plans/
