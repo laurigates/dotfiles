@@ -41,10 +41,10 @@ Commit proactively when a coherent unit of work is done — no need to pause and
 
 - **Commit at natural checkpoints** — tests green, feature tracker updated, working tree contains exactly one theme of change
 - **Conventional-commit subject** — `type(scope): short imperative summary`; body explains the why, not the what
-- **Still do not push** — pushes remain explicit-ask only (shared state, visible to others)
-- **Still do not amend or rebase** others' commits — always a new commit
+- **Push a feature branch and open a PR autonomously** — a normal `git push` of a feature branch and `gh pr create` are part of the same wrap-up checkpoint as the commit; no separate ask needed
+- **Still ask before force-push, push to `main`/default, and rebase/amend of others' commits** — these touch shared state destructively; confirm first. Always a new commit, never amend/rebase someone else's
 - **Split when concerns diverge** — two themes → two commits; don't bundle drift-audit bookkeeping with a feature slice just because both are in the tree
-- Rationale: the default "ask before every commit" is needless friction when a wave of work wraps cleanly. Push / force-push / rebase / destructive ops still need confirmation — only the commit itself is autonomous.
+- Rationale: the default "ask before every commit/push" is needless friction when a wave of work wraps cleanly. A feature-branch push + PR is reversible (close PR, delete branch) and is the natural end of a work unit. Force-push / push-to-main / rebase / destructive ops are not reversible and still need confirmation.
 
 ## Adding New Defaults
 
