@@ -109,6 +109,30 @@ Pattern: when a batch's siblings depend on existence, do a single
 existence-check call first (`Glob`, `ls -1`), then issue the parallel
 batch over confirmed-present paths.
 
+### Don't launch a large agent fan-out in one burst — serialize or wave it
+
+Spawning many agents simultaneously — a `Workflow` `parallel()`/`pipeline()`
+of N agents, or N `Agent` calls in one message — can trip a **server-side
+burst rate limit** (`API Error: Server is temporarily limiting requests (not
+your usage limit) · Rate limited`), distinct from your usage quota. When it
+fires, the agents die after their retries and `parallel()` returns them as
+`null` — **every agent's startup tokens wasted** (observed: 7 Opus auditors,
+628 k tokens, all killed at 18 s).
+
+Mitigations, in order of preference:
+
+- **For deterministic / mechanical work** (parsing, counting, audits, link
+  resolution, frontmatter scans), prefer a **single inline pass** — one
+  `python3`/`rg` script — over an agent fan-out. It's cheaper, reproducible,
+  and rate-limit-immune. Reserve agents for genuinely independent
+  *reasoning-heavy* work (judgment, synthesis, review).
+- **When you do fan out, serialize or small-wave it.** Run agents in a
+  `for…await` loop (one at a time) or in waves of 2–3, not all N at once.
+  Sequential execution keeps the request rate low and dodges the burst limit;
+  the wall-clock cost is usually acceptable for non-latency-critical work.
+- **Don't blind-retry the same wide fan-out** after a burst-limit kill — it
+  re-trips. Re-issue serialized, or fall back to the inline pass.
+
 ## WebFetch — do not retry the same failing URL
 
 | Failure | Try |
