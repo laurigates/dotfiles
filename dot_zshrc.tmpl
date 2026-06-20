@@ -676,6 +676,27 @@ _gh_run_pick() {
     awk '{print $1}'
 }
 
+# Pick a workflow (gh ships no dynamic completion for the name/id argument);
+# prints its id (id is field 1).
+_gh_workflow_pick() {
+  gh workflow list --limit 100 \
+      --json id,name,state \
+      --jq '.[] | [
+        (.id|tostring),
+        (if .state == "active" then "✓active" else "✗\(.state)" end),
+        .name[:50]
+      ] | @tsv' 2>/dev/null | \
+    column -t -s $'\t' | \
+    _gh_paint | \
+    fzf --ansi \
+        --preview 'GH_FORCE_TTY=1 gh workflow view {1}' \
+        --preview-window right:65%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+        --header '⏎ select workflow | ^/ toggle preview | ^d/u scroll' | \
+    awk '{print $1}'
+}
+
 # Resolve a wrapper's target: $1 = picker fn, $2 = optional CLI arg.
 _gh_pick_arg() { if [[ -z "$2" ]]; then "$1"; else print -r -- "${2%%\[*}"; fi }
 
@@ -686,6 +707,20 @@ ghck() { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr che
 ghiv() { local p=$(_gh_pick_arg _gh_issue_pick "$1"); [[ -n "$p" ]] && gh issue view "$p"; }    # gh issue view (cf. ghi → Claude)
 ghr()  { local p=$(_gh_pick_arg _gh_run_pick   "$1"); [[ -n "$p" ]] && gh run view "$p"; }      # gh run view
 ghw()  { local p=$(_gh_pick_arg _gh_run_pick   "$1"); [[ -n "$p" ]] && gh run watch "$p"; }     # gh run watch
+
+# gh workflow run: no positional workflow → fzf-pick; a leading non-flag arg is
+# taken as the workflow (id/name/file). Trailing flags (--ref, -f k=v, -F …)
+# pass straight through to `gh workflow run`.
+ghwr() {
+  local wf
+  if [[ -n "$1" && "$1" != -* ]]; then
+    wf="${1%%\[*}"; shift
+  else
+    wf=$(_gh_workflow_pick)
+  fi
+  [[ -z "$wf" ]] && return 0
+  gh workflow run "$wf" "$@"
+}
 
 # release-please across your repos + orgs: list open release PRs (label
 # 'autorelease: pending' — release-please's own marker, precise across the
@@ -943,6 +978,20 @@ _gh_run_complete() {
 
 compdef _gh_run_complete ghr ghw
 
+# Custom completion for ghwr (gh workflow run) — gh has no dynamic completion
+# for the workflow argument, so supply ids with name+state descriptions.
+# `id:desc` → _describe splits at the first colon (ids are numeric, no colon),
+# inserting a clean single-token id. Only the workflow position (2) completes.
+_gh_workflow_complete() {
+  [[ $CURRENT -eq 2 ]] || return 1
+  local -a wfs
+  wfs=("${(@f)$(gh workflow list --limit 100 --json id,name,state --jq '.[] | "\(.id):\(.name) (\(.state))"' 2>/dev/null)}")
+  [[ ${#wfs} -eq 0 ]] && return
+  _describe -t workflows 'workflow' wfs
+}
+
+compdef _gh_workflow_complete ghwr
+
 # ---- Command-name completion for the gh* wrappers themselves ---------
 # When you type `gh<TAB>`, zsh's built-in command/function completion lists
 # these wrapper functions with no descriptions. The table below is the single
@@ -959,6 +1008,7 @@ _GH_WRAPPER_DESC=(
   ghiv 'gh issue view'
   ghr  'gh run view'
   ghw  'gh run watch'
+  ghwr 'gh workflow run'
   ghsq 'gh pr merge --squash --delete-branch (multi)'
   ghrb 'gh pr merge --rebase --delete-branch (multi)'
   ghrp 'release-please merge across repos/orgs'
@@ -973,6 +1023,7 @@ _GH_WRAPPER_DOC=(
   ghiv 'fzf-pick an issue, then view it (plain; cf. ghi → Claude).'
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
+  ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
   ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches.'
   ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches.'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge.'
@@ -997,7 +1048,7 @@ zstyle ':completion:*' completer _gh_wrapper_names_complete _complete
 # Belt-and-suspenders: also hide the bare wrapper names from the default
 # `functions` group in command position, in case de-dup ever doesn't apply.
 zstyle ':completion:*:-command-:*:functions' ignored-patterns \
-  '(ghv|ghd|ghco|ghck|ghiv|ghr|ghw|ghsq|ghrb|ghrp|ghpc|ghi)'
+  '(ghv|ghd|ghco|ghck|ghiv|ghr|ghw|ghwr|ghsq|ghrb|ghrp|ghpc|ghi)'
 
 # Preview pane (fzf-tab) for `gh<TAB>`: fzf runs the preview in a child shell
 # that never sourced this file, so it can't call a function defined here — it
@@ -1034,6 +1085,8 @@ zstyle ':fzf-tab:complete:ghiv:*' fzf-preview \
   'GH_FORCE_TTY=1 gh issue view ${word%%\[*} 2>/dev/null'
 zstyle ':fzf-tab:complete:(ghr|ghw):*' fzf-preview \
   'GH_FORCE_TTY=1 gh run view ${word%%\[*} 2>/dev/null'
+zstyle ':fzf-tab:complete:ghwr:*' fzf-preview \
+  'GH_FORCE_TTY=1 gh workflow view ${word%%\[*} 2>/dev/null'
 
 [ -f ~/zsh/fzf-tab/fzf-tab.plugin.zsh ] && \
   source ~/zsh/fzf-tab/fzf-tab.plugin.zsh
