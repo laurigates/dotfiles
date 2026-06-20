@@ -29,7 +29,9 @@
   skaffold = "skaffold completion zsh"
   kitty = "kitty +complete setup zsh"
   bun = "bun completions"
-  just = "just --completions zsh"
+  # just: NOT generated — the native `just --completions zsh` (clap dynamic)
+  # flattens all recipes into one group. We ship a custom grouped completer
+  # at dot_zfunc/_just instead.
   ruff = "ruff generate-shell-completion zsh"
   deadbranch = "deadbranch completions zsh"
   "git-repo-agent" = "git-repo-agent completion zsh"

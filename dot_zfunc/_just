@@ -1,0 +1,89 @@
+#compdef just
+# Custom `just` completion: recipes grouped by their `[group('...')]`
+# attribute, with per-group headers that fzf-tab colorizes and lets you
+# switch between (`,` / `.`). Falls back to just's native clap dynamic
+# completer for flags and recipe arguments.
+#
+# Managed by chezmoi (dot_zfunc/_just). The native completer that
+# `just --completions zsh` emits flattens every recipe into a single
+# "values" group, discarding the group metadata — so it is intentionally
+# NOT generated for `just` (see .chezmoidata/completions.toml).
+
+emulate -L zsh
+setopt local_options
+
+# Lazily load just's native (clap) completer once, renamed to `_just_clap`
+# and with its own `compdef` stripped so it can't steal the binding back.
+if (( ! $+functions[_just_clap] )); then
+  local _src
+  _src="$(JUST_COMPLETE=zsh just 2>/dev/null \
+          | sed -e 's/_clap_dynamic_completer_just/_just_clap/g' -e '/^compdef /d')"
+  [[ -n $_src ]] && eval "$_src"
+fi
+
+# Add recipe names grouped by their `[group(...)]` attribute.
+# Returns 0 if it added at least one group of matches.
+_just_recipes_grouped() {
+  local json
+  json="$(just --dump --dump-format json 2>/dev/null)" || return 1
+  [[ -n $json ]] || return 1
+
+  # Emit  group<TAB>name<TAB>doc  (ungrouped recipes get an empty group).
+  local -a rows
+  rows=("${(@f)$(print -r -- "$json" | jq -r '
+    .recipes
+    | to_entries
+    | map(select(.value.private != true))
+    | .[]
+    | (([.value.attributes[]?
+          | if type == "object" then .group else empty end] | first) // "") as $g
+    | "\($g)\t\(.key)\t\(((.value.doc // "") | gsub("\t"; " ")))"
+  ' 2>/dev/null)}")
+  (( ${#rows} )) || return 1
+
+  # Ordered, unique group list: ungrouped first, then groups alphabetically
+  # (mirrors `just --list`).
+  local -A seen
+  local -a named=()
+  local r g
+  local has_ungrouped=0
+  for r in $rows; do
+    g=${r%%$'\t'*}
+    if [[ -z $g ]]; then
+      has_ungrouped=1
+    elif [[ -z ${seen[$g]} ]]; then
+      seen[$g]=1
+      named+=$g
+    fi
+  done
+  named=(${(o)named})
+
+  local -a order=()
+  (( has_ungrouped )) && order+=("")
+  order+=($named)
+
+  local added=0 label
+  for g in "${order[@]}"; do
+    local -a items=()
+    for r in $rows; do
+      [[ ${r%%$'\t'*} == $g ]] || continue
+      local n=${${r#*$'\t'}%%$'\t'*}
+      local d=${r##*$'\t'}
+      items+=("${n}:${d}")
+    done
+    (( ${#items} )) || continue
+    label=${g:-recipes}
+    # Distinct description per call => distinct fzf-tab group (auto-colored).
+    _describe -t "just-grp-${label}" "$label" items
+    added=1
+  done
+  (( added ))
+}
+
+# Complete the recipe name in the first non-flag position with groups;
+# delegate everything else (flags, recipe arguments) to the native completer.
+if [[ ${words[CURRENT]} != -* ]] && (( CURRENT == 2 )); then
+  _just_recipes_grouped && return
+fi
+
+(( $+functions[_just_clap] )) && _just_clap "$@"
