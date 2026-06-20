@@ -80,6 +80,34 @@ echo "$UUIDS" | xargs -I {} sh -c 'task rc.confirmation=no {} done'
 
 Without it, taskwarrior may prompt "this task is blocked by N other tasks, complete anyway? (yes/no)" per task, hanging the loop. `rc.confirmation=no` makes batch closes deterministic.
 
+## `task config` also needs `rc.confirmation=no` — or it silently no-ops
+
+The confirmation hazard is not limited to `task done`. **`task config <name> <value>` prompts to confirm by default**, and in a non-interactive context (a script, an agent's Bash tool, a hook, `chezmoi`) the un-answered prompt makes the command **exit 0 without writing the value**. The config change silently does not persist — no error, exit status 0, looks like success.
+
+The bite is worst when **declaring UDAs**. A setup script that runs:
+
+```sh
+# WRONG — exits 0 but the UDA is NOT written non-interactively
+task config uda.ghid.type numeric
+```
+
+reports success, yet `task _udas` still lacks `ghid`. The next `task add foo ghid:1417` then treats `ghid:` as an unknown attribute and **appends the literal `ghid:1417` to the description** instead of setting the UDA — so every downstream `task ghid:1417 export` / reconcile query finds nothing. The failure is invisible until you notice the field landed in the description text.
+
+```sh
+# Right — rc.confirmation=no makes the write actually happen; </dev/null
+# guards against any residual prompt eating the caller's stdin
+task rc.confirmation=no config uda.ghid.type numeric </dev/null
+task rc.confirmation=no config uda.ghid.label "GH Issue" </dev/null
+```
+
+Verify the write took effect rather than trusting the exit code:
+
+```sh
+task _udas | grep -qx ghid && echo "declared" || echo "MISSING — config did not persist"
+```
+
+The same applies to any scripted `task config` (urgency coefficients, report definitions, `data.location`): pass `rc.confirmation=no` and confirm the value landed. (Discovered 2026-06 building taskwarrior-plugin's `ensure-udas.sh`: the inline `task config` install blocks worked interactively — the agent answered the prompt — but silently no-op'd in a fresh non-interactive store.)
+
 ## Filter caveats when finding tasks
 
 - `task project: status:pending list` (empty `project:` value as first filter) errors with `Unable to find report`. Use `task status:pending project: list` or sidestep the CLI filter by exporting and filtering with `jq`:
