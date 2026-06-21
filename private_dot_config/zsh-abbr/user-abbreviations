@@ -1,0 +1,20 @@
+# zsh-abbr user abbreviations — fish-style inline expansions.
+#
+# Format: one `abbr <name>=<value>` per line. zsh-abbr keeps this file
+# alphabetized automatically when you mutate it with `abbr add/rename/erase`.
+#
+# Two ways to edit (this file is chezmoi-managed):
+#   1. Edit this source, then `chezmoi apply`.
+#   2. Run `abbr add foo='bar'` interactively, then capture the change with
+#      `chezmoi re-add ~/.config/zsh-abbr/user-abbreviations` (zsh-abbr writes
+#      to the target, so re-add it back into the chezmoi source — same drift
+#      pattern as settings.json).
+#
+# Seeded by migrating the two most-typed-in-full commands from aliases.zsh:
+# `gh pr ls` was typed in full 849 times and `gh issue ls` 102 times despite
+# the prls/ils aliases existing — because a plain alias never reveals itself.
+# As abbreviations they expand inline on Space, so the habit actually sticks.
+# Named gils/gpls (gh-`g` prefix, avoiding the gpl↔git-pull clash); rename
+# freely — the inline expansion makes the name matter less than for an alias.
+abbr gils='gh issue ls'
+abbr gpls='gh pr ls'
