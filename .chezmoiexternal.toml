@@ -46,3 +46,13 @@
     exact = true
     stripComponents = 1
     refreshPeriod = "168h"
+
+# olets/zsh-abbr — fish-style abbreviations. Depends on the zsh-job-queue
+# submodule; fetch it at clone/pull time so the plugin loads without relying
+# on its (cwd-sensitive) runtime self-heal.
+["zsh/zsh-abbr"]
+    type = "git-repo"
+    url = "https://github.com/olets/zsh-abbr.git"
+    refreshPeriod = "168h"
+    clone.args = ["--recurse-submodules"]
+    pull.args = ["--ff-only", "--recurse-submodules"]

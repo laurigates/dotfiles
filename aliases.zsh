@@ -40,8 +40,9 @@ alias s="kitty +kitten ssh"
   alias ll='lsd --long --almost-all'
 
 ### GitHub aliases
-alias prls='gh pr ls'
-alias ils='gh issue ls'
+# gh pr/issue ls live in zsh-abbr as gpls / gils
+# (see ~/.config/zsh-abbr/user-abbreviations) — they expand inline on Space so
+# the long form stays visible and the habit sticks.
 
 ### Git aliases
 # Mostly cherry-picked from the oh-my-zsh git plugin:
@@ -274,6 +275,13 @@ alias hssh='hcloud server ssh -u lgates'
 ### Terraform aliases
 
 alias tf='terraform'
+
+### Skaffold aliases
+alias sk='skaffold'
+alias skd='skaffold dev'
+alias skdp='skaffold dev --port-forward'
+alias skr='skaffold run'
+alias skdel='skaffold delete'
 
 ### Docker aliases
 alias dcls='docker compose ps --format "table {{.Service}}\t{{.Ports}}\t{{.Status}}"'

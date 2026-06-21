@@ -339,6 +339,15 @@ zle -N rationalise-dot
 [ -f ~/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh ] && \
   source ~/zsh/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
+# zsh-abbr (olets) — fish-style abbreviations that expand inline as you type,
+# so the long form is visible every time (unlike a plain alias). Its default
+# Space/Enter bindings target the `main` keymap, which zsh-vi-mode rebuilds
+# after this file finishes — so disable them here and re-bind into `viins`
+# in zvm_after_init (per zsh-abbr issue #101). The `abbr` command, widgets,
+# and completions registered at source time survive the rebuild.
+ABBR_DEFAULT_BINDINGS=0
+[ -f ~/zsh/zsh-abbr/zsh-abbr.zsh ] && source ~/zsh/zsh-abbr/zsh-abbr.zsh
+
 
 #======================================================================
 # FZF Sourcing (keybindings & completions)
@@ -359,6 +368,15 @@ function zvm_after_init() {
 
   # PC-like bind for pipe on macOS (Command + <)
   bindkey -s "^[[60;9u" "|"
+
+  # zsh-abbr: Space expands the abbreviation, Ctrl+Space inserts a literal
+  # space (no expansion), Enter expands then accepts. Bound into viins here so
+  # they survive zsh-vi-mode's main-keymap rebuild (zsh-abbr issue #101).
+  if (( $+functions[abbr] )); then
+    bindkey -M viins " " abbr-expand-and-insert
+    bindkey -M viins "^ " magic-space
+    bindkey -M viins "^M" abbr-expand-and-accept
+  fi
 }
 
 
