@@ -2,6 +2,10 @@
 
 Chezmoi dotfiles repository with cross-platform development environment configuration.
 
+## ⚠️ Public Repository
+
+This repo is **public** (`github.com/laurigates/dotfiles`). Never commit private information: secrets/API tokens (use `~/.api_tokens`, sourced by mise), personal hostnames/IPs, internal-only org facts, or machine-specific identifiers. Secret-adjacent files use the chezmoi `private_` prefix and stay out of templates that render to tracked output. When in doubt, leave it out — assume anything committed is world-readable and indexed.
+
 ## Chezmoi Quick Reference
 
 - **Source directory**: `~/.local/share/chezmoi/` (always edit here)
@@ -97,4 +101,4 @@ Blueprint v3.3.0 manages project documentation and rules.
 
 ## Security & Release
 
-See `.claude/rules/security.md` and `.claude/rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`.
+See `exact_dot_claude/rules/security.md` and `exact_dot_claude/rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.
