@@ -25,6 +25,18 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/claude-plugins-refresh.sh",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write|NotebookEdit",

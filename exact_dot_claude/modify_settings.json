@@ -18,13 +18,21 @@
 # unless it is promoted into the overlay below. That keeps project-specific
 # permission noise out of the global config by design.
 #
-# hooks.SessionStart / hooks.Stop are pinned to empty arrays on purpose:
-# session spinup/end nudges now come from session-plugin (auto-registered via
-# its plugin.json hooks). Because the overlay REPLACES arrays on merge, the
-# empty arrays force-clear the retired user-level nudge hooks from the live
-# target. (Do not re-add a "//" comment key inside the JSON hooks object —
-# Claude Code's settings schema has no comment support and /doctor flags it
-# as an unknown hook event.)
+# hooks.Stop is pinned to an empty array on purpose: the end-of-session nudge
+# now comes from session-plugin (registered via its plugin.json hooks).
+#
+# hooks.SessionStart carries ONE user-level hook — claude-plugins-refresh.sh
+# (debounced marketplace freshness + plugin/env audit nudge). Plugin-provided
+# hooks are a SEPARATE source that Claude Code UNIONS with user/project
+# settings hooks (per code.claude.com/docs/en/hooks: "its hooks merge with your
+# user and project hooks; all matching hooks run in parallel; identical
+# handlers are deduplicated"). So session-plugin's own SessionStart spinup nudge
+# still fires alongside this one — listing the refresh hook here does NOT clobber
+# it. Because the overlay REPLACES arrays on merge, this array is authoritative
+# for USER-LEVEL SessionStart hooks only: a retired user nudge is force-cleared,
+# but plugin hooks are untouched. (Do not re-add a "//" comment key inside the
+# JSON hooks object — Claude Code's settings schema has no comment support and
+# /doctor flags it as an unknown hook event.)
 set -euo pipefail
 
 current="$(cat)"
@@ -195,7 +203,18 @@ read -r -d '' overlay <<'OVERLAY' || true
     ]
   },
   "hooks": {
-    "SessionStart": [],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/claude-plugins-refresh.sh",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
     "Stop": [],
     "PreToolUse": [
       {
@@ -269,7 +288,8 @@ read -r -d '' overlay <<'OVERLAY' || true
       "source": {
         "source": "github",
         "repo": "laurigates/claude-plugins"
-      }
+      },
+      "autoUpdate": true
     }
   },
   "alwaysThinkingEnabled": true,
