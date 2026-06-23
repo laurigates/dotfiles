@@ -560,8 +560,11 @@ _gh_batch_merge() {
 }
 
 # fzf multi-select over current-repo PRs → TSV "<tab>num<tab>title" lines for
-# the batch engine (empty repo field = current repo). $1 = header verb.
+# the batch engine (empty repo field = current repo). $1 = header verb;
+# remaining args = extra fzf flags (e.g. --tac to reverse the list order).
 _gh_pr_multi_select() {
+  local verb="$1"; shift
+  local -a fzf_extra=("$@")
   local repo
   repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   gh pr list --limit 100 \
@@ -582,8 +585,8 @@ _gh_pr_multi_select() {
       ] | @tsv' | \
     column -t -s $'\t' | \
     _gh_paint | \
-    fzf --ansi --multi \
-        --header "Tab mark · ^a all · ⏎ confirm ${1}-merge · ^/ preview · ^d/u scroll" \
+    fzf --ansi --multi "${fzf_extra[@]}" \
+        --header "Tab mark · ^a all · ⏎ confirm ${verb}-merge · ^/ preview · ^d/u scroll" \
         --bind 'tab:toggle+down,btab:toggle+up' \
         --bind 'ctrl-a:select-all' \
         --bind 'ctrl-/:toggle-preview' \
@@ -598,7 +601,7 @@ _gh_pr_multi_select() {
 # via completion) merges that single PR directly.
 ghsq() {
   if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select squash)
+    local tsv; tsv=$(_gh_pr_multi_select squash --tac)
     [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --squash --delete-branch
   else
     gh pr merge "${1%%\[*}" --squash --delete-branch
@@ -608,7 +611,7 @@ ghsq() {
 # Interactive PR merge (rebase) — multi-select twin of ghsq.
 ghrb() {
   if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select rebase)
+    local tsv; tsv=$(_gh_pr_multi_select rebase --tac)
     [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --rebase --delete-branch
   else
     gh pr merge "${1%%\[*}" --rebase --delete-branch
@@ -639,7 +642,7 @@ _gh_pr_pick() {
       ] | @tsv' | \
     column -t -s $'\t' | \
     _gh_paint | \
-    fzf --ansi \
+    fzf --ansi --tac \
         --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
         --preview-window right:65%:wrap \
         --bind 'ctrl-/:toggle-preview' \
@@ -765,7 +768,7 @@ ghrp() {
 
   local selections
   selections=$(print -r -- "$list" | column -t -s $'\t' | _gh_paint | \
-      fzf --ansi --multi \
+      fzf --ansi --multi --tac \
           --header 'Tab mark · ^a all · ⏎ confirm squash-merge · ^/ preview · ^d/u scroll' \
           --bind 'tab:toggle+down,btab:toggle+up' \
           --bind 'ctrl-a:select-all' \
