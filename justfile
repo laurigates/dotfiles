@@ -47,6 +47,49 @@ verify:
     @echo "{{BLUE}}Verifying configuration integrity...{{NORMAL}}"
     chezmoi verify .
 
+# Drift = `chezmoi status` FIRST column M (target modified since chezmoi last
+# wrote it). A second-column-only change is a pending SOURCE edit, NOT drift —
+# keying on column 1 avoids flagging (and later reverting) un-applied source work.
+# Non-template files: `chezmoi re-add` captures them. Templates: re-add SKIPS
+# them, so they're listed for a manual `chezmoi merge`.
+# Preview local target edits to capture back into source (read-only). [paths...]
+capture-drift *targets:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    drift=$(chezmoi status {{targets}} 2>/dev/null | awk 'substr($0,1,1)=="M"{print substr($0,4)}')
+    if [ -z "$drift" ]; then echo "{{GREEN}}No target drift — nothing to capture.{{NORMAL}}"; exit 0; fi
+    plain=""; tmpl=""
+    while IFS= read -r t; do
+        [ -z "$t" ] && continue
+        case "$(chezmoi source-path "$HOME/$t" 2>/dev/null || true)" in
+            *.tmpl) tmpl+="    chezmoi merge ~/$t"$'\n' ;;
+            *)      plain+="    ~/$t"$'\n' ;;
+        esac
+    done <<< "$drift"
+    if [ -n "$plain" ]; then echo "{{BLUE}}Target edits re-add can capture:{{NORMAL}}"; printf '%s' "$plain"; fi
+    if [ -n "$tmpl" ]; then echo "{{YELLOW}}Drifted templates — merge by hand (re-add skips these):{{NORMAL}}"; printf '%s' "$tmpl"; fi
+    if [ -n "$plain" ]; then echo; echo "Capture non-templates: {{BOLD}}just capture-drift-apply{{NORMAL}} (append paths to scope)"; fi
+
+# Passes the drifted paths EXPLICITLY to `chezmoi re-add` so a bare re-add can't
+# also revert un-applied source edits. Skips templates (use `chezmoi merge`).
+# Capture drifted non-template target edits into source via re-add. [paths...]
+capture-drift-apply *targets:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    drift=$(chezmoi status {{targets}} 2>/dev/null | awk 'substr($0,1,1)=="M"{print substr($0,4)}')
+    paths=()
+    while IFS= read -r t; do
+        [ -z "$t" ] && continue
+        case "$(chezmoi source-path "$HOME/$t" 2>/dev/null || true)" in
+            *.tmpl) ;;
+            *) paths+=("$HOME/$t") ;;
+        esac
+    done <<< "$drift"
+    if [ ${#paths[@]} -eq 0 ]; then echo "{{GREEN}}No non-template target drift to capture.{{NORMAL}}"; exit 0; fi
+    echo "{{BLUE}}Capturing into source via re-add:{{NORMAL}}"; printf '  %s\n' "${paths[@]}"
+    chezmoi re-add "${paths[@]}"
+    echo "{{GREEN}}Done.{{NORMAL}} Drifted templates still need {{BOLD}}chezmoi merge{{NORMAL}} — see {{BOLD}}just capture-drift{{NORMAL}}."
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Testing
 # ─────────────────────────────────────────────────────────────────────────────
