@@ -31,10 +31,10 @@ repos:
   - repo: https://github.com/JohnnyMorganz/StyLua
     rev: v2.1.0
     hooks:
-      # Prebuilt-binary variant: the default `stylua` hook (language: rust)
-      # builds from source and needs a C linker, which isn't available on
-      # minimal Linux hosts like TrueNAS where apt is disabled.
-      - id: stylua-github
+      # Use language: rust hook (compiles from source). The stylua-github
+      # variant downloads prebuilt binaries but hits GitHub API rate limits
+      # in CI without auth tokens. Compilation is cached by pre-commit.
+      - id: stylua
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.7
     hooks:
