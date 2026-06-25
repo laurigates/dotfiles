@@ -26,13 +26,27 @@ GEMINI="138;180;248"  # #8AB4F8 — Google blue, gemini badge
 WARM="255;176;102"    # warm amber — cache-warm glyph
 COLD="150;180;205"    # cool dim — cache-cold glyph
 HEART="235;110;120"   # soft red — time heart
-DIM="150;160;170"     # context % and separators
+DIM="150;160;170"     # context % / token totals
 SEP="90;95;105"       # separator dots
+GREEN="126;200;130"   # CI passing
+RED="235;110;120"     # CI failing
+AMBER="230;190;110"   # CI pending
+
+# Format a token count with a K suffix (8500→8.5K, 84000→84K)
+fmt_tokens() {
+  awk -v n="$1" 'BEGIN{
+    if (n >= 10000)     printf "%.0fK", n/1000
+    else if (n >= 1000) printf "%.1fK", n/1000
+    else                printf "%d", n
+  }'
+}
 
 # Extract JSON fields
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
 model_name=$(echo "$input" | jq -r '.model.display_name')
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
+total_in=$(echo "$input" | jq -r '.context_window.total_input_tokens // empty')
+total_out=$(echo "$input" | jq -r '.context_window.total_output_tokens // empty')
 transcript=$(echo "$input" | jq -r '.transcript_path // empty')
 pr_number=$(echo "$input" | jq -r '.pr.number // empty')
 pr_state=$(echo "$input" | jq -r '.pr.review_state // empty')
@@ -68,19 +82,22 @@ fi
 # Model name: strip "Claude " prefix for brevity
 short_model="${model_name#Claude }"
 
-# ── Gemini PR review badge ────────────────────────────────────────────────────
-# Counts UNRESOLVED review threads opened by gemini-code-assist[bot] on the
-# current PR. The gh GraphQL call is slow, so we never run it inline: each
-# render reads a cached count, and if the cache is stale it kicks off a
-# detached background refresh (single-flight, guarded by a lock) for next time.
+# ── PR network data: Gemini reviews + CI checks ───────────────────────────────
+# Both need slow gh calls, so we never run them inline: each render reads a
+# cached line, and if it's stale it kicks off a single detached background
+# refresh (single-flight, lock-guarded) that fetches both and writes one line:
+#   "<gemini_unresolved>;<ci_pass>;<ci_fail>;<ci_pending>"
 gemini_unresolved=""
+ci_pass=""; ci_fail=""; ci_pend=""
 if [[ -n "$pr_number" && -n "$repo_owner" && -n "$repo_name" ]] && command -v gh >/dev/null 2>&1; then
-  cache_file="$cache_dir/gemini-${repo_owner}-${repo_name}-${pr_number}"
+  cache_file="$cache_dir/pr-${repo_owner}-${repo_name}-${pr_number}"
   lock_file="${cache_file}.lock"
   fresh_secs=90
 
-  # Use whatever count we already have for this render.
-  [[ -f "$cache_file" ]] && gemini_unresolved=$(cat "$cache_file" 2>/dev/null)
+  # Use whatever we already have for this render.
+  if [[ -f "$cache_file" ]]; then
+    IFS=';' read -r gemini_unresolved ci_pass ci_fail ci_pend < "$cache_file"
+  fi
 
   # Decide whether to spawn a refresh: cache missing/stale AND no recent lock.
   cache_age=999999
@@ -97,12 +114,21 @@ if [[ -n "$pr_number" && -n "$repo_owner" && -n "$repo_name" ]] && command -v gh
   if [[ "$cache_age" -ge "$fresh_secs" && "$lock_age" -ge 60 ]]; then
     : > "$lock_file"
     (
+      # Unresolved gemini-code-assist review threads
       gql='query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved comments(first:1){nodes{author{login}}}}}}}}'
-      count=$(gh api graphql -f query="$gql" \
+      gem=$(gh api graphql -f query="$gql" \
         -F owner="$repo_owner" -F name="$repo_name" -F pr="$pr_number" \
         --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select((.comments.nodes[0].author.login // "") | test("gemini")) | select(.isResolved==false)] | length' 2>/dev/null)
-      [[ -z "$count" ]] && count=0
-      printf '%s' "$count" > "${cache_file}.tmp" 2>/dev/null && mv "${cache_file}.tmp" "$cache_file" 2>/dev/null
+      [[ -z "$gem" ]] && gem=0
+      # CI check buckets (pass/fail/pending) for the PR's latest commit
+      checks=$(gh pr checks "$pr_number" -R "${repo_owner}/${repo_name}" --json bucket 2>/dev/null)
+      if [[ -n "$checks" ]]; then
+        cp=$(jq '[.[]|select(.bucket=="pass")]|length' <<<"$checks" 2>/dev/null)
+        cf=$(jq '[.[]|select(.bucket=="fail" or .bucket=="cancel")]|length' <<<"$checks" 2>/dev/null)
+        cq=$(jq '[.[]|select(.bucket=="pending")]|length' <<<"$checks" 2>/dev/null)
+      fi
+      printf '%s;%s;%s;%s' "$gem" "${cp:-0}" "${cf:-0}" "${cq:-0}" > "${cache_file}.tmp" 2>/dev/null \
+        && mv "${cache_file}.tmp" "$cache_file" 2>/dev/null
       rm -f "$lock_file" 2>/dev/null
     ) >/dev/null 2>&1 &
     disown 2>/dev/null || true
@@ -146,20 +172,24 @@ if [[ -n "$git_branch" ]]; then
   parts+=("$p")
 fi
 
-# PR info + gemini review badge
+# PR info + CI check counts + gemini review badge
 if [[ -n "$pr_number" ]]; then
-  printf -v p '\033[38;2;%smPR#%s' "$TEAL" "$pr_number"
-  case "$pr_state" in
-    approved)          p+=" ✓" ;;
-    changes_requested) p+=" ✗" ;;
-    draft)             p+=" draft" ;;
-  esac
-  # Gemini badge: only when there are unresolved gemini threads
-  if [[ -n "$gemini_unresolved" && "$gemini_unresolved" -gt 0 ]] 2>/dev/null; then
-    printf -v g '\033[38;2;%sm ✦%s' "$GEMINI" "$gemini_unresolved"
-    p+="$g"
+  printf -v p '\033[38;2;%smPR#%s\033[0m' "$TEAL" "$pr_number"
+  [[ "$pr_state" == "draft" ]] && printf -v d '\033[38;2;%sm draft\033[0m' "$DIM" && p+="$d"
+  # CI checks: green pass / red fail / amber pending, each shown only when > 0
+  if [[ "${ci_pass:-0}" -gt 0 ]] 2>/dev/null; then
+    printf -v c '\033[38;2;%sm %s✓\033[0m' "$GREEN" "$ci_pass"; p+="$c"
   fi
-  p+=$'\033[0m'
+  if [[ "${ci_fail:-0}" -gt 0 ]] 2>/dev/null; then
+    printf -v c '\033[38;2;%sm %s✗\033[0m' "$RED" "$ci_fail"; p+="$c"
+  fi
+  if [[ "${ci_pend:-0}" -gt 0 ]] 2>/dev/null; then
+    printf -v c '\033[38;2;%sm %s⏳\033[0m' "$AMBER" "$ci_pend"; p+="$c"
+  fi
+  # Gemini badge: only when there are unresolved gemini threads
+  if [[ "${gemini_unresolved:-0}" -gt 0 ]] 2>/dev/null; then
+    printf -v g '\033[38;2;%sm ✦%s\033[0m' "$GEMINI" "$gemini_unresolved"; p+="$g"
+  fi
   parts+=("$p")
 fi
 
@@ -167,9 +197,13 @@ fi
 printf -v p '\033[38;2;%sm%s\033[0m' "$BLUE" "$short_model"
 parts+=("$p")
 
-# Context % + cache warmth + heart + time (one trailing part)
+# Context % + session token totals + cache warmth + heart + time (one part)
 p=""
 [[ -n "$used_pct" ]] && printf -v p '\033[38;2;%sm%.0f%%\033[0m ' "$DIM" "$used_pct"
+if [[ -n "$total_in" && -n "$total_out" ]]; then
+  printf -v tok '\033[38;2;%sm%s↓/%s↑\033[0m ' "$DIM" "$(fmt_tokens "$total_in")" "$(fmt_tokens "$total_out")"
+  p+="$tok"
+fi
 if [[ -n "$cache_glyph" ]]; then
   printf -v c '\033[38;2;%sm%s%s\033[0m ' "$cache_fg" "$cache_glyph" "$cache_remaining"
   p+="$c"
