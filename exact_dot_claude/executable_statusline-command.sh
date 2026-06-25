@@ -31,6 +31,7 @@ SEP="90;95;105"       # separator dots
 GREEN="126;200;130"   # CI passing
 RED="235;110;120"     # CI failing
 AMBER="230;190;110"   # CI pending
+WT="180;160;230"      # lavender — linked-worktree marker
 
 # Format a token count with a K suffix (8500→8.5K, 84000→84K)
 fmt_tokens() {
@@ -52,22 +53,29 @@ pr_number=$(echo "$input" | jq -r '.pr.number // empty')
 pr_state=$(echo "$input" | jq -r '.pr.review_state // empty')
 repo_owner=$(echo "$input" | jq -r '.workspace.repo.owner // empty')
 repo_name=$(echo "$input" | jq -r '.workspace.repo.name // empty')
+wt_name=$(echo "$input" | jq -r '.workspace.git_worktree // .worktree.name // empty')
 
 now=$(date +%s)
 cache_dir="${TMPDIR:-/tmp}/cc-statusline"
 mkdir -p "$cache_dir" 2>/dev/null
 
-# Directory: replace HOME with ~ then truncate to last 2 components
-dir="${current_dir/$HOME/~}"
-dir=$(echo "$dir" | awk -F'/' '{
-  if (NF > 2) { print "…/" $(NF-1) "/" $NF }
-  else         { print $0 }
-}')
+# Location: prefer owner/repo (present when there's a GitHub origin remote),
+# otherwise fall back to the HOME-relative path truncated to its last 2 parts.
+if [[ -n "$repo_owner" && -n "$repo_name" ]]; then
+  loc="$repo_owner/$repo_name"
+else
+  loc="${current_dir/$HOME/~}"
+  loc=$(echo "$loc" | awk -F'/' '{
+    if (NF > 2) { print "…/" $(NF-1) "/" $NF }
+    else         { print $0 }
+  }')
+fi
 
-# Git branch + dirty indicator (local only, no network). Long branch names are
-# middle-truncated so they cannot dominate the line width.
+# Git branch + dirty + worktree indicator (local only, no network). Long branch
+# names are middle-truncated so they cannot dominate the line width.
 git_branch=""
 git_dirty=""
+git_worktree=""
 if git -C "$current_dir" rev-parse --git-dir >/dev/null 2>&1; then
   git_branch=$(git -C "$current_dir" branch --show-current 2>/dev/null || echo "")
   if [[ -n "$git_branch" ]]; then
@@ -76,6 +84,14 @@ if git -C "$current_dir" rev-parse --git-dir >/dev/null 2>&1; then
     if [[ "${#git_branch}" -gt 20 ]]; then
       git_branch="${git_branch:0:5}…${git_branch: -11}"
     fi
+  fi
+  # Linked worktree: JSON hint, or an absolute git-dir under .../worktrees/<name>
+  # (the main working tree's git-dir is plain .../.git, with no worktrees/ path).
+  if [[ -n "$wt_name" ]]; then
+    git_worktree=1
+  else
+    git_dir_abs=$(git -C "$current_dir" rev-parse --absolute-git-dir 2>/dev/null || echo "")
+    [[ "$git_dir_abs" == */worktrees/* ]] && git_worktree=1
   fi
 fi
 
@@ -164,13 +180,16 @@ fi
 line1=()  # directory · branch · PR (+CI +gemini)
 line2=()  # model · context/tokens · cache · time
 
-# Row 1 — Directory
-printf -v p '\033[38;2;%sm%s\033[0m' "$PURPLE" "$dir"
+# Row 1 — Location (owner/repo, or path fallback)
+printf -v p '\033[38;2;%sm%s\033[0m' "$PURPLE" "$loc"
 line1+=("$p")
 
-# Row 1 — Git branch + dirty flag
+# Row 1 — Git branch + dirty flag, prefixed with ⑂ when on a linked worktree
 if [[ -n "$git_branch" ]]; then
-  printf -v p '\033[38;2;%sm%s%s\033[0m' "$ORANGE" "$git_branch" "$git_dirty"
+  p=""
+  [[ -n "$git_worktree" ]] && printf -v p '\033[38;2;%sm⑂\033[0m' "$WT"
+  printf -v b '\033[38;2;%sm%s%s\033[0m' "$ORANGE" "$git_branch" "$git_dirty"
+  p+="$b"
   line1+=("$p")
 fi
 
