@@ -223,6 +223,10 @@ read -r -d '' overlay <<'OVERLAY' || true
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/chezmoi-exact-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/chezmoi-drift-guard.sh"
           }
         ]
       }
