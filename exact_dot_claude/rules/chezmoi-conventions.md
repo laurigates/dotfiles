@@ -106,6 +106,40 @@ naming layout.
 <source-file>` lets commands take source paths directly when you already
 have one.
 
+## `re-add` Skips Templates — It Does NOT Merge Target Edits Back
+
+`chezmoi re-add` is a purely mechanical "copy target bytes → source bytes"
+operation, **not** a merge. Its behavior depends entirely on the source's
+form, and the template case is the trap:
+
+| Source form | `chezmoi re-add` behavior |
+|---|---|
+| Plain managed file | **Overwrites** source with the target's current contents (no merge, no diff prompt — last write wins) |
+| `.tmpl` template | **Silently skipped** — source left untouched, target edits NOT captured. Docs: *"chezmoi will not overwrite templates."* |
+| `encrypted_` file | Re-adds preserving encryption; `--re-encrypt` to refresh |
+
+The danger is the **template case looking like success**: you edit a target
+(`~/.zshrc` ← `dot_zshrc.tmpl`), see drift in `chezmoi diff`, run
+`chezmoi re-add`, and it exits 0 having done **nothing** — your target edits
+are still uncaptured, and you may then `chezmoi apply` and lose them. re-add
+refuses to clobber the template because the rendered target can't be reversed
+into Go template syntax (it can't know which literal lines were once
+`{{ .chezmoi.os }}`).
+
+**The rule:** to pull target edits back into a templated source, do NOT rely
+on `re-add`. Either:
+
+1. **Hand-port** — `chezmoi source-path <target>`, open the `.tmpl`, apply the
+   edits manually (deciding literal vs. template expression), then
+   `chezmoi apply`.
+2. **Three-way merge** — `chezmoi merge <target>` launches the configured
+   merge tool with the rendered source, the target, and the source. This is
+   the closest chezmoi gets to "smart merging" for templates.
+
+After any `re-add` against a tree that might contain templates, verify with
+`chezmoi diff <target>` that the drift is actually gone — a still-dirty diff
+means re-add skipped a template and the edits remain uncaptured.
+
 ## Runtime Drift (Claude Code's `settings.json`)
 
 Some target files are mutated by the application at runtime, not just by `chezmoi apply`. Claude Code writes to `~/.claude/settings.json` when the user toggles plugins, dismisses surveys, changes editor mode, enables features, or modifies anything via `/config` or `/plugin`. The chezmoi source has no idea those mutations happened.
