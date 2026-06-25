@@ -44,6 +44,34 @@ any mode except `bypassPermissions`. Keep dangerous ops in `deny`
 (`git push --force *`, `git add -A`, `kubectl config use-context *`,
 `Write(**/CHANGELOG.md)`).
 
+## Custom hooks vs. auto mode — don't double-gate
+
+A custom PreToolUse/UserPromptSubmit hook that re-implements a safety check
+auto mode already does (push-to-protected-branch, force-push, prod-deploy)
+**double-gates** under auto mode — and usually more bluntly, because the hook
+lacks the classifier's environment context. Auto mode classifies the **actual
+tool call** with full context (CLAUDE.md, trusted repos, `soft_deny`), and its
+denials surface in `/permissions → Recently denied`, **never** as "Operation
+stopped by hook" — that phrasing is always a *hook*, not auto mode.
+
+When a hook overlaps auto mode, make it **defer**:
+
+- **`command` hooks receive `permission_mode`** (a common hook-input field;
+  value `"auto"` among `default`/`plan`/`acceptEdits`/`dontAsk`/
+  `bypassPermissions`). Have the hook `exit 0` when
+  `permission_mode == "auto"` and enforce otherwise. This stops the
+  double-gate while keeping the deterministic hook as a fallback exactly where
+  auto mode can't reach — web/remote/CI and non-Opus sessions where auto mode
+  is gated off. `PERMISSION_MODE=$(jq -r '.permission_mode // empty'); [ "$PERMISSION_MODE" = "auto" ] && exit 0`.
+- **`type:"prompt"` hooks can't self-gate** — they get only `$ARGUMENTS` (the
+  raw prompt text), not `permission_mode`, and they judge text with zero exec
+  context. They false-positive on benign phrasings (e.g. the bare token "push"
+  in a `/git-conflicts <pr> --push` slash command → "push to protected
+  branch"). If auto mode covers the concern, **remove** the prompt hook rather
+  than trying to soften it; auto mode + deterministic Bash hooks cover the real
+  cases with context and no per-prompt LLM cost. (laurigates/claude-plugins
+  hooks-plugin #1765.)
+
 ## The `autoMode` block is the real lever
 
 Separate from `permissions`; user-settable in `~/.claude/settings.json` (it is
