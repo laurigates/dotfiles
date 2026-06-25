@@ -166,6 +166,8 @@ _claude_mcp() {
         'get:<name> Get details about an MCP server.'
         'help:display help for command'
         'list:List configured MCP servers. Unapproved'
+        'login:<name> Authenticate with an MCP server (HTTP,'
+        'logout:<name> Clear stored OAuth credentials for an'
         'remove:<name> Remove an MCP server'
         'reset-project-choices:Reset all approved and rejected'
         'serve:Start the Claude Code MCP server'
