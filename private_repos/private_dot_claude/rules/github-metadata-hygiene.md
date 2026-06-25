@@ -58,6 +58,7 @@ Use these standard type labels consistently:
 | `chore` | Maintenance, dependency updates, refactoring |
 | `docs` | Documentation changes |
 | `security` | Security-related fixes or improvements |
+| `refactor` | Code restructure with no behavior change |
 
 Check available labels with `gh label list -R <owner>/<repo>` before applying —
 do not create labels that don't exist without asking. Both scopes manage their
