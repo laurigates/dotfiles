@@ -18,3 +18,6 @@
 # freely — the inline expansion makes the name matter less than for an alias.
 abbr gils='gh issue ls'
 abbr gpls='gh pr ls'
+# `just -g` runs recipes from the global ~/.user.justfile (see dot_user.justfile.tmpl)
+# from any directory — e.g. `jg plugins-list`, `jg plugins-audit`.
+abbr jg='just -g'
