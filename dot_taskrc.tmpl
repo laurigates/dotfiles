@@ -1,5 +1,12 @@
 # [Created by task 3.4.2 4/23/2026 12:23:05]
-data.location=/Users/lgates/.task
+{{- /* Taskwarrior data store differs per OS: macOS keeps the default
+       ~/.task; this Linux host's store lives under XDG ~/.local/share/task.
+       Templated so a single dotfile works on both without manual rc overrides. */}}
+{{ if eq .chezmoi.os "darwin" -}}
+data.location={{ .chezmoi.homeDir }}/.task
+{{- else -}}
+data.location={{ .chezmoi.homeDir }}/.local/share/task
+{{- end }}
 news.version=3.4.2
 
 # To use the default location of the XDG directories,
