@@ -157,22 +157,24 @@ if [[ -n "$transcript" && -f "$transcript" ]]; then
   fi
 fi
 
-# ── Render: colored text, joined by dim separators ───────────────────────────
-# Each part carries its own color and a trailing reset, so any truncation by
-# the TUI is harmless. Parts are collected, then joined with " · ".
-parts=()
+# ── Render: two colored rows ──────────────────────────────────────────────────
+# Each part carries its own color + reset, so any truncation is harmless.
+# Multi-line is supported (each printed line is a status row). Row 1 is identity
+# (where am I / what PR); row 2 is session metrics.
+line1=()  # directory · branch · PR (+CI +gemini)
+line2=()  # model · context/tokens · cache · time
 
-# Directory
+# Row 1 — Directory
 printf -v p '\033[38;2;%sm%s\033[0m' "$PURPLE" "$dir"
-parts+=("$p")
+line1+=("$p")
 
-# Git branch + dirty flag
+# Row 1 — Git branch + dirty flag
 if [[ -n "$git_branch" ]]; then
   printf -v p '\033[38;2;%sm%s%s\033[0m' "$ORANGE" "$git_branch" "$git_dirty"
-  parts+=("$p")
+  line1+=("$p")
 fi
 
-# PR info + CI check counts + gemini review badge
+# Row 1 — PR info + CI check counts + gemini review badge
 if [[ -n "$pr_number" ]]; then
   printf -v p '\033[38;2;%smPR#%s\033[0m' "$TEAL" "$pr_number"
   [[ "$pr_state" == "draft" ]] && printf -v d '\033[38;2;%sm draft\033[0m' "$DIM" && p+="$d"
@@ -190,14 +192,14 @@ if [[ -n "$pr_number" ]]; then
   if [[ "${gemini_unresolved:-0}" -gt 0 ]] 2>/dev/null; then
     printf -v g '\033[38;2;%sm ✦%s\033[0m' "$GEMINI" "$gemini_unresolved"; p+="$g"
   fi
-  parts+=("$p")
+  line1+=("$p")
 fi
 
-# Model name
+# Row 2 — Model name
 printf -v p '\033[38;2;%sm%s\033[0m' "$BLUE" "$short_model"
-parts+=("$p")
+line2+=("$p")
 
-# Context % + session token totals + cache warmth + heart + time (one part)
+# Row 2 — Context % + session token totals + cache warmth + heart + time
 p=""
 [[ -n "$used_pct" ]] && printf -v p '\033[38;2;%sm%.0f%%\033[0m ' "$DIM" "$used_pct"
 if [[ -n "$total_in" && -n "$total_out" ]]; then
@@ -210,13 +212,18 @@ if [[ -n "$cache_glyph" ]]; then
 fi
 printf -v t '\033[38;2;%sm♥\033[0m\033[38;2;%sm%s\033[0m' "$HEART" "$DIM" "$(date +%H:%M)"
 p+="$t"
-parts+=("$p")
+line2+=("$p")
 
-# Join with dim separator
+# Join a row's parts with a dim separator and print it (bash 3.2 safe — no namerefs)
 printf -v sep '\033[38;2;%sm · \033[0m' "$SEP"
-out=""
-for i in "${!parts[@]}"; do
-  [[ "$i" -gt 0 ]] && out+="$sep"
-  out+="${parts[$i]}"
-done
-printf '%s\n' "$out"
+join_row() {
+  local out="" i=0 part
+  for part in "$@"; do
+    [[ "$i" -gt 0 ]] && out+="$sep"
+    out+="$part"
+    i=$((i + 1))
+  done
+  printf '%s\n' "$out"
+}
+join_row "${line1[@]}"
+join_row "${line2[@]}"
