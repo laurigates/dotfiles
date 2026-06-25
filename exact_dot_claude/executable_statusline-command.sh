@@ -1,9 +1,12 @@
 #!/bin/bash
 # ~/.claude/statusline-command.sh
-# Powerline / Starship-inspired status line for Claude Code
-# Segment colors and order match ~/.config/starship.toml
+# Minimal colored-text status line for Claude Code.
+# Foreground colors on the terminal's own background (no filled blocks), so a
+# mid-line truncation just drops trailing text — it can never leave a color
+# escape unclosed and bleed into the rest of the UI. Accent palette is borrowed
+# from ~/.config/starship.toml.
 #
-# Extra features beyond the base Starship style:
+# Extra features beyond plain dir/branch/model:
 #   - Gemini PR review badge: count of UNRESOLVED gemini-code-assist[bot]
 #     review threads on the current PR (cached, refreshed in the background
 #     so rendering never blocks on a network call).
@@ -13,20 +16,18 @@
 
 input=$(cat)
 
-# Truecolor RGB values matching starship.toml segment palette
-PURPLE="154;52;142"   # #9A348E — opening segment (username/os in Starship)
-ORANGE="252;161;125"  # #FCA17D — git branch in Starship
-TEAL="6;150;154"      # #06969A — docker context in Starship (PR info here)
-BLUE="134;187;216"    # #86BBD8 — language runtimes in Starship (model name here)
-DARKBLUE="51;101;138" # #33658A — time segment in Starship
-BLACK="0;0;0"
-WHITE="255;255;255"
-GEMINI="138;180;248"  # #8AB4F8 — Google blue, gemini badge fg
+# Truecolor RGB accent palette (used as foreground; brightened from the
+# starship.toml hexes where needed for legibility on a dark background)
+PURPLE="186;104;200"  # directory
+ORANGE="252;161;125"  # git branch (#FCA17D)
+TEAL="38;186;190"     # PR info
+BLUE="134;187;216"    # model name (#86BBD8)
+GEMINI="138;180;248"  # #8AB4F8 — Google blue, gemini badge
 WARM="255;176;102"    # warm amber — cache-warm glyph
 COLD="150;180;205"    # cool dim — cache-cold glyph
-
-# U+E0B0 Powerline solid right arrow (requires Nerd Font; kitty + Starship implies this)
-ARROW=$(printf '\xee\x82\xb0')
+HEART="235;110;120"   # soft red — time heart
+DIM="150;160;170"     # context % and separators
+SEP="90;95;105"       # separator dots
 
 # Extract JSON fields
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
@@ -42,15 +43,15 @@ now=$(date +%s)
 cache_dir="${TMPDIR:-/tmp}/cc-statusline"
 mkdir -p "$cache_dir" 2>/dev/null
 
-# Directory: replace HOME with ~ then truncate to last 3 components
-# (mirrors Starship's truncation_length = 3 and truncation_symbol = "…/")
+# Directory: replace HOME with ~ then truncate to last 2 components
 dir="${current_dir/$HOME/~}"
 dir=$(echo "$dir" | awk -F'/' '{
-  if (NF > 3) { print "…/" $(NF-2) "/" $(NF-1) "/" $NF }
+  if (NF > 2) { print "…/" $(NF-1) "/" $NF }
   else         { print $0 }
 }')
 
-# Git branch + dirty indicator (local only, no network)
+# Git branch + dirty indicator (local only, no network). Long branch names are
+# middle-truncated so they cannot dominate the line width.
 git_branch=""
 git_dirty=""
 if git -C "$current_dir" rev-parse --git-dir >/dev/null 2>&1; then
@@ -58,6 +59,9 @@ if git -C "$current_dir" rev-parse --git-dir >/dev/null 2>&1; then
   if [[ -n "$git_branch" ]]; then
     git_porcelain=$(git -C "$current_dir" status --porcelain 2>/dev/null || echo "")
     [[ -n "$git_porcelain" ]] && git_dirty="*"
+    if [[ "${#git_branch}" -gt 20 ]]; then
+      git_branch="${git_branch:0:5}…${git_branch: -11}"
+    fi
   fi
 fi
 
@@ -127,51 +131,58 @@ if [[ -n "$transcript" && -f "$transcript" ]]; then
   fi
 fi
 
-# ── Powerline segments ────────────────────────────────────────────────────────
-prev_bg="$PURPLE"
+# ── Render: colored text, joined by dim separators ───────────────────────────
+# Each part carries its own color and a trailing reset, so any truncation by
+# the TUI is harmless. Parts are collected, then joined with " · ".
+parts=()
 
-# Segment 1: Purple — directory (Starship: username + directory)
-printf "\033[48;2;%sm\033[38;2;%sm  %s " "$PURPLE" "$WHITE" "$dir"
+# Directory
+printf -v p '\033[38;2;%sm%s\033[0m' "$PURPLE" "$dir"
+parts+=("$p")
 
-# Segment 2: Orange — git branch + dirty flag (Starship: git_branch + git_status)
+# Git branch + dirty flag
 if [[ -n "$git_branch" ]]; then
-  printf "\033[38;2;%sm\033[48;2;%sm%s\033[38;2;%sm  %s%s " \
-    "$prev_bg" "$ORANGE" "$ARROW" "$BLACK" "$git_branch" "$git_dirty"
-  prev_bg="$ORANGE"
+  printf -v p '\033[38;2;%sm%s%s\033[0m' "$ORANGE" "$git_branch" "$git_dirty"
+  parts+=("$p")
 fi
 
-# Segment 3: Teal — PR info + gemini review badge (Starship: docker_context)
+# PR info + gemini review badge
 if [[ -n "$pr_number" ]]; then
-  printf "\033[38;2;%sm\033[48;2;%sm%s\033[38;2;%sm  PR#%s" \
-    "$prev_bg" "$TEAL" "$ARROW" "$WHITE" "$pr_number"
+  printf -v p '\033[38;2;%smPR#%s' "$TEAL" "$pr_number"
   case "$pr_state" in
-    approved)          printf " [ok]" ;;
-    changes_requested) printf " [!]" ;;
-    draft)             printf " [draft]" ;;
+    approved)          p+=" ✓" ;;
+    changes_requested) p+=" ✗" ;;
+    draft)             p+=" draft" ;;
   esac
   # Gemini badge: only when there are unresolved gemini threads
   if [[ -n "$gemini_unresolved" && "$gemini_unresolved" -gt 0 ]] 2>/dev/null; then
-    printf "\033[38;2;%sm ✦%s\033[38;2;%sm" "$GEMINI" "$gemini_unresolved" "$WHITE"
+    printf -v g '\033[38;2;%sm ✦%s' "$GEMINI" "$gemini_unresolved"
+    p+="$g"
   fi
-  printf " "
-  prev_bg="$TEAL"
+  p+=$'\033[0m'
+  parts+=("$p")
 fi
 
-# Segment 4: Blue — model name (Starship: language runtimes)
-printf "\033[38;2;%sm\033[48;2;%sm%s\033[38;2;%sm  %s " \
-  "$prev_bg" "$BLUE" "$ARROW" "$BLACK" "$short_model"
-prev_bg="$BLUE"
+# Model name
+printf -v p '\033[38;2;%sm%s\033[0m' "$BLUE" "$short_model"
+parts+=("$p")
 
-# Segment 5: Dark blue — context % + cache warmth + heart + time
-printf "\033[38;2;%sm\033[48;2;%sm%s\033[38;2;%sm " \
-  "$prev_bg" "$DARKBLUE" "$ARROW" "$WHITE"
-[[ -n "$used_pct" ]] && printf "%.0f%% " "$used_pct"
+# Context % + cache warmth + heart + time (one trailing part)
+p=""
+[[ -n "$used_pct" ]] && printf -v p '\033[38;2;%sm%.0f%%\033[0m ' "$DIM" "$used_pct"
 if [[ -n "$cache_glyph" ]]; then
-  printf "\033[38;2;%sm%s\033[38;2;%sm" "$cache_fg" "$cache_glyph" "$WHITE"
-  [[ -n "$cache_remaining" ]] && printf "%s" "$cache_remaining"
-  printf " "
+  printf -v c '\033[38;2;%sm%s%s\033[0m ' "$cache_fg" "$cache_glyph" "$cache_remaining"
+  p+="$c"
 fi
-printf "♥ %s " "$(date +%H:%M)"
+printf -v t '\033[38;2;%sm♥\033[0m\033[38;2;%sm%s\033[0m' "$HEART" "$DIM" "$(date +%H:%M)"
+p+="$t"
+parts+=("$p")
 
-# Closing arrow back to terminal default background
-printf "\033[0m\033[38;2;%sm%s\033[0m\n" "$DARKBLUE" "$ARROW"
+# Join with dim separator
+printf -v sep '\033[38;2;%sm · \033[0m' "$SEP"
+out=""
+for i in "${!parts[@]}"; do
+  [[ "$i" -gt 0 ]] && out+="$sep"
+  out+="${parts[$i]}"
+done
+printf '%s\n' "$out"
