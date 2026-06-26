@@ -21,11 +21,15 @@ tool=$(jq -r '.tool_name // empty' <<<"$input" 2>/dev/null || echo "")
 cmd=$(jq -r '.tool_input.command // empty' <<<"$input" 2>/dev/null || echo "")
 [ -z "$cmd" ] && exit 0
 
-# Fast bail: only inspect commands that invoke `chezmoi ... apply`
-case "$cmd" in
-    *chezmoi*apply*) ;;
-    *) exit 0 ;;
-esac
+# Fast bail: only inspect commands that actually INVOKE `chezmoi ... apply`.
+# Strip quoted string literals first, so the words `chezmoi`/`apply` appearing
+# inside an argument or heredoc body (e.g. a `gh pr create --body` that
+# documents a chezmoi command) don't trip the guard — a real invocation is
+# never wrapped in quotes. Then require `chezmoi` at a command position with
+# `apply` as its own following token, so prose like "run chezmoi apply, then…"
+# (trailing punctuation, no shell boundary) is ignored too.
+code=$(sed -e "s/'[^']*'//g" -e 's/"[^"]*"//g' <<<"$cmd")
+grep -Eq '(^|[[:space:];&|(])chezmoi[[:space:]]([^|;&]*[[:space:]])?apply([[:space:]]|[;&|)]|$)' <<<"$code" || exit 0
 
 # Dry runs and verbose previews are safe
 case "$cmd" in
