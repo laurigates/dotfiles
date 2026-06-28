@@ -6,6 +6,12 @@ return {
     ---@type snacks.Config
     opts = {
       picker = { enabled = true },
+      image = {
+        enabled = true,
+        doc = {
+          inline = true,
+        },
+      },
       git = { enabled = true },
       gitbrowse = { enabled = true },
       bigfile = { enabled = true },
