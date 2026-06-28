@@ -55,6 +55,31 @@ task "$CLEANUP" annotate "..." </dev/null
 
 If you only have a numeric ID and a gap has passed, **re-derive it** (re-run the `export`/`list` and re-match on description) before acting — do not trust the cached number.
 
+### `_get` is a DOM accessor, not a filter — `task +LATEST _get uuid` returns empty
+
+To capture the UUID of the task you just added, the obvious-looking
+`task +LATEST _get uuid` **silently returns empty** (exit 0) and captures
+nothing. `_get` takes a **DOM reference** of the form `<id>.<attribute>`
+(`task _get 169.uuid`) — it does **not** accept a `<filter> _get <attribute>`
+shape, so a tag filter like `+LATEST` resolves to nothing. The failure is
+invisible: no error, exit 0, an empty UUID, and the next `task <empty> done`
+no-ops or hits the wrong task. Verified on taskwarrior 3.4.2.
+
+```sh
+# Wrong — _get given a tag filter returns empty
+task +LATEST _get uuid        # → '' (exit 0), captures nothing
+
+# Right — the +LATEST-aware accessor, or a DOM ref, or export+jq
+task +LATEST uuids                              # → <uuid> of the just-added task
+task _get 169.uuid                              # DOM ref: <id>.<attribute>
+task +LATEST export | jq -r '.[0].uuid'         # always exit-0, parallel-safe
+```
+
+| Intent | Wrong | Right |
+|---|---|---|
+| UUID of the just-added task | `task +LATEST _get uuid` | `task +LATEST uuids` |
+| UUID of a known numeric id | `task <id> _get uuid` | `task _get <id>.uuid` |
+
 ## Foot-gun 2: `task done` consumes loop stdin
 
 `task done` reads from stdin (for confirmation prompts and similar). In a shell `for` loop, the loop's input is *also* stdin. When `task done` runs inside the loop body, it eats subsequent iterations from stdin and the loop exits early — usually after one or two iterations — with no error.
