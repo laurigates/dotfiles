@@ -8,6 +8,14 @@ set shell := ["bash", "-uc"]
 # the global ~/.user.justfile so `just -g plugins-*` works from any directory.
 import 'private_dot_config/just/plugins.just'
 
+# Claude Code setup recipes (mcp-*, cclsp, claude-setup, settings-audit) — single
+# source of truth, also imported by ~/.user.justfile so `just -g mcp-*` works
+# from any directory.
+import 'private_dot_config/just/claude.just'
+
+# Neovim maintenance recipes (nvim-*) — audit configured plugins for staleness.
+import 'private_dot_config/just/nvim.just'
+
 # Default recipe - show help
 [default]
 help:
