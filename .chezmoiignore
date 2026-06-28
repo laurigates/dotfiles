@@ -2,6 +2,11 @@
 # Claude memory files that should be copied by chezmoi are prefixed with private to differentiate them.
 # e.g. dot_claude/private_CLAUDE.md.
 README.md
+# The repo-root justfile is the dotfiles repo's OWN project justfile (for working
+# in this repo). Without this, chezmoi applies it to ~/justfile, which shadows
+# ~/.user.justfile in `just -g`'s resolution order and breaks it (relative import
+# fails from $HOME). The global justfile is dot_user.justfile.tmpl → ~/.user.justfile.
+/justfile
 Dockerfile
 docker-compose.yml
 setup/

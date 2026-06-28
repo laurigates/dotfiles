@@ -183,6 +183,67 @@ jq -n --argjson cur "$current" --argjson ov "$overlay" '$cur * $ov'
 
 See the `chezmoi-expert` skill REFERENCE for the general `modify_` mechanics. For the permission-key specifics of a Claude Code settings overlay, see `claude-code-auto-mode.md`.
 
+## A Non-`dot_` File at the Source Root Silently Applies to `$HOME`
+
+Every file in the chezmoi source dir maps to a target unless ignored. A
+source-root file with **no `dot_`/`private_`/etc. prefix** — e.g. the
+dotfiles repo's own `justfile`, `Makefile`, or `Taskfile.yml` kept for
+working *in the repo* — maps to a literal target of the same name in
+`$HOME` (`justfile` → `~/justfile`). chezmoi applies it, and the copy is
+usually broken: a repo justfile's **relative** `import`/`include` paths
+(`import 'private_dot_config/just/plugins.just'`) don't resolve from
+`$HOME`. The failure is invisible until something reads the leaked file.
+
+The fix is the same as the existing `README.md` / `Dockerfile` /
+`docker-compose.yml` entries already in `.chezmoiignore`: ignore the
+repo-meta file so it stays repo-local. **Root-anchor** the pattern so it
+only catches the source-root copy, not managed nested targets of the same
+basename:
+
+```
+# .chezmoiignore — root-anchored, won't touch ~/.config/just/justfile etc.
+/justfile
+```
+
+Verify it's no longer a target, then remove the already-leaked copy:
+
+```
+chezmoi ignored | grep -x justfile && rm -f ~/justfile
+```
+
+(Discovered 2026-06: the dotfiles repo's own `justfile` had been applying
+to `~/justfile`, which then shadowed the intended global justfile — see
+below.)
+
+## `just -g` Reads `~/.config/just/justfile`, NOT `~/.user.justfile`
+
+The global justfile (`just -g` / `just --global-justfile`, recipes
+invokable from **any** directory) is resolved from a **fixed search
+path**, first match wins:
+
+```
+$XDG_CONFIG_HOME/just/justfile  →  ~/.config/just/justfile  →  ~/justfile  →  ~/.justfile
+```
+
+`~/.user.justfile` is **not** on that path — a global justfile placed
+there is never read. So the chezmoi source for the global justfile must
+target `~/.config/just/justfile` (source `private_dot_config/just/justfile`,
+which can `import 'plugins.just'` / `import 'claude.just'` as same-dir
+siblings). Per-area recipe files live beside it
+(`~/.config/just/{plugins,claude}.just`) and are imported by both the
+global justfile and the dotfiles repo's own justfile, so `just <recipe>`
+(in-repo) and `just -g <recipe>` (anywhere) resolve the same recipes.
+
+Note `~/justfile` is earlier in the path than `~/.justfile` but *later*
+than `~/.config/just/justfile`. A stray `~/justfile` (e.g. the source-root
+leak above) therefore shadows nothing if the `~/.config/just/justfile`
+exists — but if it's the *only* candidate, `just -g` loads it and breaks.
+Confirm what `just -g` actually reads:
+
+```
+cd /tmp && just -g --list      # lists the global recipes, or errors if the wrong file is found
+```
+
 ## Script Conventions
 
 - `run_onchange_*` scripts execute when their template hash changes

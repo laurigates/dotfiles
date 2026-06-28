@@ -2,10 +2,11 @@
 #
 # Imported by BOTH:
 #   • the dotfiles repo justfile (so `just plugins-*` works in this repo), and
-#   • ~/.user.justfile (so `just -g plugins-*` works from ANY directory).
+#   • the global ~/.config/just/justfile (so `just -g plugins-*` works from ANY directory).
 #
 # chezmoi applies this file to ~/.config/just/plugins.just; the global
-# justfile imports that applied copy. Edit here, then `chezmoi apply`.
+# justfile (~/.config/just/justfile) imports it as a sibling. Edit here, then
+# `chezmoi apply`.
 
 marketplace := "laurigates-claude-plugins"
 marketplace_url := "https://raw.githubusercontent.com/laurigates/claude-plugins/refs/heads/main/.claude-plugin/marketplace.json"
