@@ -10,3 +10,8 @@ Include ~/.orbstack/ssh/config
 #   ControlPersist 10s
 
 HashKnownHosts no
+
+Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlPersist 60s
