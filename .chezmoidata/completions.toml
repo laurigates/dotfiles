@@ -35,3 +35,7 @@
   ruff = "ruff generate-shell-completion zsh"
   deadbranch = "deadbranch completions zsh"
   "git-repo-agent" = "git-repo-agent completion zsh"
+  # task (taskwarrior): no generator subcommand — ship the bundled _task that
+  # Homebrew installs (uses task's _columns/_config/_context helper commands).
+  # The Apple Silicon brew site-functions dir isn't on fpath, so copy it to ~/.zfunc.
+  task = "cat \"$(brew --prefix)/share/zsh/site-functions/_task\""
