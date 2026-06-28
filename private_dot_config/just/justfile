@@ -1,0 +1,15 @@
+# Global justfile — recipes available from ANY directory via `just -g` / `just --global-justfile`.
+#
+# `just -g <recipe>` ignores the current directory's justfile and reads the
+# GLOBAL justfile instead. just's global search path is (first match wins):
+#     $XDG_CONFIG_HOME/just/justfile  →  ~/.config/just/justfile  →  ~/justfile  →  ~/.justfile
+# so this file MUST live at ~/.config/just/justfile to be found. (~/.user.justfile
+# is NOT on that path — an earlier version put it there and it never worked.)
+#
+# Source of truth for the recipes lives beside this file:
+#   • plugins.just  — Claude plugin management (plugins-*)
+#   • claude.just   — Claude Code setup (mcp-*, cclsp, claude-setup, settings-audit)
+# Edit those, then `chezmoi apply`. Imports are relative to this file's directory.
+
+import 'plugins.just'
+import 'claude.just'
