@@ -348,6 +348,26 @@ zle -N rationalise-dot
 ABBR_DEFAULT_BINDINGS=0
 [ -f ~/zsh/zsh-abbr/zsh-abbr.zsh ] && source ~/zsh/zsh-abbr/zsh-abbr.zsh
 
+# A regular abbreviation isn't a command until it expands, so
+# zsh-syntax-highlighting resolves the unexpanded name (e.g. `gpls`), finds no
+# command/alias/function, and styles it as an error (red). This is a known,
+# accepted z-sy-h/zsh-abbr boundary (olets/zsh-abbr#23), and zsh-abbr's official
+# integration is to colour abbreviations via z-sy-h's `regexp` highlighter:
+#   https://zsh-abbr.olets.dev/integrations.html#zsh-syntax-highlighting
+# The anchored regex matches a bare abbreviation in command position — the
+# pre-expansion window where the red shows — with names joined from the arrays
+# zsh-abbr loaded, so there's no second source of truth. ${(Qk)} dequotes keys.
+# z-sy-h runs only `main` by default, so set it explicitly to keep `main` and
+# add `regexp` (a bare += would drop the default main highlighter). The global
+# line is guarded because an empty array would make the regex match anything.
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main regexp)
+if (( ${#ABBR_REGULAR_USER_ABBREVIATIONS} )); then
+  ZSH_HIGHLIGHT_REGEXP+=('^[[:space:]]*('${(j:|:)${(Qk)ABBR_REGULAR_USER_ABBREVIATIONS}}')$' fg=cyan,bold)
+fi
+if (( ${#ABBR_GLOBAL_USER_ABBREVIATIONS} )); then
+  ZSH_HIGHLIGHT_REGEXP+=('[[:<:]]('${(j:|:)${(Qk)ABBR_GLOBAL_USER_ABBREVIATIONS}}')$' fg=cyan,bold)
+fi
+
 
 #======================================================================
 # FZF Sourcing (keybindings & completions)
