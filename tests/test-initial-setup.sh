@@ -24,12 +24,14 @@ log_test() {
 
 log_pass() {
     echo -e "${GREEN}✓ PASS:${NC} $*"
-    ((pass_count++))
+    # Use assignment, not ((x++)): under `set -e` the post-increment returns
+    # exit 1 when the pre-value is 0, which would abort after the first PASS.
+    pass_count=$((pass_count + 1))
 }
 
 log_fail() {
     echo -e "${RED}✗ FAIL:${NC} $*"
-    ((fail_count++))
+    fail_count=$((fail_count + 1))
 }
 
 # Test 1: Verify script exists
@@ -107,11 +109,11 @@ test_skip_messages_exist() {
     local messages_found=0
 
     if grep -q "Skipping pre-commit hooks installation" "$SETUP_SCRIPT"; then
-        ((messages_found++))
+        messages_found=$((messages_found + 1))
     fi
 
     if grep -q "Skipping neovim plugin installation" "$SETUP_SCRIPT"; then
-        ((messages_found++))
+        messages_found=$((messages_found + 1))
     fi
 
     if [[ $messages_found -eq 2 ]]; then
@@ -127,7 +129,8 @@ test_skip_messages_exist() {
 test_script_syntax() {
     log_test "Verifying script has valid bash syntax"
     # Create a temporary file with template variables replaced
-    local temp_script=$(mktemp)
+    local temp_script
+    temp_script=$(mktemp)
     # Replace chezmoi template with a dummy path for syntax checking
     sed 's/{{ .chezmoi.sourceDir }}/\/tmp\/chezmoi/g' "$SETUP_SCRIPT" > "$temp_script"
 

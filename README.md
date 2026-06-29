@@ -51,7 +51,7 @@ just plugins-enable
 
 Or install individually:
 ```bash
-claude /plugin install git-plugin@lgates-claude-plugins
+claude /plugin install git-plugin@laurigates-claude-plugins
 ```
 
 ### Bulk Plugin Management

@@ -80,7 +80,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.claude/plugins
-          key: claude-plugins-v1-${{ runner.os }}-lgates-claude-plugins
+          key: claude-plugins-v1-${{ runner.os }}-laurigates-claude-plugins
           restore-keys: |
             claude-plugins-v1-${{ runner.os }}-
 
@@ -90,21 +90,21 @@ jobs:
           claude /plugin marketplace add laurigates/claude-plugins
 
           # Install essential plugins for this repository
-          claude /plugin install dotfiles-plugin@lgates-claude-plugins
-          claude /plugin install git-plugin@lgates-claude-plugins
-          claude /plugin install github-actions-plugin@lgates-claude-plugins
-          claude /plugin install code-quality-plugin@lgates-claude-plugins
-          claude /plugin install testing-plugin@lgates-claude-plugins
-          claude /plugin install tools-plugin@lgates-claude-plugins
+          claude /plugin install configure-plugin@laurigates-claude-plugins
+          claude /plugin install git-plugin@laurigates-claude-plugins
+          claude /plugin install github-actions-plugin@laurigates-claude-plugins
+          claude /plugin install code-quality-plugin@laurigates-claude-plugins
+          claude /plugin install testing-plugin@laurigates-claude-plugins
+          claude /plugin install tools-plugin@laurigates-claude-plugins
 
           # List installed plugins for verification
           {
             echo "## 🔌 Installed Claude Plugins"
             echo ""
-            echo "Marketplace: \`lgates-claude-plugins\`"
+            echo "Marketplace: \`laurigates-claude-plugins\`"
             echo ""
             echo "Plugins installed:"
-            echo "- dotfiles-plugin"
+            echo "- configure-plugin"
             echo "- git-plugin"
             echo "- github-actions-plugin"
             echo "- code-quality-plugin"
