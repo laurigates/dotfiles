@@ -544,20 +544,23 @@ _gh_poll_merge() {
   local repo="$1" num="$2"; shift 2
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
+  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
+  local green='' red='' yellow='' cyan='' dim='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' rst=$'\033[0m' }
   local state tries=0
   while (( tries < 20 )); do
     state=$(gh pr view "$num" "${repo_flag[@]}" --json mergeable --jq '.mergeable' </dev/null 2>/dev/null)
     [[ -n "$state" && "$state" != UNKNOWN ]] && break
-    (( tries == 0 )) && print -r -- "  … waiting for ${id} mergeability to settle"
+    (( tries == 0 )) && print -r -- "  ${yellow}…${rst} waiting for ${cyan}${id}${rst} mergeability to settle"
     sleep 2; (( tries++ ))
   done
   if [[ "$state" == CONFLICTING ]]; then
-    print -r -- "  ✗ ${id}: conflicting — skipped"; return 1
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — skipped"; return 1
   fi
   if gh pr merge "$num" "${repo_flag[@]}" "$@" </dev/null; then
-    print -r -- "  ✓ merged ${id}"
+    print -r -- "  ${green}✓ merged${rst} ${cyan}${id}${rst}"
   else
-    print -r -- "  ✗ ${id}: merge failed (left open — re-run to retry)"; return 1
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}merge failed${rst} (left open — re-run to retry)"; return 1
   fi
 }
 
@@ -577,11 +580,20 @@ _gh_batch_merge() {
   local count=${#nums}
   (( count == 0 )) && { print -r -- "Nothing selected."; return 0 }
 
-  local i lbl
-  print -r -- "Selected $count PR(s) — will merge (${flags[*]}) in this order:"
+  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
+  local green='' red='' yellow='' cyan='' dim='' bold='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+
+  local i lbl maxw=0
+  # Pre-compute the widest label so the summary's title column lines up.
   for (( i = 1; i <= count; i++ )); do
     [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
-    print -r -- "  $i. ${lbl}  ${titles[$i]}"
+    (( ${#lbl} > maxw )) && maxw=${#lbl}
+  done
+  print -r -- "${bold}Selected $count PR(s)${rst} — will merge (${yellow}${flags[*]}${rst}) in this order:"
+  for (( i = 1; i <= count; i++ )); do
+    [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
+    printf "  %s%2d.%s %s%-*s%s  %s\n" "$dim" "$i" "$rst" "$cyan" "$maxw" "$lbl" "$rst" "${titles[$i]}"
   done
   print
 
@@ -589,12 +601,12 @@ _gh_batch_merge() {
   for (( i = 1; i <= count; i++ )); do
     [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
     if ! $all; then
-      read -k 1 "ans?Merge ${lbl}? [y/N/a=all/q=quit] "; print
+      read -k 1 "ans?Merge ${cyan}${lbl}${rst}? [${green}y${rst}/${bold}N${rst}/${yellow}a${rst}=all/${red}q${rst}=quit] "; print
       case "$ans" in
         a|A) all=true ;;
         y|Y) ;;
-        q|Q) print -r -- "Stopped — remaining left unmerged."; break ;;
-        *)   print -r -- "  – skipped ${lbl}"; continue ;;
+        q|Q) print -r -- "${yellow}Stopped${rst} — remaining left unmerged."; break ;;
+        *)   print -r -- "  ${dim}– skipped ${lbl}${rst}"; continue ;;
       esac
     fi
     _gh_poll_merge "${repos[$i]}" "${nums[$i]}" "${flags[@]}"
