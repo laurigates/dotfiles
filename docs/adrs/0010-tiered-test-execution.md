@@ -2,7 +2,14 @@
 
 ## Status
 
-Accepted
+Accepted (command syntax superseded)
+
+> **Note:** The tiered test-execution *concept* (unit → integration → E2E with
+> specialized agents) still stands. The `/test:*` command catalog referenced
+> below is superseded by the `testing-plugin` marketplace skills, invoked with
+> the bare `/skill-name` form (e.g. `/test-quick`, `/test-full`,
+> `/test-consult`). The `/test:*` and `/git:commit` syntax in the body is
+> retained as a historical record and no longer resolves.
 
 ## Date
 

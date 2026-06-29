@@ -506,6 +506,6 @@ PRDs in Blueprint Development serve multiple purposes:
 2. **Architecture documentation** - How to structure the code
 3. **Skill generation input** - Source material for generating project-specific skills
 4. **Work-order context** - Background information for isolated tasks
-5. **Project continuity** - Enables `/project:continue` to understand goals
+5. **Project continuity** - Enables `/project-continue` to understand goals
 
 Well-written PRDs enable Blueprint Development to generate high-quality, project-specific skills and commands that enforce your architectural decisions, testing strategies, and quality standards automatically.

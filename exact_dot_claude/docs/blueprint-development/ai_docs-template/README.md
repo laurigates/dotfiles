@@ -300,9 +300,9 @@ Before adding to ai_docs:
 - [ ] Is it version-specific?
 - [ ] Are anti-patterns shown?
 
-### Using `/prp:curate-docs`
+### Using `/prp-curate-docs`
 
-Run `/prp:curate-docs` to:
+Run `/prp-curate-docs` to:
 1. Research a library's documentation
 2. Extract relevant patterns
 3. Generate ai_docs entry

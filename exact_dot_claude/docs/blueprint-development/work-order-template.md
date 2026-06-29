@@ -563,7 +563,7 @@ If a work-order depends on another:
 ### 1. Generate Work-Order
 
 ```bash
-/blueprint:work-order
+/blueprint-work-order
 ```
 
 Claude analyzes project state and creates next logical work-order.

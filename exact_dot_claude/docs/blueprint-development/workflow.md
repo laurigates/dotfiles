@@ -16,7 +16,7 @@ PRDs → Generate Skills/Commands → Development Loop → Work-Orders → Subag
 
 ```bash
 cd your-project/
-/blueprint:init
+/blueprint-init
 ```
 
 **What happens:**
@@ -76,7 +76,7 @@ Write tests first for:
 ### Step 3: Generate Skills
 
 ```bash
-/blueprint:generate-skills
+/blueprint-generate-skills
 ```
 
 **What happens:**
@@ -234,13 +234,13 @@ description: "Code review criteria, performance baselines, and security standard
 ### Step 4: Generate Commands
 
 ```bash
-/blueprint:generate-commands
+/blueprint-generate-commands
 ```
 
 **What happens:**
 Claude generates workflow commands based on PRDs and project structure:
 
-**1. `/project:continue`** - Resume development
+**1. `/project-continue`** - Resume development
 ```markdown
 ---
 description: "Analyze project state and continue development where left off"
@@ -256,10 +256,10 @@ Analyze the current project state and continue development:
 5. Identify next logical task based on PRDs and project state
 6. Begin work following TDD workflow (tests first)
 
-If starting a new feature, create a work-order first with `/blueprint:work-order`.
+If starting a new feature, create a work-order first with `/blueprint-work-order`.
 ```
 
-**2. `/project:test-loop`** - TDD automation
+**2. `/project-test-loop`** - TDD automation
 ```markdown
 ---
 description: "Run test → fix → refactor loop with TDD workflow"
@@ -291,7 +291,7 @@ Stop and report when:
 ### Step 1: Start or Resume Work
 
 ```bash
-/project:continue
+/project-continue
 ```
 
 **What Claude does:**
@@ -456,7 +456,7 @@ Create work-orders for:
 ### Generate Work-Order
 
 ```bash
-/blueprint:work-order
+/blueprint-work-order
 ```
 
 **What Claude does:**
@@ -598,7 +598,7 @@ Add TOTP-based 2FA as optional security enhancement...
 
 Then regenerate skills:
 ```bash
-/blueprint:generate-skills
+/blueprint-generate-skills
 ```
 
 ### Continue Where You Left Off
@@ -606,11 +606,11 @@ Then regenerate skills:
 Switch between projects easily:
 ```bash
 cd project-a/
-/project:continue
+/project-continue
 # Resumes project A exactly where you left off
 
 cd ../project-b/
-/project:continue
+/project-continue
 # Resumes project B with its own context
 ```
 
@@ -620,9 +620,9 @@ cd ../project-b/
 
 Create multiple work-orders for parallel execution:
 ```bash
-/blueprint:work-order    # Creates 004-implement-password-reset.md
-/blueprint:work-order    # Creates 005-add-rate-limiting.md
-/blueprint:work-order    # Creates 006-setup-email-service.md
+/blueprint-work-order    # Creates 004-implement-password-reset.md
+/blueprint-work-order    # Creates 005-add-rate-limiting.md
+/blueprint-work-order    # Creates 006-setup-email-service.md
 
 # Execute in parallel with different subagents
 <execute work-order 004 with subagent-1>
@@ -655,11 +655,11 @@ Generate work-orders from CI failures:
 
 Blueprint Development workflow:
 
-1. **Initialize** - `/blueprint:init` creates structure
+1. **Initialize** - `/blueprint-init` creates structure
 2. **Plan** - Write PRDs defining features and architecture
 3. **Generate** - Create skills and commands from PRDs
-4. **Develop** - `/project:continue` resumes work with TDD
-5. **Delegate** - `/blueprint:work-order` creates isolated tasks
+4. **Develop** - `/project-continue` resumes work with TDD
+5. **Delegate** - `/blueprint-work-order` creates isolated tasks
 6. **Execute** - Subagents work on isolated work-orders
 7. **Iterate** - Refine skills and PRDs as patterns emerge
 
