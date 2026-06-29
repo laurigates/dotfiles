@@ -2,7 +2,15 @@
 
 ## Status
 
-Accepted
+Superseded
+
+> **Superseded** by the Claude plugins marketplace
+> ([laurigates/claude-plugins](https://github.com/laurigates/claude-plugins)).
+> Commands are no longer organized as project-local `/namespace:command` files;
+> capabilities are now provided by plugin skills invoked with the bare
+> `/skill-name` form (e.g. `/configure-mcp`, `/blueprint-status`). The
+> `/namespace:command` syntax below is retained as a historical record of the
+> decision and no longer resolves.
 
 ## Date
 

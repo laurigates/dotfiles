@@ -162,5 +162,5 @@ Ongoing improvements across all areas: AI tooling expansion, new tool integratio
 | NixOS | Declarative system configuration (ADR-0013) | Planned |
 
 ---
-*Generated from existing documentation via /blueprint:derive-prd*
+*Generated from existing documentation via /blueprint-derive-prd*
 *Review and update as project evolves*

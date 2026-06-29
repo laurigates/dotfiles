@@ -97,7 +97,7 @@ Work-orders enable **isolated subagent execution** - hand a work-order to a suba
 ### 1. Write PRPs
 Create PRPs (Product Requirement Prompts) with curated context:
 ```bash
-/prp:create [feature-name]
+/prp-create [feature-name]
 ```
 
 This guides you through:
@@ -111,7 +111,7 @@ See [prp-template.md](prp-template.md) for structure.
 
 ### 2. Curate ai_docs (Optional)
 ```bash
-/prp:curate-docs [library-name]
+/prp-curate-docs [library-name]
 ```
 
 Creates curated documentation entries for frequently-used libraries.
@@ -119,22 +119,22 @@ Creates curated documentation entries for frequently-used libraries.
 ### 3. Generate Skills & Commands
 ```bash
 # In your project directory
-/blueprint:generate-skills
-/blueprint:generate-commands
+/blueprint-generate-skills
+/blueprint-generate-commands
 ```
 
 This analyzes PRPs and creates project-specific skills and commands in `.claude/`.
 
 ### 4. Start Development
 ```bash
-/project:continue
+/project-continue
 ```
 
 Claude analyzes project state (git status, PRPs, work-orders) and continues where you left off.
 
 Or execute a specific PRP:
 ```bash
-/prp:execute [feature-name]
+/prp-execute [feature-name]
 ```
 
 ### 5. Test-Driven Development
@@ -143,11 +143,11 @@ All generated skills enforce TDD:
 2. **GREEN** - Minimal implementation to pass
 3. **REFACTOR** - Improve while keeping tests green
 
-Use `/project:test-loop` to start automated test → fix cycles.
+Use `/project-test-loop` to start automated test → fix cycles.
 
 ### 6. Work-Order Generation
 ```bash
-/blueprint:work-order
+/blueprint-work-order
 ```
 
 Generates isolated task package for subagent execution with minimal context.
@@ -185,22 +185,22 @@ project-root/
 See [workflow.md](workflow.md) for complete workflow documentation.
 
 ### Phase 1: Planning
-1. Create PRPs with `/prp:create` - includes research and context curation
-2. Curate ai_docs for key libraries with `/prp:curate-docs`
-3. Run `/blueprint:generate-skills` to create project-specific skills
-4. Run `/blueprint:generate-commands` to create workflow commands
+1. Create PRPs with `/prp-create` - includes research and context curation
+2. Curate ai_docs for key libraries with `/prp-curate-docs`
+3. Run `/blueprint-generate-skills` to create project-specific skills
+4. Run `/blueprint-generate-commands` to create workflow commands
 5. Review confidence scores and refine if < 7
 
 ### Phase 2: Development
-1. Run `/project:continue` to analyze state and resume work
+1. Run `/project-continue` to analyze state and resume work
 2. Claude automatically discovers and applies project-specific skills
 3. Follow TDD workflow (tests first, then implementation)
-4. Use `/blueprint:work-order` to create isolated tasks for subagents
+4. Use `/blueprint-work-order` to create isolated tasks for subagents
 5. Commit incrementally with conventional commits
 
 ### Phase 3: Iteration
 1. Project state tracked in git, PRDs, and work-overview
-2. `/project:continue` picks up where you left off
+2. `/project-continue` picks up where you left off
 3. Skills evolve as patterns emerge (update skill definitions)
 4. Work-orders document completed and pending tasks
 
@@ -209,7 +209,7 @@ See [workflow.md](workflow.md) for complete workflow documentation.
 ### For Solo Developers
 - **Context persistence** - Project state and patterns codified, not just in your head
 - **Consistent patterns** - Skills enforce standards automatically
-- **Rapid context switching** - `/project:continue` quickly resumes any project
+- **Rapid context switching** - `/project-continue` quickly resumes any project
 
 ### For Teams
 - **Onboarding** - New contributors read skills to understand "how we build"
@@ -257,19 +257,19 @@ Use Blueprint Development in CI:
 See `.claude/commands/` for available commands:
 
 **PRP Commands:**
-- `/prp:create` - Create a PRP with systematic research and context curation
-- `/prp:execute` - Execute a PRP with validation loop
-- `/prp:curate-docs` - Curate library/project documentation for ai_docs
+- `/prp-create` - Create a PRP with systematic research and context curation
+- `/prp-execute` - Execute a PRP with validation loop
+- `/prp-curate-docs` - Curate library/project documentation for ai_docs
 
 **Blueprint Commands:**
-- `/blueprint:init` - Initialize Blueprint Development in a project
-- `/blueprint:generate-skills` - Generate skills from PRPs
-- `/blueprint:generate-commands` - Generate commands from PRPs
-- `/blueprint:work-order` - Create isolated work-order
+- `/blueprint-init` - Initialize Blueprint Development in a project
+- `/blueprint-generate-skills` - Generate skills from PRPs
+- `/blueprint-generate-commands` - Generate commands from PRPs
+- `/blueprint-work-order` - Create isolated work-order
 
 **Project Commands:**
-- `/project:continue` - Analyze state and continue work
-- `/project:test-loop` - Start TDD test → fix cycle
+- `/project-continue` - Analyze state and continue work
+- `/project-test-loop` - Start TDD test → fix cycle
 
 ## Skills
 

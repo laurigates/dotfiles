@@ -735,6 +735,6 @@ PRPs (enhanced context) → Skills (patterns) → Work-Orders (tasks) → Subage
 - **Work-Orders** from `Task Breakdown`
 
 **PRP Confidence Score determines:**
-- **7+**: Execute with `/prp:execute`
+- **7+**: Execute with `/prp-execute`
 - **9+**: Delegate to subagent with work-order
 - **< 7**: Invest in research and documentation first

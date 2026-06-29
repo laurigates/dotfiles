@@ -42,12 +42,12 @@ This document summarizes the Blueprint Development implementation in your dotfil
 
 ### Commands (`.claude/commands/`)
 
-1. **/blueprint:init** - Initialize Blueprint Development in a project
+1. **/blueprint-init** - Initialize Blueprint Development in a project
    - Creates `.claude/blueprints/` directory structure
    - Creates `work-overview.md` template
    - Guides user through setup
 
-2. **/blueprint:generate-skills** - Generate project-specific skills from PRDs
+2. **/blueprint-generate-skills** - Generate project-specific skills from PRDs
    - Analyzes PRD files
    - Generates four domain skills:
      * Architecture patterns
@@ -55,25 +55,25 @@ This document summarizes the Blueprint Development implementation in your dotfil
      * Implementation guides
      * Quality standards
 
-3. **/blueprint:generate-commands** - Generate workflow commands
+3. **/blueprint-generate-commands** - Generate workflow commands
    - Detects project type and stack
    - Creates customized commands:
-     * `/project:continue`
-     * `/project:test-loop`
+     * `/project-continue`
+     * `/project-test-loop`
      * Project-specific commands
 
-4. **/blueprint:work-order** - Create isolated work-order
+4. **/blueprint-work-order** - Create isolated work-order
    - Analyzes project state
    - Identifies next work unit
    - Generates minimal-context task package
 
-5. **/project:continue** - Analyze state and continue development
+5. **/project-continue** - Analyze state and continue development
    - Checks git status
    - Reads PRDs and work-overview
    - Identifies next task
    - Begins TDD workflow
 
-6. **/project:test-loop** - Run test → fix → refactor loop
+6. **/project-test-loop** - Run test → fix → refactor loop
    - Automated TDD cycle
    - Detects test commands
    - Fixes failures, refactors code
@@ -129,7 +129,7 @@ cd test-blueprint-dev
 git init
 
 # Initialize Blueprint Development
-/blueprint:init
+/blueprint-init
 
 # Follow the prompts
 ```
@@ -141,24 +141,24 @@ git init
 cd ~/projects/my-project
 
 # Initialize Blueprint Development
-/blueprint:init
+/blueprint-init
 
 # Generate skills from existing code/docs
-/blueprint:generate-skills
+/blueprint-generate-skills
 ```
 
 ### Validation Checklist
 
 Test each command to verify it works:
 
-- [ ] `/blueprint:init` creates directory structure
+- [ ] `/blueprint-init` creates directory structure
 - [ ] Write a sample PRD in `.claude/blueprints/prds/`
-- [ ] `/blueprint:generate-skills` creates four skills
+- [ ] `/blueprint-generate-skills` creates four skills
 - [ ] Skills are discoverable (mention "architecture" and skill activates)
-- [ ] `/blueprint:generate-commands` creates workflow commands
-- [ ] `/project:continue` analyzes state and starts work
-- [ ] `/blueprint:work-order` creates work-order document
-- [ ] `/project:test-loop` runs tests (if project has tests)
+- [ ] `/blueprint-generate-commands` creates workflow commands
+- [ ] `/project-continue` analyzes state and starts work
+- [ ] `/blueprint-work-order` creates work-order document
+- [ ] `/project-test-loop` runs tests (if project has tests)
 
 ## Next Steps
 
@@ -308,7 +308,7 @@ Track these to measure effectiveness:
 
 **Context Switching**:
 - How easily can you switch between projects?
-- Does `/project:continue` accurately resume?
+- Does `/project-continue` accurately resume?
 
 **AI Effectiveness**:
 - Do skills guide Claude correctly?

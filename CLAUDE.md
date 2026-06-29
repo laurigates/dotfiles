@@ -26,7 +26,7 @@ Managed in [laurigates/claude-plugins](https://github.com/laurigates/claude-plug
 
 ## MCP Servers
 
-Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`. Use `/configure:mcp` for guided setup.
+Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`. Use `/configure-mcp` for guided setup.
 
 ## Linting
 
@@ -87,7 +87,7 @@ Blueprint v3.3.0 manages project documentation and rules.
 - **ADRs**: `docs/adrs/` — 16 Architecture Decision Records ([index](docs/adrs/README.md))
 - **PRPs**: `docs/prps/` — Implementation plans (fish, NixOS, sketchybar)
 - **Manifest**: `docs/blueprint/manifest.json` — Configuration and task registry
-- **Commands**: `/blueprint:status`, `/blueprint:execute`, `/blueprint:derive-plans`
+- **Commands**: `/blueprint-status`, `/blueprint-execute`, `/blueprint-derive-plans`
 
 ## Sub-documentation
 

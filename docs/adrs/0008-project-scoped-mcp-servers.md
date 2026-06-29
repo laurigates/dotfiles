@@ -122,7 +122,7 @@ Maintain curated MCP server configurations in `.chezmoidata.toml`:
 
 **Interactive (recommended):**
 ```bash
-/configure:mcp  # Claude command for guided installation
+/configure-mcp  # Claude command for guided installation
 ```
 
 **Manual:**
@@ -228,4 +228,4 @@ Single config for entire monorepo.
 - Project MCP config: `.mcp.json`
 - Favorites registry: `.chezmoidata.toml` (`[mcp_servers]` section)
 - MCP management skill: `exact_dot_claude/skills/mcp-management/`
-- Installation command: `/configure:mcp`
+- Installation command: `/configure-mcp`

@@ -240,7 +240,7 @@ Custom scripts to generate changelogs.
 
 - ADR-0006: Documentation-First Development (commits document changes)
 - ADR-0004: Subagent-First Delegation (git-commit-workflow skill)
-- ADR-0005: Namespace-Based Command Organization (/git:commit command)
+- ADR-0005: Namespace-Based Command Organization (/git-commit command)
 
 ## References
 
