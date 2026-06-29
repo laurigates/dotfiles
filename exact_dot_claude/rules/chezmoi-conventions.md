@@ -183,6 +183,53 @@ jq -n --argjson cur "$current" --argjson ov "$overlay" '$cur * $ov'
 
 See the `chezmoi-expert` skill REFERENCE for the general `modify_` mechanics. For the permission-key specifics of a Claude Code settings overlay, see `claude-code-auto-mode.md`.
 
+## A Non-`--force` Apply Silently UNDER-Applies Drifted Targets
+
+`chezmoi apply <tree>` is **not** all-or-nothing. When some target files in
+the tree have **local edits made since chezmoi last wrote them** (target-side
+drift — a hand-edit, or another tool that rewrote the target), a non-`--force`
+apply syncs the *clean* files and **silently skips the drifted ones**, then
+**exits 0**. So "apply ran, exit 0" is **not** proof the whole tree synced —
+it can leave part of the tree unsynced with no error.
+
+Observed 2026-06 applying `~/.claude/docs/blueprint-development` (7 edited
+files): a plain `chezmoi apply -v <tree>` synced 3, exited 0 (looked done),
+and left 4 still `M` in `chezmoi status` because the targets had drifted.
+
+### The trap is reaching for `--force` reflexively
+
+The obvious "fix" — re-run with `--force` — is exactly the move that
+**clobbers the target-side edits**. `--force` skips the safety prompt and
+overwrites the drifted targets with the source, destroying whatever direct
+edits (yours or another tool's) caused the skip in the first place. The skip
+was chezmoi *protecting* those edits; forcing past it discards them.
+
+### The rule: diff before you force
+
+`chezmoi status <tree>` tells you **which** files are out of sync (the `M`/`D`
+flags). It does **not** tell you what would be lost. Before any `--force`:
+
+1. **`chezmoi diff <tree>`** — see *what* the apply would overwrite. The `-`
+   lines are the target-side edits that `--force` would destroy.
+2. **Judge the drift.** If those edits are unwanted (stale runtime state you
+   don't care about), `--force` is safe. If they're wanted, **capture them
+   back to source first** — `just capture-drift` (preview) → `just
+   capture-drift-apply`, or `chezmoi re-add` / hand-port per the Runtime Drift
+   workflow above (templates need `chezmoi merge`, not `re-add`).
+3. **Only then** `chezmoi apply --force <tree>`, and re-check `chezmoi status
+   <tree>` is clean (and `chezmoi diff <tree>` empty) to confirm the whole
+   tree actually synced.
+
+| Signal | Tells you | Use it to |
+|---|---|---|
+| `chezmoi status <tree>` after apply | *which* files didn't sync (`M`/`D`) | detect the silent under-apply |
+| `chezmoi diff <tree>` | *what* `--force` would overwrite | decide whether the drift is disposable before forcing |
+
+Prefer `chezmoi diff` over a reflexive `--force` precisely so that direct
+edits to target files aren't clobbered. `--force` is the last step after the
+diff confirms there's nothing worth keeping — never the first reaction to a
+partial apply.
+
 ## A Non-`dot_` File at the Source Root Silently Applies to `$HOME`
 
 Every file in the chezmoi source dir maps to a target unless ignored. A
