@@ -83,7 +83,7 @@ if [ -n "$undecided_list" ]; then
   echo "New plugin(s) not yet decided in the overlay enabledPlugins (defaulting OFF):"
   printf '%s\n' "$undecided_list" | sed 's/^/  • /'
   echo "  → decide each true/false in exact_dot_claude/modify_settings.json,"
-  echo "    or run /pin-plugins / /configure:claude-plugins --exhaustive."
+  echo "    or run /configure-claude-plugins --exhaustive."
 fi
 if [ -n "$stale_list" ]; then
   echo "Pinned plugin(s) no longer in the marketplace (safe to drop from overlay):"

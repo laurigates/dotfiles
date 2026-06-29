@@ -185,17 +185,33 @@ description = "Check what changes would be made (alias for status)"
 # Testing & Quality Assurance
 # ----------------------------------------------------------------------------
 [tasks.test]
-description = "Run all tests (linting + setup verification + container testing)"
-depends = ["lint", "test:setup", "docker"]
+description = "Run all tests (linting + setup verification + plugin refs + container testing)"
+depends = ["lint", "test:setup", "test:plugin-refs", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
 run = """
 #!/usr/bin/env bash
-if [ -x tests/test-initial-setup.sh ]; then
-    tests/test-initial-setup.sh
+# These tasks live in the global mise config and run from $HOME, so reference
+# the test by its absolute path in the chezmoi source tree.
+SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-initial-setup.sh"
+if [ -x "$SCRIPT" ]; then
+    "$SCRIPT"
 else
-    echo "⚠️  Warning: tests/test-initial-setup.sh not found or not executable"
+    echo "⚠️  Warning: $SCRIPT not found or not executable"
+    exit 1
+fi
+"""
+
+[tasks."test:plugin-refs"]
+description = "Regression test: Claude plugin/marketplace references resolve (alias, plugin existence, slash commands)"
+run = """
+#!/usr/bin/env bash
+SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-claude-plugin-references.sh"
+if [ -x "$SCRIPT" ]; then
+    "$SCRIPT"
+else
+    echo "⚠️  Warning: $SCRIPT not found or not executable"
     exit 1
 fi
 """
