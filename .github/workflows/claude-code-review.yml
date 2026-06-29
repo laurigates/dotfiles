@@ -64,5 +64,5 @@ jobs:
 
           # Claude Code configuration via CLI arguments
           claude_args: |
-            --model claude-opus-4-5-20251101
+            --model ${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}
             --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"
