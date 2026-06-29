@@ -400,6 +400,28 @@ _gh_paint() {
     }'
 }
 
+# `gh pr list` with each PR's #number wrapped in an OSC 8 terminal hyperlink to
+# the PR page. We let gh render natively (GH_FORCE_TTY forces its TTY layout
+# even through a pipe), so the state-based number colours (green=open,
+# magenta=merged, red=closed), cyan branch, dim date, and column alignment all
+# match `gh pr ls` exactly; an awk pass then wraps the leading #number — the
+# first match per line, i.e. the ID column, never a #123 inside a title — in a
+# zero-width hyperlink. Clickable under kitty/WezTerm/iTerm2, plain text
+# elsewhere. Extra args pass through (e.g. `ghprls --author @me`,
+# `ghprls -L 50 --state all`).
+ghprls() {
+  local repo
+  repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) || return
+  GH_FORCE_TTY="${COLUMNS:-100}" gh pr list "$@" |
+    awk -v repo="$repo" '
+      match($0, /#[0-9]+/) {
+        num = substr($0, RSTART + 1, RLENGTH - 1)
+        link = "\033]8;;https://github.com/" repo "/pull/" num "\033\\"
+        $0 = substr($0, 1, RSTART - 1) link substr($0, RSTART, RLENGTH) "\033]8;;\033\\" substr($0, RSTART + RLENGTH)
+      }
+      { print }'
+}
+
 # GitHub Issues → Claude: select issue and process with git:issue skill
 ghi() {
   local issue_num
