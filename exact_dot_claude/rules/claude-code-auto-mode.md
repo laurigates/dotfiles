@@ -113,6 +113,49 @@ intent; naming the exact action ("force-push this branch") is.
 API (Opus 4.7+/4.8 on Bedrock/Vertex/Foundry, which also need
 `CLAUDE_CODE_ENABLE_AUTO_MODE=1`).
 
+## Headless `claude -p`: `acceptEdits` does NOT clear the protected-path gate
+
+The permission *mode* and the protected-path gate are **separate checks**.
+`--permission-mode acceptEdits` auto-approves ordinary file edits, but writes
+to **protected paths** — notably `.claude/settings.json` — route to a separate
+gate that `acceptEdits` does not satisfy (the same routing that sends protected
+writes to the classifier under auto mode). In an interactive session you get a
+prompt; in a **non-interactive `claude -p` run there is nobody to grant it**, so
+the write **hangs *pending*** and the command **silently half-completes** —
+exit looks fine, unprotected files (`.github/workflows/…`) land, the protected
+file does not.
+
+The tell: a headless recipe that "ran successfully" but left
+`.claude/settings.json` unwritten, reported as `PENDING (write permission not
+granted)`.
+
+### Fix — pick the mode by blast radius
+
+For a headless recipe whose job is to write protected paths:
+
+| Mode | Behavior on the protected write | Use when |
+|---|---|---|
+| `acceptEdits` | **stalls pending** — wrong for headless | — |
+| `auto` | classifier auto-approves the legitimate in-repo write, still enforces hard/soft-deny | **preferred** — narrowest that works |
+| `bypassPermissions` | disables *all* checks for the run | only if `auto` is unavailable (older/pinned model) |
+
+`--permission-mode auto` is the right default — narrower than
+`bypassPermissions`, which unsandboxes the whole nested run. **But `auto`
+requires Opus 4.6+ / Sonnet 4.6+** (see below); on a runner with an older
+pinned model `auto` falls back to gating the protected write again, so a recipe
+that pins an old model in CI needs `bypassPermissions` (or no protected write).
+`--allowedTools 'Write(.claude/settings.json)'` does **not** help — the
+protected-path gate sits in front of the tool allowlist, and there is no
+classifier round-trip in `-p` mode anyway.
+
+Most surgical of all: have the recipe write `.claude/settings.json` directly
+(a `jq`/heredoc template), so no nested `claude` permission gate is involved.
+
+(Discovered 2026-06 fixing the dotfiles `plugins-setup-repo` justfile recipe:
+`claude -p "/configure-claude-plugins --fix" --permission-mode acceptEdits`
+wrote the workflows but stranded `.claude/settings.json`; switching to
+`--permission-mode auto` fixed it.)
+
 ## Ref
 
 - <https://code.claude.com/docs/en/permission-modes.md>
