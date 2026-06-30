@@ -84,12 +84,12 @@ plugins-reinstall: plugins-uninstall plugins-install plugins-enable
 # Configure current repository to use laurigates/claude-plugins marketplace (writes .claude/settings.json and workflows)
 plugins-setup-repo:
     @echo "{{BLUE}}Configuring Claude plugins for repository at $(pwd)...{{NORMAL}}"
-    CLAUDECODE= claude -p "/configure-claude-plugins --fix" --permission-mode acceptEdits
+    CLAUDECODE= claude -p "/configure-claude-plugins --fix" --model {{claude_model}} --permission-mode auto
 
 # Report current repository's Claude plugin configuration without changes
 plugins-check-repo:
     @echo "{{BLUE}}Checking Claude plugin configuration for repository at $(pwd)...{{NORMAL}}"
-    CLAUDECODE= claude -p "/configure-claude-plugins --check-only"
+    CLAUDECODE= claude -p "/configure-claude-plugins --check-only" --model {{claude_model}}
 
 # Audit committed project plugin pins for drift vs canonical (read-only)
 plugins-audit:
