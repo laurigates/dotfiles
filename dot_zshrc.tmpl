@@ -779,6 +779,7 @@ ghv()  { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr vie
 ghd()  { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr diff "$p"; }       # gh pr diff
 ghco() { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr checkout "$p"; }   # gh pr checkout
 ghck() { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr checks "$p"; }     # gh pr checks
+ghub() { local p=$(_gh_pick_arg _gh_pr_pick    "$1"); [[ -n "$p" ]] && gh pr update-branch "$p"; } # gh pr update-branch
 ghiv() { local p=$(_gh_pick_arg _gh_issue_pick "$1"); [[ -n "$p" ]] && gh issue view "$p"; }    # gh issue view (cf. ghi → Claude)
 ghr()  { local p=$(_gh_pick_arg _gh_run_pick   "$1"); [[ -n "$p" ]] && gh run view "$p"; }      # gh run view
 ghw()  { local p=$(_gh_pick_arg _gh_run_pick   "$1"); [[ -n "$p" ]] && gh run watch "$p"; }     # gh run watch
@@ -1020,7 +1021,7 @@ _gh_pr_merge_complete() {
   _describe -t prs 'pull request' prs
 }
 
-compdef _gh_pr_merge_complete ghsq ghrb ghv ghd ghco ghck
+compdef _gh_pr_merge_complete ghsq ghrb ghv ghd ghco ghck ghub
 
 # Custom completion for ghpc (PR feedback)
 _gh_pr_feedback_complete() {
@@ -1080,6 +1081,7 @@ _GH_WRAPPER_DESC=(
   ghd  'gh pr diff'
   ghco 'gh pr checkout'
   ghck 'gh pr checks'
+  ghub 'gh pr update-branch'
   ghiv 'gh issue view'
   ghr  'gh run view'
   ghw  'gh run watch'
@@ -1095,6 +1097,7 @@ _GH_WRAPPER_DOC=(
   ghd  'fzf-pick a PR, then show its diff.'
   ghco 'fzf-pick a PR, then check it out locally.'
   ghck 'fzf-pick a PR, then show its CI checks.'
+  ghub 'fzf-pick a PR, then update its branch from base (gh pr update-branch).'
   ghiv 'fzf-pick an issue, then view it (plain; cf. ghi → Claude).'
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
@@ -1123,7 +1126,7 @@ zstyle ':completion:*' completer _gh_wrapper_names_complete _complete
 # Belt-and-suspenders: also hide the bare wrapper names from the default
 # `functions` group in command position, in case de-dup ever doesn't apply.
 zstyle ':completion:*:-command-:*:functions' ignored-patterns \
-  '(ghv|ghd|ghco|ghck|ghiv|ghr|ghw|ghwr|ghsq|ghrb|ghrp|ghpc|ghi)'
+  '(ghv|ghd|ghco|ghck|ghub|ghiv|ghr|ghw|ghwr|ghsq|ghrb|ghrp|ghpc|ghi)'
 
 # Preview pane (fzf-tab) for `gh<TAB>`: fzf runs the preview in a child shell
 # that never sourced this file, so it can't call a function defined here — it
@@ -1154,7 +1157,7 @@ zstyle ':fzf-tab:complete:ghpc:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks ${word%%\[*} 2>/dev/null'
 zstyle ':fzf-tab:complete:ghi:*' fzf-preview \
   'GH_FORCE_TTY=1 gh issue view ${word%%\[*} 2>/dev/null'
-zstyle ':fzf-tab:complete:(ghv|ghd|ghco|ghck):*' fzf-preview \
+zstyle ':fzf-tab:complete:(ghv|ghd|ghco|ghck|ghub):*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
 zstyle ':fzf-tab:complete:ghiv:*' fzf-preview \
   'GH_FORCE_TTY=1 gh issue view ${word%%\[*} 2>/dev/null'
