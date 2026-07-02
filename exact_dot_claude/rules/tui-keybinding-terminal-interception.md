@@ -57,6 +57,30 @@ either. Whether a `Shift+Arrow`-style combo is a terminal *default* or *user
 config* matters: a user map can be changed (`map shift+down no_op`), a built-in
 default usually can't without overriding it.
 
+## Layout-impossible combos: the key can't even be typed
+
+A third way a bind is dead — before interception even enters the picture: on
+non-US layouts the **character itself needs a modifier**, so the Ctrl-combo is
+unproducible. On Finnish/Nordic ISO layouts `/` is `Shift+7`, `?` is `Shift++`,
+`\` is `AltGr+<`, etc. A bind like fzf's popular `ctrl-/:toggle-preview` can
+never fire: the keyboard has no bare `/` key, so the terminal never emits
+Ctrl+/ at all. Nothing intercepts it — it just doesn't exist. The failure is
+extra-invisible because the header hint (`^/ preview`) reads as a truncated or
+garbled label rather than an impossible chord.
+
+> Canonical break (dotfiles PR #294, 2026-07): every `gh` fzf picker bound
+> `ctrl-/:toggle-preview`; on a Finnish layout the preview toggle was dead in
+> all of them. Fix: rebind to bare `Ctrl+T`.
+
+The rule of thumb extends the table above: **punctuation Ctrl-combos
+(`ctrl-/`, `ctrl-?`, `ctrl-\`, `ctrl-]`, `ctrl-;`…) are layout-dependent —
+treat them as unavailable** when authoring binds meant to work across
+keyboards. Bare `Ctrl+<letter>` is the only Ctrl-space that exists on every
+layout AND passes through every terminal. Diagnosis is the same
+`show_key` run: if pressing the chord prints nothing *and* the combo involves
+a shifted/AltGr character on your layout, suspect the layout before the
+terminal.
+
 ## Secondary, app-side: legacy key aliasing (crossterm)
 
 Even once a key reaches the app, legacy terminal encoding aliases distinct keys
