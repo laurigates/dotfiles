@@ -35,6 +35,16 @@ repos:
       # builds from source and needs a C linker, which isn't available on
       # minimal Linux hosts like TrueNAS where apt is disabled.
       - id: stylua-github
+  - repo: local
+    hooks:
+      # Validate justfile roots parse + evaluate (catches undefined variables
+      # across imported fragments — see scripts/check-justfiles.sh).
+      - id: check-justfiles
+        name: check justfiles parse and evaluate
+        entry: scripts/check-justfiles.sh
+        language: script
+        files: '(^|/)(justfile$|.*\.just$)'
+        pass_filenames: false
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.7
     hooks:
