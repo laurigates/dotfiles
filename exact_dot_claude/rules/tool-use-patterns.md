@@ -133,6 +133,31 @@ Mitigations, in order of preference:
 - **Don't blind-retry the same wide fan-out** after a burst-limit kill — it
   re-trips. Re-issue serialized, or fall back to the inline pass.
 
+### A usage-limit kill mid-run is recoverable — audit remote, then resume
+
+The **session usage limit** ("You've hit your session limit · resets <time>")
+kills in-flight subagents the same way the burst limit does: each agent dies
+on a terminal API error at whatever stage it had reached — some after pushing
+a branch and opening a PR, some mid-edit, some before starting. A `Workflow`
+run reports them under `failures`; completed siblings' results survive in the
+run's journal.
+
+Recovery protocol (observed 2026-07: a 14-agent PR sweep lost 7 agents to the
+limit and recovered fully):
+
+1. **Wait out the reset** — the limit message names the reset time; nothing
+   recovers before it.
+2. **Audit remote state before resuming** — dead agents may have half-landed
+   their work: `gh pr list --state open` plus `git ls-remote --heads origin`
+   show which branches/PRs already exist. A re-run agent that pushes an
+   already-pushed branch hits a non-fast-forward reject, and one that
+   re-creates an existing PR duplicates it — brief agents to check first, or
+   verify the remote is clean yourself.
+3. **Resume, don't re-dispatch**: `Workflow({scriptPath, resumeFromRunId})`
+   replays completed agents from cache (cache key: unchanged prompt + opts)
+   at zero cost and re-runs only the dead ones. Re-dispatching from scratch
+   re-pays every completed agent's tokens.
+
 ## WebFetch — do not retry the same failing URL
 
 | Failure | Try |
