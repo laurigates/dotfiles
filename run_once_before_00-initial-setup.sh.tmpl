@@ -37,6 +37,15 @@ git config --global status.showStash true
 if command -v pre-commit &> /dev/null; then
     echo "Installing pre-commit hooks..."
     (cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+
+    # Auto-install pre-commit into EVERY future `git clone` / `git init` via
+    # git's template directory, so we never have to remember `pre-commit install`
+    # per repo. pre-commit's templatedir hooks no-op gracefully in repos that
+    # have no .pre-commit-config.yaml, so this is safe to apply globally.
+    git_template_dir="${XDG_CONFIG_HOME:-$HOME/.config}/git/template"
+    echo "Configuring git template dir for auto pre-commit install: $git_template_dir"
+    pre-commit init-templatedir "$git_template_dir" -t pre-commit -t commit-msg
+    git config --global init.templateDir "$git_template_dir"
 else
     echo "Skipping pre-commit hooks installation (pre-commit not installed yet)"
     echo "Run 'chezmoi apply' again after installing pre-commit to set up hooks"
