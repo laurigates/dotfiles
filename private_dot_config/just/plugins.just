@@ -8,6 +8,15 @@
 # justfile (~/.config/just/justfile) imports it as a sibling. Edit here, then
 # `chezmoi apply`.
 
+# Claude model for headless `claude -p` recipes (single source of truth,
+# referenced as {{claude_model}} in plugins-setup-repo / plugins-check-repo).
+# Defined HERE — not in an importing justfile — because this file is imported
+# by BOTH the dotfiles repo justfile and the global justfile; a definition in
+# only one importer leaves {{claude_model}} undefined in the other, breaking
+# every `just` invocation there (and silently downgrading the grouped `_just`
+# completer to flat). Bump the version here to update everywhere.
+claude_model := "claude-opus-4-8"
+
 marketplace := "laurigates-claude-plugins"
 marketplace_url := "https://raw.githubusercontent.com/laurigates/claude-plugins/refs/heads/main/.claude-plugin/marketplace.json"
 

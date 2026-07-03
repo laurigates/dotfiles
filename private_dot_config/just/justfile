@@ -11,11 +11,10 @@
 #   • claude.just   — Claude Code setup (mcp-*, cclsp, claude-setup, settings-audit)
 #   • git.just      — Git branch hygiene (branch-audit)
 # Edit those, then `chezmoi apply`. Imports are relative to this file's directory.
-
-# Claude model used by headless `claude -p` recipes (single source of truth,
-# referenced as {{claude_model}} across the imported recipe files). Update here
-# to bump the version everywhere.
-claude_model := "claude-opus-4-8"
+#
+# `claude_model` (for headless `claude -p` recipes) is defined in plugins.just,
+# not here — it must live in the shared imported file so every importer inherits
+# it. See the comment there.
 
 import 'plugins.just'
 import 'claude.just'
