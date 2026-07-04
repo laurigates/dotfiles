@@ -24,12 +24,28 @@ src_root="${HOME}/.local/share/chezmoi"
 
 case "$file_path" in
     "$src_root"/exact_dot_claude/*)
-        msg="You edited a chezmoi source under exact_dot_claude/. Run \`chezmoi apply -v ~/.claude\` to sync the change to the runtime ~/.claude/ tree before relying on it."
+        class="claude"
+        msg="You edited a chezmoi source under exact_dot_claude/. Run \`chezmoi apply -v ~/.claude\` to sync the change to the runtime ~/.claude/ tree before relying on it. (Nudge debounced — it won't repeat for further edits in this burst.)"
         ;;
     "$src_root"/.chezmoidata.toml|"$src_root"/.chezmoidata/*)
-        msg="You edited chezmoi template data. The next \`chezmoi apply\` will trigger run_onchange scripts (e.g. shell completions, MCP config regeneration). Preview with \`chezmoi diff\` first."
+        class="chezmoidata"
+        msg="You edited chezmoi template data. The next \`chezmoi apply\` will trigger run_onchange scripts (e.g. shell completions, MCP config regeneration). Preview with \`chezmoi diff\` first. (Nudge debounced — it won't repeat for further edits in this burst.)"
         ;;
     *) exit 0 ;;
 esac
+
+# Debounce: one nudge per class per window. An edit sweep otherwise repeats
+# the identical reminder on every single Edit/Write (observed 2026-07: nine
+# copies in one session) — pure context noise after the first.
+DEBOUNCE_SECS="${CHEZMOI_NUDGE_DEBOUNCE_SECS:-1800}"
+stamp_dir="${TMPDIR:-/tmp}/chezmoi-nudge-$(id -u)"
+stamp="$stamp_dir/$class"
+mkdir -p "$stamp_dir" 2>/dev/null || true
+now=$(date +%s)
+if [ -f "$stamp" ]; then
+    last=$(stat -f %m "$stamp" 2>/dev/null || stat -c %Y "$stamp" 2>/dev/null || echo 0)
+    [ $((now - last)) -lt "$DEBOUNCE_SECS" ] && exit 0
+fi
+touch "$stamp"
 
 jq -nc --arg r "$msg" '{decision: "block", reason: $r}'
