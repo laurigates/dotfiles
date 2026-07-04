@@ -27,7 +27,7 @@ FVH daily note stays clean.
 
 # Project naming map
 
-Follow `~/.claude/rules/taskwarrior-cross-session.md`. Common projects in
+Follow `~/.claude/rules/taskwarrior-tracking.md`. Common projects in
 this user's queue:
 
 | Context | `project:` |

@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/Dockerfile*"
+  - "**/*.dockerignore"
+  - "**/.dockerignore"
+  - "**/docker-compose*.yml"
+---
+
 # Docker Build Context & `.dockerignore` Location
 
 A bare `.dockerignore` placed **inside a subdirectory** is never read by

@@ -1,77 +1,71 @@
-# Taskwarrior — Tracking Durable Follow-ups
+# Taskwarrior — Cross-Session Work Tracking
 
-Use the local `task` CLI (Taskwarrior 3.x, data in
-`~/.local/share/task/`) as the **persistent backlog across sessions**.
-The in-conversation TaskCreate/TaskList tools are for *this* session;
-once the session ends they're gone. Anything that needs to outlive
-the session — a pending external action, an upstream PR to watch, a
-follow-up decision — belongs in Taskwarrior.
+The local `task` CLI (Taskwarrior 3.x, data in `~/.local/share/task/`) is the
+**persistent backlog across sessions**. The in-conversation TaskCreate/TaskList
+tools die with the session; anything that must outlive it belongs in
+taskwarrior. (Merged 2026-07 from `taskwarrior-tracking.md` +
+`taskwarrior-cross-session.md`. Bulk/batch mechanics: see
+`taskwarrior-bulk-operations.md`.)
 
-## When to populate
+## When to add a task
 
-Add a Taskwarrior task when the work produced one of these:
+All of these true:
 
-- **Pending user action** the agent can't perform itself
-  (`sudo systemctl restart`, `gcloud auth login`, manual review).
-- **Upstream tracking** that spans days/weeks (PR review, issue
-  monitoring, "re-apply patch after next upgrade").
-- **Decisions deferred** out of the current session
-  ("decide whether to switch from Mode A to Mode B next week").
-- **Multi-session work** where the next step happens after the user
-  comes back ("finish migrating remaining 3 services").
+- **Concrete and actionable** (not "think about X someday" — those rot)
+- **Won't finish this session**: pending user action (`sudo`, manual UI step),
+  upstream PR/issue to watch, deferred decision, multi-session work
+- **Not already tracked** somewhere durable (GitHub issue/PR, calendar) —
+  annotate/link the existing tracker instead of duplicating
 
-Do **not** add a task for work that completed cleanly inside the
-session, or for routine in-flight steps (those belong in
-TaskCreate/TaskList only).
+Do **not** add tasks for work completed in-session or routine in-flight steps.
 
 ## How to add
 
-The CLI accepts task descriptions with `+tags`, `project:foo`, and
-`priority:H|M|L`. Use `rc.confirmation:no` so the agent doesn't get
-stuck on a confirmation prompt:
-
 ```sh
-task rc.confirmation:no add project:<repo-or-area> +<tag> [+<tag>...] \
-  [priority:H] '<description>'
+task rc.confirmation:no add project:<slug> +<tag> [priority:H|M|L] '<description>'
 ```
 
-Conventions:
-
-- **`project:`** — short slug naming the area (`comfyui`, `dotfiles`,
-  `claude-plugins`, `fvh-<service>`). One word, lowercase.
-- **Tags** — orthogonal facets. Common ones:
-  `+upstream` (waiting on a third-party repo),
-  `+remix`/`+wan22`/`<feature>` (sub-area within the project),
-  `+followup` (deferred decision),
-  `+blocked` (waiting on something external).
-- **`priority:H`** only when the task is genuinely time-sensitive
-  (service is down, deploy is broken). Default unset.
-- **Description** — write so it makes sense in 6 weeks with no
-  other context. Reference PR numbers, file paths, decision criteria
-  in the description itself.
+- **`project:`** — one short lowercase slug per long-running area, reused
+  consistently (`dotfiles`, `claude-plugins`, `immeral`, `comfyui`,
+  `fvh-<service>`; default: repo/directory name). Ask once when unsure, then
+  stick to it.
+- **Tags** — orthogonal facets: `+upstream` (waiting on third-party),
+  `+blocked`, `+followup`, area tags (`+foundry`, `+wan22`, …).
+- **`priority:`** — `H` only when genuinely time-sensitive (service down,
+  gameplay-blocking); default `M`; `L` for monitoring/nice-to-have.
+- **Description** — must make sense in 6 weeks with no other context: include
+  PR numbers, file paths, decision criteria.
+- **Annotate references**: `task <id> annotate "See: <url or path>"` so a
+  future session picks it up without conversation history.
+- **`due:`** only for real deadlines — it's a queue, not a calendar.
 
 ## How to inspect
 
 ```sh
-task project:<slug> list                   # backlog for one project
-task +upstream list                        # all upstream-tracking work
-task rc.confirmation:no <id> done          # complete a task
-task rc.confirmation:no <id> modify +urgent priority:H   # bump
+task project:<slug> list                 # one project's backlog
+task +upstream list                      # all upstream-tracking work
+task rc.confirmation:no <id> done        # complete
 ```
 
-For any agent-friendly bulk read, use `export | jq` (always exit-0)
-rather than `list` (exits 1 on empty), per
-`parallel-safe-queries.md`.
+For agent/bulk reads prefer `task <filter> export | jq` (always exit-0) over
+`list` (exits 1 on empty).
 
 ## End-of-session checklist
 
-When wrapping a session that produced durable follow-ups:
+When wrapping a session that produced durable follow-ups, do this proactively:
 
-1. Add a task for each one, with project + tags.
-2. Mention the additions in the closing summary so the user knows
-   they're recorded.
-3. Don't duplicate: skim `task project:<slug> list` first; update
-   an existing task with `modify` rather than adding a near-duplicate.
+1. Skim `task project:<slug> list` first — `modify` near-duplicates rather
+   than re-adding.
+2. Add each surviving follow-up with project + tags + annotations
+   (3–6 well-chosen tasks beat 20 noisy ones).
+3. Mention what got logged in the closing summary so the user can adjust.
+
+## What this is *not*
+
+- Not a replacement for GitHub issues (project-owned) — taskwarrior is the
+  personal cross-project queue.
+- Not a replacement for in-session TaskCreate (tracks work *during* the
+  conversation).
 
 ## Bootstrap
 
@@ -81,5 +75,3 @@ If `task` errors with "Cannot proceed without rc file":
 mkdir -p ~/.local/share/task
 echo "data.location=~/.local/share/task" > ~/.taskrc
 ```
-
-Taskwarrior 3.x then auto-creates the SQLite store on first write.

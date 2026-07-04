@@ -113,7 +113,7 @@ close to legacy.
 
 - `kitty-agent-interaction.md` — the read-only kitty remote-control surface; this
   rule is the keyboard-interception debugging complement.
-- `zshrc-keybindings.md` — the *shell*-layer analogue (zsh-vi-mode rebuilding the
+- `zshrc-keybindings.md` (dotfiles repo `.claude/rules/`) — the *shell*-layer analogue (zsh-vi-mode rebuilding the
   keymap after sourcing); both are "something between you and the binding ate it."
 
 ## Rationale

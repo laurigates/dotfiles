@@ -16,7 +16,8 @@
 # crying wolf on every apply that follows a source edit (chezmoi issue #4180's
 # ambiguity). Column 1 isolates real target drift. `just capture-drift` lists
 # specifics incl. templated sources (which need `chezmoi merge`, not re-add).
-# See rules/chezmoi-conventions.md ("re-add Skips Templates").
+# See .claude/rules/chezmoi-conventions.md in the chezmoi source repo
+# ("re-add Skips Templates").
 #
 # Registered user-globally (modify_settings.json) so it fires regardless of cwd.
 set -euo pipefail
@@ -29,11 +30,14 @@ tool=$(jq -r '.tool_name // empty' <<<"$input" 2>/dev/null || echo "")
 cmd=$(jq -r '.tool_input.command // empty' <<<"$input" 2>/dev/null || echo "")
 [ -z "$cmd" ] && exit 0
 
-# Only inspect `chezmoi ... apply` invocations.
-case "$cmd" in
-    *chezmoi*apply*) ;;
-    *) exit 0 ;;
-esac
+# Only inspect actual `chezmoi ... apply` invocations: `chezmoi` must start a
+# command (line start, after ;|&&, or inside $( )) and `apply` must follow
+# within the same segment. A bare substring match also fires on commit
+# messages / PR bodies that merely MENTION "chezmoi apply" (observed 2026-07:
+# git commit and gh pr edit calls triggered the guard via their heredoc
+# text). Backtick is deliberately NOT an anchor — markdown inline code in
+# message bodies (`chezmoi status` ... apply) would false-positive.
+printf '%s\n' "$cmd" | grep -qE '(^|[;&|]|[$][(])[[:space:]]*(command[[:space:]]+)?chezmoi[[:space:]][^;&|]*\bapply\b' || exit 0
 
 # Dry runs and verbose previews write nothing — no drift to lose.
 case "$cmd" in
@@ -42,12 +46,14 @@ esac
 
 command -v chezmoi >/dev/null 2>&1 || exit 0
 
-# Count targets modified since chezmoi last wrote them (status col1 == M).
-pending=$(chezmoi status 2>/dev/null | awk 'substr($0,1,1)=="M"' | grep -c . || true)
-pending=${pending:-0}
-[ "$pending" -eq 0 ] && exit 0
+# Targets modified since chezmoi last wrote them (status col1 == M).
+drifted=$(chezmoi status 2>/dev/null | awk 'substr($0,1,1)=="M" {print $2}' || true)
+[ -z "$drifted" ] && exit 0
+pending=$(printf '%s\n' "$drifted" | grep -c .)
+names=$(printf '%s\n' "$drifted" | head -3 | tr '\n' ' ')
+[ "$pending" -gt 3 ] && names="${names}… "
 
-msg="Heads-up: ${pending} chezmoi target file(s) have local edits made since chezmoi last wrote them, which this 'chezmoi apply' will OVERWRITE. If those edits are wanted, capture them first: 'just capture-drift' (preview) then 'just capture-drift-apply'. Templated sources also need 'chezmoi merge'. If the overwrite is intended, proceed."
+msg="Heads-up: ${pending} chezmoi target file(s) have local edits made since chezmoi last wrote them, which this 'chezmoi apply' will OVERWRITE: ${names}. If those edits are wanted, capture them first: 'just capture-drift' (preview) then 'just capture-drift-apply'. Templated sources also need 'chezmoi merge'. If the overwrite is intended, proceed."
 
 jq -nc --arg c "$msg" '{
     hookSpecificOutput: {

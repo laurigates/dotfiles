@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/.claude/settings*.json"
+  - "**/modify_settings.json"
+  - "**/.claude/hooks/**"
+---
+
 # Claude Code Auto Mode & Permission Rules
 
 **Scope**: writing or editing `permissions` / `autoMode` in any Claude Code

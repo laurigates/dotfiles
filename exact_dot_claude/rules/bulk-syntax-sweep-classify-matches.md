@@ -80,10 +80,8 @@ which look like real targets and can only be told apart by reading intent.
 - `verify-upstream-before-patching.md` / `read-issue-thread-before-contributing.md`
   — same instinct: establish the authoritative *intent* before acting, don't
   trust a surface signal.
-- `textual-merge-duplicates-identical-additions.md`,
-  `squash-merge-orphans-post-merge-commits.md` — kin in spirit: an automated
-  pass reporting success is not proof the *result* is correct; verify the
-  content, not the exit code.
+- `git-hazards.md` — kin in spirit: an automated pass reporting success is
+  not proof the *result* is correct; verify the content, not the exit code.
 - ADR handling (category 4) follows the standard supersede-don't-rewrite
   convention — set `Status: Superseded` + a top-note, leave the body as a
   historical record.
