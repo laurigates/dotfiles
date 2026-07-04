@@ -2,7 +2,7 @@
 
 When triaging or closing many tasks in one pass (queue cleanup, PR sweep, project wrap-up), the obvious CLI shape — `for id in 1 2 3; do task $id done; done` — silently breaks in two ways. This rule documents the two foot-guns and the patterns that avoid them.
 
-Companion to `taskwarrior-cross-session.md` (which covers **when** to add tasks). This rule covers **how** to operate on tasks at scale.
+Companion to `taskwarrior-tracking.md` (which covers **when** to add tasks). This rule covers **how** to operate on tasks at scale.
 
 ## Foot-gun 1: numeric IDs renumber after every `task done`
 

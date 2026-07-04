@@ -1,17 +1,8 @@
 # Dependency Management
 
 Derived from git history patterns (tooling decisions across 1404 commits).
-
-## Tool Installation Priority
-
-1. **mise** with appropriate backend:
-   - Core runtimes: `python`, `node`, `go`, `rust`, `bun`
-   - Python CLIs: `pipx:` backend (runs via uvx)
-   - Standalone binaries: `aqua:` backend (checksum verification)
-2. **uv tool install** — Python tools as isolated packages
-3. **bun install -g** — JavaScript/TypeScript global packages
-4. **cargo install** / **go install** — When not available via aqua
-5. **brew install** — Last resort for CLI tools; primary for system packages and GUI apps
+Tool installation priority (mise → uv → bun → cargo/go → brew) is defined
+once in `~/.claude/CLAUDE.md` § Tool Installation Priority.
 
 ## Running With a Specific Version — `mise exec`, Not `mise use`
 

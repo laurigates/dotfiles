@@ -33,11 +33,12 @@ RULES_DIR="exact_dot_claude/rules"
 GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 
 # --- Budgets --------------------------------------------------------------
-# Baseline at introduction (2026-07): 145,988 rule bytes + 2,600 CLAUDE.md
-# = 148,588. Headroom is deliberate but small: hitting the budget should
+# Baseline history: 148,588 at introduction (2026-07); 98,956 after the
+# same-month consolidation wave (git-hazards merge, path-scoping, skill
+# pointers). Headroom is deliberate but small: hitting the budget should
 # trigger a cleanup pass, not a bump. Ratchet DOWN when cleanups land;
 # raising it needs a justification in the commit message.
-TOTAL_BUDGET_BYTES=160000
+TOTAL_BUDGET_BYTES=110000
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 
@@ -49,7 +50,7 @@ MARKERS='\.chezmoidata|dot_zshrc|mise run lint|exact_dot_claude/|\.chezmoiignore
 # content). Format: one rule filename per line. Adding to this list is a
 # conscious decision — prefer migrating the rule instead.
 MARKER_ALLOWLIST=(
-    branch-merge-detection.md      # points at the global justfile recipe source
+    git-hazards.md                 # points at the global justfile recipe source
     claude-plugins-freshness.md    # names the overlay file as source of truth
     path-scoped-rules.md           # chezmoi globs as frontmatter *examples*
     zsh-pattern-expansion-extended-glob.md  # names dot_zshrc.tmpl as one scope example

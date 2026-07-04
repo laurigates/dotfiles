@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/.claude/settings*.json"
+  - "**/modify_settings.json"
+---
+
 # Keeping `laurigates/claude-plugins` Fresh + Plugin Enablement
 
 **Scope**: managing the `laurigates-claude-plugins` marketplace and the

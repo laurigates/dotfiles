@@ -1,0 +1,82 @@
+# Git Hazards — Verify the Content, Not the Exit Code
+
+Six traps sharing one law: **a green git command is not proof the result is
+correct.** "Merge went well", "PR merged", and exit 0 are claims about
+mechanics, not content. Each hazard below: the trap, the 5-second check, the
+fix. (Consolidated 2026-07 from six separate incident rules; full narratives
+are in git history.)
+
+## 1. `--merged` misses squash-merged branches
+
+A squash-merge collapses a branch into one fresh-SHA commit on `main`, so the
+branch's own commits are never ancestors — `git branch --merged` (and any
+ancestry check) reports it **unmerged**. "Files identical to main" also fails
+once `main` drifts the same files.
+
+- **Check** (either proves the work is in `main`, immune to squash + drift):
+  - `git merge-tree --write-tree main <branch>` equals `git rev-parse main^{tree}` → contained.
+  - `gh pr list --state all --head <branch> --json state` → a MERGED PR is authoritative.
+- **Fix**: use the encoded recipe rather than re-deriving: `just -g branch-audit`
+  (in `private_dot_config/just/git.just`) prints MERGED vs REVIEW + a paste-ready delete.
+- A non-match is "review", **not** proof of unmerged — don't force the count to zero.
+
+## 2. Commits added after a squash-merge are orphaned
+
+Anything committed to a branch **after** its squash-merge is in neither `main`
+nor the squash commit. A fresh branch off `origin/main` silently lacks that
+work; the first symptom is an ImportError far downstream.
+
+- **Check** before follow-up work: `git grep <symbol> origin/main -- <path>` —
+  don't trust "the PR merged".
+- **Fix**: replay only the orphans: `git rebase --onto origin/main <squash-point> <branch>`,
+  then verify `git log --oneline origin/main..HEAD` shows only the orphaned + new commits.
+
+## 3. Merging a stacked base auto-CLOSES the child PR
+
+When PR B is based on PR A's branch, merging A and deleting its branch
+auto-closes B (GitHub does **not** retarget it), and a closed PR whose base
+branch is gone **cannot be reopened**.
+
+- **Fix — order matters**: retarget the child **first**, while the base PR is open:
+  1. `gh pr edit <child> --base main`
+  2. `gh pr merge <base> --squash --delete-branch`
+  3. `git rebase --onto origin/main <old-base-tip> <child-branch>` (drops the
+     already-squashed base commits) + `git push --force-with-lease`
+  4. merge the child.
+- **If already auto-closed**: the head branch survives — rebase as above,
+  `gh pr create` fresh, comment "Superseded by #new" on the closed one.
+
+## 4. Unpushed commits on local `main` ride into new branches
+
+Branching off local `main` inherits whatever it is ahead of `origin/main` by;
+the PR then bundles stray commits under an unrelated title (squash hides it —
+visible only in the file list).
+
+- **Rule**: cut PR branches from the remote, always:
+  `git fetch origin && git switch -c <branch> origin/main`.
+- **Check** when unsure: `git log --oneline origin/main..main` — empty means clean.
+
+## 5. A clean textual merge can duplicate identical additions
+
+When two branches each add the **same** helper/import/enum arm in non-adjacent
+spots, `git merge` sees no overlapping hunk, reports success, and keeps **both
+copies** — a duplicate-definition build break (or worse, silent shadowing in
+lax languages).
+
+- **Check**: build/test the merged tree before committing the merge; when
+  siblings solved related problems, `grep -c '<symbol>' <file>` — expect 1.
+- **Fix**: hand-resolve to a single combined definition; never trust
+  "Automatic merge went well" as a verdict on content.
+
+## 6. `git add` aborts atomically on a bad pathspec
+
+`git add fileA nonexistent` stages **nothing** — not "fileA plus a warning".
+Classic trip: `git mv old new`, edit `new`, then `git add new old` → the stale
+`old` aborts the add, and the commit ships the rename with pre-edit content.
+
+- **Rules**: one pathspec per `git add`, or only confirmed-present paths.
+  After `git mv` + edit, `git add <newname>` alone.
+- **Check**: `git status --short` before committing — the index column must
+  show the change you intend.
+- **Recovery**: the edit is still unstaged in the working tree; add and
+  commit/amend — don't redo the work.
