@@ -6,7 +6,7 @@
 # the removal silent. Path-scoped `chezmoi diff <target>` does NOT surface
 # pending deletions; only `chezmoi status` D-lines do. This guard runs that
 # status check so an apply can never silently delete unmanaged files.
-# Incident reference: ~/.claude/rules/chezmoi-conventions.md
+# Incident reference: ~/.local/share/chezmoi/.claude/rules/chezmoi-conventions.md
 # ("exact_ Dirs DELETE Unmanaged Files").
 #
 # Registered user-globally (modify_settings.json) so it fires regardless of
@@ -80,7 +80,7 @@ Before re-running, register or resolve each one:
   - keep, unmanaged:   add a commented entry to the exact_ dir's .chezmoiignore
   - deletion intended: rm the target file yourself, then apply
 
-See ~/.claude/rules/chezmoi-conventions.md ("exact_ Dirs DELETE Unmanaged
-Files") for the full guard rationale.
+See ~/.local/share/chezmoi/.claude/rules/chezmoi-conventions.md ("exact_ Dirs
+DELETE Unmanaged Files") for the full guard rationale.
 EOF
 exit 2

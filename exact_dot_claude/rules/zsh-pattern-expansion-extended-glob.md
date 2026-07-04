@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.zsh"
+  - "**/*zshrc*"
+  - "**/*zshenv*"
+---
+
 # Zsh Pattern Expansion Under `extended_glob`
 
 **Scope**: applies when writing or editing zsh parameter expansions that

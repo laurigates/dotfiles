@@ -16,7 +16,8 @@
 # crying wolf on every apply that follows a source edit (chezmoi issue #4180's
 # ambiguity). Column 1 isolates real target drift. `just capture-drift` lists
 # specifics incl. templated sources (which need `chezmoi merge`, not re-add).
-# See rules/chezmoi-conventions.md ("re-add Skips Templates").
+# See .claude/rules/chezmoi-conventions.md in the chezmoi source repo
+# ("re-add Skips Templates").
 #
 # Registered user-globally (modify_settings.json) so it fires regardless of cwd.
 set -euo pipefail

@@ -40,26 +40,9 @@ Why `exec` over `use`:
 Reach for `mise use` only when you genuinely want to *change* the project's or
 shell's default version going forward — not for a one-off run.
 
-## Homebrew Package Profiles
-
-Packages are managed through `.chezmoidata/packages.toml` with profile activation in `.chezmoidata/profiles.toml`:
-
-- `core` — Always installed
-- `dev` — Development tools (default: enabled)
-- `infra` — Infrastructure tools (terraform, kubectl, helm)
-- `gui` — GUI applications (cask installs)
-- Enable/disable profiles by toggling flags in `profiles.toml`
-
 ## Upgrade Patterns
 
 - Replace deprecated tools promptly — don't maintain compatibility shims
 - When upgrading, remove the old tool entirely (no dual-install period)
 - Update CI workflows alongside local tooling
 - Prefer tools with native completion support over manual completion scripts
-
-## MCP Server Management
-
-- Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`
-- Enable/disable per server — `enabled = true/false`
-- Project-specific overrides in per-project `.mcp.json`
-- Use `update-ai-tools.sh` for safe updates during active sessions

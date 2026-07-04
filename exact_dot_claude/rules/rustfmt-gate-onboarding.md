@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.rs"
+  - "**/rustfmt.toml"
+  - "**/Cargo.toml"
+---
+
 # Onboarding a `cargo fmt --check` Gate Onto a Never-Formatted Rust Repo
 
 When you add a CI `fmt` job (`cargo fmt --all -- --check`) to a Rust repo
