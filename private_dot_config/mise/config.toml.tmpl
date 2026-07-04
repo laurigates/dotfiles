@@ -185,8 +185,8 @@ description = "Check what changes would be made (alias for status)"
 # Testing & Quality Assurance
 # ----------------------------------------------------------------------------
 [tasks.test]
-description = "Run all tests (linting + setup verification + plugin refs + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "docker"]
+description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -208,6 +208,19 @@ description = "Regression test: Claude plugin/marketplace references resolve (al
 run = """
 #!/usr/bin/env bash
 SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-claude-plugin-references.sh"
+if [ -x "$SCRIPT" ]; then
+    "$SCRIPT"
+else
+    echo "⚠️  Warning: $SCRIPT not found or not executable"
+    exit 1
+fi
+"""
+
+[tasks."test:context-budget"]
+description = "Regression test: always-loaded Claude global context stays within budget (size, repo-specific markers, frontmatter)"
+run = """
+#!/usr/bin/env bash
+SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-claude-context-budget.sh"
 if [ -x "$SCRIPT" ]; then
     "$SCRIPT"
 else

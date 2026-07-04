@@ -45,6 +45,14 @@ repos:
         language: script
         files: '(^|/)(justfile$|.*\.just$)'
         pass_filenames: false
+      # Always-loaded Claude global context stays within budget (total size,
+      # per-file cap, repo-specific markers, paths: frontmatter validity).
+      - id: claude-context-budget
+        name: check Claude global context budget
+        entry: tests/test-claude-context-budget.sh
+        language: script
+        files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
+        pass_filenames: false
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.7
     hooks:
