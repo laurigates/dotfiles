@@ -18,7 +18,7 @@ Bash call fails instantly with
    `docker system prune -a`, `journalctl --vacuum-size=1G`). A typical
    uv/pip/HF session frees 30–50 GB.
 4. Fix the cause, not the symptom: redirect caches on small-root machines
-   (`HF_HOME` — see `huggingface-downloads.md`; `UV_CACHE_DIR`,
+   (`HF_HOME` — see the `tools-plugin:hf-downloads` skill; `UV_CACHE_DIR`,
    `PIP_CACHE_DIR`, `HOMEBREW_CACHE`), persisted in `.zshrc`/`~/.api_tokens`.
 
 For the full space-hunt playbook (APFS snapshots, OrbStack images, offender

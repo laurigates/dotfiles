@@ -4,8 +4,8 @@ The local `task` CLI (Taskwarrior 3.x, data in `~/.local/share/task/`) is the
 **persistent backlog across sessions**. The in-conversation TaskCreate/TaskList
 tools die with the session; anything that must outlive it belongs in
 taskwarrior. (Merged 2026-07 from `taskwarrior-tracking.md` +
-`taskwarrior-cross-session.md`. Bulk/batch mechanics: see
-`taskwarrior-bulk-operations.md`.)
+`taskwarrior-cross-session.md`. Bulk/batch mechanics: the
+`taskwarrior-plugin:task-bulk-ops` skill.)
 
 ## When to add a task
 
