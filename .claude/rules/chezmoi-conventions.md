@@ -70,6 +70,16 @@ Two traps stack here:
   `rules/`, `skills/` under `exact_dot_claude/`) tolerate unmanaged files.
   That asymmetry is why damage can look partial — and why "it survived last
   time" proves nothing about a sibling path.
+- **The flip side: non-`exact_` subdirs never PURGE either.** Deleting or
+  moving a source file out of `exact_dot_claude/rules/` leaves the old
+  target **orphaned in `~/.claude/rules/`** — still loading into every
+  session — with no `D` line in `chezmoi status` to flag it (bit twice in
+  the 2026-07 context diet). After removing a rule from source, delete the
+  target yourself and verify it's truly unmanaged first:
+  `chezmoi source-path ~/.claude/rules/<f> || rm ~/.claude/rules/<f>`.
+  The inverse leak also happens — a rule created directly in the target is
+  never captured to source and silently loads forever; sweep with
+  `for f in ~/.claude/rules/*.md; do chezmoi source-path "$f" >/dev/null 2>&1 || echo "UNMANAGED: $f"; done`.
 
 ## Finding the Source File — Ask Chezmoi, Don't Translate
 
