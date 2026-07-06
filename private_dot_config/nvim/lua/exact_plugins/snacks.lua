@@ -20,7 +20,8 @@ return {
       bufdelete = { enabled = true },
       dim = { enabled = true },
       indent = { enabled = true },
-      -- input = { enabled = true },
+      -- vim.ui.input + vim.ui.select (via picker) — replaces dressing.nvim (archived)
+      input = { enabled = true },
       rename = { enabled = true },
       scope = { enabled = true },
       util = { enabled = true },
