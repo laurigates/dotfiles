@@ -20,7 +20,7 @@ Modern Neovim configuration using Lua with lazy.nvim plugin management.
 ## Plugin Categories
 
 - **Completion**: blink.cmp with LSP
-- **LSP/Formatting**: Mason (installs), conform.nvim (format), nvim-lint (lint), navic/navbuddy (navigation)
+- **LSP/Formatting**: Mason (installs), conform.nvim (format), nvim-lint (lint), navic (breadcrumbs in lualine)
 - **Navigation**: fzf-lua, oil.nvim, aerial.nvim
 - **Git**: gitsigns, fugitive
 - **UI**: tokyonight, lualine, noice.nvim

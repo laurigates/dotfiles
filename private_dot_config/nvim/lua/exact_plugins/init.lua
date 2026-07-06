@@ -89,5 +89,4 @@ return {
     "nmac427/guess-indent.nvim",
     opts = {},
   },
-  { "meznaric/key-analyzer.nvim", opts = {} },
 }
