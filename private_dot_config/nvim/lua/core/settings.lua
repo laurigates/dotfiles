@@ -60,6 +60,8 @@ opt.fillchars = {
   diff = "╱",
   eob = " ",
 }
-opt.foldexpr = "nvim_treesitter#foldexpr()"
-opt.foldtext = "nvim_treesitter#foldtext()"
--- opt.foldtext = ""
+-- Built-in treesitter foldexpr (the nvim_treesitter#foldexpr() vimscript
+-- function only exists on the archived master branch)
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- Empty foldtext shows the folded line with its syntax highlighting (nvim 0.10+)
+opt.foldtext = ""
