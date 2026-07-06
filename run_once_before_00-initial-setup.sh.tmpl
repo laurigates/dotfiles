@@ -35,8 +35,17 @@ git config --global status.showStash true
 
 # Install pre-commit hooks (if pre-commit is available)
 if command -v pre-commit &> /dev/null; then
-    echo "Installing pre-commit hooks..."
-    (cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+    # pre-commit refuses to install when core.hooksPath is set, and with
+    # `set -e` that failure aborts the entire chezmoi apply. Skip the
+    # per-repo install in that case — hooks are managed via the configured
+    # hooks path (or the git template dir below for fresh clones).
+    if git -C "{{ .chezmoi.sourceDir }}" config --get core.hooksPath > /dev/null; then
+        echo "Skipping pre-commit install: core.hooksPath is set for {{ .chezmoi.sourceDir }}"
+        echo "hint: git -C {{ .chezmoi.sourceDir }} config --unset-all core.hooksPath"
+    else
+        echo "Installing pre-commit hooks..."
+        (cd "{{ .chezmoi.sourceDir }}" && pre-commit install --install-hooks)
+    fi
 
     # Auto-install pre-commit into EVERY future `git clone` / `git init` via
     # git's template directory, so we never have to remember `pre-commit install`
