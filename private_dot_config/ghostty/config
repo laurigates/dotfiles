@@ -1,0 +1,31 @@
+# Matched to private_kitty/kitty.conf.tmpl (font) and its
+# current-theme.conf (Catppuccin-Macchiato colors) so kitty and ghostty
+# look identical.
+
+font-family = "Hack Nerd Font Mono"
+font-size = 14
+
+# Catppuccin-Macchiato — https://github.com/catppuccin/kitty/blob/main/macchiato.conf
+background = #24273A
+foreground = #CAD3F5
+selection-background = #F4DBD6
+selection-foreground = #24273A
+cursor-color = #F4DBD6
+cursor-text = #24273A
+
+palette = 0=#494D64
+palette = 1=#ED8796
+palette = 2=#A6DA95
+palette = 3=#EED49F
+palette = 4=#8AADF4
+palette = 5=#F5BDE6
+palette = 6=#8BD5CA
+palette = 7=#B8C0E0
+palette = 8=#5B6078
+palette = 9=#ED8796
+palette = 10=#A6DA95
+palette = 11=#EED49F
+palette = 12=#8AADF4
+palette = 13=#F5BDE6
+palette = 14=#8BD5CA
+palette = 15=#A5ADCB
