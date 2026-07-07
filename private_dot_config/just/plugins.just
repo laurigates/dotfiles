@@ -26,15 +26,18 @@ plugin-names:
     @curl -s "{{marketplace_url}}" | jq -r '.plugins[].name'
 
 # List installed plugins and their status
+[group: "plugins"]
 plugins-list:
     @echo "{{BLUE}}Installed Claude plugins:{{NORMAL}}"
     @CLAUDECODE= claude plugin list
 
 # List installed plugins as JSON
+[group: "plugins"]
 plugins-json:
     @CLAUDECODE= claude plugin list --json
 
 # Install all plugins from marketplace
+[group: "plugins"]
 plugins-install:
     @echo "{{BLUE}}Installing all plugins from {{marketplace}}...{{NORMAL}}"
     @for p in $(curl -s "{{marketplace_url}}" | jq -r '.plugins[].name'); do \
@@ -43,64 +46,55 @@ plugins-install:
     done
     @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
 
-# Enable all installed plugins from marketplace
-plugins-enable:
-    @echo "{{BLUE}}Enabling all plugins from {{marketplace}}...{{NORMAL}}"
+# Run `claude plugin <action>` over every installed plugin from this marketplace,
+# narrowed by an optional jq {{filter}} fragment. Single source of truth for the
+# bulk enable/disable/update/uninstall recipes below — they differ ONLY in the
+# action verb and the enabled-state filter, so they share this body.
+[private]
+_plugins-foreach action filter="":
+    @echo "{{BLUE}}Running plugin {{action}} for {{marketplace}}...{{NORMAL}}"
     @CLAUDECODE= claude plugin list --json \
-        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | select(.enabled == false) | .id' \
+        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) {{filter}} | .id' \
         | while read -r p; do \
-            echo "  Enabling $p..."; \
-            CLAUDECODE= claude plugin enable "$p" 2>&1 | tail -1; \
+            echo "  {{action}} $p..."; \
+            CLAUDECODE= claude plugin {{action}} "$p" 2>&1 | tail -1; \
         done
     @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
 
-# Disable all installed plugins from marketplace
-plugins-disable:
-    @echo "{{BLUE}}Disabling all plugins from {{marketplace}}...{{NORMAL}}"
-    @CLAUDECODE= claude plugin list --json \
-        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | select(.enabled == true) | .id' \
-        | while read -r p; do \
-            echo "  Disabling $p..."; \
-            CLAUDECODE= claude plugin disable "$p" 2>&1 | tail -1; \
-        done
-    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+# Enable all installed (currently-disabled) plugins from marketplace
+[group: "plugins"]
+plugins-enable: (_plugins-foreach "enable" "| select(.enabled == false)")
+
+# Disable all installed (currently-enabled) plugins from marketplace
+[group: "plugins"]
+plugins-disable: (_plugins-foreach "disable" "| select(.enabled == true)")
 
 # Update all installed plugins from marketplace
-plugins-update:
-    @echo "{{BLUE}}Updating all plugins from {{marketplace}}...{{NORMAL}}"
-    @CLAUDECODE= claude plugin list --json \
-        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | .id' \
-        | while read -r p; do \
-            echo "  Updating $p..."; \
-            CLAUDECODE= claude plugin update "$p" 2>&1 | tail -1; \
-        done
-    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+[group: "plugins"]
+plugins-update: (_plugins-foreach "update")
 
 # Uninstall all plugins from marketplace
-plugins-uninstall:
-    @echo "{{BLUE}}Uninstalling all plugins from {{marketplace}}...{{NORMAL}}"
-    @CLAUDECODE= claude plugin list --json \
-        | jq -r '.[] | select(.id | endswith("@{{marketplace}}")) | .id' \
-        | while read -r p; do \
-            echo "  Uninstalling $p..."; \
-            CLAUDECODE= claude plugin uninstall "$p" 2>&1 | tail -1; \
-        done
-    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+[group: "plugins"]
+plugins-uninstall: (_plugins-foreach "uninstall")
 
 # Reinstall all plugins (uninstall → install → enable)
+[group: "plugins"]
 plugins-reinstall: plugins-uninstall plugins-install plugins-enable
 
 # Configure current repository to use laurigates/claude-plugins marketplace (writes .claude/settings.json and workflows)
+[group: "plugins"]
 plugins-setup-repo:
     @echo "{{BLUE}}Configuring Claude plugins for repository at $(pwd)...{{NORMAL}}"
     CLAUDECODE= claude -p "/configure-claude-plugins --fix" --model {{claude_model}} --permission-mode auto
 
 # Report current repository's Claude plugin configuration without changes
+[group: "plugins"]
 plugins-check-repo:
     @echo "{{BLUE}}Checking Claude plugin configuration for repository at $(pwd)...{{NORMAL}}"
     CLAUDECODE= claude -p "/configure-claude-plugins --check-only" --model {{claude_model}}
 
 # Audit committed project plugin pins for drift vs canonical (read-only)
+[group: "plugins"]
 plugins-audit:
     #!/usr/bin/env bash
     # Canonical = the @laurigates-claude-plugins keys in ~/.claude/settings.json.
@@ -148,6 +142,7 @@ plugins-audit:
     [ "$drifted" -gt 0 ] && echo "Bring one to canonical: just plugins-sync-repo <repo-path>"
 
 # Rewrite one repo's committed enabledPlugins from canonical (shows diff first)
+[group: "plugins"]
 plugins-sync-repo repo:
     #!/usr/bin/env bash
     # Canonical = ~/.claude/settings.json. Shows the enabledPlugins diff, then

@@ -1,6 +1,10 @@
 # justfile for dotfiles repository
 # Serves as documentation for integration points and common operations
 # Run `just` or `just --list` to see available recipes
+#
+# Recipes are organised into native `[group: …]` buckets so `just --list`
+# renders them alongside the imported groups (plugins/claude/git). The section
+# banners below mirror those groups for readers scanning the file directly.
 
 set shell := ["bash", "-uc"]
 
@@ -29,28 +33,33 @@ help:
     @echo "  • CI/CD pipeline in .github/workflows/smoke.yml"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Build & Development
+# Build & Development  →  group: chezmoi
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Apply dotfiles configuration to system
+[group: "chezmoi"]
 apply target="":
     @echo "{{BLUE}}Applying dotfiles configuration...{{NORMAL}}"
     chezmoi apply {{ if target != "" { target } else { "" } }} -v
 
 # Check what changes would be made (alias for status)
+[group: "chezmoi"]
 check: status
 
 # Show differences between current state and dotfiles
+[group: "chezmoi"]
 diff:
     @echo "{{BLUE}}Showing configuration differences...{{NORMAL}}"
     chezmoi diff
 
 # Show status of dotfiles vs current system state
+[group: "chezmoi"]
 status:
     @echo "{{BLUE}}Checking dotfiles status...{{NORMAL}}"
     chezmoi status
 
 # Verify dotfiles configuration integrity
+[group: "chezmoi"]
 verify:
     @echo "{{BLUE}}Verifying configuration integrity...{{NORMAL}}"
     chezmoi verify .
@@ -61,6 +70,7 @@ verify:
 # Non-template files: `chezmoi re-add` captures them. Templates: re-add SKIPS
 # them, so they're listed for a manual `chezmoi merge`.
 # Preview local target edits to capture back into source (read-only). [paths...]
+[group: "chezmoi"]
 capture-drift *targets:
     #!/usr/bin/env bash
     set -uo pipefail
@@ -81,6 +91,7 @@ capture-drift *targets:
 # Passes the drifted paths EXPLICITLY to `chezmoi re-add` so a bare re-add can't
 # also revert un-applied source edits. Skips templates (use `chezmoi merge`).
 # Capture drifted non-template target edits into source via re-add. [paths...]
+[group: "chezmoi"]
 capture-drift-apply *targets:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -99,16 +110,19 @@ capture-drift-apply *targets:
     echo "{{GREEN}}Done.{{NORMAL}} Drifted templates still need {{BOLD}}chezmoi merge{{NORMAL}} — see {{BOLD}}just capture-drift{{NORMAL}}."
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Testing
+# Testing  →  group: test
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Run all tests (linting + smoke test in Docker)
+[group: "test"]
 test: lint smoke
 
 # Run all linters as used in CI
+[group: "test"]
 lint: lint-shell lint-lua lint-actions lint-brew
 
 # Lint shell scripts with shellcheck
+[group: "test"]
 lint-shell:
     @echo "{{BLUE}}Running shellcheck...{{NORMAL}}"
     @if command -v shellcheck >/dev/null 2>&1; then \
@@ -118,6 +132,7 @@ lint-shell:
     fi
 
 # Lint Neovim Lua configuration
+[group: "test"]
 lint-lua:
     @echo "{{BLUE}}Running luacheck...{{NORMAL}}"
     @if command -v luacheck >/dev/null 2>&1; then \
@@ -127,6 +142,7 @@ lint-lua:
     fi
 
 # Lint GitHub Actions workflows
+[group: "test"]
 lint-actions:
     @echo "{{BLUE}}Running actionlint...{{NORMAL}}"
     @if command -v actionlint >/dev/null 2>&1; then \
@@ -136,6 +152,7 @@ lint-actions:
     fi
 
 # Check Brewfile integrity
+[group: "test"]
 lint-brew:
     @echo "{{BLUE}}Checking Brewfile integrity...{{NORMAL}}"
     @if [ -f Brewfile ]; then \
@@ -145,6 +162,7 @@ lint-brew:
     fi
 
 # Run pre-commit hooks on all files
+[group: "test"]
 pre-commit:
     @echo "{{BLUE}}Running pre-commit hooks...{{NORMAL}}"
     @if command -v pre-commit >/dev/null 2>&1; then \
@@ -154,38 +172,51 @@ pre-commit:
     fi
 
 # Run full smoke test in Docker (reproduces CI)
+[group: "test"]
 smoke:
     @echo "{{BLUE}}Running smoke test in Docker...{{NORMAL}}"
     docker compose up --build smoke
 
 # Run lint stage only in Docker
+[group: "test"]
 smoke-lint:
     @echo "{{BLUE}}Running lint stage in Docker...{{NORMAL}}"
     docker compose run --rm smoke lint
 
 # Run build stage only in Docker
+[group: "test"]
 smoke-build:
     @echo "{{BLUE}}Running build stage in Docker...{{NORMAL}}"
     docker compose run --rm smoke build
 
 # Start interactive shell for debugging smoke test failures
+[group: "test"]
 smoke-shell:
     @echo "{{BLUE}}Starting interactive smoke test shell...{{NORMAL}}"
     docker compose run --rm smoke-shell
 
 # Clean up smoke test Docker resources
+[group: "test"]
 smoke-clean:
     @echo "{{BLUE}}Cleaning up smoke test containers...{{NORMAL}}"
     docker compose down --rmi local --volumes --remove-orphans
 
+# Run CI checks locally
+[group: "test"]
+ci: lint
+    @echo "{{BLUE}}Running CI checks locally...{{NORMAL}}"
+    @echo "{{GREEN}}All CI checks completed{{NORMAL}}"
+
 # ─────────────────────────────────────────────────────────────────────────────
-# Environment Setup
+# Environment Setup  →  group: setup
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Complete initial environment setup
+[group: "setup"]
 setup: setup-brew setup-mise setup-nvim
 
 # Install/update Homebrew packages
+[group: "setup"]
 setup-brew:
     @echo "{{BLUE}}Setting up Homebrew packages...{{NORMAL}}"
     @if [ -f Brewfile ]; then \
@@ -197,6 +228,7 @@ setup-brew:
     fi
 
 # Install mise tool versions
+[group: "setup"]
 setup-mise:
     @echo "{{BLUE}}Setting up mise tools...{{NORMAL}}"
     @if command -v mise >/dev/null 2>&1; then \
@@ -205,7 +237,8 @@ setup-mise:
         echo "{{YELLOW}}Warning: mise not installed{{NORMAL}}"; \
     fi
 
-# Install/update Neovim plugins and LSP tools
+# Install/update Neovim plugins and LSP tools (also the nvim step of `update`)
+[group: "setup"]
 setup-nvim:
     @echo "{{BLUE}}Setting up Neovim plugins...{{NORMAL}}"
     @if command -v nvim >/dev/null 2>&1; then \
@@ -215,22 +248,12 @@ setup-nvim:
     fi
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Documentation
+# Utilities & Maintenance  →  group: maintain
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Open documentation
-docs:
-    @echo "{{BLUE}}Available documentation:{{NORMAL}}"
-    @echo "  README.md - Repository overview"
-    @echo "  CLAUDE.md - AI assistant guidance"
-    @echo "  docs/ - Detailed documentation"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Utilities
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Update all tools and packages
-update: update-claude-completion
+# Update all tools and packages (nvim step reuses setup-nvim: Lazy sync + MasonUpdate)
+[group: "maintain"]
+update: update-claude-completion setup-nvim
     @echo "{{BLUE}}Updating all tools and packages...{{NORMAL}}"
     @echo "{{GREEN}}Updating Homebrew...{{NORMAL}}"
     @if command -v brew >/dev/null 2>&1; then \
@@ -244,12 +267,6 @@ update: update-claude-completion
     else \
         echo "{{YELLOW}}Warning: mise not found{{NORMAL}}"; \
     fi
-    @echo "{{GREEN}}Updating Neovim plugins...{{NORMAL}}"
-    @if command -v nvim >/dev/null 2>&1; then \
-        nvim --headless "+Lazy! sync" "+lua require('lazy').load({plugins={'mason.nvim'}})" "+MasonUpdate" +qa; \
-    else \
-        echo "{{YELLOW}}Warning: nvim not found{{NORMAL}}"; \
-    fi
     @echo "{{GREEN}}Updating uv tool packages...{{NORMAL}}"
     @if command -v uv >/dev/null 2>&1; then \
         uv tool upgrade --all; \
@@ -258,12 +275,14 @@ update: update-claude-completion
     fi
 
 # Bump all tools to latest versions across all package managers
+[group: "maintain"]
 bump:
     @echo "{{BLUE}}🚀 Bumping all tools to latest versions...{{NORMAL}}"
     BUMP=1 chezmoi apply
     @echo "{{GREEN}}✅ Bump complete!{{NORMAL}}"
 
 # Update Claude CLI zsh completion
+[group: "maintain"]
 update-claude-completion:
     @echo "{{BLUE}}Updating Claude CLI completion...{{NORMAL}}"
     @if [ -x "./scripts/generate-claude-completion-simple.sh" ]; then \
@@ -273,6 +292,7 @@ update-claude-completion:
     fi
 
 # Clean up temporary files and caches
+[group: "maintain"]
 clean:
     @echo "{{BLUE}}Cleaning up...{{NORMAL}}"
     @if command -v brew >/dev/null 2>&1; then \
@@ -284,6 +304,7 @@ clean:
     @find . -name ".DS_Store" -delete 2>/dev/null || true
 
 # Scan for secrets in repository
+[group: "maintain"]
 secrets:
     @echo "{{BLUE}}Scanning for secrets...{{NORMAL}}"
     @if command -v detect-secrets >/dev/null 2>&1; then \
@@ -324,25 +345,26 @@ colors:
     }'
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CI/CD Integration
+# Documentation, Development & Information  →  group: info
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Run CI checks locally
-ci: lint
-    @echo "{{BLUE}}Running CI checks locally...{{NORMAL}}"
-    @echo "{{GREEN}}All CI checks completed{{NORMAL}}"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Development
-# ─────────────────────────────────────────────────────────────────────────────
+# Open documentation
+[group: "info"]
+docs:
+    @echo "{{BLUE}}Available documentation:{{NORMAL}}"
+    @echo "  README.md - Repository overview"
+    @echo "  CLAUDE.md - AI assistant guidance"
+    @echo "  docs/ - Detailed documentation"
 
 # Start development environment
+[group: "info"]
 dev: status
     @echo "{{BLUE}}Starting development environment...{{NORMAL}}"
     @echo "{{GREEN}}Development environment ready{{NORMAL}}"
     @echo "{{YELLOW}}Run 'just apply' to apply changes{{NORMAL}}"
 
 # Edit dotfiles configuration
+[group: "info"]
 edit:
     @echo "{{BLUE}}Opening dotfiles for editing...{{NORMAL}}"
     @if command -v nvim >/dev/null 2>&1; then \
@@ -353,11 +375,8 @@ edit:
         echo "{{YELLOW}}No preferred editor found, please edit manually{{NORMAL}}"; \
     fi
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Information
-# ─────────────────────────────────────────────────────────────────────────────
-
 # Show system and tool information
+[group: "info"]
 info:
     @echo "{{BLUE}}System Information:{{NORMAL}}"
     @echo "OS: $(uname -s) $(uname -r)"
@@ -373,6 +392,7 @@ info:
     @echo -n "just: "; just --version 2>/dev/null || echo "not installed"
 
 # Diagnose common issues
+[group: "info"]
 doctor:
     @echo "{{BLUE}}Running diagnostics...{{NORMAL}}"
     @echo ""
