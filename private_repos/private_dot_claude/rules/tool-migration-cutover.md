@@ -46,7 +46,7 @@ lands — but cannot be merged prematurely by you or anyone else.
   PR. `gh issue list --search "Dependency Dashboard in:title"`,
   `gh api repos/<o>/<r>/branches --jq '.[].name|select(startswith("renovate/"))'`.
 - **Credentials/secrets are present where consumed** — the secret/variable on the
-  consuming repo, not just "set upstream" (in Scalr/CI/a vault). The push from
+  consuming repo, not just "set upstream" (in the IaC runner/CI/a vault). The push from
   upstream to the repo is a separate step that can itself be blocked.
 
 ## Worked example — Dependabot → Renovate (Bun), 2026-06
@@ -77,7 +77,7 @@ re-deriving:
 - Dependency-bot swaps (Dependabot ↔ Renovate), where "no PRs" looks the same
   whether the tool is off or just has nothing to do.
 - Credential/secret migrations where the value is set in the orchestrator
-  (Scalr, a vault, org secrets) but the *push to the consuming repo* hasn't run.
+  (an IaC runner, a vault, org secrets) but the *push to the consuming repo* hasn't run.
 - CI tool replacements merged as a workflow file but never exercised on a PR.
 
 ## Rationale
