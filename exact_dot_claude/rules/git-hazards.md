@@ -1,6 +1,6 @@
 # Git Hazards — Verify the Content, Not the Exit Code
 
-Six traps sharing one law: **a green git command is not proof the result is
+Seven traps sharing one law: **a green git command is not proof the result is
 correct.** "Merge went well", "PR merged", and exit 0 are claims about
 mechanics, not content. Each hazard below: the trap, the 5-second check, the
 fix. (Consolidated 2026-07 from six separate incident rules; full narratives
@@ -80,3 +80,31 @@ Classic trip: `git mv old new`, edit `new`, then `git add new old` → the stale
   show the change you intend.
 - **Recovery**: the edit is still unstaged in the working tree; add and
   commit/amend — don't redo the work.
+
+## 7. Stacked-chain merges: push by SHA, never `HEAD:` — and expect auto-close races
+
+Working down a stacked-PR chain (retarget child → merge base → rebase child →
+force-push → merge, per #3) has three traps of its own (observed 2026-07,
+claude-plugins #1979→#1987):
+
+- **`HEAD:` in a push refspec is a race in a shared checkout.** HEAD is
+  process-global repo state; a coworker session can move it *between two of
+  your Bash calls*. Observed: rebase left HEAD at the child's new tip; by the
+  next call HEAD was `main`'s tip, so `git push --force-with-lease origin
+  HEAD:<child-branch>` overwrote the branch with main. Resolve the tip to an
+  **explicit SHA in the same command that creates it** and push
+  `git push --force-with-lease origin <sha>:<branch>`.
+- **An empty-diff force-push auto-closes the PR — and a closed PR whose *head*
+  moved after closing cannot be reopened.** Sibling of #3's
+  base-branch-deleted variant. GitHub saw the branch == main, closed the PR,
+  and refused `gh pr reopen` because the head ref had moved since closing.
+- **A single mergeability read after a force-push is a race.** GitHub
+  recomputes `mergeable` asynchronously; `gh pr merge` right after a push
+  fails with "not mergeable" on a perfectly clean PR. Poll
+  `gh pr view <n> --json mergeable` until it leaves `UNKNOWN`.
+
+- **Check** before every force-push: `git log --oneline origin/main..<sha>` —
+  expect *exactly* the child's commits, nothing more, never empty.
+- **Recovery** when auto-closed: the rebased commits survive in local objects
+  (`git reflog`) — `git push --force-with-lease origin <sha>:<branch>`, open a
+  fresh PR from the branch, comment "Superseded by #new" on the closed one.
