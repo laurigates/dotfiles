@@ -1,6 +1,6 @@
 ---
 name: telegram
-description: Send notifications or interactive questions to the user via Telegram. Use when the user asks to be notified ("ping me", "notify me on Telegram", "ask me when..."), when a long-running task finishes and the user is likely away, or when an irreversible action needs out-of-band confirmation. Provides telegram-notify (one-way) and telegram-ask (send + block for reply).
+description: Send notifications, interactive questions, or multiple-choice polls to the user via Telegram. Use when the user asks to be notified ("ping me", "notify me on Telegram", "ask me when..."), when a long-running task finishes and the user is likely away, when an irreversible action needs out-of-band confirmation, or when the user should pick among several fixed options ("ask me which one via poll"). Provides telegram-notify (one-way), telegram-ask (send + block for reply), and telegram-poll (send a multiple-choice poll + block for the vote).
 ---
 
 # Telegram Communication
@@ -15,14 +15,15 @@ For the *when-to-use* policy (and when not to), see
 
 ## Tools
 
-Two scripts in `~/.local/bin`:
+Three scripts in `~/.local/bin`:
 
 | Script | Purpose | Blocks? |
 |---|---|---|
 | `telegram-notify` | Fire-and-forget message | No |
 | `telegram-ask` | Send a question, wait for reply, print reply to stdout | Yes |
+| `telegram-poll` | Send a multiple-choice poll, wait for the vote, print selected option(s) | Yes |
 
-Both read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
+All three read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
 environment. They're sourced from `~/.api_tokens` by mise — if you
 hit `... not set`, the user needs to add them there.
 
@@ -56,7 +57,10 @@ Behaviour:
    opens a reply thread on the user's phone.
 2. Drains pending updates so old messages don't satisfy the wait.
 3. Long-polls (`getUpdates`, `timeout=30`) until either a matching
-   reply arrives or the deadline passes.
+   reply arrives or the deadline passes. While waiting, re-sends the
+   question as a reminder at exponentially increasing intervals
+   (default: 30s, 60s, 120s, ... capped by `-t`) — a missed phone
+   notification gets more than one chance. Disable with `-r 0`.
 4. On timeout: prints `TIMEOUT` to stderr, sends a "(timed out)"
    notice to the chat, and exits 1.
 5. On config error (missing token / chat id): exits 2 with a message
@@ -92,6 +96,61 @@ Bash(
 If the user's reply is `YES`, proceed. Anything else (including
 `TIMEOUT`), do not proceed — surface the result and wait for fresh
 direction.
+
+## telegram-poll
+
+```
+# Single-choice, default 5-minute timeout
+choice=$(telegram-poll "Which environment?" "staging" "prod" "both")
+
+# Short timeout for an at-keyboard pick
+choice=$(telegram-poll -t 60 "Which fix?" "revert" "hotfix" "wait")
+
+# Multiple choice — user can select more than one option
+choices=$(telegram-poll -M "Which suites failed?" "unit" "integration" "e2e")
+
+# Silent (no notification sound)
+choice=$(telegram-poll -s "Non-urgent pick" "A" "B")
+```
+
+Behaviour:
+
+1. Sends a non-anonymous poll (`is_anonymous: false`) — required so the
+   `poll_answer` update identifies the voter; there's no other way for
+   the bot to attribute a vote to a reply.
+2. Drains pending updates so a stale vote from an earlier poll can't
+   satisfy the wait.
+3. Long-polls (`getUpdates` with `allowed_updates=["poll_answer"]`,
+   `timeout=30`) until a `poll_answer` for this poll's id arrives or the
+   deadline passes. While waiting, sends a plain-text nudge ("Still
+   waiting for your vote on: ...") at exponentially increasing intervals
+   (default: 30s, 60s, 120s, ... capped by `-t`) — same backoff as
+   `telegram-ask`. Disable with `-r 0`.
+4. On answer: closes the poll (`stopPoll`) and prints the selected
+   option text(s) to stdout, one per line — not the raw option index.
+5. On timeout: prints `TIMEOUT` to stderr, closes the poll, sends a
+   "(poll timed out)" notice to the chat, and exits 1.
+6. On config error or a send failure (bad option count, question too
+   long): exits 2 with a message.
+
+Constraints (Telegram Bot API): question ≤300 characters, each option
+≤100 characters, at most 10 options.
+
+Use `telegram-poll` when the choice is genuinely a fixed set of
+options — it renders as tappable buttons on the user's phone, which
+beats typing a reply for a menu of 3-10 choices. For yes/no or
+free-text confirmation, `telegram-ask` is still the right tool; a
+two-option poll is heavier than it needs to be for a plain yes/no.
+
+Calling pattern from inside a Claude Code session — same rule as
+`telegram-ask`: the Bash `timeout` must exceed the `-t` value.
+
+```
+Bash(
+  command='telegram-poll -t 300 "Which fix?" "revert" "hotfix" "wait"',
+  timeout=320000   # ms, must be > telegram-poll -t (seconds) * 1000
+)
+```
 
 ## Sending multi-line output
 
@@ -131,19 +190,22 @@ In practice, plain text is almost always the right default.
 | Reply never arrives despite user typing | User typed in a different chat than `TELEGRAM_CHAT_ID` | Verify chat id with `curl .../getUpdates` after a fresh message |
 | Bot in a group never sees replies | Bot **privacy mode** is on — bot only sees commands and direct mentions | In @BotFather: `/mybots` → bot → Bot Settings → Group Privacy → **Turn off**. Trade-off: bot now reads every message in the group |
 | Group chat id stops working with `400 chat not found` | Group was upgraded to a supergroup; chat id gained a `-100` prefix | Re-run `getUpdates` and update `TELEGRAM_CHAT_ID` in `~/.api_tokens` |
+| `telegram-poll` never returns despite a vote | `poll_answer` wasn't in `allowed_updates`, or the vote landed on a different, older poll | Rare — the script always scopes `allowed_updates` and filters by `poll_id`; re-run if it happens |
+| `telegram-poll: send failed` with a 400 | Question >300 chars, an option >100 chars, or fewer than 2 / more than 10 options | Shorten the text or the option count |
 
 ## Why these tools and not `telegram-send`?
 
 `telegram-send` (the well-known Python tool) is **send-only**. It has
 no receive mode, no polling, no way to wait for a reply. The
-interactive flow needs `getUpdates` long-polling, which these two
+interactive flow needs `getUpdates` long-polling, which these three
 thin curl+jq wrappers provide with no extra runtime dependencies
 beyond `curl` and `jq` (both already on the system).
 
 ## Rationale
 
-Telegram is the user's "I might be on my phone" channel. The two
-tools make the two natural patterns one-line: notify (no reply
-needed) and ask (block on reply). Keep messages signal-rich and
+Telegram is the user's "I might be on my phone" channel. The three
+tools make the natural patterns one-line: notify (no reply needed),
+ask (block on a free-text reply), and poll (block on a pick among
+fixed options). Keep messages signal-rich and
 infrequent — see `telegram-communication.md` for the policy on
 when to send vs. stay quiet.
