@@ -5,6 +5,7 @@
 #   telegram-ask "Question text?"                       # default 5min timeout
 #   telegram-ask -t 30 "Quick question?"                # 30s timeout
 #   telegram-ask --pattern '^(YES|NO)$' "YES or NO?"    # require regex match
+#   telegram-ask -r 0 "No reminders, just wait"         # disable reminders
 #
 # Exit codes:
 #   0  — got a reply (printed to stdout)
@@ -13,12 +14,18 @@
 #
 # Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in the environment.
 # These are typically sourced from ~/.api_tokens via mise.
+#
+# While waiting, re-pings with a reminder at exponentially increasing
+# intervals (default: 30s, 60s, 120s, ... capped by --timeout) so a missed
+# phone notification gets a second and third chance before the deadline.
+# Disable with -r 0.
 
 set -euo pipefail
 
 TIMEOUT=300
 PATTERN=""
 PARSE_MODE=""
+REMIND=30
 
 usage() {
   sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'
@@ -30,6 +37,7 @@ while [[ $# -gt 0 ]]; do
     -t|--timeout) TIMEOUT="$2"; shift 2 ;;
     -p|--pattern) PATTERN="$2"; shift 2 ;;
     -m|--markdown) PARSE_MODE="MarkdownV2"; shift ;;
+    -r|--remind-after) REMIND="$2"; shift 2 ;;
     -h|--help) usage ;;
     --) shift; break ;;
     -*) echo "telegram-ask: unknown flag: $1" >&2; exit 2 ;;
@@ -72,12 +80,18 @@ offset=$(jq -r '([.result[].update_id] | max // -1) + 1' <<<"$drain")
 # 3. Long-poll for a reply from the target chat. Filter to replies-to-our-message
 #    when possible, but accept any text from the chat as a fallback.
 deadline=$(( $(date +%s) + TIMEOUT ))
+remind_interval=$REMIND
+remind_at=$(( REMIND > 0 ? $(date +%s) + REMIND : 0 ))
 
 while :; do
   now=$(date +%s)
   remaining=$(( deadline - now ))
   (( remaining <= 0 )) && break
   poll_timeout=$(( remaining < 30 ? remaining : 30 ))
+  if (( remind_at > 0 )); then
+    remind_wait=$(( remind_at - now ))
+    (( remind_wait > 0 && remind_wait < poll_timeout )) && poll_timeout=$remind_wait
+  fi
 
   updates=$(curl -fsS \
     "${API}/getUpdates?timeout=${poll_timeout}&offset=${offset}&allowed_updates=%5B%22message%22%5D" \
@@ -107,6 +121,18 @@ while :; do
     fi
     printf '%s\n' "$reply"
     exit 0
+  fi
+
+  now=$(date +%s)
+  if (( remind_at > 0 && now >= remind_at )); then
+    curl -fsS -X POST "${API}/sendMessage" \
+      -d "chat_id=${TELEGRAM_CHAT_ID}" \
+      --data-urlencode "text=⏳ Still waiting for your reply to: ${QUESTION}" \
+      -d 'reply_markup={"force_reply":true,"selective":true}' \
+      >/dev/null || true
+    remind_interval=$(( remind_interval * 2 ))
+    next_remind=$(( now + remind_interval ))
+    remind_at=$(( next_remind < deadline ? next_remind : 0 ))
   fi
 done
 
