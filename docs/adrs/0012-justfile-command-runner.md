@@ -243,6 +243,7 @@ Replace with individual shell scripts.
 
 - [ADR-0002](0002-unified-tool-version-management-mise.md): mise for tool management (just installed via mise)
 - [ADR-0010](0010-tiered-test-execution.md): Test execution strategy (smoke tests in justfile)
+- [Justfile Architecture](../justfile-architecture.md): current module/group layout, the shared `.just` modules, and the claude-plugins symbiosis (post-2026-07 grouping/dedup pass)
 
 ## References
 

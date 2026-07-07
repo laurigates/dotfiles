@@ -22,7 +22,7 @@ Two distinct `.claude/`-shaped directories exist here:
 
 ## Plugins
 
-Managed in [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins). Use `just plugins-*` recipes for bulk management.
+Managed in [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins). Use `just plugins-*` recipes for bulk management. The provider ↔ consumer symbiosis between the two repos, and the `just` module/group layout, are diagrammed in [`docs/justfile-architecture.md`](docs/justfile-architecture.md).
 
 ## MCP Servers
 
@@ -63,7 +63,7 @@ pre-commit run detect-secrets --all-files
 - `private_dot_config/nvim/` — Neovim setup (see `nvim/CLAUDE.md`)
 - `private_dot_config/private_fish/` — Fish shell (experimental)
 - `Brewfile` — Homebrew packages
-- `justfile` — Task runner recipes (`just --list`)
+- `justfile` — Task runner recipes (`just --list`); shared modules in `private_dot_config/just/*.just` (see `docs/justfile-architecture.md`)
 - `mise.lock` — Reproducible tool versions
 
 ## Tools
