@@ -614,16 +614,18 @@ _gh_batch_merge() {
 }
 
 # fzf multi-select over current-repo PRs → TSV "<tab>num<tab>title" lines for
-# the batch engine (empty repo field = current repo). $1 = header verb;
-# remaining args = extra fzf flags (e.g. --tac to reverse the list order).
+# the batch engine (empty repo field = current repo). List is sorted oldest→
+# newest (safer bet for clean rebase/squash order); $1 = header verb; remaining
+# args = extra fzf flags (callers pass --layout=reverse so the cursor starts
+# on the oldest PR, at the top, matching the sort direction).
 _gh_pr_multi_select() {
   local verb="$1"; shift
   local -a fzf_extra=("$@")
   local repo
   repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   gh pr list --limit 100 \
-      --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision \
-      --jq '.[] | [
+      --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt \
+      --jq 'sort_by(.createdAt) | .[] | [
         "#\(.number)",
         (if .isDraft then "draft" else "ready" end),
         (if (.statusCheckRollup | length) == 0 then "⏳CI"
@@ -655,7 +657,7 @@ _gh_pr_multi_select() {
 # via completion) merges that single PR directly.
 ghsq() {
   if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select squash --tac)
+    local tsv; tsv=$(_gh_pr_multi_select squash --layout=reverse)
     [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --squash --delete-branch
   else
     gh pr merge "${1%%\[*}" --squash --delete-branch
@@ -665,7 +667,7 @@ ghsq() {
 # Interactive PR merge (rebase) — multi-select twin of ghsq.
 ghrb() {
   if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select rebase --tac)
+    local tsv; tsv=$(_gh_pr_multi_select rebase --layout=reverse)
     [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --rebase --delete-branch
   else
     gh pr merge "${1%%\[*}" --rebase --delete-branch
