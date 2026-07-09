@@ -1013,6 +1013,22 @@ autoload -Uz compinit && compinit
 # Note: Completion definitions must be loaded AFTER compinit to ensure
 # they are properly registered with the zsh completion system
 
+# Custom completion for `chezmoi edit`: offer managed target files.
+# chezmoi's own cobra completion returns nothing for `edit`, so it falls
+# back to completing the entire filesystem. Restrict it to files/symlinks
+# that actually exist in the source directory (via `chezmoi managed`).
+# All other subcommands defer to the real _chezmoi completion.
+_chezmoi_edit_managed() {
+  if [[ ${words[2]} == edit && ${words[CURRENT]} != -* ]]; then
+    local -a managed
+    managed=("${(@f)$(command chezmoi managed --path-style=absolute --include=files,symlinks 2>/dev/null)}")
+    compadd -f -- "${managed[@]}"
+    return
+  fi
+  _chezmoi "$@"
+}
+compdef _chezmoi_edit_managed chezmoi
+
 # Custom completion for gh PR merge wrappers (ghsq, ghrb)
 # Lists open PRs with fzf-tab preview of PR details
 _gh_pr_merge_complete() {
