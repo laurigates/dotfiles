@@ -229,6 +229,16 @@ read -r -d '' overlay <<'OVERLAY' || true
             "command": "bash ~/.claude/hooks/chezmoi-drift-guard.sh"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/chezmoi-target-guard.sh",
+            "timeout": 10
+          }
+        ]
       }
     ]
   },
