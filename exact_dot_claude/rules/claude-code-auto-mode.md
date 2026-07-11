@@ -51,6 +51,16 @@ any mode except `bypassPermissions`. Keep dangerous ops in `deny`
 (`git push --force *`, `git add -A`, `kubectl config use-context *`,
 `Write(**/CHANGELOG.md)`).
 
+**Use the space-delimited form for flag-scoped deny rules, not `:*`.**
+Colon-form patterns prefix-match the raw command string, so
+`Bash(git push --force:*)` also hard-blocks `git push --force-with-lease …`
+— locking out the safe recovery form that the stacked-PR protocol
+(`git-hazards.md` trap #7) depends on. The space form
+`Bash(git push --force *)` stops the match at the exact flag (the trailing
+space can't match `-with-lease`), leaving lease-guarded pushes to the
+classifier's soft-deny instead of a hard block. (Caught in loractl PR #39
+review, 2026-07 — an agent-authored colon-form deny had silently widened.)
+
 ## Custom hooks vs. auto mode — don't double-gate
 
 A custom PreToolUse/UserPromptSubmit hook that re-implements a safety check
