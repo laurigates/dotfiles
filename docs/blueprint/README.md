@@ -4,9 +4,7 @@ Blueprint development structure for this project.
 
 ## Contents
 
-- `manifest.json` — Blueprint configuration and task registry (v3.2.0)
-- `work-orders/` — Detailed work order documents
-- `ai_docs/` — AI-curated documentation
+- `manifest.json` — Blueprint configuration and task registry (v3.3.0)
 
 ## Related Directories
 

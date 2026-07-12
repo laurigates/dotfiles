@@ -50,8 +50,9 @@ just plugins-enable
 ```
 
 Or install individually:
+
 ```bash
-claude /plugin install git-plugin@laurigates-claude-plugins
+claude plugin install git-plugin@laurigates-claude-plugins
 ```
 
 ### Bulk Plugin Management
@@ -68,37 +69,36 @@ just plugins-list        # Show installed plugins and status
 
 ## AI Tools & MCP Configuration
 
-AI tools and MCP (Model Context Protocol) servers are configured through the `.chezmoidata.toml` file and automatically installed via the `update-ai-tools.sh` script.
+MCP (Model Context Protocol) servers are managed **per-project** via each project's `.mcp.json`. A curated registry of available servers lives in `.chezmoidata.toml` under `[mcp_servers]`, disabled by default to avoid bloating context in every repository.
 
 ### MCP Server Configuration
 
-MCP servers for Claude Code are dynamically configured from `.chezmoidata.toml`. To manage servers:
+The `[mcp_servers]` registry in `.chezmoidata.toml` records each server's metadata:
 
 - **Enable/disable servers**: Set `enabled = true/false` in the `[mcp_servers]` section
 - **Add new servers**: Create a new `[mcp_servers.name]` section with required fields
 - **Configure options**: `scope`, `command`, `args`, and optional `transport`
 
 Example configuration:
+
 ```toml
 [mcp_servers.my-server]
-  enabled = true
-  scope = "user"
+  enabled = false
+  scope = "project"
   command = "npx"
   args = ["-y", "my-mcp-package"]
   transport = "stdio"  # optional
 ```
 
-**Adding/updating servers** (safe during active Claude sessions):
-```bash
-./update-ai-tools.sh  # or: chezmoi apply update-ai-tools.sh
-```
+**Installing servers into a project**: run the `/configure:mcp` command for interactive, project-scoped selection — it writes the chosen servers to that project's `.mcp.json`.
 
-**Cleaning up disabled servers** (WARNING: disrupts active Claude sessions):
+**Removing servers** (WARNING: disrupts active Claude sessions):
+
 ```bash
 ./cleanup-mcp-servers.sh  # Run only when no Claude sessions are active
 ```
 
-> **Note**: `update-ai-tools.sh` only adds new servers without removing existing ones, making it safe to run during active Claude sessions. Use `cleanup-mcp-servers.sh` only when you need to remove disabled servers and no Claude Code sessions are running.
+> **Note**: `cleanup-mcp-servers.sh` removes MCP servers from user and project scope, so run it only when no Claude Code sessions are active. Afterwards, reinstall per-project with `/configure:mcp`.
 
 ## Claude Code Configuration
 
@@ -111,6 +111,7 @@ Full guide: See [CLAUDE.md](./CLAUDE.md)
 ### Skills
 
 Auto-discovered skills provide contextual guidance:
+
 - **chezmoi-expert** - Dotfiles management, templates, cross-platform configs
 - **neovim-configuration** - Lua config, plugin management, LSP setup
 - **obsidian-bases** - Obsidian Bases database feature for YAML-based views

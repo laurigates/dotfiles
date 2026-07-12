@@ -9,7 +9,7 @@
 | Lua | `mise run lint:lua` | After modifying Neovim config |
 | Actions | `mise run lint:actions` | After modifying workflows |
 | Full | `mise run test` | Before committing |
-| Docker | `mise run test:docker` | For environment changes |
+| Docker | `mise run docker` | For environment changes |
 
 ## Linting Standards
 

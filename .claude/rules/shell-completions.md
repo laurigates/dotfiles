@@ -3,7 +3,7 @@
 ## Overview
 
 Shell completions are managed via chezmoi's data-driven approach:
-- **Registry**: `.chezmoidata.toml` under `[packages.completion_tools.zsh_completions]`
+- **Registry**: `.chezmoidata/completions.toml` under `[packages.completion_tools.zsh_completions]`
 - **Generator**: `run_onchange_02-generate-completions.sh.tmpl`
 - **Output**: `~/.zfunc/_<tool>` (Zsh completion files)
 
@@ -15,7 +15,7 @@ Shell completions are managed via chezmoi's data-driven approach:
    # or check tool documentation
    ```
 
-2. **Add to registry** in `.chezmoidata.toml`:
+2. **Add to registry** in `.chezmoidata/completions.toml`:
    ```toml
    [packages.completion_tools.zsh_completions]
      # ... existing entries ...
@@ -41,7 +41,7 @@ Shell completions are managed via chezmoi's data-driven approach:
 ## How It Works
 
 The `run_onchange` script:
-1. Detects changes via `.chezmoidata.toml` hash in template header
+1. Detects changes via `.chezmoidata/completions.toml` hash in template header
 2. Iterates over all entries in `zsh_completions`
 3. Skips tools not installed (`command -v` check)
 4. Generates `~/.zfunc/_<tool>` for each available tool
@@ -71,6 +71,6 @@ rm -f ~/.zcompdump && compinit
 **Force regeneration:**
 ```bash
 # Touch the data file to trigger run_onchange
-touch ~/.local/share/chezmoi/.chezmoidata.toml
+touch ~/.local/share/chezmoi/.chezmoidata/completions.toml
 chezmoi apply
 ```

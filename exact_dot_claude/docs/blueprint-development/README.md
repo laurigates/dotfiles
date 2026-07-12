@@ -254,7 +254,9 @@ Use Blueprint Development in CI:
 
 ## Commands
 
-See `.claude/commands/` for available commands:
+These commands are now provided by the external
+[`blueprint-plugin`](https://github.com/laurigates/claude-plugins) marketplace
+(they no longer live in this repo's `.claude/commands/`):
 
 **PRP Commands:**
 - `/prp-create` - Create a PRP with systematic research and context curation

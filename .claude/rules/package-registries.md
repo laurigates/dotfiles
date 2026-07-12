@@ -18,5 +18,5 @@ Packages are managed through `.chezmoidata/packages.toml` with profile activatio
 
 - Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`
 - Enable/disable per server — `enabled = true/false`
-- Project-specific overrides in per-project `.mcp.json`
-- Use `update-ai-tools.sh` for safe updates during active sessions
+- Servers are installed per-project into that project's `.mcp.json`
+- Use `/configure:mcp` to install servers into a project; `./cleanup-mcp-servers.sh` to remove them (run only when no Claude sessions are active)

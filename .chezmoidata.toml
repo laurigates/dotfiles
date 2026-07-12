@@ -29,8 +29,8 @@
   #   - /configure:mcp command for interactive selection
   #   - MCP Management skill for automated installation based on project needs
   #
-  # Note: The update-ai-tools.sh script only installs servers with enabled=true.
-  # For project-specific needs, manually create .mcp.json in your project root.
+  # Note: This is a registry only — servers are installed per-project into that
+  # project's .mcp.json (via /configure:mcp), not from this file directly.
 
   [mcp_servers.graphiti-memory]
     enabled = false

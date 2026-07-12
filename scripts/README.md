@@ -160,16 +160,16 @@ uv run --with detect-secrets python3 scripts/audit-secrets-baseline.py
 
 ### Pre-commit Hook
 
-The `.pre-commit-config.yaml` includes detect-secrets:
+Secret scanning in pre-commit is handled by gitleaks; `.pre-commit-config.yaml` includes:
 
 ```yaml
-- repo: https://github.com/Yelp/detect-secrets
-  rev: v1.5.0
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.30.0
   hooks:
-    - id: detect-secrets
-      args: ['--baseline', '.secrets.baseline']
-      exclude: (package\.lock\.json|lazy-lock\.json)
+    - id: gitleaks
 ```
+
+detect-secrets is no longer a pre-commit hook — it remains available only as a manual/on-demand baseline-audit tool (see the `uv run --with detect-secrets` commands above).
 
 **Pre-commit workflow**:
 1. Make changes
@@ -277,4 +277,4 @@ This repository excludes:
 - `\.claude/docs/.*` - Claude Code documentation
 - `lazy-lock\.json` - Neovim plugin lock file (git commit hashes)
 
-See `.secrets.baseline` line 115-117 for the current exclusion pattern.
+See `.gitleaks.toml` for the current secret-scan allowlist and exclusion patterns.

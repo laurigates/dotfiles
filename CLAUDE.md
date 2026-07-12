@@ -26,7 +26,7 @@ Managed in [laurigates/claude-plugins](https://github.com/laurigates/claude-plug
 
 ## MCP Servers
 
-Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`. Use `/configure-mcp` for guided setup.
+Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`. Use `/configure:mcp` for guided setup.
 
 ## Linting
 
@@ -50,9 +50,8 @@ pre-commit run --all-files            # All pre-commit hooks
 
 ### Secret scanning:
 ```bash
-detect-secrets scan --baseline .secrets.baseline
-detect-secrets audit .secrets.baseline
-pre-commit run detect-secrets --all-files
+gitleaks detect --source . --config .gitleaks.toml   # scan the working tree
+pre-commit run gitleaks --all-files                  # via pre-commit
 ```
 
 ## Key Files & Directories
@@ -92,8 +91,6 @@ Blueprint v3.3.0 manages project documentation and rules.
 ## Sub-documentation
 
 - `exact_dot_claude/CLAUDE.md` — Claude Code design and directory structure
-- `exact_dot_claude/commands/CLAUDE.md` — Slash commands guide
-- `exact_dot_claude/skills/CLAUDE.md` — Skills system
 - `private_dot_config/CLAUDE.md` — Application configuration
 - `private_dot_config/nvim/CLAUDE.md` — Neovim configuration
 - `scripts/CLAUDE.md` — Maintenance scripts
