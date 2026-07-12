@@ -443,22 +443,24 @@ ghprls() {
 }
 
 # GitHub Issues → Claude: select issue and process with git:issue skill
+# Sorted oldest-first by creation date (like ghsq), with --layout=reverse so
+# the cursor starts on the oldest issue at the top.
 ghi() {
   local issue_num
   if [[ $# -eq 0 ]]; then
     # No args: interactive fzf selection
     local selection
-    selection=$(gh issue list --json number,title,labels,updatedAt \
-      --jq '.[] | [
+    selection=$(gh issue list --json number,title,labels,createdAt \
+      --jq 'sort_by(.createdAt) | .[] | [
         "#\(.number)",
         (if (.labels | length) > 0 then (.labels | map(.name) | join(","))[:20] else "-" end),
-        (.updatedAt | fromdateiso8601 | strftime("%Y-%m-%d")),
+        (.createdAt | fromdateiso8601 | strftime("%Y-%m-%d")),
         .title[:60]
       ] | @tsv' | \
       column -t -s $'\t' | \
       _gh_paint | \
-      fzf --ansi \
-          --header '#       Labels               Updated     Title' \
+      fzf --ansi --layout=reverse \
+          --header '#       Labels               Created     Title' \
           --preview 'GH_FORCE_TTY=1 gh issue view {1}' \
           --preview-window right:60%:wrap \
           --bind 'ctrl-t:toggle-preview' \
