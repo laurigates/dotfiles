@@ -53,6 +53,17 @@ repos:
         language: script
         files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
         pass_filenames: false
+      # Advisory doc-drift nudge: flags docs that reference scripts/paths/links
+      # which no longer exist. ADVISORY (always exits 0) so it never blocks a
+      # commit; `mise run lint:docs` is the strict/enforcing variant for CI.
+      # See scripts/check-doc-references.py and .doc-reference-allow.
+      - id: check-doc-references
+        name: check docs for dangling references (advisory)
+        entry: scripts/check-doc-references.py
+        language: script
+        pass_filenames: false
+        always_run: true
+        verbose: true
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.7
     hooks:

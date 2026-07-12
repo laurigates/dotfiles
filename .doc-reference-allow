@@ -1,0 +1,12 @@
+# Allowlist for scripts/check-doc-references.py — one glob per line.
+# Docs matching these globs are skipped by the doc-reference gate.
+
+# Immutable point-in-time records: ADRs intentionally reference paths that were
+# accurate when the decision was made and may since have moved/been removed.
+docs/adrs/**
+
+# Global ~/.claude source tree. These docs reference the external
+# claude-plugins marketplace and OTHER projects' paths (e.g. an aiq project's
+# scripts/aiq.py, docs/source/...), plus runtime ~/.claude structures — none of
+# which are files in THIS repo. Repo-relative existence checking does not apply.
+exact_dot_claude/**

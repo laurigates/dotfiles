@@ -13,5 +13,6 @@ Utility scripts for Claude Code infrastructure automation.
 | `audit-secrets-baseline.py` | Audit secrets baseline file |
 | `audit-secrets-selective.py` | Selective secrets audit |
 | `smoke-test-docker.sh` | Docker-based smoke tests for dotfiles |
+| `check-doc-references.py` | Flag docs that reference scripts/paths/links no longer in the repo (advisory pre-commit hook; strict via `mise run lint:docs`). See `.doc-reference-allow` for scoping and `tests/test-check-doc-references.sh` for the contract. |
 
 All shell scripts support `--help`. Run `shellcheck scripts/*.sh` to lint.

@@ -278,8 +278,20 @@ else
     echo "  ⚠️  Warning: Brewfile not found"
 fi
 
+# Documentation references (dangling scripts/paths/links)
+if command -v python3 >/dev/null 2>&1; then
+    echo "  ✓ Checking doc references..."
+    python3 scripts/check-doc-references.py --strict || {
+        echo "  ⚠️  Warning: doc reference check found dangling references"
+    }
+fi
+
 echo "✅ Linting complete!"
 """
+
+[tasks."lint:docs"]
+description = "Check docs for dangling repo-relative references (scripts/paths/links)"
+run = "python3 scripts/check-doc-references.py --strict"
 
 [tasks."lint:shell"]
 description = "Run shellcheck on shell scripts"
