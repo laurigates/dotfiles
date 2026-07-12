@@ -1,5 +1,12 @@
 # Blueprint Development - Implementation Summary
 
+> **Superseded:** Blueprint has since moved to the external
+> [`blueprint-plugin`](https://github.com/laurigates/claude-plugins) marketplace.
+> The in-repo skills (`.claude/skills/blueprint-development/`) and commands
+> (`.claude/commands/`) described below **no longer exist in this repo** — those
+> capabilities now resolve at runtime from the plugin. This document is retained
+> as a historical record of the original in-repo implementation.
+
 This document summarizes the Blueprint Development implementation in your dotfiles repository.
 
 ## What Was Created

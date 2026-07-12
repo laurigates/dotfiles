@@ -44,12 +44,8 @@ Configuration is managed via Lua (`private_dot_config/nvim/lua/`).
 -   **Git Integration:**
     -   **[Gitsigns](https://github.com/lewis6991/gitsigns.nvim)**: Shows Git status (added, modified, deleted lines) in the sign column and provides related actions (preview hunk, stage, reset, blame, etc.).
 -   **AI / LLM Integration:**
-    -   **[CodeCompanion.nvim](https://github.com/olimorris/codecompanion.nvim)**: AI-powered coding plugin supporting Anthropic, Copilot, Gemini, Ollama, OpenAI and other LLMs.
-        -   **Strategies (`strategies.lua`)**: Defines different interaction modes (e.g., chat, workflow).
-        -   **Tools**: Allows the LLM to invoke external commands securely:
-            -   `git diff`, `git log`, `git status`, `git commit`, `git push`
-            -   `arduino-cli compile`, `arduino-cli upload`, `arduino-cli monitor`
-        -   **Prompts (`private_prompts/`)**: Pre-defined prompt templates and workflows (e.g., Arduino code generation).
+    -   **[claudecode.nvim](https://github.com/coder/claudecode.nvim)** (`exact_plugins/claudecode.lua`): Claude Code integration for Neovim.
+    -   **[opencode.nvim](https://github.com/NickvanDyke/opencode.nvim)** (`exact_plugins/opencode.lua`): OpenCode AI agent integration.
 
 ## Terminal Utilities
 

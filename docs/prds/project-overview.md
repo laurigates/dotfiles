@@ -78,8 +78,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 ### Security
 - No secrets in git — API tokens, credentials via `~/.api_tokens`
 - Private files use `private_` chezmoi prefix (mode 600)
-- gitleaks on every commit via pre-commit hook
-- detect-secrets baseline maintained in `.secrets.baseline`
+- gitleaks on every commit via pre-commit hook (see ADR 0015)
 
 ### Reliability
 - Smoke test CI validates setup on Ubuntu and macOS
@@ -102,9 +101,10 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 - **Brewfile** with profile-based package selection via `.chezmoidata/profiles.toml`
 
 ### Key Configuration Files
-- `.chezmoidata.toml` — MCP servers, uv_tools, platform data
+- `.chezmoidata.toml` — MCP servers, platform data
 - `.chezmoidata/packages.toml` — Profile-based Homebrew package registry
 - `.chezmoidata/profiles.toml` — Profile activation flags
+- `.chezmoidata/uv_tools.toml` — Python tools managed by uv
 - `dot_zshrc.tmpl` — Zsh config (template)
 - `private_dot_config/mise/config.toml.tmpl` — mise tools and tasks
 - `private_dot_config/nvim/` — Neovim Lua configuration

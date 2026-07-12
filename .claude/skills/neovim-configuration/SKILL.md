@@ -5,8 +5,8 @@ reviewed: 2025-12-16
 name: neovim-configuration
 description: |
   Modern Neovim configuration expertise including Lua scripting, plugin management with
-  lazy.nvim, LSP setup with Mason, AI integration with CodeCompanion, and workflow
-  optimization. Covers keymaps, autocommands, and treesitter configuration.
+  lazy.nvim, LSP setup with Mason, AI integration with claudecode.nvim/opencode.nvim,
+  and workflow optimization. Covers keymaps, autocommands, and treesitter configuration.
   Use when user mentions Neovim, nvim, lazy.nvim, Mason, init.lua, Lua config,
   nvim plugins, or Neovim customization.
 allowed-tools: Glob, Grep, Read, Edit, Write
@@ -21,7 +21,7 @@ Expert knowledge for modern Neovim configuration with Lua scripting, plugin mana
 **Modern Neovim Configuration**
 - Lua-based configuration with lazy.nvim plugin management
 - LSP setup with Mason for language server management
-- AI integration with CodeCompanion and custom prompt strategies
+- AI integration with claudecode.nvim and opencode.nvim
 - Advanced key mapping and workflow optimization
 
 ## Key Capabilities
@@ -39,9 +39,8 @@ Expert knowledge for modern Neovim configuration with Lua scripting, plugin mana
 - **Code Navigation**: Go-to-definition, references, and symbol search
 
 **AI Integration & Automation**
-- **CodeCompanion**: AI-powered code assistance with custom prompts
-- **Custom Strategies**: Domain-specific AI workflows for different development contexts
-- **Prompt Management**: Custom prompts for Arduino, deployment, debugging, and more
+- **claudecode.nvim**: Claude Code integration for AI-powered coding in Neovim
+- **opencode.nvim**: OpenCode AI agent integration
 - **Workflow Integration**: AI assistance integrated into development workflows
 
 **Advanced Features**

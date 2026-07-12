@@ -20,6 +20,5 @@ Application configuration files managed by chezmoi. Uses chezmoi naming conventi
 | `rofi/` | Application launcher (Linux) |
 | `sketchybar/` | macOS status bar |
 | `private_dunst/` | Notification daemon (Linux) |
-| `private_i3/` | i3 window manager (Linux) |
 | `fd/` | fd ignore patterns |
 | `pet/` | Snippet manager |

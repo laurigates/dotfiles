@@ -36,7 +36,7 @@ claude mcp remove --scope={{ $config.scope }} {{ $name }} || true
 {{- end }}
 
 echo ""
-echo "✅ Cleanup complete. Run update-ai-tools.sh to re-add servers."
+echo "✅ Cleanup complete. MCP servers are now managed per-project."
 echo ""
-echo "To re-add servers now:"
-echo "  ./update-ai-tools.sh"
+echo "To reinstall servers into a project, use:"
+echo "  /configure:mcp   (interactive, writes to the project's .mcp.json)"

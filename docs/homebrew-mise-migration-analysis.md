@@ -2,6 +2,12 @@
 
 This document analyzes package duplication between Homebrew and the new mise configuration.
 
+> **Note (point-in-time analysis):** the package/tool registries have since been
+> split out of `.chezmoidata.toml` into the `.chezmoidata/` directory —
+> `uv_tools` now lives in `.chezmoidata/uv_tools.toml` and packages in
+> `.chezmoidata/packages.toml`. References to a `uv_tools` section "in
+> `.chezmoidata.toml`" below reflect the layout at the time of writing.
+
 ## 📊 Duplicate Analysis
 
 ### Packages Now Managed by mise (Remove from Homebrew)
