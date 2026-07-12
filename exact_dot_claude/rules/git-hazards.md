@@ -13,9 +13,21 @@ branch's own commits are never ancestors — `git branch --merged` (and any
 ancestry check) reports it **unmerged**. "Files identical to main" also fails
 once `main` drifts the same files.
 
-- **Check** (either proves the work is in `main`, immune to squash + drift):
-  - `git merge-tree --write-tree main <branch>` equals `git rev-parse main^{tree}` → contained.
-  - `gh pr list --state all --head <branch> --json state` → a MERGED PR is authoritative.
+- **Check**, in order of authority:
+  - `gh pr list --state all --head <branch> --json state` → a MERGED PR is
+    **authoritative**. Reach for this first; the git-side checks below are all
+    one-way.
+  - `git cherry main <branch>` → marks a commit `-` when a patch-equivalent
+    commit is already upstream, `+` when it is not. Survives squash **and**
+    cherry-pick, and does not care that `main` drifted.
+  - `git merge-tree --write-tree main <branch>` equals `git rev-parse main^{tree}`
+    → contained. **A match proves containment; a non-match proves nothing.**
+- **Not immune to drift** (corrected 2026-07): once `main` moves on over the same
+  files, merging an already-merged branch back would re-introduce its older
+  versions, so the trees differ and merge-tree reports **not contained** for work
+  that fully landed. Observed reporting three merged branches as unmerged. Same
+  trap as "files identical to main". Use the PR state or `git cherry` to decide;
+  keep merge-tree only as a positive-containment shortcut.
 - **Fix**: use the encoded recipe rather than re-deriving: `just -g branch-audit`
   (in `private_dot_config/just/git.just`) prints MERGED vs REVIEW + a paste-ready delete.
 - A non-match is "review", **not** proof of unmerged — don't force the count to zero.
@@ -45,6 +57,19 @@ branch is gone **cannot be reopened**.
   4. merge the child.
 - **If already auto-closed**: the head branch survives — rebase as above,
   `gh pr create` fresh, comment "Superseded by #new" on the closed one.
+- **Nothing tells you this happened.** The auto-close is silent: no failed
+  check, no notification, and the PR list just looks one shorter. claude-plugins
+  #2049 sat stranded for a day; a sweep then found 26 dead branches, two carrying
+  work that had **never had a PR opened at all** (so no event ever fired for
+  them either). A scheduled sweep is the only thing that finds this class —
+  an event handler on `pull_request: closed` is too late by construction (the
+  base ref is already deleted, so the reopen window is gone) and is blind to
+  never-PR'd branches. `claude-plugins scripts/check-stranded-work.sh` is the
+  encoded audit; it takes `--repo`, so one run sweeps the portfolio.
+- **Telling an accident from a decision**: a closed-unmerged PR whose base ref
+  **404s** was auto-closed; one whose base ref is still **alive** was closed by a
+  human (duplicate/superseded). That single check is the discriminator — 11 of
+  those 26 branches were deliberate closes and must not be resurrected.
 
 ## 4. Unpushed commits on local `main` ride into new branches
 
