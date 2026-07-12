@@ -307,18 +307,14 @@ clean:
 [group: "maintain"]
 secrets:
     @echo "{{BLUE}}Scanning for secrets...{{NORMAL}}"
-    @if command -v detect-secrets >/dev/null 2>&1; then \
-        if [ -f .secrets.baseline ]; then \
-            detect-secrets scan --baseline .secrets.baseline; \
-            echo "{{GREEN}}Secret scan complete (baseline: .secrets.baseline){{NORMAL}}"; \
-        else \
-            detect-secrets scan; \
-        fi \
+    @if command -v gitleaks >/dev/null 2>&1; then \
+        gitleaks dir . --config .gitleaks.toml --no-banner \
+            && echo "{{GREEN}}Secret scan complete (no leaks){{NORMAL}}"; \
     elif command -v rg >/dev/null 2>&1; then \
-        echo "{{YELLOW}}detect-secrets not installed, using ripgrep fallback{{NORMAL}}"; \
+        echo "{{YELLOW}}gitleaks not installed, using ripgrep fallback{{NORMAL}}"; \
         rg -i "password|secret|token|api.?key" --type-not lock --type-not json . || echo "{{GREEN}}No obvious secrets found{{NORMAL}}"; \
     else \
-        echo "{{YELLOW}}Warning: neither detect-secrets nor ripgrep installed{{NORMAL}}"; \
+        echo "{{YELLOW}}Warning: neither gitleaks nor ripgrep installed{{NORMAL}}"; \
     fi
 
 # Display terminal color capabilities
@@ -406,7 +402,7 @@ doctor:
     done
     @echo ""
     @echo "{{BLUE}}Optional Tools:{{NORMAL}}"
-    @for tool in nvim brew fish shellcheck luacheck actionlint pre-commit detect-secrets rg fd; do \
+    @for tool in nvim brew fish shellcheck luacheck actionlint pre-commit gitleaks rg fd; do \
         if command -v $tool >/dev/null 2>&1; then \
             echo "  {{GREEN}}✓{{NORMAL}} $tool"; \
         else \
