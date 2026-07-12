@@ -50,8 +50,8 @@ pre-commit run --all-files            # All pre-commit hooks
 
 ### Secret scanning:
 ```bash
-gitleaks detect --source . --config .gitleaks.toml   # scan the working tree
-pre-commit run gitleaks --all-files                  # via pre-commit
+gitleaks dir . --config .gitleaks.toml   # scan the working tree
+pre-commit run gitleaks --all-files      # via pre-commit
 ```
 
 ## Key Files & Directories

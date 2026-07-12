@@ -52,7 +52,7 @@
       "Bash(actionlint:*)",
       "Bash(shellcheck:*)",
       "Bash(luacheck:*)",
-      "Bash(detect-secrets:*)"
+      "Bash(gitleaks:*)"
     ],
     "package_managers": [
       "Bash(uv:*)",

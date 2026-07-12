@@ -47,7 +47,7 @@ documentation:
 # Security
 security:
   - changed-files:
-    - any-glob-to-any-file: '.secrets.baseline'
+    - any-glob-to-any-file: '.gitleaks.toml'
     - any-glob-to-any-file: '.pre-commit-config.yaml'
     - any-glob-to-any-file: '**/*secret*'
 

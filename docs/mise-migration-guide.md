@@ -84,7 +84,7 @@ mise run setup
 | `make update` (uv only) | `mise run update:uv` | Update uv tools only |
 | `make clean` | `mise run clean` | Clean up caches |
 | `make security-audit` | `mise run security:audit` | Run security audit |
-| - | `mise run security:scan` | Run detect-secrets scan |
+| - | `mise run security:scan` | Run gitleaks scan |
 | `make dev` | `mise run dev` | Start development environment |
 | `make edit` | `mise run edit` | Edit dotfiles |
 | `make info` | `mise run info` | Show system information |
@@ -505,7 +505,7 @@ mise trust                   # In directory with .mise.toml
 
 3. **aqua Security Features**: Automatically verifies checksums, GitHub Attestations, SLSA provenance
 
-4. **Pre-commit Hooks**: Keep using detect-secrets - mise doesn't replace this
+4. **Pre-commit Hooks**: Secret scanning via gitleaks - mise doesn't replace pre-commit
 
 ## ✅ Success Criteria
 

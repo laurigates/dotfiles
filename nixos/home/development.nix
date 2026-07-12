@@ -259,11 +259,10 @@
           - id: check-merge-conflict
           - id: check-symlinks
 
-      - repo: https://github.com/Yelp/detect-secrets
-        rev: v1.4.0
+      - repo: https://github.com/gitleaks/gitleaks
+        rev: v8.30.1
         hooks:
-          - id: detect-secrets
-            args: ['--baseline', '.secrets.baseline']
+          - id: gitleaks
 
       - repo: https://github.com/shellcheck-py/shellcheck-py
         rev: v0.9.0.6

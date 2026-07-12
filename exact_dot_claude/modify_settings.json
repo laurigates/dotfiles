@@ -64,7 +64,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(argocd app resources *)",
       "Bash(argocd login *)",
       "Bash(ast-grep *)",
-      "Bash(detect-secrets scan *)",
+      "Bash(gitleaks dir *)",
       "Bash(docker info *)",
       "Bash(docker ps *)",
       "Bash(echo *)",

@@ -490,20 +490,20 @@ else
     echo "  ⚠️  Warning: ripgrep not installed, cannot check for secrets"
 fi
 
-# Run detect-secrets if available
-if command -v detect-secrets >/dev/null 2>&1; then
-    echo "  🔍 Running detect-secrets scan..."
-    detect-secrets scan --baseline .secrets.baseline
+# Run gitleaks if available
+if command -v gitleaks >/dev/null 2>&1; then
+    echo "  🔍 Running gitleaks scan..."
+    gitleaks dir . --config .gitleaks.toml --no-banner
 else
-    echo "  ⚠️  Warning: detect-secrets not installed"
+    echo "  ⚠️  Warning: gitleaks not installed"
 fi
 
 echo "✅ Security audit complete!"
 """
 
 [tasks."security:scan"]
-description = "Scan for secrets with detect-secrets"
-run = "detect-secrets scan --baseline .secrets.baseline"
+description = "Scan for secrets with gitleaks"
+run = "gitleaks dir . --config .gitleaks.toml --no-banner"
 
 # ----------------------------------------------------------------------------
 # Development Workflow
@@ -604,7 +604,7 @@ pipx.uvx = true
 
 # [hooks]
 # Run security scan when entering dotfiles directory
-# enter = "detect-secrets scan --baseline .secrets.baseline"
+# enter = "gitleaks dir . --config .gitleaks.toml --no-banner"
 
 # Clean up when leaving
 # leave = "mise prune"
