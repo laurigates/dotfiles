@@ -158,6 +158,34 @@ limit and recovered fully):
    at zero cost and re-runs only the dead ones. Re-dispatching from scratch
    re-pays every completed agent's tokens.
 
+## Grep / rg — `-r` is `--replace`, not a bundled short flag
+
+`rg`'s `-r` takes an argument: it **rewrites every match in the output**. Bundling
+it into a short-flag cluster silently consumes the next letter as the replacement
+string, so the tool prints *fabricated* lines that look like real file contents.
+
+```
+# Wrong — reads as "recursive + line numbers"; actually means --replace=n
+rg -rn "yolo" .
+./conf/cli_clients/gemini.json:    "--n"      ← the file says "--yolo"; rg rewrote it
+
+# Right
+rg -n "yolo" .
+./conf/cli_clients/gemini.json:    "--yolo"
+```
+
+The failure is **silent and confident**: no error, no warning, and the output is
+well-formed — it just doesn't match the file on disk. Observed 2026-07 building a
+false picture of a config file that was then nearly acted on; caught only because
+the doctored line contradicted an earlier direct `Read` of the same file.
+
+- **`rg` is recursive by default** — there is no `-r` to add. The instinct is
+  imported from `grep -r`, and that's the trap.
+- **Never bundle `-r` into a cluster.** If an `rg` result contradicts something you
+  read directly, suspect the flags before you suspect the file.
+- **Prefer the Grep tool** over `rg` in Bash: it has no `--replace` surface, so
+  this class of error cannot occur.
+
 ## WebFetch — do not retry the same failing URL
 
 | Failure | Try |
