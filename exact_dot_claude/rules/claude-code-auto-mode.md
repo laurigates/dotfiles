@@ -49,7 +49,10 @@ entries.
 `permissions.deny` resolves before the classifier and cannot be overridden in
 any mode except `bypassPermissions`. Keep dangerous ops in `deny`
 (`git push --force *`, `git add -A`, `kubectl config use-context *`,
-`Write(**/CHANGELOG.md)`).
+`Edit(**/CHANGELOG.md)` — file-permission checks match only `Edit(path)`
+rules, which cover all file-editing tools including Write; a
+`Write(path)` deny rule is never matched and Claude Code warns about it
+at launch).
 
 **Use the space-delimited form for flag-scoped deny rules, not `:*`.**
 Colon-form patterns prefix-match the raw command string, so
