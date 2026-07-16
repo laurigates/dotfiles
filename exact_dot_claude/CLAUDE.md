@@ -47,3 +47,4 @@ When installing new tools, prefer earlier options:
 ## Development Notes
 
 - If a justfile exists, prefer its recipes (check `just --help`) over calling tools directly (e.g. use `just test` instead of `bun run test`); run `just --list` to discover recipes
+- Global recipes also exist at `~/.config/just/justfile`, invokable from **any** directory via `just -g <recipe>` (source: `private_dot_config/just/*.just` in the dotfiles repo). Run `just -g --list` to discover them before re-deriving mechanical work — they cover branch cleanup (`branch-audit`), blocked-PR triage (`pr-todo`), Claude plugin management (`plugins-*`), MCP/Claude setup (`claude-setup`, `mcp-*`), and settings hygiene (`settings-audit`). Prefer an existing recipe over hand-rolling the equivalent (per the `offload-to-deterministic-substrate` rule).
