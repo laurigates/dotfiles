@@ -41,6 +41,8 @@ jobs/
 .last-update-result.json
 
 # Runtime files created by Claude Code
+.credentials.json
+settings.json.backup.*
 policy-limits.json
 remote-settings.json
 .update.lock
