@@ -53,3 +53,40 @@ branch-audit:
       echo "# ${#merged[@]} branch(es) safe to delete:"
       echo "git branch -D ${merged[*]}"
     fi
+
+# List your own open PRs blocked on YOU — changes requested or CI failing. Read-only.
+#
+# Two independent GitHub searches, unioned by URL:
+#   1. --review=changes_requested — a reviewer asked for changes.
+#   2. --checks=failure           — the PR's checks are failing.
+# A PR matching both shows both reasons. Empty result prints a clean line
+# and still exits 0 (safe in pipelines / autonomous sweeps).
+[group: "git"]
+pr-todo:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    changes=$(gh search prs --author=@me --state=open --review=changes_requested \
+      --json repository,number,title,url \
+      --jq '.[] | [.url, .repository.nameWithOwner, "#"+(.number|tostring), "changes-requested", .title] | @tsv' 2>/dev/null || true)
+    failing=$(gh search prs --author=@me --state=open --checks=failure \
+      --json repository,number,title,url \
+      --jq '.[] | [.url, .repository.nameWithOwner, "#"+(.number|tostring), "ci-failing", .title] | @tsv' 2>/dev/null || true)
+
+    # Union by URL; a PR in both searches gets both reasons joined with "+".
+    rows=$(printf '%s\n%s\n' "$changes" "$failing" | grep -v '^$' | awk -F'\t' '
+      { url=$1; repo[$1]=$2; num[$1]=$3; title[$1]=$5;
+        reason[$1] = ($1 in reason) ? reason[$1]"+"$4 : $4 }
+      END { for (u in repo) printf "%s\t%s\t%s\t%s\t%s\n", repo[u], num[u], reason[u], title[u], u }
+    ' | sort)
+
+    if [ -z "$rows" ]; then
+      echo "Nothing blocked on you — no open PRs with changes requested or failing CI."
+      exit 0
+    fi
+
+    printf '%-40s %-7s %-24s %s\n' REPO PR REASON TITLE
+    printf '%.0s-' {1..100}; echo
+    printf '%s\n' "$rows" | while IFS=$'\t' read -r repo num reason title url; do
+      printf '%-40s %-7s %-24s %s\n' "$repo" "$num" "$reason" "$title"
+    done
