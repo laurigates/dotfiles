@@ -12,7 +12,7 @@ _claude() {
     commands=(
         'agents:Manage background agents'
         'auth:Manage authentication'
-        'auto-mode:Inspect auto mode classifier'
+        'auto-mode:Inspect or reset auto mode classifier'
         'doctor:Check the health of your Claude Code'
         'gateway:Run the enterprise auth/telemetry'
         'install:Install Claude Code native build. Use'
@@ -104,7 +104,7 @@ _claude_config() {
     config_commands=(
         'agents:Manage background agents'
         'auth:Manage authentication'
-        'auto-mode:Inspect auto mode classifier'
+        'auto-mode:Inspect or reset auto mode classifier'
         'doctor:Check the health of your Claude Code'
         'gateway:Run the enterprise auth/telemetry'
         'install:Install Claude Code native build. Use'
