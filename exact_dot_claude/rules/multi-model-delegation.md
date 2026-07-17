@@ -67,6 +67,20 @@ none of them is "the model wrote my design."
   as "my prompt was too long." Prompt length, file attachments, and
   `thinking_mode` are all innocent; `glm-5.2` accepts `temperature` fine. Omit
   `temperature` for kimi. Tracked: `laurigates/pal-mcp-server#67`.
+- **`model_used` in the response metadata can be wrong — verify independence
+  via `provider_used`.** A `chat` call requesting `gpt-5.3-codex` returned
+  `model_used: gemini-3.5-flash` with `provider_used: openai` (2026-07,
+  softmax-rung consults) — an inconsistent triple. Since the whole point of
+  a two-model consult is provably independent draws, check the *provider*
+  field (and pick models on different providers to begin with); a
+  same-model pair silently breaks the disagreement-is-the-payload logic.
+  Tracked: `laurigates/pal-mcp-server#68`.
+- **Registry models can be retired upstream** — `gemini-3-pro-preview`
+  404'd ("no longer available") while still listed by `listmodels`. Have a
+  same-provider fallback picked before dispatching (the registry's current
+  frontier alias, e.g. `pro`/`flash`), and re-send the identical brief to
+  the fallback — a reworded brief would break the identical-briefs
+  invariant.
 - **Isolate a model failure with controlled probes before believing your first
   theory.** The intuitive suspects (big prompt, file attachments) were both
   wrong here, twice, and a bug filed on either would have been a misleading
