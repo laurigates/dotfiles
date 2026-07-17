@@ -654,26 +654,73 @@ _gh_pr_multi_select() {
     awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
 }
 
+# ---- post-merge "go home" helper (ghsq / ghrb) ----------------------
+# When you merge the PR of the branch you're standing on, land on the (now
+# updated) base branch. gh's --delete-branch already moves HEAD off the deleted
+# local branch, but it does NOT pull, so the base is left behind origin. The PR
+# number must be captured BEFORE the merge (gh moves HEAD during --delete-branch,
+# after which `gh pr view` with no arg would resolve the base branch's PR, not
+# yours).
+_gh_current_pr() {
+  git rev-parse --git-dir >/dev/null 2>&1 || return
+  gh pr view --json number --jq .number </dev/null 2>/dev/null
+}
+
+# Act only if that PR is authoritatively MERGED — so this no-ops when you merge
+# only other people's PRs, or skip your own at the confirm prompt.
+_gh_home_if_merged() {
+  local cur_pr="$1"
+  [[ -n "$cur_pr" ]] || return 0
+  local info state base
+  info=$(gh pr view "$cur_pr" --json state,baseRefName \
+           --jq '"\(.state)\t\(.baseRefName)"' </dev/null 2>/dev/null)
+  state="${info%%$'\t'*}"; base="${info#*$'\t'}"
+  [[ "$state" == MERGED && -n "$base" ]] || return 0
+  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
+  local green='' yellow='' cyan='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' yellow=$'\033[33m' cyan=$'\033[36m' rst=$'\033[0m' }
+  local cur; cur=$(git symbolic-ref --short -q HEAD 2>/dev/null)
+  if [[ "$cur" != "$base" ]]; then
+    git switch "$base" 2>/dev/null || git checkout "$base" 2>/dev/null || {
+      print -r -- "  ${yellow}!${rst} #${cur_pr} merged, but couldn't switch to ${cyan}${base}${rst} (uncommitted changes?)"
+      return 1
+    }
+  fi
+  print -r -- "  ${green}⇣${rst} #${cur_pr} was merged — on ${cyan}${base}${rst}, pulling"
+  git pull --ff-only
+}
+
 # Interactive PR merge (squash). No args → multi-select picker (Tab to mark
 # several) → sequential squash-merge in selection order. Arg form (ghsq 123,
-# via completion) merges that single PR directly.
+# via completion) merges that single PR directly. If the branch you're on gets
+# merged, you're left on an updated base branch (see _gh_home_if_merged).
 ghsq() {
+  local cur_pr
   if [[ $# -eq 0 ]]; then
     local tsv; tsv=$(_gh_pr_multi_select squash --layout=reverse)
-    [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --squash --delete-branch
+    [[ -z "$tsv" ]] && return
+    cur_pr=$(_gh_current_pr)
+    _gh_batch_merge "$tsv" --squash --delete-branch
   else
+    cur_pr=$(_gh_current_pr)
     gh pr merge "${1%%\[*}" --squash --delete-branch
   fi
+  _gh_home_if_merged "$cur_pr"
 }
 
 # Interactive PR merge (rebase) — multi-select twin of ghsq.
 ghrb() {
+  local cur_pr
   if [[ $# -eq 0 ]]; then
     local tsv; tsv=$(_gh_pr_multi_select rebase --layout=reverse)
-    [[ -n "$tsv" ]] && _gh_batch_merge "$tsv" --rebase --delete-branch
+    [[ -z "$tsv" ]] && return
+    cur_pr=$(_gh_current_pr)
+    _gh_batch_merge "$tsv" --rebase --delete-branch
   else
+    cur_pr=$(_gh_current_pr)
     gh pr merge "${1%%\[*}" --rebase --delete-branch
   fi
+  _gh_home_if_merged "$cur_pr"
 }
 
 # ---- Read-only gh wrappers (view/diff/checkout/checks/run) -----------
@@ -1122,8 +1169,8 @@ _GH_WRAPPER_DOC=(
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches.'
-  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches.'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If your branch merged, land on updated base.'
+  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. If your branch merged, land on updated base.'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge.'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
   ghi  'Pick a GitHub issue and hand it to Claude.'
