@@ -2,7 +2,7 @@
 # telegram-ask — send a question to Telegram and wait for the user's reply.
 #
 # Usage:
-#   telegram-ask "Question text?"                       # default 5min timeout
+#   telegram-ask "Question text?"                       # default 1h timeout
 #   telegram-ask -t 30 "Quick question?"                # 30s timeout
 #   telegram-ask --pattern '^(YES|NO)$' "YES or NO?"    # require regex match
 #   telegram-ask -r 0 "No reminders, just wait"         # disable reminders
@@ -16,16 +16,16 @@
 # These are typically sourced from ~/.api_tokens via mise.
 #
 # While waiting, re-pings with a reminder at exponentially increasing
-# intervals (default: 30s, 60s, 120s, ... capped by --timeout) so a missed
-# phone notification gets a second and third chance before the deadline.
-# Disable with -r 0.
+# intervals (default: 5m, then 10m, 20m, ... capped by --timeout) so a
+# missed phone notification gets a second and third chance before the
+# deadline. Disable with -r 0.
 
 set -euo pipefail
 
-TIMEOUT=300
+TIMEOUT=3600
 PATTERN=""
 PARSE_MODE=""
-REMIND=30
+REMIND=300
 
 usage() {
   sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'

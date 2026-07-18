@@ -22,16 +22,16 @@
 # telegram-ask instead — polls are for picking among fixed options.
 #
 # While waiting, re-pings with a reminder at exponentially increasing
-# intervals (default: 30s, 60s, 120s, ... capped by --timeout) so a missed
-# phone notification gets a second and third chance before the deadline.
-# Disable with -r 0.
+# intervals (default: 5m, then 10m, 20m, ... capped by --timeout) so a
+# missed phone notification gets a second and third chance before the
+# deadline. Disable with -r 0.
 
 set -euo pipefail
 
-TIMEOUT=300
+TIMEOUT=3600
 MULTIPLE="false"
 SILENT="false"
-REMIND=30
+REMIND=300
 
 usage() {
   sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'
