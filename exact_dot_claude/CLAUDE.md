@@ -5,6 +5,7 @@ Personal configuration for Claude Code. Domain-specific skills and workflows are
 ## Core
 
 - Use Skills proactively — see `rules/skill-and-agent-catalog-check.md` for when to re-check the catalog and how to brief subagents with matched skills/agents.
+- Before depending on a heavy single-purpose tool (GUI app, bundled runtime, non-cross-platform binary), always evaluate a transparent DIY reimplementation first — see `rules/prefer-diy-over-heavy-dependency.md`. Not a mandate to always DIY, but the evaluation itself is never optional.
 
 ## Git Workflow
 
