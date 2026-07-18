@@ -415,6 +415,8 @@ _gh_paint() {
       gsub(/✗[A-Za-z]*/, "\033[31m&\033[0m")   # failure  → red
       gsub(/⏳[A-Za-z]*/, "\033[33m&\033[0m")  # pending  → yellow
       gsub(/#[0-9]+/,     "\033[36m&\033[0m")  # PR/issue → cyan
+      gsub(/ draft /, " \033[1;35mdraft\033[0m ")  # draft PR (blocks merge) → bold magenta
+      gsub(/ ready /, " \033[2mready\033[0m ")     # ready PR → dim (so drafts pop)
       gsub(/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/, "\033[2m&\033[0m")  # date → dim
       print
     }'
@@ -547,8 +549,24 @@ _gh_poll_merge() {
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
   # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
-  local green='' red='' yellow='' cyan='' dim='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' rst=$'\033[0m' }
+  local green='' red='' yellow='' cyan='' dim='' magenta='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' magenta=$'\033[35m' rst=$'\033[0m' }
+  # Draft PRs report mergeable=MERGEABLE (that field tracks conflicts, not draft
+  # state), so the poll loop below never catches them — `gh pr merge` just fails.
+  # Detect the draft up front and prompt: mark ready & merge, or skip.
+  if [[ $(gh pr view "$num" "${repo_flag[@]}" --json isDraft --jq '.isDraft' </dev/null 2>/dev/null) == true ]]; then
+    local dans
+    read -k 1 "dans?  ${magenta}draft${rst} ${cyan}${id}${rst} — [${green}r${rst}=ready&merge/${dim}s${rst}=skip] "; print
+    case "$dans" in
+      r|R)
+        if gh pr ready "$num" "${repo_flag[@]}" </dev/null; then
+          print -r -- "  ${green}✓${rst} ${cyan}${id}${rst} marked ready for review"
+        else
+          print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: couldn't mark ready — skipped"; return 1
+        fi ;;
+      *) print -r -- "  ${dim}– skipped draft ${id}${rst}"; return 0 ;;
+    esac
+  fi
   local state tries=0
   while (( tries < 20 )); do
     state=$(gh pr view "$num" "${repo_flag[@]}" --json mergeable --jq '.mergeable' </dev/null 2>/dev/null)
@@ -648,9 +666,9 @@ _gh_pr_multi_select() {
         --bind 'tab:toggle+down,btab:toggle+up' \
         --bind 'ctrl-a:select-all' \
         --bind 'ctrl-t:toggle-preview' \
-        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
-        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
-        --preview-window right:65%:wrap | \
+        --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up' \
+        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "── Files ──" && gh pr diff {1} | git apply --stat 2>/dev/null' \
+        --preview-window right:60%:wrap | \
     awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
 }
 
@@ -748,10 +766,10 @@ _gh_pr_pick() {
     column -t -s $'\t' | \
     _gh_paint | \
     fzf --ansi --tac \
-        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && gh pr diff {1} --color=always | head -100' \
-        --preview-window right:65%:wrap \
+        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "── Files ──" && gh pr diff {1} | git apply --stat 2>/dev/null' \
+        --preview-window right:60%:wrap \
         --bind 'ctrl-t:toggle-preview' \
-        --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up' \
+        --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up' \
         --header '⏎ select PR | ^t toggle preview | ^d/u scroll' | \
     awk '{n=$1; sub(/^#/,"",n); print n}'
 }
