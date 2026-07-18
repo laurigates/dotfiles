@@ -41,7 +41,7 @@ Returns immediately. Exit 0 on send, 2 on config error.
 ## telegram-ask
 
 ```
-# Default: 5-minute timeout, accept any reply
+# Default: 1-hour timeout, accept any reply
 answer=$(telegram-ask "Proceed with the deploy?")
 
 # Short timeout for an at-keyboard yes/no
@@ -59,8 +59,9 @@ Behaviour:
 3. Long-polls (`getUpdates`, `timeout=30`) until either a matching
    reply arrives or the deadline passes. While waiting, re-sends the
    question as a reminder at exponentially increasing intervals
-   (default: 30s, 60s, 120s, ... capped by `-t`) — a missed phone
-   notification gets more than one chance. Disable with `-r 0`.
+   (default: after 5m, then 10m, 20m, ... capped by `-t`) — a missed
+   phone notification gets more than one chance, without nagging
+   someone who's simply away from their phone. Disable with `-r 0`.
 4. On timeout: prints `TIMEOUT` to stderr, sends a "(timed out)"
    notice to the chat, and exits 1.
 5. On config error (missing token / chat id): exits 2 with a message
@@ -82,16 +83,33 @@ fi
 
 ## Calling pattern from inside a Claude Code session
 
-Use `Bash` with a long-enough `timeout` parameter. `telegram-ask` blocks
-the call until the user replies, so the Bash timeout must exceed the
-`telegram-ask -t` value.
+`telegram-ask` blocks until the user replies, and the default `-t` is
+now 3600s (1 hour) — longer than the Bash tool's 10-minute foreground
+cap. Two patterns:
+
+**Short waits (≤ ~9 min)**: pass an explicit `-t` and a Bash `timeout`
+that exceeds it.
 
 ```
 Bash(
-  command='telegram-ask -t 600 -p "^(YES|NO)$" "Run the destructive migration?"',
-  timeout=620000   # ms, must be > telegram-ask -t (seconds) * 1000
+  command='telegram-ask -t 480 -p "^(YES|NO)$" "Run the destructive migration?"',
+  timeout=500000   # ms, must be > telegram-ask -t (seconds) * 1000
 )
 ```
+
+**Long waits (default 1h)**: run in the background — the harness
+re-invokes you when the script exits, so no polling loop is needed.
+
+```
+Bash(
+  command='telegram-ask -p "^(YES|NO)$" "Run the destructive migration?"',
+  run_in_background=true
+)
+```
+
+Read the reply from the task output when it completes. Humans routinely
+take 15–60 minutes to notice a phone notification; prefer the
+background pattern over shrinking `-t` to fit a foreground call.
 
 If the user's reply is `YES`, proceed. Anything else (including
 `TIMEOUT`), do not proceed — surface the result and wait for fresh
@@ -100,7 +118,7 @@ direction.
 ## telegram-poll
 
 ```
-# Single-choice, default 5-minute timeout
+# Single-choice, default 1-hour timeout
 choice=$(telegram-poll "Which environment?" "staging" "prod" "both")
 
 # Short timeout for an at-keyboard pick
@@ -124,8 +142,8 @@ Behaviour:
    `timeout=30`) until a `poll_answer` for this poll's id arrives or the
    deadline passes. While waiting, sends a plain-text nudge ("Still
    waiting for your vote on: ...") at exponentially increasing intervals
-   (default: 30s, 60s, 120s, ... capped by `-t`) — same backoff as
-   `telegram-ask`. Disable with `-r 0`.
+   (default: after 5m, then 10m, 20m, ... capped by `-t`) — same backoff
+   as `telegram-ask`. Disable with `-r 0`.
 4. On answer: closes the poll (`stopPoll`) and prints the selected
    option text(s) to stdout, one per line — not the raw option index.
 5. On timeout: prints `TIMEOUT` to stderr, closes the poll, sends a
@@ -142,8 +160,9 @@ beats typing a reply for a menu of 3-10 choices. For yes/no or
 free-text confirmation, `telegram-ask` is still the right tool; a
 two-option poll is heavier than it needs to be for a plain yes/no.
 
-Calling pattern from inside a Claude Code session — same rule as
-`telegram-ask`: the Bash `timeout` must exceed the `-t` value.
+Calling pattern from inside a Claude Code session — same rules as
+`telegram-ask`: for a short explicit `-t`, the Bash `timeout` must
+exceed it; for the 1-hour default, use `run_in_background=true`.
 
 ```
 Bash(
