@@ -1,6 +1,6 @@
 # Git Hazards — Verify the Content, Not the Exit Code
 
-Seven traps sharing one law: **a green git command is not proof the result is
+Eight traps sharing one law: **a green git command is not proof the result is
 correct.** "Merge went well", "PR merged", and exit 0 are claims about
 mechanics, not content. Each hazard below: the trap, the 5-second check, the
 fix. (Consolidated 2026-07 from six separate incident rules; full narratives
@@ -133,3 +133,27 @@ claude-plugins #1979→#1987):
 - **Recovery** when auto-closed: the rebased commits survive in local objects
   (`git reflog`) — `git push --force-with-lease origin <sha>:<branch>`, open a
   fresh PR from the branch, comment "Superseded by #new" on the closed one.
+
+## 8. A "vanished" staged file in a shared checkout was probably committed by a coworker
+
+Sibling of #7's HEAD race: the **index and HEAD are process-global**, so a
+coworker session's commit lands between two of your Bash calls with no
+warning. Observed 2026-07 (dotfiles): a file another session had staged (`A `)
+disappeared from `git status`, then `ls` said it didn't exist, then status
+flapped `A ` → `M ` across consecutive calls. The wrong theory ("pre-commit's
+stash dance ate it") was nearly acted on; the truth was the coworker had
+committed the file to `main` mid-flight — every observation was a stale read
+of state the coworker kept moving.
+
+- **Check first, before any recovery**: `git log --oneline -3` — did HEAD
+  move? — and `git log -1 -- <path>`; a fresh commit touching the path is the
+  discriminator between "lost" and "landed".
+- **Don't blind-restore.** Re-adding your own copy of a "lost" file can
+  silently **downgrade** the coworker's version (observed: the restored copy
+  lacked frontmatter the coworker had added before committing). Diff your
+  candidate against `HEAD:<path>` and keep the committed version unless yours
+  is genuinely newer.
+- **Status flapping between consecutive calls is itself the tell** that a
+  coworker is active — stop mutating shared state (index, HEAD, branch
+  switches) until the flapping stops; re-read state fresh in the same command
+  that acts on it (same instinct as #7's push-by-SHA).
