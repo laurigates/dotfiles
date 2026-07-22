@@ -10,6 +10,7 @@
 #   • plugins.just  — Claude plugin management (plugins-*)
 #   • claude.just   — Claude Code setup (mcp-*, cclsp, claude-setup, settings-audit)
 #   • git.just      — Git branch hygiene (branch-audit)
+#   • maint.just    — Local machine maintenance (home-audit)
 # Edit those, then `chezmoi apply`. Imports are relative to this file's directory.
 #
 # `claude_model` (for headless `claude -p` recipes) is defined in plugins.just,
@@ -19,3 +20,4 @@
 import 'plugins.just'
 import 'claude.just'
 import 'git.just'
+import 'maint.just'
