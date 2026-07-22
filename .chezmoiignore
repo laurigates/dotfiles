@@ -19,3 +19,14 @@ CLAUDE.md
 /**/__pycache__/
 plugins/
 .mcp.json
+# Repo-meta that lives at the source root for working *in this repo* but must not
+# apply to $HOME (same rationale as README.md / Dockerfile / plugins/ above).
+# Root-anchored so only the source-root copy is ignored, never a managed nested
+# target of the same basename.
+/LICENSE
+/DOCKER.md
+/docs/
+/tests/
+# ~/tmp is a scratch dir, not dotfiles state — chezmoi shouldn't manage it or the
+# one-off notes previously committed under tmp/.
+/tmp/
