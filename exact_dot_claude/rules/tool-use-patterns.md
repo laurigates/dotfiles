@@ -186,6 +186,24 @@ the doctored line contradicted an earlier direct `Read` of the same file.
 - **Prefer the Grep tool** over `rg` in Bash: it has no `--replace` surface, so
   this class of error cannot occur.
 
+## A rejected flag looks exactly like "no results"
+
+Any `cmd … | jq/grep` whose **non-zero exit** yields empty stdout masquerades as
+a legitimate empty result. Worst case is a **dedup step**: you conclude nobody
+reported the bug and file a duplicate.
+
+Live instance: `gh search issues --state all` is invalid (that flag takes only
+`{open|closed}`; `all` belongs to `gh issue list`). It prints usage to stderr,
+so a `--jq` pipeline emits nothing — six consecutive false "no duplicate"
+verdicts. Use `gh api --paginate "repos/O/R/issues?state=all"` + `grep` instead
+(it returns PRs too; discriminate on `.pull_request`).
+
+**Control-test every negative that gates an action.** Re-run the same command
+shape against a term you know is present; if the control also returns nothing,
+the tool is broken, not the result empty. One control run caught all six above.
+This is `never-fabricate-test-identifiers.md`'s known-good control, applied to
+search.
+
 ## WebFetch — do not retry the same failing URL
 
 | Failure | Try |
