@@ -118,6 +118,53 @@ plugins-sync-repo repo:
     printf '%s\n' "$new" > "$target"
     echo "{{GREEN}}Wrote $target — review with: git -C \"$(dirname "$(dirname "$target")")\" diff{{NORMAL}}"
 
+# Reconcile one repo's exhaustive plugin key SET against canonical, preserving its own enable values
+[group: "plugins"]
+plugins-reconcile-keys repo:
+    #!/usr/bin/env bash
+    # The safe half of plugins-sync-repo, for unattended use (the weekly routine).
+    # Membership only:
+    #   +  add canonical @laurigates-claude-plugins keys the repo is MISSING, using
+    #      canonical's value. This is the real functional bug: enabledPlugins is a
+    #      WHOLE-MAP replacement, so a plugin omitted from an exhaustive pin is
+    #      silently DISABLED in web/remote sessions.
+    #   -  drop keys pinned here that no longer exist in the live marketplace
+    #      (renamed/removed upstream) — dead pins that can never resolve.
+    #
+    # Deliberately does NOT touch the value of a key present in both. Enable state
+    # is stack-specific and drifts in BOTH directions on purpose: `infrastructure`
+    # keeps terraform-plugin/kubernetes-plugin ON where canonical has them OFF.
+    # Auto-"fixing" that would disable exactly the plugins a repo needs. Value
+    # drift is reported by plugins-audit and resolved by a human.
+    #
+    # Applies only to EXHAUSTIVE pins (>= floor keys, same floor as plugins-audit);
+    # a deliberate narrow subset is left untouched. Idempotent.
+    set -uo pipefail
+    repo="{{repo}}"; repo="${repo%/}"
+    s="$repo/.claude/settings.json"
+    canonical="$HOME/.claude/settings.json"
+    mp="laurigates-claude-plugins"
+    floor=30
+    if [ ! -f "$s" ];         then echo "{{YELLOW}}No $s{{NORMAL}}"; exit 1; fi
+    if [ ! -f "$canonical" ]; then echo "{{YELLOW}}No $canonical{{NORMAL}}"; exit 1; fi
+    n="$(jq -r --arg m "$mp" '[(.enabledPlugins // {}) | keys[] | select(endswith("@"+$m))] | length' "$s" 2>/dev/null)"
+    if [ -z "$n" ]; then echo "{{YELLOW}}Unreadable enabledPlugins: $s{{NORMAL}}"; exit 1; fi
+    if [ "$n" -lt "$floor" ]; then echo "{{GREEN}}Deliberate subset ($n < $floor) — untouched: $repo{{NORMAL}}"; exit 0; fi
+    live="$(curl -fsS "{{marketplace_url}}" | jq -c '[.plugins[].name]')" || live=""
+    if [ -z "$live" ] || [ "$live" = "[]" ]; then echo "{{YELLOW}}Marketplace fetch failed — refusing to reconcile (would look like every plugin was removed){{NORMAL}}"; exit 1; fi
+    new="$(jq --arg m "$mp" --argjson live "$live" --slurpfile c "$canonical" '
+        ($live | map(. + "@" + $m))                                             as $liveKeys
+      | (($c[0].enabledPlugins // {}) | with_entries(select((.key | endswith("@"+$m)) and (.key | IN($liveKeys[]))))) as $Canon
+      | ((.enabledPlugins   // {}) | with_entries(select((.key | endswith("@"+$m) | not) or (.key | IN($liveKeys[]))))) as $Kept
+      | .enabledPlugins = ($Canon + $Kept)
+    ' "$s" 2>/dev/null)"
+    if [ -z "$new" ]; then echo "{{YELLOW}}jq reconcile failed: $s{{NORMAL}}"; exit 1; fi
+    if [ "$(printf '%s' "$new" | jq -S .)" = "$(jq -S . "$s")" ]; then echo "{{GREEN}}Key set already canonical: $repo{{NORMAL}}"; exit 0; fi
+    echo "{{BLUE}}enabledPlugins key-set changes for $repo:{{NORMAL}}"
+    diff <(jq -S '.enabledPlugins // {}' "$s") <(printf '%s' "$new" | jq -S '.enabledPlugins') || true
+    printf '%s\n' "$new" > "$s"
+    echo "{{GREEN}}Wrote $s — review with: git -C \"$repo\" diff{{NORMAL}}"
+
 # ── Domain-scoped bulk install/check/re-eval across repos ─────────────────────
 # Orchestration layer over the per-repo judgment skills (configure-claude-plugins,
 # health-check --scope=stack, configure:repo). Enumerate a domain scope → fzf
@@ -160,7 +207,11 @@ _plugins-annotate repo:
     allow_re='^(laurigates-claude-plugins|claude-plugins|lgates-claude-plugins|laurigates-plugins)$'
     mapfile -t all_aliases < <(jq -r '(.enabledPlugins // {}) | keys[] | split("@") | .[-1]' "$s" 2>/dev/null)
     total=${#all_aliases[@]}
-    lauri_n=0; declare -A seen
+    # The `=()` is load-bearing: under `set -u`, bash treats a declared-but-never-
+    # assigned associative array as UNBOUND, so `${#seen[@]}` below aborts the
+    # recipe ("seen: unbound variable") for any repo with zero laurigates plugins
+    # — exactly the repos an audit most needs to report (OLMap, kicad-mcp).
+    lauri_n=0; declare -A seen=()
     for a in "${all_aliases[@]}"; do
       if [[ "$a" =~ $allow_re ]]; then lauri_n=$((lauri_n + 1)); seen["$a"]=1; fi
     done
