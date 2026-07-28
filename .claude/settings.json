@@ -18,7 +18,13 @@
       "Bash(git fetch)",
       "Bash(kubectl get *)",
       "Bash(chezmoi diff *)",
-      "Bash(chezmoi diff)"
+      "Bash(chezmoi diff)",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "PushNotification",
+      "RemoteTrigger",
+      "ScheduleWakeup"
     ],
     "additionalDirectories": []
   },
