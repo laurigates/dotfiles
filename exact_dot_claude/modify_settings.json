@@ -124,6 +124,12 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(terraform fmt *)",
       "Bash(tflint)",
       "Bash(wc *)",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "PushNotification",
+      "RemoteTrigger",
+      "ScheduleWakeup",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:argo-cd.readthedocs.io)",
       "WebFetch(domain:argocd-image-updater.readthedocs.io)",
@@ -171,10 +177,12 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(git add .)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
-      "Bash(kubectl config use-context *)",
-      "Edit(**/CHANGELOG.md)"
+      "Bash(kubectl config use-context *)"
     ],
-    "ask": [],
+    "ask": [
+      "Edit(**/CHANGELOG.md)",
+      "Write(**/CHANGELOG.md)"
+    ],
     "defaultMode": "auto",
     "additionalDirectories": [
       "~/Documents/LakuVault",
