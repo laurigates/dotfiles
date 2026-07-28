@@ -44,6 +44,41 @@ oversight in the non-auto modes. Under auto mode the allow-list's only job is
 skipping the classifier on safe, high-frequency commands — which wants narrow
 entries.
 
+## Some tools ALWAYS reach the classifier — only a whole-tool allow rule clears them
+
+Auto mode usually short-circuits *before* the classifier: it re-runs the
+tool's own `checkPermissions` with the mode forced to `acceptEdits`, and an
+`allow` there skips the classifier entirely. A **hardcoded set of tools is
+excluded from that fast path** and is classified on every single call:
+
+`Agent` · `CronCreate` · `RemoteTrigger` · `ScheduleWakeup` · `SendFile`
+
+(`CronCreate` and `RemoteTrigger` also return `passthrough` — "requires
+classifier review" — in auto mode, where every other mode gets a plain
+`allow`.) The symptom is a steady drip of approve/deny prompts for the
+check-back-in machinery — arm a cron, arm a claude.ai routine, notify when CI
+finishes — which stalls unattended sessions. No amount of `autoMode` prose
+fixes it; the classifier is behaving as designed.
+
+**The lever is a whole-tool allow rule**, which resolves ahead of the
+classifier. Bare tool name, no scoping:
+
+    "allow": ["CronCreate", "CronDelete", "CronList",
+              "PushNotification", "RemoteTrigger", "ScheduleWakeup"]
+
+- **Bare names only.** These tools declare no `ruleContentField`, so a scoped
+  rule like `RemoteTrigger(create)` **silently never matches** — it is
+  all-actions-or-nothing per tool.
+- **Survives the strip above**, which targets arbitrary code execution
+  (`Bash`, `Agent(*)`); non-exec tool grants carry over into auto mode.
+- A tool can opt out via `ignoresWholeToolAllowRule`; none of these do.
+- **`Monitor` is deliberately excluded** — it runs arbitrary shell, so it
+  belongs with `Bash`, not with the benign schedulers.
+- **Web/remote needs the project file.** `~/.claude` is unreachable there, so
+  the same entries must also live in each repo's committed
+  `.claude/settings.json` — `just -g claude-perms-sweep <scope>` sweeps the
+  fleet (same global-vs-committed split as `claude-plugins-freshness.md`).
+
 ## `deny` is a hard backstop
 
 `permissions.deny` resolves before the classifier and cannot be overridden in

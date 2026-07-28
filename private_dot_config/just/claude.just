@@ -181,3 +181,22 @@ settings-audit:
     if [[ $((critical + high)) -gt 0 ]]; then
         exit 1
     fi
+
+# Sweep permission allow-rules into every repo's committed .claude/settings.json
+# (dry-run by default; pass --apply to write, --pr to also open PRs).
+#
+# Committed project settings are the ONLY place permission rules reach Claude
+# Code web/remote — ~/.claude is unreachable there. A rule added to the chezmoi
+# overlay alone therefore covers local sessions and nothing else, which is the
+# same global-vs-committed split plugins-audit handles for enabledPlugins.
+#
+# Goes through the GitHub API, not local checkouts: a portfolio sweep meets
+# dirty trees and feature-branch checkouts, and the API leaves both alone while
+# reading true remote state. Repos with no committed settings.json are skipped,
+# never created — an absent project config is a deliberate state.
+#
+#   just -g claude-perms-sweep laurigates "CronCreate,RemoteTrigger"
+#   just -g claude-perms-sweep fvh "CronCreate,CronDelete" --pr
+[group: "claude"]
+claude-perms-sweep scope rules *flags:
+    @python3 "$HOME/.local/share/chezmoi/scripts/claude-perms-sweep.py" "{{scope}}" --rules "{{rules}}" {{flags}}
