@@ -1926,7 +1926,7 @@ chezmoi apply  # If not using symlink
 ### References
 
 **Claude Code Documentation:**
-- Slash Commands: https://docs.anthropic.com/claude-code/commands
+- Slash Commands: https://code.claude.com/docs/en/slash-commands
 - MCP Protocol: https://modelcontextprotocol.io/
 
 **MCP Servers:**
