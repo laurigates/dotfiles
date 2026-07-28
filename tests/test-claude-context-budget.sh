@@ -60,7 +60,7 @@ MARKERS='\.chezmoidata|dot_zshrc|mise run lint|exact_dot_claude/|\.chezmoiignore
 # content). Format: one rule filename per line. Adding to this list is a
 # conscious decision — prefer migrating the rule instead.
 MARKER_ALLOWLIST=(
-    git-hazards.md                 # points at the global justfile recipe source
+    pr-merge-hazards.md            # points at the global justfile recipe source
     claude-plugins-freshness.md    # names the overlay file as source of truth
     path-scoped-rules.md           # chezmoi globs as frontmatter *examples*
     zsh-pattern-expansion-extended-glob.md  # names dot_zshrc.tmpl as one scope example
