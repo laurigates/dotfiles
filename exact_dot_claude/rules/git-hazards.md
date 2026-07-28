@@ -127,6 +127,13 @@ claude-plugins #1979→#1987):
   recomputes `mergeable` asynchronously; `gh pr merge` right after a push
   fails with "not mergeable" on a perfectly clean PR. Poll
   `gh pr view <n> --json mergeable` until it leaves `UNKNOWN`.
+- **Waiting for CI races check *registration*, not just completion.** A loop on
+  "zero pending checks" can exit **immediately** after a push/`update-branch`:
+  zero pending is trivially true before the jobs are registered. Observed
+  2026-07: `state=CLEAN` on a **single** check while three CI jobs had not yet
+  appeared — merging there merges untested. Gate on **both** nothing-pending
+  **and** `--jq 'length'` ≥ the expected check count. Same root cause as the
+  mergeability race above: an async field read once, too early.
 
 - **Check** before every force-push: `git log --oneline origin/main..<sha>` —
   expect *exactly* the child's commits, nothing more, never empty.
