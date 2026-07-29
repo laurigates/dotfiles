@@ -21,11 +21,39 @@ if (( ! $+functions[_just_clap] )); then
   [[ -n $_src ]] && eval "$_src"
 fi
 
+# Walk the words before the cursor. If they are *only* justfile-selecting
+# flags (`just -g <TAB>`, `just -f path/to/justfile <TAB>`, …), the cursor is
+# still at the recipe-name position: set `_just_dump_args` so `--dump` reads
+# the same justfile the recipe would run from, and return 0. Anything else
+# (a positional recipe already typed, an unrecognized flag) returns 1 so the
+# native clap completer takes over.
+_just_recipe_position() {
+  _just_dump_args=()
+  local i=2 w
+  while (( i < CURRENT )); do
+    w=$words[i]
+    case $w in
+      -g|--global-justfile|-u|--unstable|--justfile=*|--working-directory=*)
+        _just_dump_args+=$w
+        (( i++ ))
+        ;;
+      -f|--justfile|-d|--working-directory)
+        # Its value is the word under the cursor -> not a recipe position.
+        (( i + 1 < CURRENT )) || return 1
+        _just_dump_args+=($w $words[i+1])
+        (( i += 2 ))
+        ;;
+      *) return 1 ;;
+    esac
+  done
+  return 0
+}
+
 # Add recipe names grouped by their `[group(...)]` attribute.
 # Returns 0 if it added at least one group of matches.
 _just_recipes_grouped() {
   local json
-  json="$(just --dump --dump-format json 2>/dev/null)" || return 1
+  json="$(just $_just_dump_args --dump --dump-format json 2>/dev/null)" || return 1
   [[ -n $json ]] || return 1
 
   # Emit  group<TAB>name<TAB>doc  (ungrouped recipes get an empty group).
@@ -80,9 +108,12 @@ _just_recipes_grouped() {
   (( added ))
 }
 
-# Complete the recipe name in the first non-flag position with groups;
-# delegate everything else (flags, recipe arguments) to the native completer.
-if [[ ${words[CURRENT]} != -* ]] && (( CURRENT == 2 )); then
+# Complete the recipe name in the first positional slot with groups — also
+# after leading justfile-selecting flags, so `just -g <TAB>` groups the global
+# justfile's recipes instead of falling through to the flat clap list.
+# Delegate everything else (flags, recipe arguments) to the native completer.
+local -a _just_dump_args
+if [[ ${words[CURRENT]} != -* ]] && _just_recipe_position; then
   _just_recipes_grouped && return
 fi
 
