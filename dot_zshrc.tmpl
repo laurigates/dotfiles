@@ -399,6 +399,24 @@ function zvm_after_init() {
   fi
 }
 
+# Terminal-mode hygiene after a suspended TUI.
+# Full-screen TUIs (notably Claude Code) enable mouse/scroll reporting so they
+# can handle the wheel themselves. Suspending with Ctrl+Z (SIGTSTP) bypasses
+# their terminal-restore path, so kitty is left translating touchpad scroll
+# into arrow keys — which atuin's Up-arrow binding then catches, popping open
+# history instead of scrolling the scrollback. zsh runs precmd hooks when it
+# regains control after a suspend, so re-disabling these DEC private modes here
+# heals the terminal the instant we land back at the prompt. It's a no-op at a
+# normal prompt (the modes are already off) and a real Up keypress still opens
+# atuin. Not a keybinding, so it lives outside zvm_after_init. Upstream bug:
+# Claude Code should restore terminal state on SIGTSTP/SIGCONT.
+autoload -Uz add-zsh-hook
+_reset_terminal_input_modes() {
+  # 1000/1002/1003 mouse tracking, 1006 SGR extended, 1007 alternate scroll
+  printf '\033[?1000l\033[?1002l\033[?1003l\033[?1006l\033[?1007l'
+}
+add-zsh-hook precmd _reset_terminal_input_modes
+
 
 #======================================================================
 # Custom Functions
@@ -411,6 +429,11 @@ function zvm_after_init() {
 _gh_paint() {
   awk '
     {
+      # ⚠<login> (external contributor) FIRST, while the line is still free of
+      # escapes: the [^ ]* run would otherwise swallow an escape another gsub
+      # had inserted immediately after the token. White-on-red so a stranger’s
+      # PR cannot be mistaken for one of yours at a glance.
+      gsub(/⚠[^ ]*/,     "\033[1;97;41m&\033[0m")
       gsub(/✓[A-Za-z]*/, "\033[32m&\033[0m")   # success  → green
       gsub(/✗[A-Za-z]*/, "\033[31m&\033[0m")   # failure  → red
       gsub(/⏳[A-Za-z]*/, "\033[33m&\033[0m")  # pending  → yellow
@@ -420,6 +443,131 @@ _gh_paint() {
       gsub(/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/, "\033[2m&\033[0m")  # date → dim
       print
     }'
+}
+
+# ---- contributor trust (external-PR merge guard) ---------------------
+# The gh* merge wrappers exist for bulk-merging your OWN and bots' PRs, and the
+# muscle memory is `ghsq` → ^a (select all) → a (all remaining). A drive-by PR
+# from a stranger riding that reflex is the hazard these three helpers close:
+# external PRs are hidden from the picker by default (ghsq -x opts in) and can
+# never be merged by a single keypress or swept up by `a`.
+
+# Your own login, resolved once per shell. A failure is cached too, so a
+# network-less shell doesn't re-probe per PR — it just fails closed below.
+typeset -g _GH_ME= _GH_ME_TRIED=0
+_gh_me() {
+  (( _GH_ME_TRIED )) || { _GH_ME=$(gh api user --jq '.login' 2>/dev/null); _GH_ME_TRIED=1 }
+  print -r -- "$_GH_ME"
+}
+
+# Classify a PR author → self | bot | external | unknown.
+#   _gh_trust <login> [is_bot] [author_type]
+# Bot authors render DIFFERENTLY per gh subcommand, which is the trap here:
+#   gh pr list    → login "app/<name>",   is_bot true,  no type
+#   gh search prs → login "<name>[bot]",  is_bot FALSE, type "Bot"
+# So `is_bot` alone silently misclassifies every App bot in search results as a
+# stranger. Accept any of the four signals. `unknown` (own login unresolvable,
+# or no author) is treated as untrusted by callers — fail closed.
+_gh_trust() {
+  local login="$1" is_bot="${2:-}" atype="${3:-}" me
+  me=$(_gh_me)
+  [[ -z "$me" || -z "$login" ]] && { print -r -- unknown; return }
+  [[ "$login" == "$me" ]] && { print -r -- self; return }
+  [[ "$is_bot" == true || "$atype" == Bot || "$login" == *'[bot]' || "$login" == app/* ]] \
+    && { print -r -- bot; return }
+  print -r -- external
+}
+
+# Loud confirmation for a PR that is not yours and not a bot's. Prints who wrote
+# it, how big it is, and — the part that matters — which touched paths actually
+# EXECUTE something (CI workflow, shell, Claude config, build entry point).
+# Requires a typed word, never a keypress. 0 = merge it, 1 = skip it.
+#   _gh_confirm_external <repo|""> <num> <login> <trust> <title>
+_gh_confirm_external() {
+  local repo="$1" num="$2" login="$3" trust="$4" title="$5"
+  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
+
+  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
+  local red='' yellow='' cyan='' dim='' bold='' rst='' alarm=''
+  [[ -t 1 ]] && { red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' alarm=$'\033[1;97;41m' }
+
+  # author_association needs an owner/repo slug (gh pr view has no such field).
+  local slug="$repo" assoc=
+  [[ -z "$slug" ]] && slug=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  [[ -n "$slug" ]] && assoc=$(gh api "repos/$slug/pulls/$num" --jq '.author_association' </dev/null 2>/dev/null)
+
+  local stats adds dels nfiles
+  stats=$(gh pr view "$num" "${repo_flag[@]}" --json additions,deletions,changedFiles \
+            --jq '[(.additions|tostring),(.deletions|tostring),(.changedFiles|tostring)] | @tsv' </dev/null 2>/dev/null)
+  IFS=$'\t' read -r adds dels nfiles <<< "$stats"
+
+  # One path per line, so paths containing spaces survive.
+  local -a paths risky
+  paths=("${(@f)$(gh pr view "$num" "${repo_flag[@]}" --json files --jq '.files[].path' </dev/null 2>/dev/null)}")
+  local p
+  for p in "${paths[@]}"; do
+    [[ -z "$p" ]] && continue
+    case "$p" in
+      .github/workflows/*|.github/actions/*)              risky+=("$p  ${dim}← CI executes this${rst}") ;;
+      *.sh|*.bash|*.zsh|*/hooks/*|.githooks/*)            risky+=("$p  ${dim}← shell that may run on your machine${rst}") ;;
+      .claude/*|*/.claude/*)                              risky+=("$p  ${dim}← Claude Code config / permissions${rst}") ;;
+      package.json|*/package.json|pyproject.toml|Cargo.toml|mise.toml|[jJ]ustfile|Makefile|Dockerfile|.pre-commit-config.yaml) \
+                                                          risky+=("$p  ${dim}← build / tooling entry point${rst}") ;;
+      *.lock|package-lock.json)                           risky+=("$p  ${dim}← dependency pin${rst}") ;;
+    esac
+  done
+
+  print
+  if [[ "$trust" == unknown ]]; then
+    print -r -- "  ${alarm}╔═ ⚠ AUTHORSHIP UNVERIFIED ═${rst}"
+  else
+    print -r -- "  ${alarm}╔═ ⚠ EXTERNAL CONTRIBUTOR ═${rst}"
+  fi
+  print -r -- "  ${red}║${rst} ${cyan}${id}${rst}  ${title}"
+  print -r -- "  ${red}║${rst} ${bold}author${rst}  ${alarm} ${login:-<unknown>} ${rst}${assoc:+  ${dim}(${assoc})${rst}}"
+  [[ -n "$nfiles" ]] && print -r -- "  ${red}║${rst} ${bold}size${rst}    ${nfiles} file(s)  ${yellow}+${adds}${rst} ${dim}-${dels}${rst}"
+  if (( ${#risky} )); then
+    print -r -- "  ${red}║${rst} ${alarm} ⚠ EXECUTABLE PATHS TOUCHED ${rst}"
+    for p in "${risky[@]}"; do print -r -- "  ${red}║${rst}     ${p}"; done
+  elif (( ${#paths} )); then
+    print -r -- "  ${red}║${rst} ${dim}no CI / shell / config paths touched${rst}"
+  fi
+  print -r -- "  ${red}╠═${rst} ${yellow}not covered by 'a'=all — review it before answering${rst}"
+  print -r -- "  ${red}╚═${rst} type ${bold}merge${rst} to merge, anything else skips"
+  local ans
+  read -r "ans?  ${bold}merge>${rst} "
+  [[ "${ans:l}" == merge ]] && return 0
+  print -r -- "  ${dim}– skipped ${id} (not merged)${rst}"
+  return 1
+}
+
+# Resolve a PR's author and gate on it. Silent (and 0) for your own and bots'
+# PRs, so bulk-merging is unchanged; loud and typed-word-gated otherwise.
+# Called from _gh_poll_merge (covers the batch path, including `a`=all) AND from
+# the ghsq/ghrb single-arg form, which bypasses the picker entirely.
+#   _gh_trust_gate <repo|""> <num>     → 0 proceed, 1 skip
+_gh_trust_gate() {
+  local repo="$1" num="$2"
+  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
+  local yellow='' dim='' rst=''
+  [[ -t 1 ]] && { yellow=$'\033[33m' dim=$'\033[2m' rst=$'\033[0m' }
+
+  local meta login is_bot title
+  meta=$(gh pr view "$num" "${repo_flag[@]}" --json author,title \
+           --jq '[.author.login, (.author.is_bot|tostring), .title] | @tsv' </dev/null 2>/dev/null)
+  if [[ -z "$meta" ]]; then
+    print -r -- "  ${yellow}!${rst} ${id}: couldn't read PR author — ${yellow}skipped${rst} (can't verify it's yours)"
+    return 1
+  fi
+  IFS=$'\t' read -r login is_bot title <<< "$meta"
+
+  local trust; trust=$(_gh_trust "$login" "$is_bot")
+  case "$trust" in
+    self|bot) return 0 ;;
+    *)        _gh_confirm_external "$repo" "$num" "$login" "$trust" "$title" ;;
+  esac
 }
 
 # `gh pr list` with each PR's #number wrapped in an OSC 8 terminal hyperlink to
@@ -551,6 +699,11 @@ _gh_poll_merge() {
   # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
   local green='' red='' yellow='' cyan='' dim='' magenta='' rst=''
   [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' magenta=$'\033[35m' rst=$'\033[0m' }
+  # Contributor-trust gate FIRST, before the draft prompt or any merge: a
+  # stranger's PR must not even reach "mark ready & merge". This is also what
+  # makes `a`=all in _gh_batch_merge safe — `a` skips the per-PR y/N prompt but
+  # still lands here, and an external PR demands a typed word regardless.
+  _gh_trust_gate "$repo" "$num" || return 0
   # Draft PRs report mergeable=MERGEABLE (that field tracks conflicts, not draft
   # state), so the poll loop below never catches them — `gh pr merge` just fails.
   # Detect the draft up front and prompt: mark ready & merge, or skip.
@@ -633,20 +786,34 @@ _gh_batch_merge() {
   done
 }
 
-# fzf multi-select over current-repo PRs → TSV "<tab>num<tab>title" lines for
-# the batch engine (empty repo field = current repo). List is sorted oldest→
-# newest (safer bet for clean rebase/squash order); $1 = header verb; remaining
-# args = extra fzf flags (callers pass --layout=reverse so the cursor starts
-# on the oldest PR, at the top, matching the sort direction).
+# fzf multi-select over current-repo PRs → TSV "repo<tab>num<tab>title" lines
+# for the batch engine. List is sorted oldest→newest (safer bet for clean
+# rebase/squash order). $1 = header verb; $2 = "1" to include external
+# contributors' PRs (ghsq -x), empty to hide them; remaining args = extra fzf
+# flags (callers pass --layout=reverse so the cursor starts on the oldest PR, at
+# the top, matching the sort direction).
+#
+# External PRs are EXCLUDED from the list by default, so ^a (select-all) cannot
+# reach them at all. A banner on stderr reports what was withheld, so nothing is
+# silently forgotten — hiding a contribution must not mean ghosting it. All
+# stdout is the TSV the caller captures, hence stderr for the banner.
 _gh_pr_multi_select() {
-  local verb="$1"; shift
+  local verb="$1" show_ext="$2"; shift 2
   local -a fzf_extra=("$@")
-  local repo
+  local repo me
   repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  gh pr list --limit 100 \
-      --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt \
+  me=$(_gh_me)
+
+  # jq emits the raw author (login + is_bot) as fields 2-3; the awk pass below
+  # turns them into a trust verdict. Classifying in awk rather than jq is
+  # deliberate: gh has no --arg, so $me cannot be passed into the jq program.
+  local rows
+  rows=$(gh pr list --limit 100 \
+      --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt,author \
       --jq 'sort_by(.createdAt) | .[] | [
         "#\(.number)",
+        (.author.login // "?"),
+        (if .author.is_bot then "bot" else "user" end),
         (if .isDraft then "draft" else "ready" end),
         (if (.statusCheckRollup | length) == 0 then "⏳CI"
          elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
@@ -658,18 +825,64 @@ _gh_pr_multi_select() {
          else "-rev" end),
         .headRefName[:25],
         .title[:50]
-      ] | @tsv' | \
+      ] | @tsv' 2>/dev/null)
+  [[ -z "$rows" ]] && return 0
+
+  # → "#num  <me|bot|EXT>  login  state  CI  rev  branch  title"
+  local classed
+  classed=$(print -r -- "$rows" | awk -F'\t' -v me="$me" '
+    { login = $2
+      if (me != "" && login == me)                                          t = "me"
+      else if ($3 == "bot" || login ~ /\[bot\]$/ || login ~ /^app\//)        t = "bot"
+      else                                                                  t = "EXT"
+      printf "%s\t%s\t%s", $1, t, login
+      for (i = 4; i <= NF; i++) printf "\t%s", $i
+      printf "\n" }')
+
+  local ext_rows vis_rows
+  ext_rows=$(print -r -- "$classed" | awk -F'\t' '$2 == "EXT"')
+  vis_rows=$(print -r -- "$classed" | awk -F'\t' '$2 != "EXT"')
+
+  local yellow='' dim='' bold='' rst='' alarm=''
+  [[ -t 2 ]] && { yellow=$'\033[33m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' alarm=$'\033[1;97;41m' }
+
+  local shown="$classed"
+  if [[ -z "$show_ext" ]]; then
+    shown="$vis_rows"
+    if [[ -n "$ext_rows" ]]; then
+      local n caller; n=$(print -r -- "$ext_rows" | grep -c .)
+      # funcstack[1] is this function, [2] its caller (ghsq / ghrb) — so the hint
+      # names the command the user actually typed.
+      caller="${funcstack[2]:-ghsq}"
+      print -r -- "  ${alarm} ⚠ ${n} external PR(s) hidden ${rst} ${dim}— ${rst}${bold}${caller} -x${rst}${dim} to include${rst}" >&2
+      print -r -- "$ext_rows" | awk -F'\t' '{ printf "      %s  %s  %s\n", $1, $3, $NF }' >&2
+      print >&2
+    fi
+  fi
+  if [[ -z "$shown" ]]; then
+    print -r -- "  ${dim}No PRs to ${verb}-merge.${rst}" >&2
+    return 0
+  fi
+
+  # Drop the raw login column, folding it into the trust token so the table stays
+  # one-token-per-column (a `column -t` requirement — see the extraction caveat
+  # in .claude/rules/fzf-picker-colorize-align.md). ⚠ is what _gh_paint reddens.
+  print -r -- "$shown" | \
+    awk -F'\t' '{ who = ($2 == "EXT") ? "⚠" $3 : $2
+                  printf "%s\t%s", $1, who
+                  for (i = 4; i <= NF; i++) printf "\t%s", $i
+                  printf "\n" }' | \
     column -t -s $'\t' | \
     _gh_paint | \
     fzf --ansi --multi "${fzf_extra[@]}" \
-        --header "Tab mark · ^a all · ⏎ confirm ${verb}-merge · ^t toggle preview · ^d/u scroll" \
+        --header "Tab mark · ^a all · ⏎ confirm ${verb}-merge · ^t toggle preview · ^d/u scroll${show_ext:+ · ⚠ = EXTERNAL, needs typed confirm}" \
         --bind 'tab:toggle+down,btab:toggle+up' \
         --bind 'ctrl-a:select-all' \
         --bind 'ctrl-t:toggle-preview' \
         --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up' \
         --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "── Files ──" && gh pr diff {1} | git apply --stat 2>/dev/null' \
         --preview-window right:60%:wrap | \
-    awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
+    awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=$6=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
 }
 
 # ---- post-merge "go home" helper (ghsq / ghrb) ----------------------
@@ -712,31 +925,41 @@ _gh_home_if_merged() {
 # several) → sequential squash-merge in selection order. Arg form (ghsq 123,
 # via completion) merges that single PR directly. If the branch you're on gets
 # merged, you're left on an updated base branch (see _gh_home_if_merged).
+#
+# -x/--external includes external contributors' PRs in the picker (hidden by
+# default). Either way, merging one requires a typed confirmation — including on
+# the arg form, which skips the picker entirely and is therefore gated here.
 ghsq() {
-  local cur_pr
+  local cur_pr show_ext=
+  while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
   if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select squash --layout=reverse)
+    local tsv; tsv=$(_gh_pr_multi_select squash "$show_ext" --layout=reverse)
     [[ -z "$tsv" ]] && return
     cur_pr=$(_gh_current_pr)
     _gh_batch_merge "$tsv" --squash --delete-branch
   else
+    local num="${1%%\[*}"
+    _gh_trust_gate "" "$num" || return 1
     cur_pr=$(_gh_current_pr)
-    gh pr merge "${1%%\[*}" --squash --delete-branch
+    gh pr merge "$num" --squash --delete-branch
   fi
   _gh_home_if_merged "$cur_pr"
 }
 
-# Interactive PR merge (rebase) — multi-select twin of ghsq.
+# Interactive PR merge (rebase) — multi-select twin of ghsq (same -x guard).
 ghrb() {
-  local cur_pr
+  local cur_pr show_ext=
+  while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
   if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select rebase --layout=reverse)
+    local tsv; tsv=$(_gh_pr_multi_select rebase "$show_ext" --layout=reverse)
     [[ -z "$tsv" ]] && return
     cur_pr=$(_gh_current_pr)
     _gh_batch_merge "$tsv" --rebase --delete-branch
   else
+    local num="${1%%\[*}"
+    _gh_trust_gate "" "$num" || return 1
     cur_pr=$(_gh_current_pr)
-    gh pr merge "${1%%\[*}" --rebase --delete-branch
+    gh pr merge "$num" --rebase --delete-branch
   fi
   _gh_home_if_merged "$cur_pr"
 }
@@ -880,20 +1103,39 @@ ghrp() {
     [[ -n "$o" ]] && { owners+=("$o"); owner_args+=(--owner "$o") }
   done
 
-  local list
+  # These are bot PRs by construction (the release-please label), but the scope
+  # spans every org you belong to — where someone else can label a PR. So carry
+  # an author column here too. NOTE: in `gh search prs` output an App bot reports
+  # is_bot=FALSE and type="Bot" (unlike `gh pr list`, which reports is_bot=true
+  # and login "app/<name>"), which is why the awk below keys on type as well.
+  # Merging is gated regardless, in _gh_poll_merge.
+  local me list
+  me=$(_gh_me)
   list=$(gh search prs --state open --label 'autorelease: pending' \
            "${owner_args[@]}" --limit 100 \
-           --json repository,number,title \
-           --jq '.[] | [.repository.nameWithOwner, "#\(.number)", .title] | @tsv' 2>/dev/null)
+           --json repository,number,title,author \
+           --jq '.[] | [.repository.nameWithOwner, "#\(.number)",
+                        (.author.login // "?"), (.author.type // "User"), .title] | @tsv' 2>/dev/null)
   if [[ -z "$list" ]]; then
     echo "No open release-please PRs found in: ${(j:, :)owners}"
     return 0
   fi
 
+  # → "repo  #num  <me|bot|⚠login>  title"  (⚠ is what _gh_paint reddens)
+  local display
+  display=$(print -r -- "$list" | awk -F'\t' -v me="$me" '
+    { login = $3
+      if (me != "" && login == me)                                     who = "me"
+      else if ($4 == "Bot" || login ~ /\[bot\]$/ || login ~ /^app\//)   who = "bot"
+      else                                                             who = "⚠" login
+      printf "%s\t%s\t%s", $1, $2, who
+      for (i = 5; i <= NF; i++) printf "\t%s", $i
+      printf "\n" }')
+
   local selections
-  selections=$(print -r -- "$list" | column -t -s $'\t' | _gh_paint | \
+  selections=$(print -r -- "$display" | column -t -s $'\t' | _gh_paint | \
       fzf --ansi --multi --tac \
-          --header 'Tab mark · ^a all · ⏎ confirm squash-merge · ^t toggle preview · ^d/u scroll' \
+          --header 'Tab mark · ^a all · ⏎ confirm squash-merge · ^t toggle preview · ^d/u scroll · ⚠ = EXTERNAL' \
           --bind 'tab:toggle+down,btab:toggle+up' \
           --bind 'ctrl-a:select-all' \
           --bind 'ctrl-t:toggle-preview' \
@@ -905,7 +1147,7 @@ ghrp() {
   # columned selection → "repo<TAB>num<TAB>title" for the batch engine
   local tsv
   tsv=$(print -r -- "$selections" | \
-    awk '{repo=$1; num=$2; sub(/^#/,"",num); $1=$2=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}')
+    awk '{repo=$1; num=$2; sub(/^#/,"",num); $1=$2=$3=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}')
   _gh_batch_merge "$tsv" --squash
 }
 
@@ -1171,8 +1413,8 @@ _GH_WRAPPER_DESC=(
   ghr  'gh run view'
   ghw  'gh run watch'
   ghwr 'gh workflow run'
-  ghsq 'gh pr merge --squash --delete-branch (multi)'
-  ghrb 'gh pr merge --rebase --delete-branch (multi)'
+  ghsq 'gh pr merge --squash --delete-branch (multi; -x = incl. external)'
+  ghrb 'gh pr merge --rebase --delete-branch (multi; -x = incl. external)'
   ghrp 'release-please merge across repos/orgs'
   ghpc 'gh pr → Claude feedback'
   ghi  'gh issue → Claude'
@@ -1187,9 +1429,9 @@ _GH_WRAPPER_DOC=(
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If your branch merged, land on updated base.'
-  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. If your branch merged, land on updated base.'
-  ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge.'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If your branch merged, land on updated base. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
+  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. If your branch merged, land on updated base. Same external-contributor guard as ghsq (-x to include).'
+  ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
   ghi  'Pick a GitHub issue and hand it to Claude.'
 )
