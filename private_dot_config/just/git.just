@@ -8,14 +8,23 @@
 
 # Classify local branches as MERGED (safe to delete) or REVIEW (keep). Read-only.
 #
-# Two independent "definitely merged" signals, checked in order:
-#   1. merge-tree no-op — merging the branch into the default branch changes
-#      nothing, so its content is already present (survives squash-merge AND
-#      later drift on the same files, which `git branch --merged` misses).
-#   2. a MERGED pull request exists for the branch's head ref (GitHub is
-#      authoritative; the squash landed the work even if main drifted since).
-# Anything matching neither is REVIEW: genuine unmerged work or scratch.
+# Three "definitely merged" signals, checked in ORDER OF AUTHORITY — the order
+# matters, see ~/.claude/rules/pr-merge-hazards.md #1:
+#   1. a MERGED pull request for the branch's head ref. GitHub is authoritative;
+#      the squash landed the work even if the default branch drifted since.
+#   2. `git cherry` reports no '+' commits — every commit has a patch-equivalent
+#      already upstream. Survives squash-merge AND cherry-pick, and unlike
+#      merge-tree it does NOT care that the base drifted over the same files.
+#   3. merge-tree no-op — merging the branch changes nothing. Positive proof of
+#      containment only: a NON-match proves nothing, because once the base moves
+#      on over the same files the trees differ for work that fully landed.
+# Anything matching none is REVIEW: genuine unmerged work or scratch.
 # Prints a table and a copy-paste `git branch -D ...` for the MERGED set.
+#
+# Both #1 and #2 were added 2026-08-04 after this recipe misclassified 174 of
+# 191 REVIEW rows (91%) on laurigates/claude-plugins: merge-tree alone lost 132
+# to base drift, and the PR window was capped at 500 on a repo with 1881 PRs, so
+# every older merged PR read as "no merged PR".
 [group: "git"]
 branch-audit:
     #!/usr/bin/env bash
@@ -28,8 +37,12 @@ branch-audit:
     protected="^(${base}|master|develop|staging|production)$"
 
     # Pull PR head->state once (best effort; empty without gh / remote).
+    # NO SMALL --limit: the cap is silent and one-directional — a branch whose
+    # merged PR falls outside the window reads as "no merged PR" and lands in
+    # REVIEW. gh paginates internally, so this costs a few seconds on big repos
+    # and buys a correct answer.
     prs=$(mktemp)
-    gh pr list --state all --limit 500 --json number,headRefName,state \
+    gh pr list --state all --limit 10000 --json number,headRefName,state \
       --jq '.[] | [.headRefName, "#"+(.number|tostring), .state] | @tsv' >"$prs" 2>/dev/null || true
 
     merged=()
@@ -37,14 +50,27 @@ branch-audit:
     printf '%.0s-' {1..90}; echo
     for b in $(git for-each-ref --format='%(refname:short)' refs/heads/ | grep -vE "$protected"); do
       pr=$(awk -F'\t' -v b="$b" '$1==b{p=$2" "$3} END{print p}' "$prs")
+
+      # 1. A MERGED PR is authoritative — check it before any git-side test.
+      if printf '%s' "${pr:-}" | grep -q ' MERGED$'; then
+        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "$pr" "PR merged (authoritative)"; merged+=("$b"); continue
+      fi
+
+      # 2. git cherry: '+' marks a commit with no patch-equivalent upstream.
+      #    A non-zero exit is NOT containment (no merge base, bad ref), so
+      #    require rc 0 before reading an empty '+' set as "landed".
+      crc=0; cout=$(git cherry "$base" "$b" 2>/dev/null) || crc=$?
+      if [ "$crc" -eq 0 ] && ! printf '%s\n' "$cout" | grep -q '^+'; then
+        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "${pr:-—}" "patch-equivalent in $base"; merged+=("$b"); continue
+      fi
+
+      # 3. merge-tree no-op — positive proof only; a non-match proves nothing.
       mt=$(git merge-tree --write-tree "$base" "$b" 2>/dev/null) && rc=0 || rc=$?
       if [ "${rc:-1}" -eq 0 ] && [ "$mt" = "$base_tree" ]; then
-        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "${pr:-—}" "contained in $base"; merged+=("$b")
-      elif printf '%s' "${pr:-}" | grep -q ' MERGED$'; then
-        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "$pr" "PR merged (base drifted since)"; merged+=("$b")
-      else
-        printf '%-44s %-9s %-16s %s\n' "$b" REVIEW "${pr:-—}" "not contained, no merged PR"
+        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "${pr:-—}" "contained in $base"; merged+=("$b"); continue
       fi
+
+      printf '%-44s %-9s %-16s %s\n' "$b" REVIEW "${pr:-—}" "no merged PR, not patch-equivalent"
     done
     rm -f "$prs"
 
