@@ -180,8 +180,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(kubectl config use-context *)"
     ],
     "ask": [
-      "Edit(**/CHANGELOG.md)",
-      "Write(**/CHANGELOG.md)"
+      "Edit(**/CHANGELOG.md)"
     ],
     "defaultMode": "auto",
     "additionalDirectories": [
@@ -261,7 +260,7 @@ read -r -d '' overlay <<'OVERLAY' || true
     "home-assistant-plugin@laurigates-claude-plugins": false,
     "langchain-plugin@laurigates-claude-plugins": false,
     "networking-plugin@laurigates-claude-plugins": false,
-    "python-plugin@laurigates-claude-plugins": true,
+    "python-plugin@laurigates-claude-plugins": false,
     "rust-plugin@laurigates-claude-plugins": false,
     "terraform-plugin@laurigates-claude-plugins": false,
     "accessibility-plugin@laurigates-claude-plugins": false,
@@ -274,9 +273,9 @@ read -r -d '' overlay <<'OVERLAY' || true
     "component-patterns-plugin@laurigates-claude-plugins": false,
     "configure-plugin@laurigates-claude-plugins": true,
     "container-plugin@laurigates-claude-plugins": false,
-    "documentation-plugin@laurigates-claude-plugins": true,
+    "documentation-plugin@laurigates-claude-plugins": false,
     "git-plugin@laurigates-claude-plugins": true,
-    "github-actions-plugin@laurigates-claude-plugins": true,
+    "github-actions-plugin@laurigates-claude-plugins": false,
     "health-plugin@laurigates-claude-plugins": true,
     "hooks-plugin@laurigates-claude-plugins": true,
     "kubernetes-plugin@laurigates-claude-plugins": false,
@@ -297,8 +296,8 @@ read -r -d '' overlay <<'OVERLAY' || true
     "clangd-lsp@claude-plugins-official": false,
     "codebase-attributes-plugin@laurigates-claude-plugins": false,
     "evaluate-plugin@laurigates-claude-plugins": true,
-    "obsidian-plugin@laurigates-claude-plugins": true,
-    "prompt-engineering-plugin@laurigates-claude-plugins": true,
+    "obsidian-plugin@laurigates-claude-plugins": false,
+    "prompt-engineering-plugin@laurigates-claude-plugins": false,
     "taskwarrior-plugin@laurigates-claude-plugins": true,
     "macos-plugin@laurigates-claude-plugins": true,
     "session-plugin@laurigates-claude-plugins": true
