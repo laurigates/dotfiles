@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.lgates.reclaim</string>
+
+  <!-- Weekly auto-delete of regenerable build artifacts and package caches.
+       Everything it removes rebuilds on next use. Ollama models are NOT
+       included — see scripts/ollama-idle.sh for why that stays manual. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>"$HOME/scripts/reclaim.sh" --days 30 --apply</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>0</integer>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>23</integer>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/lgates/Library/Logs/reclaim.run.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/lgates/Library/Logs/reclaim.run.log</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/lgates/.local/share/mise/shims:/Users/lgates/.cargo/bin:/Users/lgates/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>
