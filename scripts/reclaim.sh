@@ -17,6 +17,14 @@
 # `KEY=VALUE` / `RECLAIM …` rollup convention so a caller (or the weekly
 # launchd job) reads a verdict instead of re-deriving the computation.
 #
+# On sizing: `du` sums st_blocks, and APFS reports a copy-on-write clone at FULL
+# size even though its blocks are shared and cost nothing. uv and bun both clone
+# from a global cache into .venv/node_modules, so du over-reports those; cargo
+# gives each project its own compiled copy, so du is exact for target/. The
+# rollup keeps the two apart rather than summing them into one wrong number, and
+# --apply reports a df delta as ground truth. Swapping du for dust would not
+# help: every tool reading st_blocks double-counts clones identically.
+#
 # Companion to home-audit.sh; backs `just -g reclaim-dry` / `just -g reclaim`.
 set -euo pipefail
 
@@ -40,11 +48,18 @@ test "$(uname -s)" = "Darwin" || { echo "reclaim.sh: not Darwin, refusing" >&2; 
 
 now=$(date +%s)
 cutoff=$(( now - days * 86400 ))
-total_kb=0
+# `du` sums st_blocks, which APFS reports at FULL size for a copy-on-write
+# clone even though the blocks are shared and cost nothing. That makes du exact
+# for some artifact kinds and an over-estimate for others — see the rollup.
+exact_kb=0      # cargo target/: real per-project copies, du is exact
+bounded_kb=0    # node_modules/.venv: uv and bun clone these from a global cache
 cache_kb=0
 stale_list="$(mktemp)"
 active_list="$(mktemp)"
 trap 'rm -f "$stale_list" "$active_list"' EXIT
+
+free_kb() { df -k / | awk 'NR==2{print $4}'; }
+free_before=$(free_kb)
 
 # ---------------------------------------------------------------- artifacts
 
@@ -68,8 +83,18 @@ done < <(find "$root" -maxdepth 5 -type d \
 echo "--- stale (whole-dir removal) ---"
 while IFS=$'\t' read -r size_kb dir; do
     age_days=$(( (now - $(stat -f %m "$dir")) / 86400 ))
-    printf 'RECLAIM kind=stale size_kb=%s age_days=%s path=%s\n' "$size_kb" "$age_days" "$dir"
-    total_kb=$(( total_kb + size_kb ))
+    if [ "$(basename "$dir")" = "target" ]; then
+        accuracy=exact
+        exact_kb=$(( exact_kb + size_kb ))
+    else
+        # A cloned .venv/node_modules frees real space only where it holds the
+        # LAST reference to those blocks; if the global cache still has them,
+        # removing it frees close to nothing.
+        accuracy=upper-bound
+        bounded_kb=$(( bounded_kb + size_kb ))
+    fi
+    printf 'RECLAIM kind=stale accuracy=%s size_kb=%s age_days=%s path=%s\n' \
+        "$accuracy" "$size_kb" "$age_days" "$dir"
     [ "$apply" -eq 1 ] && rm -rf "$dir"
 done < <(sort -rn "$stale_list")
 
@@ -116,18 +141,38 @@ command -v pre-commit  >/dev/null 2>&1 && purge pre-commit "$HOME/.cache/pre-com
 command -v docker      >/dev/null 2>&1 && purge docker-build "" docker builder prune -af
 
 echo "=== ROLLUP ==="
-# Two figures, deliberately NOT summed. Artifact removals are whole directories,
-# so that number is exact. The cache figure is the total size on disk — an UPPER
-# BOUND, because `uv cache prune` and `pre-commit gc` evict only unreferenced
-# entries and typically free a small fraction of it.
-printf 'ARTIFACT_RECLAIM_KB=%s\n' "$total_kb"
-printf 'ARTIFACT_RECLAIM_GB=%.1f\n' "$(echo "$total_kb" | awk '{print $1/1048576}')"
+# Three ESTIMATES, deliberately not summed into one headline number — each has a
+# different error mode, and collapsing them hides that:
+#
+#   exact       cargo target/ — every project compiles its own copy of each
+#               dependency (no shared compiled-artifact cache), so du is honest.
+#   upper bound node_modules/.venv — uv and bun materialise these from a global
+#               cache via APFS clonefile, so du bills shared blocks per copy.
+#   upper bound caches — `uv cache prune` and `pre-commit gc` evict only
+#               UNREFERENCED entries, typically a small fraction of the total.
+#
+# In --apply mode ACTUAL_FREED_GB below supersedes all three: a df delta is the
+# only clone-aware measurement available on APFS, since every tool that reads
+# st_blocks (du, dust, gdu, ncdu) double-counts clones identically.
+gb() { awk -v k="$1" 'BEGIN{printf "%.1f", k/1048576}'; }
+
+printf 'ARTIFACT_EXACT_KB=%s\n' "$exact_kb"
+printf 'ARTIFACT_EXACT_GB=%s  (cargo target/ — du is accurate here)\n' "$(gb "$exact_kb")"
+printf 'ARTIFACT_BOUNDED_KB=%s\n' "$bounded_kb"
+printf 'ARTIFACT_BOUNDED_GB=%s  (node_modules/.venv — upper bound, CoW clones)\n' "$(gb "$bounded_kb")"
 printf 'CACHE_SIZE_KB=%s\n' "$cache_kb"
-printf 'CACHE_SIZE_GB=%.1f  (upper bound; prune/gc evict only unused entries)\n' \
-    "$(echo "$cache_kb" | awk '{print $1/1048576}')"
-printf 'DISK_AVAIL=%s\n' "$(df -h / | awk 'NR==2{print $4}')"
+printf 'CACHE_SIZE_GB=%s  (upper bound; prune/gc evict only unused entries)\n' "$(gb "$cache_kb")"
+
 if [ "$apply" -eq 1 ]; then
+    sync
+    free_after=$(free_kb)
+    freed_kb=$(( free_after - free_before ))
+    [ "$freed_kb" -lt 0 ] && freed_kb=0   # concurrent writes can outpace the sweep
+    printf 'ACTUAL_FREED_KB=%s\n' "$freed_kb"
+    printf 'ACTUAL_FREED_GB=%s  (df delta — ground truth)\n' "$(gb "$freed_kb")"
     printf 'STATUS=applied\n'
 else
+    printf 'ACTUAL_FREED_GB=n/a  (--apply measures the real df delta)\n'
     printf 'STATUS=dry-run  (pass --apply to delete)\n'
 fi
+printf 'DISK_AVAIL=%s\n' "$(df -h / | awk 'NR==2{print $4}')"
