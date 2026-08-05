@@ -167,7 +167,7 @@ plugins-reconcile-keys repo:
 
 # ── Domain-scoped bulk install/check/re-eval across repos ─────────────────────
 # Orchestration layer over the per-repo judgment skills (configure-claude-plugins,
-# health-check --scope=stack, configure:repo). Enumerate a domain scope → fzf
+# health-check --scope=stack, configure-repo). Enumerate a domain scope → fzf
 # --multi checkbox picker → sequential per-repo action → deterministic alias
 # post-pass. AI-free orchestration; per-repo judgment still runs `claude -p`.
 
@@ -294,7 +294,11 @@ plugins-normalize-alias repo:
 plugins-bulk scope action="check":
     #!/usr/bin/env bash
     # actions: check (local jq annotation, read-only) | setup (/configure-claude-plugins
-    # --fix) | reeval (/health:check --scope=stack --fix) | full (/configure:repo --fix).
+    # --fix) | reeval (/health-check --scope=stack --fix) | full (/configure-repo --fix).
+    # Slash commands use the BARE skill name. A `namespace:command` form
+    # (/health:check, /configure:repo) is the deprecated pre-plugin syntax and
+    # resolves to nothing — `claude -p` exits 0 after printing "Unknown command",
+    # so the recipe reports ok and the repo is silently never processed.
     # Sequential (sibling claude subprocesses are rate-limited & per-repo expensive);
     # every claude call gets </dev/null so the picker loop never eats its stdin.
     # NOTE: reeval's fix flow uses per-category AskUserQuestion; under `-p` there is
@@ -320,8 +324,8 @@ plugins-bulk scope action="check":
       case "{{action}}" in
         check)  just -g _plugins-annotate "$repo" ;;
         setup)  CLAUDECODE= claude -p "/configure-claude-plugins --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
-        reeval) CLAUDECODE= claude -p "/health:check --scope=stack --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
-        full)   CLAUDECODE= claude -p "/configure:repo --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
+        reeval) CLAUDECODE= claude -p "/health-check --scope=stack --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
+        full)   CLAUDECODE= claude -p "/configure-repo --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
       esac
       if [ "$rc" -eq 0 ]; then echo "{{GREEN}}ok{{NORMAL}}"; ok=$((ok + 1)); else echo "{{YELLOW}}FAILED (rc=$rc){{NORMAL}}"; failed=$((failed + 1)); fi
       case "{{action}}" in

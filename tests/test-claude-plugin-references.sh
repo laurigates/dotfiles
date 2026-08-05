@@ -56,17 +56,23 @@ log_skip() { echo -e "${YELLOW}● SKIP:${NC} $*"; ((skip_count++)); }
 # ----------------------------------------------------------------------------
 check_alias_consistency() {
     log_test "Marketplace alias references all use '$CANONICAL_ALIAS'"
-    # Match <token>-claude-plugins alias forms. The owner/repo path form
-    # `laurigates/claude-plugins` has a slash before `claude` so never matches
-    # the required `<token>-claude-plugins` shape.
-    # Match `<token>-claude-plugins` in an *alias* position: preceded by `@`,
-    # `-`, backtick, space, etc. — but NOT `/`. That excludes the slash-command
-    # skill name `/configure-claude-plugins` while keeping `@lgates-claude-plugins`,
-    # the cache-key literal, and step-summary echoes. The leading boundary char
-    # is captured by -o and stripped with sed.
+    # Match `<token>-claude-plugins` only where it is genuinely used AS an alias:
+    #   @<alias>        — a plugin pin / install target (`foo@lgates-claude-plugins`)
+    #   "<alias>":      — an extraKnownMarketplaces / enabledPlugins JSON key
+    # Anything else is prose or data, not a reference that can fail to resolve.
+    #
+    # A looser "any boundary char except /" match over-fires on two legitimate
+    # shapes that are NOT aliases, and did so until 2026-08:
+    #   - the skill NAME `configure-claude-plugins` in prose (it merely ends in
+    #     the same suffix; it is a skill, not a marketplace)
+    #   - the legacy-alias allowlists in plugins.just (plugins-normalize-alias
+    #     must *name* the deprecated aliases in order to rewrite them)
+    # Both are quoted-but-not-keys / pipe-separated, so neither shape matches.
+    # Trade-off: a bare unquoted alias mention in prose is no longer flagged.
     local bad
-    bad="$(git grep -hoIE '(^|[^a-z0-9_/])[a-z][a-z0-9_]*-claude-plugins' -- . "${EXCLUDE_PATHSPEC[@]}" 2>/dev/null \
-        | sed -E 's/^[^a-z]//' | sort -u | grep -vxF "$CANONICAL_ALIAS" || true)"
+    bad="$(git grep -hoIE '(@|")[a-z][a-z0-9_-]*-claude-plugins("[[:space:]]*:)?' -- . "${EXCLUDE_PATHSPEC[@]}" 2>/dev/null \
+        | grep -E '^@|":[[:space:]]*$|":$' \
+        | sed -E 's/^[@"]//; s/"[[:space:]]*:?$//' | sort -u | grep -vxF "$CANONICAL_ALIAS" || true)"
     if [[ -z "$bad" ]]; then
         log_pass "No non-canonical marketplace aliases found"
         return
