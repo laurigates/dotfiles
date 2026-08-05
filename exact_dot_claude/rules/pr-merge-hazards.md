@@ -103,3 +103,26 @@ Merging over red needs **two** checks: `--json files` (config/docs can't break
 a compile) **and** the same check already failing on `main`. Either alone is a
 guess — and a stale-green `main` lies, so check `createdAt` (2026-07: a "green"
 run was 21 days old; main hadn't compiled for three weeks).
+
+
+## 5. A **negated** closing keyword still closes the issue
+
+GitHub matches `close|fixes|resolves|…` + an issue reference without parsing the
+sentence around it, so the natural way to *disclaim* closure closes the issue.
+Markdown emphasis between verb and number doesn't break the match either:
+
+```
+Does **not** close #162   →   GitHub reads `close #162`, and closes it
+```
+
+- **Check**: `gh issue view <n> --json closedByPullRequestsReferences` names the
+  closer; a `closedAt` one second after a merge is automation, not a decision.
+- **Fix**: never let a closing verb precede an issue number you don't mean to
+  close — `Related: #162`, `Unblocks #162`, or `#162 stays open — it needs …`.
+- **Recovery**: `gh issue reopen` works (nothing was deleted, unlike #2), then
+  comment so the next reader doesn't re-derive it.
+
+The damage is a **false status report**: 2026-08-05, a PR body written to
+disclaim closure closed loractl #162 at merge, and the session reported it open
+for two turns afterward. Like #2, GitHub does this silently — only re-reading
+issue state from the API catches it.
