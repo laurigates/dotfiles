@@ -15,7 +15,7 @@
 # only one importer leaves {{claude_model}} undefined in the other, breaking
 # every `just` invocation there (and silently downgrading the grouped `_just`
 # completer to flat). Bump the version here to update everywhere.
-claude_model := "claude-opus-4-8"
+claude_model := "claude-opus-5"
 
 marketplace := "laurigates-claude-plugins"
 marketplace_url := "https://raw.githubusercontent.com/laurigates/claude-plugins/refs/heads/main/.claude-plugin/marketplace.json"
@@ -36,15 +36,53 @@ plugins-list:
 plugins-json:
     @CLAUDECODE= claude plugin list --json
 
-# Install all plugins from marketplace
+# Install all plugins from marketplace (ALWAYS at user scope — see below)
 [group: "plugins"]
 plugins-install:
-    @echo "{{BLUE}}Installing all plugins from {{marketplace}}...{{NORMAL}}"
+    @echo "{{BLUE}}Installing all plugins from {{marketplace}} (scope: user)...{{NORMAL}}"
     @for p in $(curl -s "{{marketplace_url}}" | jq -r '.plugins[].name'); do \
         echo "  Installing $p..."; \
-        CLAUDECODE= claude plugin install "${p}@{{marketplace}}" 2>&1 | tail -1; \
+        CLAUDECODE= claude plugin install "${p}@{{marketplace}}" --scope user 2>&1 | tail -1; \
     done
     @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# `--scope user` above is load-bearing, not cosmetic. A plugin installed at
+# `project` scope is recorded in ~/.claude/plugins/installed_plugins.json with a
+# `projectPath`, and its skills/commands/agents load ONLY when cwd is that
+# project. Everywhere else the plugin is invisible — yet `enabledPlugins` in
+# settings.json still says true and `claude plugin list` still prints
+# "Status: ✔ enabled", because both report ENABLEMENT, not reachability. The
+# only honest signal is the `scope` field of `claude plugin list --json`.
+#
+# Observed 2026-08-06: all 40 marketplace plugins were project-scoped to
+# ~/repos/ForumViriumHelsinki/thelma (a `plugins-install` run from that cwd on
+# 2026-03-08, before this flag existed). Consequence: `/configure-claude-plugins`
+# resolved in NO repo, so `plugins-setup-repo` printed "Unknown command" and —
+# because `claude -p` exits 0 on an unresolved slash command — reported success.
+# `_claude-slash` below is the guard for that second half.
+
+# Lists marketplace plugins that have NO user-scope install — i.e. are invisible
+# outside the single project they were installed from. Distinct from
+# `plugins-audit-scope`, which audits committed pins over a domain scope.
+
+# Audit plugin INSTALL SCOPE (flags project-scoped-only plugins that won't load elsewhere)
+[group: "plugins"]
+plugins-install-audit:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    json="$(CLAUDECODE= claude plugin list --json)"
+    bad="$(jq -r '[.[] | select(.id | endswith("@{{marketplace}}"))]
+        | group_by(.id)
+        | map(select(any(.[]; .scope == "user") | not) | .[0].id)
+        | .[]' <<<"$json")"
+    if [ -z "$bad" ]; then
+      echo "{{GREEN}}All {{marketplace}} plugins are installed at user scope.{{NORMAL}}"
+    else
+      echo "{{YELLOW}}Project-scoped only (will NOT load outside their install dir):{{NORMAL}}"
+      printf '  %s\n' $bad
+      echo "{{BLUE}}Fix: just -g plugins-install{{NORMAL}}"
+      exit 1
+    fi
 
 # Run `claude plugin <action>` over every installed plugin from this marketplace,
 # narrowed by an optional jq {{filter}} fragment. Single source of truth for the
@@ -81,17 +119,44 @@ plugins-uninstall: (_plugins-foreach "uninstall")
 [group: "plugins"]
 plugins-reinstall: plugins-uninstall plugins-install plugins-enable
 
+# Run a headless `claude -p "/<skill>"` and FAIL LOUDLY when the slash command
+# doesn't resolve. `claude -p` prints "Unknown command: /foo" and exits 0, so a
+# bare exit-code check reports success while nothing ran. Single source of truth
+# for every `claude -p "/…"` call site in this file.
+# mode: "ro" (read-only) | "rw" (adds --permission-mode auto).
+# dir: repo to run IN — `claude` reads the project it is launched from, so a
+# per-repo action must cd first (plugins-bulk previously ran every picked repo's
+# claude call from the invocation cwd, configuring that repo N times instead).
+[private]
+_claude-slash prompt mode="ro" dir=".":
+    #!/usr/bin/env bash
+    set -uo pipefail
+    cd "{{dir}}" || exit 2
+    out="$(mktemp)"; trap 'rm -f "$out"' EXIT
+    if [ "{{mode}}" = "rw" ]; then
+      CLAUDECODE= claude -p "{{prompt}}" --model {{claude_model}} --permission-mode auto </dev/null 2>&1 | tee "$out"
+    else
+      CLAUDECODE= claude -p "{{prompt}}" --model {{claude_model}} </dev/null 2>&1 | tee "$out"
+    fi
+    rc=${PIPESTATUS[0]}
+    if grep -q '^Unknown command:' "$out"; then
+      echo "{{RED}}Slash command did not resolve: {{prompt}}{{NORMAL}}" >&2
+      echo "{{YELLOW}}Its plugin is probably not installed at USER scope — check with 'just -g plugins-install-audit', fix with 'just -g plugins-install'.{{NORMAL}}" >&2
+      exit 3
+    fi
+    exit "$rc"
+
 # Configure current repository to use laurigates/claude-plugins marketplace (writes .claude/settings.json and workflows)
 [group: "plugins"]
 plugins-setup-repo:
     @echo "{{BLUE}}Configuring Claude plugins for repository at $(pwd)...{{NORMAL}}"
-    CLAUDECODE= claude -p "/configure-claude-plugins --fix" --model {{claude_model}} --permission-mode auto
+    @just -g _claude-slash "/configure-claude-plugins --fix" rw
 
 # Report current repository's Claude plugin configuration without changes
 [group: "plugins"]
 plugins-check-repo:
     @echo "{{BLUE}}Checking Claude plugin configuration for repository at $(pwd)...{{NORMAL}}"
-    CLAUDECODE= claude -p "/configure-claude-plugins --check-only" --model {{claude_model}}
+    @just -g _claude-slash "/configure-claude-plugins --check-only" ro
 
 # Audit committed project plugin pins for drift vs canonical over the whole ~/repos tree (read-only)
 [group: "plugins"]
@@ -298,7 +363,9 @@ plugins-bulk scope action="check":
     # Slash commands use the BARE skill name. A `namespace:command` form
     # (/health:check, /configure:repo) is the deprecated pre-plugin syntax and
     # resolves to nothing — `claude -p` exits 0 after printing "Unknown command",
-    # so the recipe reports ok and the repo is silently never processed.
+    # so the recipe would report ok and the repo be silently never processed.
+    # `_claude-slash` now turns that into a hard rc=3, and cds into the repo so
+    # each picked repo is the one actually configured.
     # Sequential (sibling claude subprocesses are rate-limited & per-repo expensive);
     # every claude call gets </dev/null so the picker loop never eats its stdin.
     # NOTE: reeval's fix flow uses per-category AskUserQuestion; under `-p` there is
@@ -323,9 +390,9 @@ plugins-bulk scope action="check":
       rc=0
       case "{{action}}" in
         check)  just -g _plugins-annotate "$repo" ;;
-        setup)  CLAUDECODE= claude -p "/configure-claude-plugins --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
-        reeval) CLAUDECODE= claude -p "/health-check --scope=stack --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
-        full)   CLAUDECODE= claude -p "/configure-repo --fix" --model {{claude_model}} --permission-mode auto </dev/null || rc=$? ;;
+        setup)  just -g _claude-slash "/configure-claude-plugins --fix" rw "$repo" || rc=$? ;;
+        reeval) just -g _claude-slash "/health-check --scope=stack --fix" rw "$repo" || rc=$? ;;
+        full)   just -g _claude-slash "/configure-repo --fix" rw "$repo" || rc=$? ;;
       esac
       if [ "$rc" -eq 0 ]; then echo "{{GREEN}}ok{{NORMAL}}"; ok=$((ok + 1)); else echo "{{YELLOW}}FAILED (rc=$rc){{NORMAL}}"; failed=$((failed + 1)); fi
       case "{{action}}" in
