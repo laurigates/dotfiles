@@ -899,69 +899,110 @@ _gh_current_pr() {
 
 # Act only if that PR is authoritatively MERGED — so this no-ops when you merge
 # only other people's PRs, or skip your own at the confirm prompt.
+#
+# The guard is "this branch's PR is merged", NOT "…was merged by this run": it
+# fires just as well when you were already standing on a branch merged days ago,
+# since the branch is equally stale either way. That is deliberate but
+# surprising, so the move is narrated rather than merely performed:
+#   what  the switch + pull about to run
+#   why   the PR authorising it, and whether THIS run merged it ($2 = the PR
+#         numbers this invocation acted on) or it had already merged
+#   kept  that the local branch survives, plus the command to delete it
+# what/why print BEFORE the switch, so git's own "your branch is behind" chatter
+# lands under an explanation instead of ahead of one.
 _gh_home_if_merged() {
-  local cur_pr="$1"
+  local cur_pr="$1" acted="$2"
   [[ -n "$cur_pr" ]] || return 0
-  local info state base
-  info=$(gh pr view "$cur_pr" --json state,baseRefName \
-           --jq '"\(.state)\t\(.baseRefName)"' </dev/null 2>/dev/null)
-  state="${info%%$'\t'*}"; base="${info#*$'\t'}"
+  local info state base merged_at
+  info=$(gh pr view "$cur_pr" --json state,baseRefName,mergedAt \
+           --jq '"\(.state)\t\(.baseRefName)\t\(.mergedAt // "")"' </dev/null 2>/dev/null)
+  state="${info%%$'\t'*}"; info="${info#*$'\t'}"
+  base="${info%%$'\t'*}"; merged_at="${info#*$'\t'}"
   [[ "$state" == MERGED && -n "$base" ]] || return 0
   # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
-  local green='' yellow='' cyan='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' yellow=$'\033[33m' cyan=$'\033[36m' rst=$'\033[0m' }
+  local green='' yellow='' cyan='' dim='' bold='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
   local cur; cur=$(git symbolic-ref --short -q HEAD 2>/dev/null)
-  if [[ "$cur" != "$base" ]]; then
-    git switch "$base" 2>/dev/null || git checkout "$base" 2>/dev/null || {
-      print -r -- "  ${yellow}!${rst} #${cur_pr} merged, but couldn't switch to ${cyan}${base}${rst} (uncommitted changes?)"
-      return 1
-    }
+
+  # "by this run" is decided by membership in the acted-on set, never by clocks:
+  # local-vs-GitHub skew would misdate a merge landing seconds either side of the
+  # run. The picker only ever lists OPEN PRs, so "was selected AND is now MERGED"
+  # means this run merged it. The timestamp prints either way, as the ground
+  # truth behind the label.
+  local when
+  if [[ -n "$acted" && " ${acted//$'\n'/ } " == *" ${cur_pr} "* ]]; then
+    when="merged by this run"
+  else
+    when="already merged before this run"
   fi
-  print -r -- "  ${green}⇣${rst} #${cur_pr} was merged — on ${cyan}${base}${rst}, pulling"
+  [[ -n "$merged_at" ]] && when="${when}, ${merged_at%%T*} ${${merged_at#*T}%:*}Z"
+
+  if [[ "$cur" == "$base" ]]; then
+    print -r -- "  ${green}⇣${rst} ${bold}what${rst}  already on ${cyan}${base}${rst} — ${dim}git pull --ff-only${rst}"
+    print -r -- "    ${bold}why${rst}   PR ${cyan}#${cur_pr}${rst} is ${green}MERGED${rst} (${when}), so ${cyan}${base}${rst} has moved ahead"
+    git pull --ff-only
+    return
+  fi
+
+  print -r -- "  ${green}⇣${rst} ${bold}what${rst}  ${cyan}${cur:-detached HEAD}${rst} → ${cyan}${base}${rst} — ${dim}git switch ${base} && git pull --ff-only${rst}"
+  print -r -- "    ${bold}why${rst}   this branch's PR ${cyan}#${cur_pr}${rst} is ${green}MERGED${rst} (${when}) — its commits are already on ${cyan}${base}${rst}"
+  git switch "$base" 2>/dev/null || git checkout "$base" 2>/dev/null || {
+    print -r -- "    ${yellow}!${rst}     couldn't switch (uncommitted changes?) — staying on ${cyan}${cur}${rst}"
+    return 1
+  }
+  if [[ -n "$cur" ]] && git show-ref --verify --quiet "refs/heads/${cur}"; then
+    print -r -- "    ${bold}kept${rst}  local branch ${cyan}${cur}${rst} — delete with ${dim}git branch -d ${cur}${rst}"
+  fi
   git pull --ff-only
 }
 
 # Interactive PR merge (squash). No args → multi-select picker (Tab to mark
 # several) → sequential squash-merge in selection order. Arg form (ghsq 123,
-# via completion) merges that single PR directly. If the branch you're on gets
-# merged, you're left on an updated base branch (see _gh_home_if_merged).
+# via completion) merges that single PR directly. If the branch you're on has a
+# merged PR — merged by this run or already merged when you started — you're
+# left on an updated base branch, with the what/why printed first
+# (see _gh_home_if_merged).
 #
 # -x/--external includes external contributors' PRs in the picker (hidden by
 # default). Either way, merging one requires a typed confirmation — including on
 # the arg form, which skips the picker entirely and is therefore gated here.
 ghsq() {
-  local cur_pr show_ext=
+  local cur_pr acted show_ext=
   while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
   if [[ $# -eq 0 ]]; then
     local tsv; tsv=$(_gh_pr_multi_select squash "$show_ext" --layout=reverse)
     [[ -z "$tsv" ]] && return
     cur_pr=$(_gh_current_pr)
+    acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
     _gh_batch_merge "$tsv" --squash --delete-branch
   else
     local num="${1%%\[*}"
     _gh_trust_gate "" "$num" || return 1
     cur_pr=$(_gh_current_pr)
+    acted="$num"
     gh pr merge "$num" --squash --delete-branch
   fi
-  _gh_home_if_merged "$cur_pr"
+  _gh_home_if_merged "$cur_pr" "$acted"
 }
 
 # Interactive PR merge (rebase) — multi-select twin of ghsq (same -x guard).
 ghrb() {
-  local cur_pr show_ext=
+  local cur_pr acted show_ext=
   while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
   if [[ $# -eq 0 ]]; then
     local tsv; tsv=$(_gh_pr_multi_select rebase "$show_ext" --layout=reverse)
     [[ -z "$tsv" ]] && return
     cur_pr=$(_gh_current_pr)
+    acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
     _gh_batch_merge "$tsv" --rebase --delete-branch
   else
     local num="${1%%\[*}"
     _gh_trust_gate "" "$num" || return 1
     cur_pr=$(_gh_current_pr)
+    acted="$num"
     gh pr merge "$num" --rebase --delete-branch
   fi
-  _gh_home_if_merged "$cur_pr"
+  _gh_home_if_merged "$cur_pr" "$acted"
 }
 
 # ---- Read-only gh wrappers (view/diff/checkout/checks/run) -----------
@@ -1429,8 +1470,8 @@ _GH_WRAPPER_DOC=(
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If your branch merged, land on updated base. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
-  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. If your branch merged, land on updated base. Same external-contributor guard as ghsq (-x to include).'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If the branch you are on has a merged PR (this run or earlier), land on the updated base — it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
+  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
   ghi  'Pick a GitHub issue and hand it to Claude.'
