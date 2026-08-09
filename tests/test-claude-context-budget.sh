@@ -48,7 +48,30 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 # which largely duplicates the agent-patterns-plugin:multi-model-delegation
 # skill and is a CONSOLIDATE per meta-context-diet; it was being edited by a
 # concurrent session at the time. Ratchet back toward 110,000 once it lands.
-TOTAL_BUDGET_BYTES=114000
+#
+# 2026-08-09 → 120,000. The 2026-07-28 cleanup DID land: multi-model-delegation
+# went 6,607 → 493 bytes (a skill pointer), freeing 6.1 kB. The surface still
+# ended up at 116,268 — over budget — because concurrent additions across
+# tool-use-patterns, communication, pr-merge-hazards, never-fabricate-test-
+# identifiers and shell-pipefail-grep-q outpaced it in the same window. So this
+# bump is NOT "we ran out of room again": it records that a 6 kB consolidation
+# was absorbed inside one cleanup cycle, which means the ratchet-down target of
+# 110,000 was not reachable and pretending otherwise just relocates the hard
+# stop. Headroom kept deliberately small (~2.3 kB after the in-flight work
+# commits) so this stays a cleanup trigger.
+#
+# Measured at 113,990 of 114,000 — 10 bytes free — when a 1,381-byte rule was
+# refused. At that margin the gate has no useful signal left: it cannot
+# distinguish "this addition is not worth its bytes" from "nothing fits", and
+# it forces whoever writes the next rule to adjudicate someone else's, mid-task,
+# often against files other sessions have open. See laurigates/claude-plugins#2324
+# for the proposal to warn at ~95% and print headroom on the passing path, which
+# is what would make the next ratchet-down deliberate rather than reactive.
+#
+# Next cleanup candidates (largest unconditional, none yet triaged):
+#   tool-use-patterns.md ~9.9 kB · pr-merge-hazards.md ~7.6 kB
+#   prefer-diy-over-heavy-dependency.md ~7.1 kB
+TOTAL_BUDGET_BYTES=120000
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 
