@@ -79,6 +79,12 @@ Corollaries: prefer `task <uuid> modify project:<slug>` when consolidating
 `add`, so a typo never errors — it just starts a parallel backlog that the
 prefix match then hides.
 
+## Read a task's annotations before working it
+
+`task list` truncates them, hiding what past sessions established:
+`task <uuid> export | jq -r '.[0].annotations[].description'`. 2026-08: a
+session re-derived and announced a finding task 48517b52 already held.
+
 ## End-of-session checklist
 
 When wrapping a session that produced durable follow-ups, do this proactively:

@@ -75,6 +75,13 @@ resolvers/routes interleaved. To attribute a line correctly:
   resolvers route via your LAN gateway.
 - When in doubt, the IaC is authoritative over any local readout.
 
+## Stale, not just misattributed
+
+A fact true when drafted can be false when published. Re-derive mutable ones
+(dates, versions, IDs, counts) in the breath that publishes. 2026-08: a draft
+held through two review rounds needed a rolled-over date and 2 of 11 version
+IDs fixed at post time.
+
 ## Relationship to sibling rules
 
 - `verify-upstream-before-patching.md` — same instinct (check the
