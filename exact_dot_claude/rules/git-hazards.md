@@ -1,6 +1,6 @@
 # Git Hazards — Verify the Content, Not the Exit Code
 
-Five local-git traps, one law: **a green git command is not proof the result is
+Six local-git traps, one law: **a green git command is not proof the result is
 correct** — exit 0 is a claim about mechanics, not content. Each: the trap, the
 5-second check, the fix. Sibling: `pr-merge-hazards.md` (GitHub PR/merge).
 
@@ -73,3 +73,15 @@ stale read of state the coworker kept moving.
   coworker is active — stop mutating shared state (index, HEAD, branch
   switches) until the flapping stops; re-read state fresh in the same command
   that acts on it (same instinct as push-by-SHA).
+
+## 6. Work destroyed by `reset --hard` is often still in a pre-commit stash
+
+Unstaged content has no reflog entry, so this looks unrecoverable — but
+`pre-commit` stashes unstaged changes around every run, and those stash
+**commits** go dangling and survive until `gc`.
+
+- **Prevent**: `git status` before `reset --hard`/`checkout`/`restore`/`clean`;
+  `git stash -u` anything present.
+- **Recover**: `git fsck --lost-found`, then per dangling *commit* (not blob)
+  `git show <c>:<path>`; rank by `git diff --numstat HEAD <c> -- <path>`
+  against the diff shape you remember.
