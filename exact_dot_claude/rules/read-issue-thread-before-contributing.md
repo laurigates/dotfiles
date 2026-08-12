@@ -7,6 +7,10 @@ look like simple feature requests are often where the maintainer has already
 exactly the part that matters: the decided mechanism, the agreed scope, and the
 work someone has already volunteered to do.
 
+**Applies to repos you own too** (§ *Your own tracker*): the deference part is
+about upstream, but the load-bearing part is that a tracker records decisions
+past-you made and no longer remembers.
+
 ## The trap
 
 `WebFetch` (and any "summarize this issue" step) returns a *compressed* view. It
@@ -54,10 +58,34 @@ Specifically extract, before writing any code:
 If you only have a summary and a gap has passed, **re-read the live thread** before
 acting — the discussion may have moved.
 
+## Your own tracker — search before filing, read before reversing
+
+No maintainer to defer to is exactly why this gets skipped. Two failures:
+
+1. **Search before filing** — a well-researched duplicate is still a duplicate,
+   and the better write-up makes it *harder* to spot as one.
+   `gh issue list -R <o>/<r> --state all --search "<kw>" --json number,title,state`
+2. **Read before reversing** — an old issue records not just a problem but a
+   *decision with its reasoning*, including decisions to **defer**. Shipping the
+   deferred option because it is obviously better silently overrides a choice
+   made with context you no longer have.
+
+> Observed 2026-08 (pal-mcp-server), ten minutes apart: filed a detailed issue
+> duplicating a month-old one that had already diagnosed the same broken publish
+> pipeline — then merged a PR doing the very migration that issue **explicitly
+> deferred**. Neither was caught by review; both surfaced only from listing open
+> issues afterwards.
+
+The tell: calling something "the obvious fix" on a subsystem broken long enough
+for someone to have written about it — long-broken means *investigated*. When
+reversing a decision, say so on the PR and issue, quoting the old reasoning, so
+the next reader sees a decision changed rather than forgotten.
+
 ## When it bites
 
 - Any external contribution scoped from an issue, especially a popular repo where
   maintainers discuss design in comments.
+- **Your own repo**, when the tracker is the last place you think to look.
 - Resuming work on an issue days later from a cached summary.
 - Letting an early `WebFetch`/research step stand in for the primary source.
 
