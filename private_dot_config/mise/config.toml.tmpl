@@ -132,6 +132,27 @@ chezmoi = "latest"
 usage = "latest"
 uv = "latest"
 "aqua:EmbarkStudios/cargo-deny" = "latest"    # Rust license/bans/sources gate (cargo deny)
+"npm:@gradient-tools/surface" = "0.8.0"       # docs-drift gate (see configure-plugin:configure-surface)
+
+# npm-only CLI tools
+# Migrated out of a hand-maintained ~/package.json (2026-08-14); these ship
+# exclusively on npm, so there is no aqua/pipx backend to prefer. Pinned rather
+# than "latest" because several are agent CLIs where a surprise major bump is
+# disruptive — bump deliberately via `mise upgrade --bump`.
+#
+# Deliberately NOT migrated: @musistudio/claude-code-router (ccr). v3 performs a
+# "global profile takeover" on first run, rewriting ~/.claude/settings.json with
+# an apiKeyHelper + ANTHROPIC_BASE_URL proxy wrapper (and ~/.codex/config.toml
+# with its own provider), which breaks Claude Code. Do not re-add.
+"npm:@dotenvx/dotenvx" = "2.21.0"                # .env encryption/loading
+"npm:@earendil-works/pi-coding-agent" = "0.84.1" # pi
+"npm:@google/gemini-cli" = "0.55.1"              # gemini
+"npm:@mermaid-js/mermaid-cli" = "11.16.0"        # mmdc (see tools-plugin:mermaid-diagrams)
+"npm:@playwright/test" = "1.62.1"                # playwright (browsers need `playwright install`)
+"npm:jsonlint" = "1.6.3"
+"npm:ocx" = "2.0.14"
+"npm:opencode-ai" = "1.17.16"                    # opencode — pinned exact upstream of this migration
+"npm:vitest" = "4.1.10"
 
 # ============================================================================
 # Environment Variables
