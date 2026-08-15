@@ -81,10 +81,41 @@ for someone to have written about it — long-broken means *investigated*. When
 reversing a decision, say so on the PR and issue, quoting the old reasoning, so
 the next reader sees a decision changed rather than forgotten.
 
+## An issue's cited evidence expires — re-verify every line before acting on it
+
+Distinct from the sections above, which are about *discussion* you failed to
+read. Here you read everything, and the issue is simply **out of date**: it
+cites `file.ts:230` and asserts what is there, and between filing and today
+some unrelated PR fixed it. A well-written issue makes this worse — precise
+line numbers and quoted snippets read as verified fact, and the better the
+write-up, the less anyone re-checks it.
+
+> Observed 2026-08-13 (thelma #1055). A security issue's central claim was
+> "no `responseSchema` enforcement on the Gemini call — `gemini.ts:230` does
+> not pass it." True when filed on 05-13; false by the time it was worked.
+> #1060 had added it in between. The issue even listed *"`responseSchema`
+> enforcement is deliberately removed (currently absent)"* as a trigger to
+> re-evaluate — so writing the doc from the issue verbatim would have shipped
+> a threat model asserting the absence of the control that was by then its
+> primary defence, and inverted one of its own triggers.
+
+- **Re-read every file:line the issue cites, at HEAD, before writing anything
+  from it.** The issue is a *claim about the code*, and the code is the
+  authority — same instinct as `diagnose-at-the-failure-point.md`.
+- **Date the gap.** `gh issue view <n> --json createdAt` against
+  `git log -S'<symbol>' -- <path>` finds the PR that moved it. An issue older
+  than a few weeks on an active file should be assumed stale until checked.
+- **Report the correction in the PR that acts on it**, so the next reader sees
+  the issue's evidence was superseded rather than silently contradicted.
+- Corollary for *filing*: prefer citing behaviour and symbols over line
+  numbers, which rot fastest.
+
 ## When it bites
 
 - Any external contribution scoped from an issue, especially a popular repo where
   maintainers discuss design in comments.
+- **Acting on an issue filed weeks or months ago against a file that has since
+  changed** — the evidence is stale even though the thread is complete.
 - **Your own repo**, when the tracker is the last place you think to look.
 - Resuming work on an issue days later from a cached summary.
 - Letting an early `WebFetch`/research step stand in for the primary source.

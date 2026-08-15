@@ -57,6 +57,41 @@ to review-by-reading:
 Three independent designers and a four-lens adversarial review all missed the
 first defect; a 60-line NumPy simulation found it in seconds.
 
+## The bypass must reproduce the old behaviour, not merely disable the new
+
+Step 3's "prove the gate has teeth" is normally done by reverting the fix and
+watching the test fail. The trap is that the quickest way to *disable* a guard
+is rarely the same thing as *restoring the pre-fix state* — and when it isn't,
+the run tells you nothing while looking like a clean verification.
+
+The tell is a **test that passes when you expected it to fail**. That reads as
+"weak assertion" and invites deleting the test; the real cause is usually that
+the bypass introduced a *different* failure which the test caught by accident.
+
+> Observed 2026-08 (thelma, funding-analysis). Adding a Zod `safeParse` after
+> `JSON.parse`, the teeth-check short-circuited the throw:
+> `if (false && !validated.success)`. Four of five tests failed as designed —
+> but `safeParse` returns **no `.data` on failure**, so `parsed` became
+> `undefined` and `parsed.dimensions` threw a `TypeError`. The fifth test
+> ("a failed parse is not cached") passed on that TypeError, not on the
+> behaviour it asserts. Re-run against a faithful stand-in —
+> `const validated = { success: true, data: raw }`, which is exactly what the
+> old unvalidated code did — and all five failed. The gate was fine; the
+> bypass was lying.
+
+- **Prefer deleting the new code to neutering it.** `git stash`, or check out
+  the pre-fix file, and run against that. A hand-written bypass is the same
+  retyping hazard as `never-fabricate-test-identifiers.md` § *extract the code,
+  don't retype it*.
+- **When a bypass is unavoidable, name the old behaviour and reproduce it
+  exactly** — including what the removed call returned on the failure path.
+  Short-circuiting a conditional leaves every binding it fed in a state the
+  original code never had.
+- **Read *which* tests fail, never just the count.** The set is the evidence;
+  a total that matches expectation can still be the wrong tests.
+- **A pass during a teeth-check is a finding, not a relief.** Diagnose it
+  before touching the test.
+
 ## Related
 
 - `offload-to-deterministic-substrate.md` — the parent law: the simulation is
