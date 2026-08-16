@@ -1,0 +1,25 @@
+#autoload
+#
+# Tags offered by `git switch <TAB>`, labelled with the flag they require.
+# Called only from the __git_branch_names override in this directory — see the
+# comment block there for the mechanism and the scoping.
+#
+# Mirrors zsh's own __git_tags_of_type (Completion/Unix/_git) for type
+# `commit`: list refs/tags, keep the ones that resolve to a commit (so blob and
+# tree tags, which `git switch --detach` cannot take, stay out). The only
+# departures are the completion tag name (`detach-tags`, so it can be styled
+# and previewed separately from the plain `commit-tags` group that
+# `git switch --detach` / `git checkout` already use) and the description,
+# which carries the hint.
+
+__git_switch_detach_tags () {
+  local expl
+  declare -a tags
+
+  tags=(${${(M)${(f)"$(_call_program commit-tag-refs "git for-each-ref --format='%(*objecttype)%(objecttype) %(refname)' refs/tags 2>/dev/null")"}:#commit(tag|) *}#commit(tag|) refs/tags/})
+  __git_command_successful $pipestatus || return 1
+  (( $#tags )) || return 1
+
+  _wanted detach-tags expl 'tag (needs --detach)' \
+    compadd -M 'r:|/=* r:|=*' "$@" -o numeric -a - tags
+}

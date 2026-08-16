@@ -1,0 +1,62 @@
+#autoload
+#
+# Override of the __git_branch_names helper from zsh's own git completion
+# (Completion/Unix/_git, zsh 5.9 — the one macOS ships as /bin/zsh).
+#
+# Why this file exists
+# --------------------
+# `git switch <TAB>` offers branch names only, never tags. That is upstream's
+# deliberate choice, because git itself refuses a tag here:
+#
+#     $ git switch v1.0.0
+#     fatal: a branch is expected, got tag 'v1.0.0'
+#     hint: If you want to detach HEAD at the commit, try again with the
+#           --detach option.
+#
+# The flag is what makes it legal: zsh's `_git-switch` marks `-d/--detach` as
+# excluding positional 1, so with the flag present the argument is parsed as a
+# *start point* (heads + tags + commits) instead of a *branch name*. Hence
+# `git switch --detach v<TAB>` completes tags and bare `git switch v<TAB>` does
+# not.
+#
+# Rather than hide the tags or offer them unlabelled, this override adds them
+# as their own completion group whose description names the missing flag. In
+# fzf-tab that description becomes the group header:
+#
+#     [tag (needs --detach)] [branch name]
+#
+# How the override takes effect
+# -----------------------------
+# zsh's `_git` guards every helper it defines with
+#
+#     (( $+functions[__git_branch_names] )) || __git_branch_names () { ... }
+#
+# so a definition that already exists wins. compinit autoloads every `_*` file
+# in fpath that starts with `#autoload`, which makes $+functions true for this
+# name before `_git` ever runs. ~/.zfunc is on fpath via dot_zshrc.tmpl.
+#
+# Scope
+# -----
+# The tag group is added in exactly one completion context,
+# `*:git-switch:argument-1` — the "which ref am I switching to" position.
+# Every other caller of __git_branch_names (`git switch -c`, `git switch
+# --orphan`, `git branch -d`, …) takes the unmodified upstream path, since
+# offering a tag as a *new branch name* would be nonsense.
+#
+# Body below is upstream's verbatim, plus the one `if` block.
+
+__git_branch_names () {
+  local expl ret=1
+  declare -a branch_names
+
+  branch_names=(${${(f)"$(_call_program branchrefs git for-each-ref --format='"%(refname)"' refs/heads 2>/dev/null)"}#refs/heads/})
+  __git_command_successful $pipestatus || return 1
+
+  if [[ $curcontext == *:git-switch:argument-1 ]]; then
+    __git_switch_detach_tags "$@" && ret=0
+  fi
+
+  __git_describe_commit branch_names branch-names 'branch name' "$@" && ret=0
+
+  return ret
+}
