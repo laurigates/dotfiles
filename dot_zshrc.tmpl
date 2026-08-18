@@ -9,9 +9,9 @@ set -o vi
 # set terminal preference for i3
 export TERMINAL=kitty
 
-{{ if eq .chezmoi.os "darwin" }}
-	export BROWSER="open -a Google\ Chrome"
-{{ else if eq .chezmoi.os "linux" }}
+# No BROWSER on macOS: LaunchServices already routes http(s) to Chrome, and
+# tools that spawn $BROWSER as argv[0] (Claude Code) break on a multi-word value.
+{{ if eq .chezmoi.os "linux" }}
 	export BROWSER=google-chrome-stable
 {{ end }}
 
