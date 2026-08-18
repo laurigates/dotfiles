@@ -253,14 +253,50 @@ usually broken: a repo justfile's **relative** `import`/`include` paths
 
 The fix is the same as the existing `README.md` / `Dockerfile` /
 `docker-compose.yml` entries already in `.chezmoiignore`: ignore the
-repo-meta file so it stays repo-local. **Root-anchor** the pattern so it
-only catches the source-root copy, not managed nested targets of the same
-basename:
+repo-meta file so it stays repo-local. The pattern must be **root-anchored**
+so it only catches the source-root copy, not managed nested targets of the
+same basename — and the way to write that is a **bare, slash-free** pattern:
 
 ```
 # .chezmoiignore — root-anchored, won't touch ~/.config/just/justfile etc.
-/justfile
+justfile
 ```
+
+### A leading `/` is NOT how you anchor — it's a hard error
+
+The obvious-looking `/justfile` is **invalid**. chezmoi matches patterns
+against the target path *relative* to the destination dir, so a leading
+slash makes the path absolute — outside the destination — and chezmoi
+aborts the whole run on it:
+
+```
+chezmoi: /path/to/source/.chezmoiignore:9: /justfile: invalid path
+```
+
+That error is **fatal and total**: `apply`, `ignored`, `managed` all refuse
+to run, and chezmoi reports only the *first* offending line, so a file with
+several absolute patterns looks like it has one problem. Older chezmoi
+tolerated the form silently; ≥2.72 rejects it. This broke the repo's CI for
+two weeks in 2026-08 — the `Build (Ubuntu)` job died at `chezmoi apply`
+while every other check stayed green, because CI installs chezmoi unpinned
+(`brew install chezmoi`) and a release changed the rule underneath it.
+
+The same applies to `.chezmoiremove`. There, a path genuinely outside `$HOME`
+(e.g. `/tmp/some.log`) is not expressible at all — `.chezmoiremove` can only
+name targets under the destination dir. Delete such an entry rather than
+"fixing" the slash: `tmp/some.log` silently re-points it at `~/tmp/some.log`,
+a different file.
+
+Anchoring semantics, verified against chezmoi v2.72.0:
+
+| Pattern | Matches | Use for |
+|---|---|---|
+| `justfile` | source-root `justfile` **only** — `.config/just/justfile` stays managed | root-anchored ignore ✅ |
+| `/justfile` | nothing — **fatal parse error** | never ❌ |
+| `**/justfile` | *every* `justfile` at any depth, including the managed global one | deliberate recursion only (e.g. `**/__pycache__/`) |
+
+Directory patterns follow the same rule: `docs/` ignores only the root
+`docs/`, leaving `~/.config/nvim/docs/` managed.
 
 Verify it's no longer a target, then remove the already-leaked copy:
 

@@ -3,10 +3,17 @@
 # e.g. dot_claude/private_CLAUDE.md.
 README.md
 # The repo-root justfile is the dotfiles repo's OWN project justfile (for working
-# in this repo). Without this, chezmoi applies it to ~/justfile, which shadows
-# ~/.user.justfile in `just -g`'s resolution order and breaks it (relative import
-# fails from $HOME). The global justfile is dot_user.justfile.tmpl → ~/.user.justfile.
-/justfile
+# in this repo). Without this, chezmoi applies it to ~/justfile, which `just -g`
+# then loads instead of the real global justfile — and it breaks, because its
+# relative imports don't resolve from $HOME. The global justfile is
+# private_dot_config/just/justfile → ~/.config/just/justfile.
+#
+# Slash-free ON PURPOSE — that IS the root anchor: a bare pattern matches only
+# the source-root copy, leaving ~/.config/just/justfile managed. Do NOT write
+# `/justfile` (leading slash = absolute = "invalid path", a fatal parse error
+# that kills every chezmoi command) nor `**/justfile` (would swallow the global
+# one too). Same for every other bare entry below.
+justfile
 Dockerfile
 docker-compose.yml
 setup/
@@ -16,17 +23,17 @@ images/
 lazy-lock.json
 # Claude Code runtime files are now handled via exact_dot_claude/.chezmoiignore
 CLAUDE.md
-/**/__pycache__/
+**/__pycache__/
 plugins/
 .mcp.json
 # Repo-meta that lives at the source root for working *in this repo* but must not
 # apply to $HOME (same rationale as README.md / Dockerfile / plugins/ above).
 # Root-anchored so only the source-root copy is ignored, never a managed nested
 # target of the same basename.
-/LICENSE
-/DOCKER.md
-/docs/
-/tests/
+LICENSE
+DOCKER.md
+docs/
+tests/
 # ~/tmp is a scratch dir, not dotfiles state — chezmoi shouldn't manage it or the
 # one-off notes previously committed under tmp/.
-/tmp/
+tmp/
