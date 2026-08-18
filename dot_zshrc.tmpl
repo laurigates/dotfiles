@@ -152,10 +152,30 @@ export TMPDIR="$HOME/tmp/"
 # Remove "/" from WORDCHARS so that Ctrl+W doesn't kill directory paths.
 WORDCHARS="${WORDCHARS//[\/]}"
 
-# Load brew and related completions if it is installed
-# Prepend homebrew to path
-# Avoid using brew shellenv for setup, because brew completions are messed up
-# Handle macos and linux paths for homebrew
+# Put homebrew on PATH. Handles the macos and linux homebrew prefixes.
+#
+# Deliberately NOT `eval "$(brew shellenv)"`, and brew's
+# share/zsh/site-functions is deliberately NOT on fpath. shellenv emits
+# `fpath[1,0]="$HOMEBREW_PREFIX/share/zsh/site-functions"` + `export FPATH`,
+# which has two consequences:
+#
+#   1. Position 1 puts brew's completions ahead of BOTH ~/.zfunc and zsh's
+#      own /usr/share/zsh/*/functions. First match in fpath wins, so brew's
+#      build-time snapshots would shadow the freshly generated ~/.zfunc ones,
+#      and brew's `_git` (git's bash-completion wrapper) would shadow zsh's
+#      much richer native `_git`.
+#   2. `export FPATH` leaks that inverted order into every child zsh --
+#      `zsh -f` included, which is supposed to read no config at all.
+#
+# Completions instead come from ~/.zfunc, generated from the tools themselves
+# by run_onchange_02-generate-completions.sh.tmpl. To pick up a completer that
+# only Homebrew ships, add it to .chezmoidata/completions.toml rather than
+# putting the directory on fpath -- the `task` entry there is the pattern.
+#
+# (A 2023-era comment also blamed brew completions for fzf-tab misbehaving on
+# e.g. kubectl. That was a load-order bug, root-caused and fixed in d4fb8c5
+# "fix(zsh): load fzf-tab after compinit"; it is not a reason for any of the
+# above.)
 
 # Cache brew prefix to avoid multiple calls (improves shell startup performance)
 {{ if eq .chezmoi.os "darwin" }}
