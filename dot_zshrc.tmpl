@@ -324,6 +324,14 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	"recent commit object name") git show --color=always $word | delta ;;
 	*) git log --color=always $word ;;
 	esac'
+# `git switch <tag>` is a hard error without --detach, so the tags offered in
+# that position live in their own group (see dot_zfunc/__git_branch_names) and
+# the preview repeats the flag as a copyable command line.
+zstyle ':fzf-tab:complete:git-switch:*' fzf-preview \
+	'case "$group" in
+	*detach*) printf "\033[1;33mhint: git switch --detach %s\033[0m\n\n" "$word"; git log --color=always -n 20 $word ;;
+	*) git log --color=always $word ;;
+	esac'
 
 # Enable IP addresses in completions (moved from fzf-tab section for clarity)
 zstyle ':completion:*' use-ip true
