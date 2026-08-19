@@ -1,5 +1,24 @@
 name: Claude Code
 
+# This workflow deliberately stays local rather than calling
+# laurigates/.github's reusable-claude.yml. That workflow is checkout ->
+# claude-code-action -> failure handling and defaults to ubuntu-slim, which
+# carries no Homebrew and no Go; a reusable workflow cannot accept
+# caller-supplied steps, so the toolchain below (node + bun for the MCP
+# servers, Homebrew + chezmoi + pre-commit for the repo's own checks) has
+# nowhere to go. Revisit if reusable-claude.yml ever grows a setup-action or
+# pre-steps input.
+#
+# MCP servers are scoped to .github/claude-mcp-ci.json via --strict-mcp-config.
+# The project .mcp.json declares five servers, but CI only ever installed the
+# runtimes -- never the server binaries: `pal-mcp-server` (no `uv tool install`)
+# and `github-mcp-server` (no `go install`) could not start, and `playwright`
+# would launch without browsers. Rather than install three more things the CI
+# job does not need, CI runs the two that work: context7 and
+# sequential-thinking, both fetched on demand by bunx/npx. The GitHub MCP
+# server is redundant here anyway -- the action's base GitHub tools and `gh`
+# cover it.
+
 on:
   issue_comment:
     types: [created]
@@ -47,19 +66,6 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - name: Setup Go for GitHub MCP server
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-
-      - name: Setup Python/uv for pal-mcp-server
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -111,8 +117,6 @@ jobs:
             echo "- testing-plugin"
             echo "- tools-plugin"
           } >> "$GITHUB_STEP_SUMMARY"
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Generate allowed tools configuration
         id: tools-config
@@ -156,6 +160,8 @@ jobs:
             --model ${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}
             --allowedTools ${{ steps.tools-config.outputs.allowed_tools }}
             --max-turns 100
+            --mcp-config .github/claude-mcp-ci.json
+            --strict-mcp-config
 
       - name: Collect workflow metrics
         if: always()
