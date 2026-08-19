@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [ main ] # Or your default branch name
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Checkout and cache only; nothing here writes to the repo.
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Linters
