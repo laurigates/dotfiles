@@ -191,6 +191,26 @@ if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
 fi
 {{ end }}
 
+# bun global installs (`bun install -g`) land in $BUN_INSTALL/bin, and mise does
+# NOT know about them: mise provides the bun BINARY, but where bun links its
+# globals is bun's own business, controlled by BUN_INSTALL.
+#
+#   bun pm bin -g                    -> ~/.bun/bin
+#   env -u BUN_INSTALL bun pm bin -g -> ~/.cache/.bun/bin
+#
+# So this line is what makes a `bun install -g` binary reachable at all -- it is
+# not redundant with mise. It sits ABOVE `mise activate` on purpose: prepending
+# below would put ~/.bun/bin ahead of mise, which is exactly how ten stale
+# symlinks from the #360 npm->mise migration ended up shadowing their
+# replacements. Prefer a mise entry over `bun install -g` for anything mise can
+# manage (see ~/.claude/CLAUDE.md, Tool Installation Priority).
+#
+# ~/.bun also holds `bun link` registrations (install/global/node_modules) --
+# local repo checkouts linked for development. Those are not binaries and never
+# touch PATH, but they are why this directory is not disposable.
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 # PATH precedence is mise > brew > system. mise activate PREPENDS its installs,
 # so it establishes that order -- which means any later `PATH="x:$PATH"` jumps
 # ahead of mise and silently shadows a managed tool. Add new PATH entries ABOVE
@@ -1353,18 +1373,6 @@ EOF
 export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
 export NDK_HOME="$ANDROID_HOME/ndk/26.1.10909125"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
-
-# bun
-# NOTE: prepends AFTER `mise activate`, so anything in ~/.bun/bin outranks mise.
-# That directory is legacy: it holds bin symlinks into ~/node_modules from the
-# hand-maintained ~/package.json that #360 migrated into mise. Ten of those were
-# left behind by that migration and shadowed their mise-managed replacements;
-# they have been removed, leaving only packages mise does NOT manage. Do not
-# reintroduce a global install here for something mise can manage -- prefer a
-# mise entry, or this line silently wins. See the note at `mise activate`.
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
 
 #======================================================================
 # Tool Initializations (Starship, Zoxide, Atuin, etc.)
