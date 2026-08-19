@@ -3,7 +3,7 @@ default_install_hook_types:
   - commit-msg
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0 # Use a recent version
+    rev: v6.0.0 # Use a recent version
     hooks:
       - id: trailing-whitespace
         # Skill signature blobs must keep their exact bytes or signature
