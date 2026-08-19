@@ -1,5 +1,11 @@
 name: Renovate
 
+# Thin caller for the org-wide reusable workflow in laurigates/.github.
+# The local copy this replaced predated that repo; it pinned
+# renovatebot/github-action itself and reimplemented the dry-run/log-level
+# plumbing. Keeping the schedule and the workflow_dispatch inputs here is
+# required — `workflow_call` cannot carry a `schedule` trigger.
+
 on:
   # Run on schedule (every 6 hours)
   schedule:
@@ -23,28 +29,16 @@ on:
           - warn
           - error
 
-# Limit concurrent runs to avoid conflicts
-concurrency:
-  group: renovate
-  cancel-in-progress: false
+# The reusable workflow declares its own concurrency group
+# (renovate-${{ github.repository }}, cancel-in-progress: false), which
+# supersedes the group the local copy declared here.
 
 jobs:
   renovate:
     name: Renovate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run Renovate
-        uses: renovatebot/github-action@v41.0.22
-        with:
-          configurationFile: renovate.json5
-          token: ${{ secrets.RENOVATE_TOKEN || secrets.GITHUB_TOKEN }}
-        env:
-          # Set dry run mode if requested
-          RENOVATE_DRY_RUN: ${{ inputs.dry_run == 'true' && 'full' || '' }}
-          # Set log level (default: info)
-          LOG_LEVEL: ${{ inputs.log_level || 'info' }}
-          # Timezone for scheduling
-          TZ: Europe/Helsinki
+    uses: laurigates/.github/.github/workflows/reusable-renovate.yml@main
+    with:
+      config-file: renovate.json5
+      # dry-run takes a string (false | full | lookup), not a boolean
+      dry-run: ${{ inputs.dry_run == true && 'full' || 'false' }}
+      log-level: ${{ inputs.log_level || 'info' }}
