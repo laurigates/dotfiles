@@ -137,3 +137,64 @@ jobs:
               exit 1
             fi
           "
+
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
+    needs: [lint] # Run after linters pass, same as the Ubuntu build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # No setup-homebrew here: macOS runners ship Homebrew preinstalled.
+      # The Linux jobs need the action because linuxbrew is not.
+      - name: Cache Homebrew
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+
+      - name: Install Dependencies
+        # Deliberately NOT installing zsh. macOS ships zsh 5.9 as /bin/zsh and
+        # that is the zsh this repo's config actually targets — see the
+        # dot_zfunc/__git_branch_names override, which hooks the completion
+        # system zsh 5.9 provides. Installing brew's zsh would smoke-test a
+        # different shell than the one on the daily driver.
+        run: brew install chezmoi neovim
+
+      - name: Setup mise
+        uses: jdx/mise-action@v4
+
+      - name: Cache mise tools
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/mise
+            ~/.local/state/mise
+          key: ${{ runner.os }}-mise-${{ hashFiles('**/.mise.toml', '**/mise.toml', '**/.config/mise/config.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-mise-
+
+      - name: Run chezmoi apply
+        # Same flags as the Ubuntu build: --source=. because chezmoi's default
+        # source dir does not exist on a fresh runner, and --exclude=scripts to
+        # skip the stateful run_once_/run_onchange_ installers.
+        run: chezmoi apply -v --source=. --exclude=scripts
+
+      - name: Test zsh shell initialization
+        # Uses the system zsh (/bin/zsh, 5.9) for the reason given above.
+        # Same hang-guard rationale as the Ubuntu job — a bound on a config
+        # change that blocks on input, not a performance budget.
+        run: |
+          timeout 60s /bin/zsh -c "
+            source ~/.zshrc
+            if [[ -n \"\$ZSH_VERSION\" ]]; then
+              echo \"✅ zsh \$ZSH_VERSION configuration loaded successfully\"
+            else
+              echo \"❌ zsh configuration failed to load\"
+              exit 1
+            fi
+          "
