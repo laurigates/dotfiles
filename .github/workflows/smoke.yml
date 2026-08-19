@@ -118,7 +118,17 @@ jobs:
           # the prompt is set by starship (eval "$(starship init zsh)"), which
           # isn't installed in this job — the assertion would always fail. The
           # meaningful smoke test is that sourcing .zshrc doesn't crash zsh.
-          timeout 10s zsh -c "
+          #
+          # The timeout guards against a HANG (a config change that blocks on
+          # input), not against slowness — it is not a perf budget. Keep it
+          # generous: the old 10s left no margin and turned normal drift into a
+          # red build. Measured cold-runner cost of this step: ~6s on
+          # 2026-07-30, ~9s on 2026-08-18 — i.e. 90% of the old budget before
+          # any given PR adds anything. A change that pushes real startup time
+          # near this limit is a genuine problem worth its own investigation;
+          # note that the benchmarks workflow does NOT cover it, because it
+          # times a minimal /tmp/test.zshrc rather than the applied ~/.zshrc.
+          timeout 60s zsh -c "
             source ~/.zshrc
             if [[ -n \"\$ZSH_VERSION\" ]]; then
               echo \"✅ zsh configuration loaded successfully\"

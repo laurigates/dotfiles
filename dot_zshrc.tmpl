@@ -152,10 +152,31 @@ export TMPDIR="$HOME/tmp/"
 # Remove "/" from WORDCHARS so that Ctrl+W doesn't kill directory paths.
 WORDCHARS="${WORDCHARS//[\/]}"
 
-# Load brew and related completions if it is installed
-# Prepend homebrew to path
-# Avoid using brew shellenv for setup, because brew completions are messed up
-# Handle macos and linux paths for homebrew
+# Put homebrew on PATH. Handles the macos and linux homebrew prefixes.
+#
+# Deliberately NOT `eval "$(brew shellenv)"`. Brew's zsh site-functions dir IS
+# on fpath, but appended by hand further down -- never via shellenv, which emits
+# `fpath[1,0]="$HOMEBREW_PREFIX/share/zsh/site-functions"` + `export FPATH`:
+#
+#   1. Position 1 puts brew's completions ahead of BOTH ~/.zfunc and zsh's
+#      own /usr/share/zsh/*/functions. First match in fpath wins, so brew's
+#      build-time snapshots would shadow the freshly generated ~/.zfunc ones,
+#      and brew's `_git` (git's bash-completion wrapper) would shadow zsh's
+#      much richer native `_git`.
+#   2. `export FPATH` leaks that inverted order into every child zsh --
+#      `zsh -f` included, which is supposed to read no config at all.
+#
+# Appending is the safe half of the same idea: it shadows nothing and still
+# reaches the completers only Homebrew ships. See the fpath block near compinit.
+#
+# shellenv is also avoided for PATH because it prepends brew ahead of mise, and
+# the intended order is mise > brew > system. tests/test-shell-precedence.sh
+# pins both orders.
+#
+# (A 2023-era comment also blamed brew completions for fzf-tab misbehaving on
+# e.g. kubectl. That was a load-order bug, root-caused and fixed in d4fb8c5
+# "fix(zsh): load fzf-tab after compinit"; it is not a reason for any of the
+# above.)
 
 # Cache brew prefix to avoid multiple calls (improves shell startup performance)
 {{ if eq .chezmoi.os "darwin" }}
@@ -170,6 +191,11 @@ if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
 fi
 {{ end }}
 
+# PATH precedence is mise > brew > system. mise activate PREPENDS its installs,
+# so it establishes that order -- which means any later `PATH="x:$PATH"` jumps
+# ahead of mise and silently shadows a managed tool. Add new PATH entries ABOVE
+# this line, or append (`path+=(...)`) instead of prepending.
+# tests/test-shell-precedence.sh fails on a mise-managed command that loses.
 eval "$(mise activate zsh)"
 
 # Set these envs after mise has been initialized since neovim may be installed by mise.
@@ -1321,11 +1347,21 @@ EOF
 #======================================================================
 
 # Android SDK (for Tauri Android development)
+# NOTE: prepends AFTER `mise activate`, so platform-tools outranks mise. Fine
+# today -- mise manages nothing that collides with adb/fastboot -- but if it
+# ever does, this is the line that wins. See the note at `mise activate`.
 export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
 export NDK_HOME="$ANDROID_HOME/ndk/26.1.10909125"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
 # bun
+# NOTE: prepends AFTER `mise activate`, so anything in ~/.bun/bin outranks mise.
+# That directory is legacy: it holds bin symlinks into ~/node_modules from the
+# hand-maintained ~/package.json that #360 migrated into mise. Ten of those were
+# left behind by that migration and shadowed their mise-managed replacements;
+# they have been removed, leaving only packages mise does NOT manage. Do not
+# reintroduce a global install here for something mise can manage -- prefer a
+# mise entry, or this line silently wins. See the note at `mise activate`.
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
@@ -1349,14 +1385,41 @@ eval "$(atuin init zsh)"
 # Completion System Initialization
 #======================================================================
 
-# Add custom completion directory to fpath (if not already added above)
-# NOTE: This needs to be before compinit
-[ -d ~/.zfunc ] && fpath+=~/.zfunc
+# fpath order is load-bearing -- first match wins, so this block decides which
+# copy of a duplicated completer is used. Pinned by tests/test-shell-precedence.sh.
+#
+#   1. ~/.zfunc        generated FROM THE BINARY THAT ACTUALLY RUNS, by
+#                      run_onchange_02-generate-completions.sh.tmpl. Must come
+#                      first, or zsh's bundled copies win instead: _npm, _pip
+#                      and _luarocks all exist in both places, and the system
+#                      ones ship with zsh (5.9 = 2022) while the generated ones
+#                      track the mise-installed tool.
+#   2. zsh's own       /usr/share/zsh/*/functions. Deliberately ahead of brew:
+#                      the only two names in both are _git and _luarocks, and
+#                      zsh's native _git is far richer than brew's (which is
+#                      git's bash-completion wrapper). dot_zfunc/__git_branch_names
+#                      hooks zsh's _git and goes inert if brew's wins.
+#   3. brew            last, so it adds the ~30 completers nothing else ships
+#                      (_bat, _delta, _k9s, _yq, _zoxide, ...) without
+#                      displacing anything above it.
+#
+# NOTE: all of this needs to be before compinit.
+[ -d ~/.zfunc ] && fpath=(~/.zfunc $fpath)
+if [ -n "$HOMEBREW_PREFIX" ] && [ -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]; then
+  fpath+=("$HOMEBREW_PREFIX/share/zsh/site-functions")
+fi
 
 # Load Homebrew path configurations (if available)
 # Path modifications should be done before compinit
 if [ -n "$HOMEBREW_PREFIX" ]; then
     # google-cloud-sdk path (this modifies PATH, so keep it before compinit)
+    #
+    # KNOWN EXCEPTION to mise > brew > system: path.zsh.inc PREPENDS, and it
+    # runs after `mise activate`, so gcloud's bundled bin/ outranks mise. It
+    # ships its own kubectl, so `kubectl` resolves to gcloud's copy rather than
+    # the mise-managed one. tests/test-shell-precedence.sh allowlists exactly
+    # that one command; to fix rather than tolerate it, move this block above
+    # `eval "$(mise activate zsh)"` and drop kubectl from the allowlist.
     [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" ] && \
       source "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" 2>/dev/null
 fi

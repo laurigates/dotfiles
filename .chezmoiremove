@@ -11,4 +11,8 @@
 ~/.claude/hooks/kitty-tab-processing.sh
 ~/.claude/setup_kitty_integration.sh
 ~/.claude/KITTY_INTEGRATION.md
-/tmp/claude_status_hub.log
+# NOTE: a `/tmp/claude_status_hub.log` entry lived here until chezmoi began
+# rejecting it as an invalid path. .chezmoiremove can only name targets under
+# the destination dir ($HOME); an absolute /tmp path is outside it. Do not
+# "fix" it to `tmp/claude_status_hub.log` — that resolves to ~/tmp, a scratch
+# dir chezmoi deliberately ignores, and would delete an unrelated file.

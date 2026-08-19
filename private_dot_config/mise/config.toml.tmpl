@@ -209,7 +209,7 @@ description = "Check what changes would be made (alias for status)"
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -244,6 +244,19 @@ description = "Regression test: always-loaded Claude global context stays within
 run = """
 #!/usr/bin/env bash
 SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-claude-context-budget.sh"
+if [ -x "$SCRIPT" ]; then
+    "$SCRIPT"
+else
+    echo "⚠️  Warning: $SCRIPT not found or not executable"
+    exit 1
+fi
+"""
+
+[tasks."test:shell-precedence"]
+description = "Regression test: interactive-shell lookup order (PATH mise > brew > system; fpath ~/.zfunc > zsh > brew)"
+run = """
+#!/usr/bin/env bash
+SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-shell-precedence.sh"
 if [ -x "$SCRIPT" ]; then
     "$SCRIPT"
 else
