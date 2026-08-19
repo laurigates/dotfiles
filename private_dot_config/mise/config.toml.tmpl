@@ -265,6 +265,19 @@ else
 fi
 """
 
+[tasks."test:gh-completion"]
+description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"
+run = """
+#!/usr/bin/env bash
+SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-gh-completion.sh"
+if [ -x "$SCRIPT" ]; then
+    "$SCRIPT"
+else
+    echo "⚠️  Warning: $SCRIPT not found or not executable"
+    exit 1
+fi
+"""
+
 [tasks.lint]
 description = "Run all linters as used in CI"
 run = """
