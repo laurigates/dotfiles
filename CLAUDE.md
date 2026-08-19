@@ -83,7 +83,7 @@ pre-commit run gitleaks --all-files      # via pre-commit
 Blueprint v3.3.0 manages project documentation and rules.
 
 - **PRD**: `docs/prds/project-overview.md` — Feature requirements and scope
-- **ADRs**: `docs/adrs/` — 16 Architecture Decision Records ([index](docs/adrs/README.md))
+- **ADRs**: `docs/adrs/` — 17 Architecture Decision Records ([index](docs/adrs/README.md))
 - **PRPs**: `docs/prps/` — Implementation plans (fish, NixOS, sketchybar)
 - **Manifest**: `docs/blueprint/manifest.json` — Configuration and task registry
 - **Commands**: `/blueprint-status`, `/blueprint-execute`, `/blueprint-derive-plans`
