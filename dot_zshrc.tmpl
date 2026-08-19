@@ -1458,6 +1458,69 @@ _chezmoi_edit_managed() {
 }
 compdef _chezmoi_edit_managed chezmoi
 
+# Custom completion for the PR argument of `gh pr <sub>`.
+# gh registers no completion for the [<number> | <url> | <branch>] positional:
+# `gh __complete pr view ""` returns zero candidates with directive 0
+# (ShellCompDirectiveDefault), which tells the shell to fall back to FILE
+# completion -- so `gh pr view <TAB>` offers the working directory. Supply the
+# open PR numbers here and defer to the cobra-generated _gh everywhere else,
+# the same wrap-and-delegate shape as _chezmoi_edit_managed above.
+#
+# Upstream has had this open as cli/cli#360 since 2020 (labelled `pitch`
+# 2026-03: pitched internally, no `help wanted`), gated on a caching
+# foundation for API-powered completions. Until that lands, this is local.
+#
+# `number:description` is _describe's pair form -- it splits at the FIRST
+# colon, so only the bare number is inserted while branch/title/author stay in
+# the description column and the fzf-tab preview. PR numbers contain no colon,
+# so the split is unambiguous. (The gh* wrapper completions above use a
+# `number[branch] title` form instead and strip the suffix in _gh_pick_arg;
+# that is not available here, since the real gh consumes the word verbatim.)
+
+# Subcommands whose first positional is [<number> | <url> | <branch>].
+typeset -ga _GH_PR_NUM_SUBS=(
+  view diff checkout checks merge comment edit close reopen ready
+  update-branch lock unlock
+)
+
+# gh flags that consume the FOLLOWING word, which is therefore not a
+# positional. `--flag=value` is self-contained and needs no entry.
+typeset -ga _GH_ARG_TAKING_FLAGS=(-R --repo -q --jq -t --template -b --body -F --body-file)
+
+# True only when the cursor sits at the FIRST positional of `gh pr <sub>`, so
+# `gh pr view 123 <TAB>` and `gh pr list <TAB>` fall through untouched.
+_gh_pr_at_number_arg() {
+  local w i skip=0
+  local -a positional
+  for (( i = 2; i < CURRENT; i++ )); do
+    w=$words[i]
+    if (( skip )); then skip=0; continue; fi
+    if (( ${_GH_ARG_TAKING_FLAGS[(Ie)$w]} )); then skip=1; continue; fi
+    [[ $w == -* ]] && continue
+    positional+=($w)
+  done
+  (( ${#positional} == 2 )) || return 1
+  [[ ${positional[1]} == pr ]] || return 1
+  (( ${_GH_PR_NUM_SUBS[(Ie)${positional[2]}]} ))
+}
+
+# Each TAB at that position costs one `gh pr list` (~0.5-1s), matching the
+# uncached gh* wrapper completions below. Outside a GitHub repo gh fails, the
+# candidate list is empty, and completion falls through to _gh.
+_gh_pr_numbers() {
+  if [[ ${words[CURRENT]} != -* ]] && _gh_pr_at_number_arg; then
+    local -a prs
+    prs=("${(@f)$(command gh pr list --limit 100 --json number,title,headRefName,author --jq '.[] | "\(.number):[\(.headRefName)] \(.title) (\(.author.login))"' 2>/dev/null)}")
+    if (( ${#prs} )); then
+      _describe -t prs 'pull request' prs
+      return
+    fi
+  fi
+  _gh "$@"
+}
+
+compdef _gh_pr_numbers gh
+
 # Custom completion for gh PR merge wrappers (ghsq, ghrb)
 # Lists open PRs with fzf-tab preview of PR details
 _gh_pr_merge_complete() {
