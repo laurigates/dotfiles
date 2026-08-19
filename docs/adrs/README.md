@@ -26,6 +26,7 @@ An ADR is a document that captures an important architectural decision made alon
 | [0014](0014-profile-based-package-registry.md) | Profile-Based Package Registry | Accepted | 2026-04 |
 | [0015](0015-gitleaks-secret-detection.md) | Gitleaks for Secret Detection | Accepted | 2026-04 |
 | [0016](0016-shell-completion-auto-generation.md) | Shell Completion Auto-Generation Pattern | Accepted | 2026-04 |
+| [0017](0017-ci-platform-coverage.md) | CI Platform Coverage — Test macOS and Ubuntu | Accepted | 2026-08 |
 
 ## ADR Format
 
