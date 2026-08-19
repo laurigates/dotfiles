@@ -1,68 +1,35 @@
 name: Claude Code Review
 
+# Thin caller for the org-wide reusable workflow in laurigates/.github.
+# The local copy this replaced predated that repo. It also carried a step that
+# generated an --allowedTools list from .github/claude-tools-config.json
+# (preset: pr_review); that is dropped deliberately — see below.
+
 on:
   pull_request:
     types: [opened, synchronize]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
 
-# Prevent duplicate review runs for the same PR
-concurrency:
-  group: claude-review-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+# Concurrency is declared by the reusable workflow
+# (claude-review-${{ github.event.pull_request.number }}-${{ github.repository }},
+# cancel-in-progress: true), matching what the local copy declared here.
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    uses: laurigates/.github/.github/workflows/reusable-claude-review.yml@main
+    with:
+      claude_args: --model ${{ vars.CLAUDE_MODEL || 'opus' }} --max-turns 50
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-      issues: read
-      id-token: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Generate allowed tools for PR review
-        id: tools-config
-        run: |
-          chmod +x .github/scripts/generate-allowed-tools.sh
-          ALLOWED_TOOLS=$(.github/scripts/generate-allowed-tools.sh .github/claude-tools-config.json pr_review)
-          echo "allowed_tools=$ALLOWED_TOOLS" >> "$GITHUB_OUTPUT"
-
-      - name: Run Claude Code Review
-        id: claude-review
-        uses: anthropics/claude-code-action@v1
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-
-          # Prompt for PR review
-          prompt: |
-            Please review this pull request and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Performance considerations
-            - Security concerns
-            - Test coverage
-
-            Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
-
-            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
-
-          # Claude Code configuration via CLI arguments
-          claude_args: |
-            --model ${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}
-            --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"
+# Why no --allowedTools here
+# -------------------------
+# claude-code-action's configuration docs state: "The base GitHub tools are
+# always included. Use --allowedTools to add additional tools." The flag is
+# ADDITIVE, so the pr_review preset was a grant list, not a sandbox — it added
+# Read/Glob/Grep and a handful of `gh` Bash commands on top of the base set.
+#
+# The reusable workflow's prompt tells Claude to use the built-in Read/Grep/Glob
+# for exploration and not to shell out for it, and it posts the review through
+# the action's own mechanism rather than `Bash(gh pr comment)`. Nothing the
+# preset granted is still needed, so the generation step goes away rather than
+# being reproduced as a literal.
