@@ -52,7 +52,8 @@ Classic trip: `git mv old new`, edit `new`, then `git add new old` → the stale
 
 ## 5. A "vanished" staged file in a shared checkout was probably committed by a coworker
 
-Sibling of the HEAD race in `pr-merge-hazards.md` #3: the **index and HEAD are
+Sibling of the push-by-SHA HEAD race in `git-plugin:git-merge-hazards` (the
+stacked-chain protocol and its three async races): the **index and HEAD are
 process-global**, so a coworker session's commit lands between two of your Bash
 calls with no warning. Observed 2026-07 (dotfiles): a file another session had
 staged (`A `) disappeared from `git status`, then `ls` said it didn't exist,
