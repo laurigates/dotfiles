@@ -27,8 +27,10 @@ FVH daily note stays clean.
 
 # Project naming map
 
-Follow `~/.claude/rules/taskwarrior-tracking.md`. Common projects in
-this user's queue:
+Follow `taskwarrior-plugin:task-add` — it carries the `project:` slug
+conventions and the prefix-match trap (a populated `task project:<slug> list`
+never proves the slug exists; read exact values via `task export | jq`).
+Common projects in this user's queue:
 
 | Context | `project:` |
 |---|---|

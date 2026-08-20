@@ -49,29 +49,47 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 # skill and is a CONSOLIDATE per meta-context-diet; it was being edited by a
 # concurrent session at the time. Ratchet back toward 110,000 once it lands.
 #
-# 2026-08-09 → 120,000. The 2026-07-28 cleanup DID land: multi-model-delegation
-# went 6,607 → 493 bytes (a skill pointer), freeing 6.1 kB. The surface still
-# ended up at 116,268 — over budget — because concurrent additions across
-# tool-use-patterns, communication, pr-merge-hazards, never-fabricate-test-
-# identifiers and shell-pipefail-grep-q outpaced it in the same window. So this
-# bump is NOT "we ran out of room again": it records that a 6 kB consolidation
-# was absorbed inside one cleanup cycle, which means the ratchet-down target of
-# 110,000 was not reachable and pretending otherwise just relocates the hard
-# stop. Headroom kept deliberately small (~2.3 kB after the in-flight work
-# commits) so this stays a cleanup trigger.
+# 2026-08-09 → 120,000. Justified on a PREMISE THAT WAS FALSE, corrected here
+# on 2026-08-19. The comment claimed "the 2026-07-28 cleanup DID land:
+# multi-model-delegation went 6,607 → 493 bytes (a skill pointer), freeing
+# 6.1 kB". It had not: the file was still 6,607 bytes when dotfiles #353 began,
+# so those 6.1 kB were booked as freed while still sitting on the surface. The
+# real reading at that bump was therefore ~6 kB worse than recorded, and the
+# 110,000 ratchet-down target was written off as unreachable on the strength of
+# a consolidation that had not happened. Lesson, and the reason this note stays:
+# a budget bump must cite MEASURED bytes on disk, never a cleanup believed to
+# have landed. The rest of that entry stands — the surface genuinely was at
+# 113,990 of 114,000 (10 bytes free) when a 1,381-byte rule was refused, and at
+# that margin the gate has no signal left: it cannot distinguish "this addition
+# is not worth its bytes" from "nothing fits", and it forces whoever writes the
+# next rule to adjudicate someone else's, mid-task, often against files other
+# sessions have open. See laurigates/claude-plugins#2324 for the proposal to
+# warn at ~95% and print headroom on the passing path.
 #
-# Measured at 113,990 of 114,000 — 10 bytes free — when a 1,381-byte rule was
-# refused. At that margin the gate has no useful signal left: it cannot
-# distinguish "this addition is not worth its bytes" from "nothing fits", and
-# it forces whoever writes the next rule to adjudicate someone else's, mid-task,
-# often against files other sessions have open. See laurigates/claude-plugins#2324
-# for the proposal to warn at ~95% and print headroom on the passing path, which
-# is what would make the next ratchet-down deliberate rather than reactive.
+# 2026-08-19 → 86,000 (RATCHET DOWN, -34,000). laurigates/dotfiles #353 promoted
+# nine always-loaded rules into the claude-plugins marketplace, leaving pointer
+# stubs at the same paths, and split tool-use-patterns.md. multi-model-delegation
+# finally landed too (6,607 → 756). Measured on disk after the promotion:
 #
-# Next cleanup candidates (largest unconditional, none yet triaged):
-#   tool-use-patterns.md ~9.9 kB · pr-merge-hazards.md ~7.6 kB
-#   prefer-diy-over-heavy-dependency.md ~7.1 kB
-TOTAL_BUDGET_BYTES=120000
+#   unconditional_rule_bytes + CLAUDE.md = 80,463   (38 unconditional rules)
+#   path_scoped_bytes                    = 45,435   (not counted; loads on match)
+#
+# That is 35,805 bytes below the 116,268 recorded at the last bump, so 120,000
+# had stopped being a cleanup trigger — it left 39.5 kB of headroom, roughly
+# half the surface itself. New ceiling 86,000 keeps 5,537 bytes (6.4%) free.
+# Deliberately NOT squeezed to the historical ~2 kB margin: #2324's finding is
+# that a razor-thin margin destroys the gate's signal and makes every new rule
+# an adjudication of someone else's. 6.4% is enough for a normal addition and
+# still small enough that a second one triggers a cleanup pass. Ratchet again
+# when the next consolidation lands.
+#
+# Next cleanup candidates (largest unconditional, measured 2026-08-19, none yet
+# triaged). Note prefer-diy-over-heavy-dependency.md (651 B) and
+# pr-merge-hazards.md (2,163 B) have LEFT this list — both are now pointers:
+#   tool-use-patterns.md ~7.7 kB · communication.md ~5.8 kB
+#   offload-to-deterministic-substrate.md ~5.4 kB
+#   diagnose-at-the-failure-point.md ~4.9 kB · git-hazards.md ~4.7 kB
+TOTAL_BUDGET_BYTES=86000
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 
@@ -83,7 +101,10 @@ MARKERS='\.chezmoidata|dot_zshrc|mise run lint|exact_dot_claude/|\.chezmoiignore
 # content). Format: one rule filename per line. Adding to this list is a
 # conscious decision — prefer migrating the rule instead.
 MARKER_ALLOWLIST=(
-    pr-merge-hazards.md            # points at the global justfile recipe source
+    # pr-merge-hazards.md was allowlisted for "points at the global justfile
+    # recipe source"; that `just -g branch-audit` line moved to
+    # git-plugin:git-merge-hazards in dotfiles #353, so the stub trips no
+    # marker and the entry was removed (verified: grep -E "$MARKERS" is empty).
     claude-plugins-freshness.md    # names the overlay file as source of truth
     path-scoped-rules.md           # chezmoi globs as frontmatter *examples*
     zsh-pattern-expansion-extended-glob.md  # names dot_zshrc.tmpl as one scope example

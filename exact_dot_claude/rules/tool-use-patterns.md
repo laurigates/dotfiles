@@ -109,54 +109,18 @@ Pattern: when a batch's siblings depend on existence, do a single
 existence-check call first (`Glob`, `ls -1`), then issue the parallel
 batch over confirmed-present paths.
 
-### Don't launch a large agent fan-out in one burst — serialize or wave it
+### Agent fan-out rate limits and mid-run kills
 
-Spawning many agents simultaneously — a `Workflow` `parallel()`/`pipeline()`
-of N agents, or N `Agent` calls in one message — can trip a **server-side
-burst rate limit** (`API Error: Server is temporarily limiting requests (not
-your usage limit) · Rate limited`), distinct from your usage quota. When it
-fires, the agents die after their retries and `parallel()` returns them as
-`null` — **every agent's startup tokens wasted** (observed: 7 Opus auditors,
-628 k tokens, all killed at 18 s).
+Promoted to a skill: see `agent-patterns-plugin:parallel-agent-dispatch`
+(§ Concurrent Rate-Limit Risk → `references/failure-recovery.md`) before
+fanning out more than ~3 heavy agents, and after any wave dies mid-run — it
+carries the server burst limit vs session usage limit discrimination, safe
+starting concurrency per agent profile, serialize-or-wave mitigation, the
+audit-remote-before-resume protocol (`gh pr list`, `git ls-remote --heads`),
+and why `resumeFromRunId` re-runs already-succeeded worktree agents.
 
-Mitigations, in order of preference:
-
-- **For deterministic / mechanical work** (parsing, counting, audits, link
-  resolution, frontmatter scans), prefer a **single inline pass** — one
-  `python3`/`rg` script — over an agent fan-out. It's cheaper, reproducible,
-  and rate-limit-immune. Reserve agents for genuinely independent
-  *reasoning-heavy* work (judgment, synthesis, review).
-- **When you do fan out, serialize or small-wave it.** Run agents in a
-  `for…await` loop (one at a time) or in waves of 2–3, not all N at once.
-  Sequential execution keeps the request rate low and dodges the burst limit;
-  the wall-clock cost is usually acceptable for non-latency-critical work.
-- **Don't blind-retry the same wide fan-out** after a burst-limit kill — it
-  re-trips. Re-issue serialized, or fall back to the inline pass.
-
-### A usage-limit kill mid-run is recoverable — audit remote, then resume
-
-The **session usage limit** ("You've hit your session limit · resets <time>")
-kills in-flight subagents the same way the burst limit does: each agent dies
-on a terminal API error at whatever stage it had reached — some after pushing
-a branch and opening a PR, some mid-edit, some before starting. A `Workflow`
-run reports them under `failures`; completed siblings' results survive in the
-run's journal.
-
-Recovery protocol (observed 2026-07: a 14-agent PR sweep lost 7 agents to the
-limit and recovered fully):
-
-1. **Wait out the reset** — the limit message names the reset time; nothing
-   recovers before it.
-2. **Audit remote state before resuming** — dead agents may have half-landed
-   their work: `gh pr list --state open` plus `git ls-remote --heads origin`
-   show which branches/PRs already exist. A re-run agent that pushes an
-   already-pushed branch hits a non-fast-forward reject, and one that
-   re-creates an existing PR duplicates it — brief agents to check first, or
-   verify the remote is clean yourself.
-3. **Resume, don't re-dispatch**: `Workflow({scriptPath, resumeFromRunId})`
-   replays completed agents from cache (cache key: unchanged prompt + opts)
-   at zero cost and re-runs only the dead ones. Re-dispatching from scratch
-   re-pays every completed agent's tokens.
+For mechanical work (parsing, counting, audits) prefer one inline `python3`/`rg`
+pass over an agent fan-out — see `offload-to-deterministic-substrate.md`.
 
 ## Grep / rg — `-r` is `--replace`, not a bundled short flag
 
@@ -206,17 +170,11 @@ search.
 
 ## WebFetch — do not retry the same failing URL
 
-| Failure | Try |
-|---|---|
-| 404 on a docs page with `?ref=…` | Strip query string |
-| 404 on a GitHub blob URL | Switch to `raw.githubusercontent.com` URL |
-| 404 on a repo path | `gh api repos/<owner>/<repo>/contents/<path>` |
-| 403 on a public docs page | Try once with a different UA or a search engine |
-| 403 on a GitHub URL | Use `gh api` (authenticated) |
-| Timeout | One retry, then fall back to context7 / WebSearch |
-
-If two attempts both fail, surface the failure in the response — do
-not loop.
+Promoted to a skill: invoke `documentation-plugin:docs-fetch-fallbacks` when a
+WebFetch returns 404, 403, or a timeout — it carries the failure→fallback table
+(strip the query string, `raw.githubusercontent.com`, `gh api
+repos/<o>/<r>/contents/<path>`, alternate UA, context7/WebSearch), the
+two-attempt ceiling, and the rule to surface the failure rather than loop.
 
 ## Bash permission denials are terminal
 
