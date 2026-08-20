@@ -136,15 +136,26 @@ jobs:
           # near this limit is a genuine problem worth its own investigation;
           # note that the benchmarks workflow does NOT cover it, because it
           # times a minimal /tmp/test.zshrc rather than the applied ~/.zshrc.
-          timeout 60s zsh -c "
+          #
+          # `perl -e 'alarm ...; exec @ARGV'` rather than `timeout`: the SIGALRM
+          # timer set by alarm(2) survives the exec, so a hang still dies
+          # non-zero — identical semantics to `timeout 60s`, minus the GNU
+          # coreutils dependency that the macOS job cannot satisfy (#380). Both
+          # jobs use the same mechanism so the guard cannot drift per-platform.
+          #
+          # The `exit 127` tail is NOT optional. perl's exec() returns only on
+          # failure, so without it a missing zsh would fall off the end of the
+          # one-liner and exit 0 — a green smoke test that sourced nothing.
+          # `timeout` reported 127 for that case; this reproduces it.
+          perl -e 'alarm shift; exec @ARGV; warn qq(exec: $!\n); exit 127' 60 zsh -c '
             source ~/.zshrc
-            if [[ -n \"\$ZSH_VERSION\" ]]; then
-              echo \"✅ zsh configuration loaded successfully\"
+            if [[ -n "$ZSH_VERSION" ]]; then
+              echo "✅ zsh configuration loaded successfully"
             else
-              echo \"❌ zsh configuration failed to load\"
+              echo "❌ zsh configuration failed to load"
               exit 1
             fi
-          "
+          '
 
   build-macos:
     name: Build (macOS)
@@ -195,14 +206,17 @@ jobs:
       - name: Test zsh shell initialization
         # Uses the system zsh (/bin/zsh, 5.9) for the reason given above.
         # Same hang-guard rationale as the Ubuntu job — a bound on a config
-        # change that blocks on input, not a performance budget.
+        # change that blocks on input, not a performance budget. `timeout` is
+        # GNU coreutils and is absent from the macOS runner image (as is
+        # `gtimeout`, without `brew install coreutils`), so this uses the same
+        # perl alarm/exec form as the Ubuntu job — see #380.
         run: |
-          timeout 60s /bin/zsh -c "
+          perl -e 'alarm shift; exec @ARGV; warn qq(exec: $!\n); exit 127' 60 /bin/zsh -c '
             source ~/.zshrc
-            if [[ -n \"\$ZSH_VERSION\" ]]; then
-              echo \"✅ zsh \$ZSH_VERSION configuration loaded successfully\"
+            if [[ -n "$ZSH_VERSION" ]]; then
+              echo "✅ zsh $ZSH_VERSION configuration loaded successfully"
             else
-              echo \"❌ zsh configuration failed to load\"
+              echo "❌ zsh configuration failed to load"
               exit 1
             fi
-          "
+          '
