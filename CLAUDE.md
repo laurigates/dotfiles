@@ -75,7 +75,7 @@ pre-commit run gitleaks --all-files      # via pre-commit
 
 ## CI Pipeline
 
-- **smoke.yml** — Multi-platform (Ubuntu/macOS) linting and build
+- **smoke.yml** — Linting on Ubuntu; build + zsh smoke test on Ubuntu and macOS (see [ADR-0017](docs/adrs/0017-ci-platform-coverage.md))
 - **claude.yml** — AI-assisted dev with auto plugin install from [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins)
 
 ## Blueprint Documentation
