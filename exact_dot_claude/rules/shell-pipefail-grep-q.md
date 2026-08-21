@@ -1,3 +1,15 @@
+---
+paths:
+  - "**/*.sh"
+  - "**/*.bash"
+  - "**/*.zsh"
+  - "**/justfile"
+  - "**/Justfile"
+  - "**/*.just"
+  - "**/Makefile"
+  - "**/*.bats"
+---
+
 # `set -o pipefail` + Early-Closing Reader = False Pipeline Failure
 
 **Scope**: writing or reviewing bash/sh that combines `set -o pipefail` (or

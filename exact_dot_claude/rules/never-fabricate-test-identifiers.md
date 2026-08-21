@@ -46,6 +46,33 @@ identifier you *know* exists. Without a control you cannot separate "access
 denied" from "not found" from "wrong shape" — and each implies a completely
 different fix.
 
+## Don't fabricate the *subject* either — extract the code, don't retype it
+
+The same trap one level up. When you build a harness to exercise code that is
+awkward to run directly, **a retyped copy of that code is not that code**. It
+reads as identical in the transcript, and when it misbehaves the failure is
+attributed to the code under test rather than to your transcription.
+
+> Observed 2026-08 (comfyui-nodes): verifying new `just prs` / `just merge`
+> recipes over a 14-repo fleet that happened to have **zero** open PRs. The
+> harness retyped the kind comparison as `[ "$k" = "'release'" ]` — literal
+> quotes, matching nothing — and reported `PLAN=0` for every kind. That is
+> precisely what "no PR qualifies" looks like. Extracting the shipped loop
+> straight out of the justfile with `sed` and re-running produced the correct
+> per-kind plans and skip reasons.
+
+- **Extract the shipped text**, e.g. `sed -n '/start/,/end/p' <file>`, and feed
+  it the inputs. Never hand-paste the logic under test into the harness.
+- **When your own target set is empty, borrow a control set.** A sweep over
+  zero items is green by construction and asserts nothing. Point the extracted
+  code at real objects from elsewhere that cover every branch — for the recipes
+  above, live PRs from other repos spanning release (bot- *and* human-authored)
+  / deps / mine / external, plus draft, `BLOCKED`, `UNSTABLE`, and
+  failing-checks.
+
+An empty run and a broken harness produce the same output. Only the control
+tells them apart.
+
 ## When it bites
 
 - Diagnosing whether an endpoint, credential, or permission works — exactly where a
