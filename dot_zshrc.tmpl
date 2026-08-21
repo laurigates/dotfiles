@@ -654,7 +654,7 @@ ghi() {
   if [[ $# -eq 0 ]]; then
     # No args: interactive fzf selection
     local selection
-    selection=$(gh issue list --json number,title,labels,createdAt \
+    selection=$(gh issue list --limit 100 --json number,title,labels,createdAt \
       --jq 'sort_by(.createdAt) | .[] | [
         "#\(.number)",
         (if (.labels | length) > 0 then (.labels | map(.name) | join(","))[:20] else "-" end),
@@ -698,7 +698,7 @@ ghpc() {
   if [[ $# -eq 0 ]]; then
     # No args: interactive fzf selection
     local selection
-    selection=$(gh pr list --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
+    selection=$(gh pr list --limit 100 --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
       --jq '.[] | [
         "#\(.number)",
         (if .isDraft then "draft" else "ready" end),
