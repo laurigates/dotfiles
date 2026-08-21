@@ -37,6 +37,29 @@ lax languages).
 - **Fix**: hand-resolve to a single combined definition; never trust
   "Automatic merge went well" as a verdict on content.
 
+**The rebase variant: zero conflicts, broken result, no textual overlap.** Same
+law, and easier to miss because a rebase that replays cleanly *feels* verified.
+When `main` gains a file that depends on state your branch **removed**, the two
+never touch the same lines, so there is nothing to conflict on — and the merged
+tree is still broken.
+
+> Observed 2026-08 (`fvh-data-pipe`): a branch removed TimescaleDB by rewriting
+> the three `0001_initial` migrations. Meanwhile `main` gained
+> `measurements/0004`, calling `decompress_chunk()`/`show_chunks()`
+> unconditionally. `git rebase origin/main` reported **success with no
+> conflicts** — different files — and produced a migration tree that cannot
+> apply on the plain PostgreSQL the branch exists to target
+> (`function show_chunks(unknown) does not exist`). Caught by reading `main`'s
+> new commits, not by any gate.
+
+- **Check after any rebase that spans many upstream commits**: list what `main`
+  added while you were away (`git log --oneline --name-only <old-base>..origin/main`)
+  and ask whether any of it depends on something your branch deletes — an
+  extension, a column, a helper, a config key. Then run the suite *on the target
+  environment*, not just the one you develop in.
+- The durable fix is a **CI matrix over both environments**; a hand-run recorded
+  in a PR description is what let the original divergence through.
+
 ## 4. `git add` aborts atomically on a bad pathspec
 
 `git add fileA nonexistent` stages **nothing** — not "fileA plus a warning".

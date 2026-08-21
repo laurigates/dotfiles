@@ -91,83 +91,6 @@ Re-trigger triggers:
 Do not retry the Edit blindly — issue a fresh Read first, then re-craft
 the Edit against the new line numbers.
 
-## Parallel tool calls
-
-### Do not parallel-batch a tool whose siblings can exit non-zero
-
-When one call in a parallel batch exits non-zero, **every sibling is
-marked cancelled** and wasted. Specific offenders to avoid in a batch:
-
-- `task <filter> list` — exits 1 on empty result; use
-  `task <filter> export | jq '.[]'` (always exit-0) instead.
-- `tar -xzf <archive>` — fails on missing archive; verify path first.
-- `ls <glob>` — fails on no-match; verify or use Glob.
-- `jq` on possibly-empty pipelines.
-- `Read` on a possibly-missing path (see above).
-
-Pattern: when a batch's siblings depend on existence, do a single
-existence-check call first (`Glob`, `ls -1`), then issue the parallel
-batch over confirmed-present paths.
-
-### Agent fan-out rate limits and mid-run kills
-
-Promoted to a skill: see `agent-patterns-plugin:parallel-agent-dispatch`
-(§ Concurrent Rate-Limit Risk → `references/failure-recovery.md`) before
-fanning out more than ~3 heavy agents, and after any wave dies mid-run — it
-carries the server burst limit vs session usage limit discrimination, safe
-starting concurrency per agent profile, serialize-or-wave mitigation, the
-audit-remote-before-resume protocol (`gh pr list`, `git ls-remote --heads`),
-and why `resumeFromRunId` re-runs already-succeeded worktree agents.
-
-For mechanical work (parsing, counting, audits) prefer one inline `python3`/`rg`
-pass over an agent fan-out — see `offload-to-deterministic-substrate.md`.
-
-## Grep / rg — `-r` is `--replace`, not a bundled short flag
-
-`rg`'s `-r` takes an argument: it **rewrites every match in the output**. Bundling
-it into a short-flag cluster silently consumes the next letter as the replacement
-string, so the tool prints *fabricated* lines that look like real file contents.
-
-```
-# Wrong — reads as "recursive + line numbers"; actually means --replace=n
-rg -rn "yolo" .
-./conf/cli_clients/gemini.json:    "--n"      ← the file says "--yolo"; rg rewrote it
-
-# Right
-rg -n "yolo" .
-./conf/cli_clients/gemini.json:    "--yolo"
-```
-
-The failure is **silent and confident**: no error, no warning, and the output is
-well-formed — it just doesn't match the file on disk. Observed 2026-07 building a
-false picture of a config file that was then nearly acted on; caught only because
-the doctored line contradicted an earlier direct `Read` of the same file.
-
-- **`rg` is recursive by default** — there is no `-r` to add. The instinct is
-  imported from `grep -r`, and that's the trap.
-- **Never bundle `-r` into a cluster.** If an `rg` result contradicts something you
-  read directly, suspect the flags before you suspect the file.
-- **Prefer the Grep tool** over `rg` in Bash: it has no `--replace` surface, so
-  this class of error cannot occur.
-
-## A rejected flag looks exactly like "no results"
-
-Any `cmd … | jq/grep` whose **non-zero exit** yields empty stdout masquerades as
-a legitimate empty result. Worst case is a **dedup step**: you conclude nobody
-reported the bug and file a duplicate.
-
-Live instance: `gh search issues --state all` is invalid (that flag takes only
-`{open|closed}`; `all` belongs to `gh issue list`). It prints usage to stderr,
-so a `--jq` pipeline emits nothing — six consecutive false "no duplicate"
-verdicts. Use `gh api --paginate "repos/O/R/issues?state=all"` + `grep` instead
-(it returns PRs too; discriminate on `.pull_request`).
-
-**Control-test every negative that gates an action.** Re-run the same command
-shape against a term you know is present; if the control also returns nothing,
-the tool is broken, not the result empty. One control run caught all six above.
-This is `never-fabricate-test-identifiers.md`'s known-good control, applied to
-search.
-
 ## WebFetch — do not retry the same failing URL
 
 Promoted to a skill: invoke `documentation-plugin:docs-fetch-fallbacks` when a
@@ -191,3 +114,27 @@ denied again. Either:
 
 See `handling-blocked-hooks.md` (in claude-plugins) for the user-handoff
 template.
+
+
+## Results that lie — promoted to a skill
+
+Promoted to a skill: invoke `agent-patterns-plugin:tool-result-traps` when an
+empty or negative tool result is about to gate an action or be reported as
+done — a dedup that concludes nobody filed it, a sweep declared complete, a
+verification that reports nothing was lost. It carries the `rg -r` silent
+rewrite (`-r` is `--replace`, not a bundled short flag), `git grep -E`
+dropping `\b` so the pattern matches nothing, a rejected flag looking exactly
+like "no results" (and its worse variants on a *write* and on an *accepted*
+flag that takes your stdin marker literally), the worktree-shell `cd` wedge
+and the vacuous path-scoped verification that shares its cause, `Workflow`
+`args` arriving JSON-encoded, and the parallel-batch rule for tools whose
+siblings can exit non-zero.
+
+One line of it stays inline, because it applies to every negative above and
+there is no earlier moment to invoke a skill: **control-test any negative that
+gates an action** — re-run the same command shape against a term you know is
+present. If the control is also empty, the tool is broken, not the tree clean.
+
+For mechanical work (parsing, counting, audits) prefer one inline
+`python3`/`rg` pass over an agent fan-out — see
+`offload-to-deterministic-substrate.md`.
