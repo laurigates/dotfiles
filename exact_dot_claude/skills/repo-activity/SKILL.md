@@ -13,8 +13,21 @@ Scan all repositories in ~/repos/ and report recent activity.
 ### 1. Find All Git Repositories
 
 ```bash
-fd -t d -H '^\.git$' ~/repos --max-depth 3 -x dirname {} | sort -u
+fd -t d -H -I '^\.git$' ~/repos --max-depth 4 -x dirname {} | sort -u
 ```
+
+Both flags are load-bearing, and omitting either fails **silently** — you get a
+short repo list that reads as a quiet portfolio rather than a broken scan:
+
+- `-I` (`--no-ignore`): `~/repos` is itself a git repo whose `.gitignore` is
+  default-deny (`/*`, allowlisting only the portfolio config). Without `-I`,
+  `fd` honors it and finds **1** repo instead of 124.
+- `--max-depth 4`: nested packs live one level deeper than the
+  `owner/repo` layout — `laurigates/comfyui-nodes/comfyui-touch-resize`,
+  `ForumViriumHelsinki/simpl-open/user-manual`. Depth 3 finds 98, depth 4 finds 124.
+
+Sanity-check the count before reporting: fewer than ~50 repos means the scan is
+broken, not that the portfolio is small.
 
 ### 2. Get Activity for Each Repo
 
