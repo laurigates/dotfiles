@@ -19,7 +19,7 @@ justfile *and* the global justfile, so `just <recipe>` (inside this repo) and
 flowchart TD
     subgraph src["chezmoi source: private_dot_config/just/"]
         plugins["plugins.just<br/>group: plugins<br/>(marketplace install/enable/audit)"]
-        claude["claude.just<br/>group: claude<br/>(mcp-*, cclsp, settings-audit)"]
+        claude["claude.just<br/>group: claude<br/>(mcp-*, settings-audit)"]
         git["git.just<br/>group: git<br/>(branch-audit)"]
     end
 
@@ -67,7 +67,7 @@ the imported modules:
 | `maintain` | root | `update`, `bump`, `clean`, `secrets`, `update-claude-completion` |
 | `info` | root | `docs`, `dev`, `edit`, `info`, `doctor` |
 | `plugins` | `plugins.just` | `plugins-install/enable/disable/update/uninstall`, `plugins-audit`, `plugins-setup-repo` |
-| `claude` | `claude.just` | `mcp-*`, `cclsp`, `claude-setup`, `settings-audit` |
+| `claude` | `claude.just` | `mcp-*`, `claude-setup`, `settings-audit` |
 | `git` | `git.just` | `branch-audit` |
 | `nvim` | `nvim.just` | `nvim-plugins-audit` |
 
