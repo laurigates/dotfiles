@@ -8,7 +8,7 @@
 #
 # Source of truth for the recipes lives beside this file:
 #   • plugins.just  — Claude plugin management (plugins-*)
-#   • claude.just   — Claude Code setup (mcp-*, cclsp, claude-setup, settings-audit)
+#   • claude.just   — Claude Code setup (mcp-*, claude-setup, settings-audit)
 #   • git.just      — Git branch hygiene (branch-audit)
 #   • maint.just    — Local machine maintenance (home-audit)
 # Edit those, then `chezmoi apply`. Imports are relative to this file's directory.

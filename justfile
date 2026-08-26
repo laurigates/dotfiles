@@ -12,7 +12,7 @@ set shell := ["bash", "-uc"]
 # the global ~/.user.justfile so `just -g plugins-*` works from any directory.
 import 'private_dot_config/just/plugins.just'
 
-# Claude Code setup recipes (mcp-*, cclsp, claude-setup, settings-audit) — single
+# Claude Code setup recipes (mcp-*, claude-setup, settings-audit) — single
 # source of truth, also imported by ~/.user.justfile so `just -g mcp-*` works
 # from any directory.
 import 'private_dot_config/just/claude.just'

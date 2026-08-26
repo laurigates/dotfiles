@@ -4,7 +4,7 @@
 #   • the dotfiles repo justfile (so `just mcp-*` / `just settings-audit` work here), and
 #   • the global ~/.config/just/justfile (so `just -g mcp-*` works from ANY directory).
 #
-# The mcp-* / cclsp / claude-setup recipes run `claude mcp add-json -s project`
+# The mcp-* / claude-setup recipes run `claude mcp add-json -s project`
 # against the CURRENT repo, so being globally invokable from inside any target
 # repo is exactly what you want. settings-audit sweeps the ~/repos portfolio
 # tree (consistent with plugins-audit in plugins.just, which also hardcodes it).
@@ -42,14 +42,9 @@ mcp-sequential-thinking:
 mcp-chrome-devtools:
     claude mcp add-json -s project chrome-devtools '{"type": "stdio", "command": "bunx", "args": ["chrome-devtools-mcp@latest"], "env": {}}'
 
-# Set up Claude Code Language Server Protocol
+# Add all MCP servers
 [group: "claude"]
-cclsp:
-    bunx cclsp@latest setup
-
-# Add all MCP servers and set up cclsp
-[group: "claude"]
-claude-setup: mcp-sentry mcp-github mcp-context7 mcp-playwright mcp-sequential-thinking mcp-chrome-devtools cclsp
+claude-setup: mcp-sentry mcp-github mcp-context7 mcp-playwright mcp-sequential-thinking mcp-chrome-devtools
 
 # Audit Claude Code settings files for hygiene issues
 [group: "claude"]
