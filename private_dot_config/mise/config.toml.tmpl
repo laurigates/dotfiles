@@ -26,7 +26,10 @@ bun = "latest"
 
 # Systems programming
 go = "1.23"
-rust = "latest"
+# components: mise drives rustup, so rust-analyzer is a rustup component, not a
+# separate tool. Declaring it here reinstalls it whenever "latest" moves to a new
+# toolchain; `rustup component add` only covers the toolchain current at the time.
+rust = { version = "latest", components = "rust-analyzer" }
 
 # ============================================================================
 # Python Tools (via pipx backend, routed through uvx)
