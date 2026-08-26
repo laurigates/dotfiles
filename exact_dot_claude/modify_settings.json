@@ -217,6 +217,11 @@ read -r -d '' overlay <<'OVERLAY' || true
             "type": "command",
             "command": "bash ~/.claude/hooks/claude-plugins-refresh.sh",
             "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/lsp-manifest-heal.sh",
+            "timeout": 10
           }
         ]
       }
@@ -290,8 +295,8 @@ read -r -d '' overlay <<'OVERLAY' || true
     "prose-plugin@laurigates-claude-plugins": true,
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "rust-analyzer-lsp@claude-plugins-official": false,
-    "gopls-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": false,
     "swift-lsp@claude-plugins-official": false,
     "clangd-lsp@claude-plugins-official": false,
     "codebase-attributes-plugin@laurigates-claude-plugins": false,
