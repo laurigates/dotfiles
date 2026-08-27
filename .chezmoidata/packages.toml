@@ -44,6 +44,7 @@
     { name = "fswatch",         pkg = "fswatch",         desc = "File change monitor" },
     { name = "git-filter-repo", pkg = "git-filter-repo", desc = "Git history rewriter" },
     { name = "groff",           pkg = "groff",           desc = "Document formatting" },
+    { name = "harper",          pkg = "harper",          desc = "Grammar and style checker (harper-cli, harper-ls)" },
     { name = "helm-docs",       pkg = "norwoodj/tap/helm-docs", desc = "Helm chart documentation" },
     { name = "help2man",        pkg = "help2man",        desc = "Man page generator" },
     { name = "httpie",          pkg = "httpie",          desc = "HTTP client for humans" },
