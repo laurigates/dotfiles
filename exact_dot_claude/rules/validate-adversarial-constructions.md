@@ -92,6 +92,47 @@ the bypass introduced a *different* failure which the test caught by accident.
 - **A pass during a teeth-check is a finding, not a relief.** Diagnose it
   before touching the test.
 
+## A comparison harness pinned to a moving baseline stops discriminating
+
+A before/after harness — `git show <ref>:<file>` and diff, golden-vs-production,
+"compare against last release" — is only an oracle while its baseline is
+**different from the thing under test**. Point it at a moving reference and it
+converges on the subject, then reports PASS having compared nothing. Two failure
+modes, with opposite symptoms:
+
+| | What happens | What it reports |
+|---|---|---|
+| **Baseline becomes identical** | the ref advances to include the change | PASS, comparing nothing |
+| **Baseline cannot run** | the old file needs something the ref lacks | a *content difference* |
+
+> Observed 2026-08 (claude-plugins #2536): an acceptance gate proving a
+> refactor's output was byte-identical defaulted to `BASE_REF=origin/main`. The
+> moment the PR merged, baseline and subject were the same bytes and every
+> re-run reported `PASSED=7 STATUS=OK` having compared a file with itself. Its
+> header anticipated the ref *ageing out of the clone*; identity arrives first,
+> on merge, and silently. The same harness extracted only the analyzer and not
+> the module it now imported, so the baseline died with `ModuleNotFoundError`
+> — exit 1, which is also the analyzer's normal "found warnings" code — and the
+> harness attributed the empty output to the change, printing the whole report
+> as newly added.
+
+Both are cheap to close, and neither is caught by running the harness today:
+
+- **Assert the baseline differs from the subject**, and treat identity as a
+  harness error rather than a pass. `cmp -s "$BEFORE" "$AFTER" && harness_fail`.
+- **Assert the baseline actually ran.** Non-empty stderr, or empty stdout from a
+  command that prints unconditionally, is a *dead oracle* — never a content
+  difference. Give it a third outcome and its own exit code, so "the baseline
+  produced nothing" cannot be read as "the output changed".
+- **Name the states the harness can be in**, in its own header: older-with-an-
+  intentional-change FAILs and that is correct; identical is a harness error;
+  only a genuinely comparable ref can pass.
+
+This applies to any harness whose reference point can advance or disappear
+without the harness noticing: a `git show <ref>` diff, a golden file regenerated
+from the current build, a drift check against `main`, a snapshot compared to
+production.
+
 ## Related
 
 - `offload-to-deterministic-substrate.md` — the parent law: the simulation is
