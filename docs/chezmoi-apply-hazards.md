@@ -185,4 +185,3 @@ Prefer `chezmoi diff` over a reflexive `--force` precisely so that direct
 edits to target files aren't clobbered. `--force` is the last step after the
 diff confirms there's nothing worth keeping — never the first reaction to a
 partial apply.
-
