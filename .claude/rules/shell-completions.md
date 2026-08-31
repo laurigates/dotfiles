@@ -1,3 +1,14 @@
+---
+created: 2026-07-19
+modified: 2026-08-31
+reviewed: 2026-08-31
+paths:
+  - ".chezmoidata/completions.toml"
+  - "run_onchange_02-generate-completions.sh.tmpl"
+  - "run_onchange_update-claude-completion.sh.tmpl"
+  - "dot_zshrc.tmpl"
+  - "dot_zfunc/**"
+---
 # Shell Completions Management
 
 ## Overview

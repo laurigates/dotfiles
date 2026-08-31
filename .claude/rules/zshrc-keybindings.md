@@ -1,3 +1,15 @@
+---
+created: 2026-07-19
+modified: 2026-08-31
+reviewed: 2026-08-31
+paths:
+  - "dot_zshrc.tmpl"
+  - "dot_zshenv.tmpl"
+  - "dot_zprofile"
+  - "aliases.zsh"
+  - "dot_zfunc/**"
+  - "**/*.zsh"
+---
 # zshrc Keybindings + zsh-vi-mode
 
 **Scope**: applies when editing `dot_zshrc.tmpl` (chezmoi source) or

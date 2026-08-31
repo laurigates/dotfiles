@@ -1,3 +1,17 @@
+---
+created: 2026-07-19
+modified: 2026-08-31
+reviewed: 2026-08-31
+paths:
+  - ".chezmoidata/packages.toml"
+  - ".chezmoidata/profiles.toml"
+  - ".chezmoidata/uv_tools.toml"
+  - ".chezmoidata.toml"
+  - "Brewfile"
+  - "run_onchange_01-update-packages.sh.tmpl"
+  - "run_onchange_03-install-packages.sh.tmpl"
+  - "**/.mcp.json"
+---
 # Package & MCP Server Registries
 
 Repo-specific registries backing package and MCP server management.
