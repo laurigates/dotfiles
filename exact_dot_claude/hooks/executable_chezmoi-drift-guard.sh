@@ -31,13 +31,16 @@ cmd=$(jq -r '.tool_input.command // empty' <<<"$input" 2>/dev/null || echo "")
 [ -z "$cmd" ] && exit 0
 
 # Only inspect actual `chezmoi ... apply` invocations: `chezmoi` must start a
-# command (line start, after ;|&&, or inside $( )) and `apply` must follow
-# within the same segment. A bare substring match also fires on commit
-# messages / PR bodies that merely MENTION "chezmoi apply" (observed 2026-07:
-# git commit and gh pr edit calls triggered the guard via their heredoc
-# text). Backtick is deliberately NOT an anchor — markdown inline code in
-# message bodies (`chezmoi status` ... apply) would false-positive.
-printf '%s\n' "$cmd" | grep -qE '(^|[;&|]|[$][(])[[:space:]]*(command[[:space:]]+)?chezmoi[[:space:]][^;&|]*\bapply\b' || exit 0
+# command (line start, after ;|&&, inside $( ), or after a shell-wrapper
+# prefix — `bash -c "..."`, `sh -c '...'`, `eval "..."` — itself sitting at a
+# command position) and `apply` must follow within the same segment. A bare
+# substring match also fires on commit messages / PR bodies that merely
+# MENTION "chezmoi apply" (observed 2026-07: git commit and gh pr edit calls
+# triggered the guard via their heredoc text). Backtick is deliberately NOT
+# an anchor — markdown inline code in message bodies (`chezmoi status` ...
+# apply) would false-positive. A wrapper quoted inside a commit message or PR
+# body does not itself sit at a command position, so it stays exempt.
+printf '%s\n' "$cmd" | grep -qE '(^|[;&|]|[$][(]|(^|[;&|(])[[:space:]]*(bash|sh|zsh|eval)[[:space:]]+(-[a-zA-Z]+[[:space:]]+)*["'"'"'])[[:space:]]*(command[[:space:]]+)?chezmoi[[:space:]][^;&|]*\bapply\b' || exit 0
 
 # Dry runs and verbose previews write nothing — no drift to lose.
 case "$cmd" in

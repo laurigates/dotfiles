@@ -21,6 +21,12 @@ Work-orders are **minimal-context task packages** that enable clean subagent del
 ## Objective
 [One sentence describing what needs to be accomplished]
 
+### Source requirement (verbatim)
+> [Paste, unedited, the text this work-order was derived from — the PRD/PRP section, the issue body, or the user's own words. The subagent reads the Objective as the orchestrator's interpretation and this quote as ground truth; if they disagree, the quote wins and the disagreement is reported back rather than resolved silently.]
+
+### Out of scope
+[What this work-order deliberately does not cover — so the subagent reports adjacent findings as follow-ups instead of doing them]
+
 ## Context
 
 ### Required Files
@@ -138,6 +144,8 @@ describe('[Feature/Function]', () => {
 - [ ] [Performance/security/quality baseline met]
 - [ ] Code follows project patterns (see `.claude/skills/`)
 - [ ] No regressions (all existing tests still pass)
+- [ ] Completion report lists each Validation Gate with the exact command run and its output/exit code — a gate that was not run is reported as `not run`, never as passed
+- [ ] Pre-existing bugs or scope beyond this work-order are reported as follow-ups, not fixed here
 
 ## Validation Gates
 [Executable commands to verify implementation quality]

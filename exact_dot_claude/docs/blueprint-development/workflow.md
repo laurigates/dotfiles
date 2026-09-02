@@ -552,11 +552,13 @@ describe('generateRefreshToken', () => {
 
 Hand the work-order to a subagent:
 ```bash
-# Option 1: Use Task tool with isolated context
-<execute work-order 003 with general-purpose subagent>
+# Option 1: hand the work-order to an Agent (formerly the Task tool). Since Claude Code 2.1.232
+#   non-teammate spawns run in the background by default — the spawn returns immediately and
+#   the result is delivered to you later; pass run_in_background: false only if you must block on it.
+#   Agent(subagent_type: "general-purpose", prompt: "Execute .claude/blueprints/work-orders/003-*.md ...")
 
-# Option 2: Use specialized subagent
-<execute work-order 003 with code-refactoring subagent>
+# Option 2: a specialised agent, same shape
+#   Agent(subagent_type: "code-refactoring", prompt: "Execute .claude/blueprints/work-orders/003-*.md ...")
 ```
 
 **Benefits of work-orders:**

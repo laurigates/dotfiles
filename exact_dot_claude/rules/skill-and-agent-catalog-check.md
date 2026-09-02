@@ -28,8 +28,11 @@ invoking a matched skill. This rule is about remembering to look.
 
 ## 2. Cross-reference the catalog when planning, and brief subagents explicitly
 
-When breaking work into phases — a `TodoWrite`/`TaskCreate` list, or an
-`ExitPlanMode` plan — walk the phase list against the skill/agent catalog
+When breaking work into phases — a phase list in the response, an
+`ExitPlanMode` plan, or a `TodoWrite`/`TaskCreate` list where the task tools
+are enabled (off by default on Opus 4.8+/Sonnet 5/Fable since 2.1.233;
+`CLAUDE_CODE_ENABLE_TODO_TOOLS=1` restores them) — walk the phase list
+against the skill/agent catalog
 and annotate each phase with the matching skill(s)/agent(s) by name, or
 note explicitly that none apply. This turns "check the catalog" from a
 vague intention into a concrete line in the plan artifact itself.

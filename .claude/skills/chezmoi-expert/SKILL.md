@@ -1,7 +1,7 @@
 ---
 created: 2025-12-16
-modified: 2025-12-16
-reviewed: 2025-12-16
+modified: 2026-09-02
+reviewed: 2026-09-02
 name: chezmoi-expert
 description: |
   Comprehensive chezmoi dotfiles management expertise including templates, cross-platform
@@ -23,13 +23,15 @@ Expert knowledge for managing dotfiles with chezmoi, including templates, cross-
 - **Template System**: Go templates with `.chezmoi.*` variables for platform-specific configs
 - **Cross-Platform Support**: Conditional logic for macOS/Linux differences
 
-## Critical Workflow
+## Apply workflow
 
-**ALWAYS follow this workflow:**
-1. `chezmoi diff` - Preview changes before applying
-2. `chezmoi apply --dry-run` - Safe testing
-3. `chezmoi apply -v <path>` - Apply specific paths first
-4. Let user review before full `chezmoi apply`
+`chezmoi apply` renders source over target, so it overwrites target-side edits and, inside an `exact_` directory, deletes unmanaged entries. Preview before applying:
+
+1. `chezmoi status <tree>` — which files are out of sync (`M`) or would be deleted (`D`); a path-scoped diff does not show the `D` lines
+2. `chezmoi diff <tree>` — what would be overwritten
+3. `chezmoi apply -v <path>` — apply the reviewed path, then let the user review before a full `chezmoi apply`
+
+Hazards, `--force` semantics, and recovery: `.claude/rules/chezmoi-apply-hazards.md`.
 
 ## Finding the Source File — Don't Translate Prefixes by Hand
 
@@ -128,9 +130,11 @@ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
 ### Changes Not Applying
 ```bash
-chezmoi managed | grep filename  # Check if managed
-chezmoi apply --force ~/.config/file  # Force apply
+chezmoi managed | grep filename   # Check if managed
+chezmoi status ~/.config/file     # M = target edited since last apply; chezmoi skipped it to protect that edit
+chezmoi diff ~/.config/file       # what --force would discard — only force after reviewing this
 ```
+See `.claude/rules/chezmoi-apply-hazards.md` before `chezmoi apply --force`.
 
 ### Template Errors
 ```bash

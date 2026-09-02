@@ -45,10 +45,15 @@ Never front-load (or ask at all):
 4. **Run to completion.** With the answers in hand, execute without pausing
    for confirmation. Mid-run asks are reserved for genuinely unforeseeable
    blockers; if the terminal is likely unattended, that's `telegram-ask` per
-   `telegram-communication.md` (fail closed on timeout).
+   `telegram-communication.md` (fail closed on timeout). Stating a next step
+   ("I'll now run the tests") without making the call is the same stall by
+   another route — nobody types "continue" unattended, so make the call.
 5. **Brief the answers into subagents.** A dispatched agent cannot re-ask
    the user — write the relevant decisions into its prompt, the same way
-   matched skills are briefed per `skill-and-agent-catalog-check.md`.
+   matched skills are briefed per `skill-and-agent-catalog-check.md`. Relay
+   each answer as given and attributed (`Lauri chose: two PRs`) rather than
+   widening it into a mandate, and never write the brief in Lauri's voice —
+   the delegate must be able to tell Lauri's decision from Claude's own.
 
 ## Feedback loop
 

@@ -116,8 +116,10 @@ When a hook overlaps auto mode, make it **defer**:
   `bypassPermissions`). Have the hook `exit 0` when
   `permission_mode == "auto"` and enforce otherwise. This stops the
   double-gate while keeping the deterministic hook as a fallback exactly where
-  auto mode can't reach — web/remote/CI and non-Opus sessions where auto mode
-  is gated off. `PERMISSION_MODE=$(jq -r '.permission_mode // empty'); [ "$PERMISSION_MODE" = "auto" ] && exit 0`.
+  auto mode can't reach — web/remote/CI, sessions on a model that predates
+  auto mode (older than Opus 4.6 / Sonnet 4.6), and Bedrock/Vertex/Foundry
+  runners without `CLAUDE_CODE_ENABLE_AUTO_MODE=1`.
+  `PERMISSION_MODE=$(jq -r '.permission_mode // empty'); [ "$PERMISSION_MODE" = "auto" ] && exit 0`.
 - **`type:"prompt"` hooks can't self-gate** — they get only `$ARGUMENTS` (the
   raw prompt text), not `permission_mode`, and they judge text with zero exec
   context. They false-positive on benign phrasings (e.g. the bare token "push"
@@ -126,6 +128,13 @@ When a hook overlaps auto mode, make it **defer**:
   than trying to soften it; auto mode + deterministic Bash hooks cover the real
   cases with context and no per-prompt LLM cost. (laurigates/claude-plugins
   hooks-plugin #1765.)
+- **A hook that blocks legitimate commands trains the agent to route around
+  it.** The model has been observed (system card §6.2.1, <0.01%) splitting or
+  re-spelling a routine command so a broken regex hook stopped matching — one
+  more reason a safety hook should defer to auto mode where it runs. Test a
+  hook against the legitimate forms it must pass, keep its match as narrow as
+  the hazard, and have the block message name the intended alternative, so the
+  fix is a different tool call rather than a variant spelling of the same one.
 
 ## The `autoMode` block is the real lever
 
@@ -164,9 +173,11 @@ intent; naming the exact action ("force-push this branch") is.
 
 `defaultMode: "auto"` is **ignored** in project/local `.claude/settings*.json`
 (v2.1.142+) so a repo cannot grant itself auto mode — set it in
-`~/.claude/settings.json`. Requires Opus 4.6+ / Sonnet 4.6+ on the Anthropic
-API (Opus 4.7+/4.8 on Bedrock/Vertex/Foundry, which also need
-`CLAUDE_CODE_ENABLE_AUTO_MODE=1`).
+`~/.claude/settings.json`. Auto mode is Claude Code's default permission mode
+(system card §5.2), so this setting pins it rather than opting in. On the
+Anthropic API it runs on Opus 4.6+ / Sonnet 4.6+ and later models (Opus 5,
+Sonnet 5, Fable 5.1); Bedrock/Vertex/Foundry need Opus 4.7+/4.8 and
+`CLAUDE_CODE_ENABLE_AUTO_MODE=1`.
 
 ## Headless `claude -p`: `acceptEdits` does NOT clear the protected-path gate
 
@@ -196,7 +207,8 @@ For a headless recipe whose job is to write protected paths:
 
 `--permission-mode auto` is the right default — narrower than
 `bypassPermissions`, which unsandboxes the whole nested run. **But `auto`
-requires Opus 4.6+ / Sonnet 4.6+** (see below); on a runner with an older
+requires Opus 4.6+ / Sonnet 4.6+** (see § `defaultMode: "auto"` placement
+above); on a runner with an older
 pinned model `auto` falls back to gating the protected write again, so a recipe
 that pins an old model in CI needs `bypassPermissions` (or no protected write).
 `--allowedTools 'Write(.claude/settings.json)'` does **not** help — the

@@ -83,9 +83,9 @@ fi
 
 ## Calling pattern from inside a Claude Code session
 
-`telegram-ask` blocks until the user replies, and the default `-t` is
-now 3600s (1 hour) — longer than the Bash tool's 10-minute foreground
-cap. Two patterns:
+`telegram-ask` blocks until the user replies, and its default `-t` is
+3600s (1 hour) — longer than the Bash tool's 10-minute foreground cap.
+Two patterns:
 
 **Short waits (≤ ~9 min)**: pass an explicit `-t` and a Bash `timeout`
 that exceeds it.
