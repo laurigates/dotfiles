@@ -28,7 +28,16 @@ cmd=$(jq -r '.tool_input.command // empty' <<<"$input" 2>/dev/null || echo "")
 # never wrapped in quotes. Then require `chezmoi` at a command position with
 # `apply` as its own following token, so prose like "run chezmoi apply, then…"
 # (trailing punctuation, no shell boundary) is ignored too.
-code=$(sed -e "s/'[^']*'//g" -e 's/"[^"]*"//g' <<<"$cmd")
+#
+# EXCEPTION: a shell-wrapper invocation (`bash -c "..."`, `sh -c '...'`,
+# `eval "..."`) at a command position, whose quoted argument is itself a
+# `chezmoi ... apply` invocation, is real executable content — not prose —
+# so it must not be discarded by the quote-strip below.
+if printf '%s\n' "$cmd" | grep -Eq '(^|[;&|(])[[:space:]]*(command[[:space:]]+)?(bash|sh|zsh|eval)([[:space:]]+-[a-zA-Z]+)*[[:space:]]+["'"'"'][[:space:]]*(command[[:space:]]+)?chezmoi[[:space:]][^;&|"'"'"']*\bapply\b'; then
+    code="chezmoi apply"
+else
+    code=$(sed -e "s/'[^']*'//g" -e 's/"[^"]*"//g' <<<"$cmd")
+fi
 grep -Eq '(^|[[:space:];&|(])chezmoi[[:space:]]([^|;&]*[[:space:]])?apply([[:space:]]|[;&|)]|$)' <<<"$code" || exit 0
 
 # Dry runs and verbose previews are safe
@@ -44,14 +53,16 @@ deletions=$(chezmoi status 2>/dev/null | awk '$1 == "D" || substr($0,2,1) == "D"
 [ -z "$deletions" ] && exit 0
 
 # If the apply is path-scoped, only block when a pending deletion falls
-# under one of the given paths. Extract non-flag args after `apply`.
-scoped_paths=$(awk '{
+# under one of the given paths. Extract non-flag args after `apply`. Quote
+# characters are stripped first so a wrapped invocation's arguments
+# (`bash -c "chezmoi apply --force ~/.claude"`) resolve to real paths too.
+scoped_paths=$(printf '%s\n' "$cmd" | tr -d "\"'" | awk '{
     seen=0
     for (i=1; i<=NF; i++) {
         if ($i == "apply") { seen=1; continue }
         if (seen && $i !~ /^-/) print $i
     }
-}' <<<"$cmd")
+}')
 
 if [ -n "$scoped_paths" ]; then
     relevant=""

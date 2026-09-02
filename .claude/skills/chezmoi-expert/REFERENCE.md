@@ -356,7 +356,8 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
 1. **File not updating?**
    - Check if managed: `chezmoi managed | grep <file>`
    - Check .chezmoiignore: `grep <file> .chezmoiignore`
-   - Force apply: `chezmoi apply --force <file>`
+   - Check for a protected target edit: `chezmoi status <file>` (`M` = chezmoi skipped it) then `chezmoi diff <file>`
+   - `chezmoi apply --force <file>` only after the diff shows nothing worth keeping — see `.claude/rules/chezmoi-apply-hazards.md`
 
 2. **Template errors?**
    - Test rendering: `chezmoi execute-template < file.tmpl`

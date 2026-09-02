@@ -42,7 +42,7 @@ _claude() {
         '--disable-slash-commands[Disable all skills]' \
         '--disallowedTools[Comma or space-separated list of tool names to deny]:tools:' \
         '--disallowed-tools[Comma or space-separated list of tool names to deny]:tools:' \
-        '--effort[Effort level for the current session]:level:(low medium high)' \
+        '--effort[Effort level for the current session]:level:(low medium high xhigh max)' \
         '--fallback-model[Enable automatic fallback to specified model (only with --print)]:model:_claude_models' \
         '--file[File resources to download at startup (file_id:relative_path)]:specs:' \
         '--fork-session[When resuming, create a new session ID instead of reusing the original]' \
@@ -59,7 +59,7 @@ _claude() {
         '--no-chrome[Disable Claude in Chrome integration]' \
         '--no-session-persistence[Disable session persistence (only with --print)]' \
         '--output-format[Output format (only with --print)]:format:(text json stream-json)' \
-        '--permission-mode[Permission mode to use for the session]:mode:(acceptEdits bypassPermissions default dontAsk plan)' \
+        '--permission-mode[Permission mode to use for the session]:mode:(acceptEdits auto bypassPermissions default dontAsk plan)' \
         '--plugin-dir[Load plugins from directories for this session only]:paths:_files -/' \
         '(-p --print)'{-p,--print}'[Print response and exit (useful for pipes)]' \
         '--replay-user-messages[Re-emit user messages from stdin back on stdout (stream-json only)]' \
@@ -251,15 +251,17 @@ _claude_install() {
 _claude_models() {
     local -a models
     models=(
-        'sonnet:Latest Sonnet model'
-        'opus:Latest Opus model'
-        'haiku:Latest Haiku model'
-        'claude-sonnet-4-6:Claude Sonnet 4.6'
-        'claude-opus-4-6:Claude Opus 4.6'
-        'claude-haiku-4-5-20251001:Claude Haiku 4.5'
-        'claude-sonnet-4-20250514:Claude Sonnet 4'
-        'claude-3-5-sonnet-20241022:Claude 3.5 Sonnet'
-        'claude-3-5-haiku-20241022:Claude 3.5 Haiku'
+        'fable:Latest Fable model (Fable 5.1; not a plan default — select explicitly)'
+        'best:Latest Fable where available, else latest Opus'
+        'opus:Latest Opus model (Opus 5)'
+        'sonnet:Latest Sonnet model (Sonnet 5)'
+        'haiku:Latest Haiku model (Haiku 4.5)'
+        'opusplan:Plan with Opus, execute with the session default model'
+        'default:Default model for the session'
+        'claude-fable-5-1:Claude Fable 5.1'
+        'claude-opus-5:Claude Opus 5'
+        'claude-sonnet-5:Claude Sonnet 5'
+        'claude-haiku-4-5:Claude Haiku 4.5'
     )
     _describe -t models 'claude models' models
 }

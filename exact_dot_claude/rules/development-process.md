@@ -12,6 +12,9 @@
   encode the tiers and commands.
 - **Version control**: commit early and often, conventional commits, pull
   before branching, security checks before staging.
+- **Scope discipline**: change what the task requires, nothing more — no
+  drive-by refactors or "while I'm here" cleanups. Pre-existing bugs you
+  notice go in the report as follow-ups, not into the diff.
 - **Temp outputs**: use the project's `tmp/` (in `.git/info/exclude`) for
   test outputs; stay in the repo root and pass paths as arguments rather than
   `cd`-ing around.

@@ -7,8 +7,9 @@
 # passes through untouched. That is how we pin the keys we care about while
 # letting Claude Code own the volatile ones it constantly rewrites:
 #
-#   - PASSED THROUGH (omitted from overlay): effortLevel, feedbackSurveyState,
-#     and any new key a future Claude Code version introduces.
+#   - PASSED THROUGH (omitted from overlay): effortLevel and
+#     modelSettings.<model-id>.effortLevel (per-model effort, written by /effort),
+#     feedbackSurveyState, and any new key a future Claude Code version introduces.
 #   - PINNED (in overlay): env, permissions, hooks, statusLine, plugins,
 #     marketplaces, and the deliberate mode/feature flags.
 #

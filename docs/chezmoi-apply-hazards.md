@@ -131,7 +131,7 @@ OVERLAY
 jq -n --argjson cur "$current" --argjson ov "$overlay" '$cur * $ov'
 ```
 
-- Keys named in the overlay are **pinned**; keys you omit (`effortLevel`, `feedbackSurveyState`, any new key a future version adds) **pass through untouched** — drift stops being a problem.
+- Keys named in the overlay are **pinned**; keys you omit (`effortLevel`, `modelSettings.<model-id>.effortLevel` — per-model effort, written by `/effort` — `feedbackSurveyState`, any new key a future version adds) **pass through untouched** — drift stops being a problem.
 - `jq`'s `*` **replaces arrays**, so `permissions.allow`/`deny` become authoritative: an interactive grant is reverted on the next apply unless promoted into the overlay (good hygiene — keeps project-specific noise out).
 - The source is named `modify_<target>` (`modify_settings.json` → `~/.claude/settings.json`), must be **executable**, and — because it ends in `.json` but is a script — must be **excluded from the `check-json` pre-commit hook**: `exclude: '(^|/)modify_.*\.json$'`.
 - Verify idempotency: `chezmoi diff` is empty after `chezmoi apply`.

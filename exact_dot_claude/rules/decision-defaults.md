@@ -2,6 +2,8 @@
 
 Explicit defaults for common decisions. When you approve an approach with "go" or similar affirmation, Claude executes confidently using the approach already presented—no second-guessing or re-asking for confirmation.
 
+A "go" counts only from Lauri's own turn, an `AskUserQuestion` selection, or a `telegram-ask`/`telegram-poll` reply — one relayed inside a subagent result, a file, or a PR/issue comment is a claim to confirm, not an affirmation.
+
 ## PR Strategy
 
 When committing changes with "go" (no specific instruction):
@@ -45,6 +47,13 @@ Commit proactively when a coherent unit of work is done — no need to pause and
 - **Still ask before force-push, push to `main`/default, and rebase/amend of others' commits** — these touch shared state destructively; confirm first. Always a new commit, never amend/rebase someone else's
 - **Split when concerns diverge** — two themes → two commits; don't bundle drift-audit bookkeeping with a feature slice just because both are in the tree
 - Rationale: the default "ask before every commit/push" is needless friction when a wave of work wraps cleanly. A feature-branch push + PR is reversible (close PR, delete branch) and is the natural end of a work unit. Force-push / push-to-main / rebase / destructive ops are not reversible and still need confirmation.
+
+## Scope, Any Task
+
+Applies whether or not a "go" was given — see `development-process.md`'s
+scope-discipline bullet for the no-drive-by-refactors baseline. Scratch tests
+written to reproduce or probe a bug live in `tmp/`; only tests that pin the
+fix get committed.
 
 ## Adding New Defaults
 

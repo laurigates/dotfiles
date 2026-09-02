@@ -70,7 +70,7 @@ jobs:
 
             **1. Agent Files (*.md in agents/)**
             - Required frontmatter: `name`, `model`, `color`, `description`, `tools`
-            - Model should be valid Claude model (claude-sonnet-4-6, claude-opus-4-8, etc.)
+            - Model should be a value Claude Code accepts: an alias (`opus`, `sonnet`, `haiku`, `fable`, `inherit`) or a current full ID (e.g. `claude-opus-5`)
             - Description should clearly state use case
             - Tools should follow least-privilege principle
             - Check for deprecated model names
@@ -144,7 +144,7 @@ jobs:
                - List what would be changed
 
           claude_args: |
-            --model ${{ vars.CLAUDE_MODEL_FAST || 'claude-sonnet-4-6' }}
+            --model ${{ vars.CLAUDE_MODEL_FAST || 'sonnet' }}
             --allowedTools "${{ steps.tools-config.outputs.allowed_tools }}"
             --max-turns 50
 

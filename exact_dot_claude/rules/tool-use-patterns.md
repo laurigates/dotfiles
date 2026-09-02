@@ -91,6 +91,12 @@ Re-trigger triggers:
 Do not retry the Edit blindly — issue a fresh Read first, then re-craft
 the Edit against the new line numbers.
 
+### Edit surgically; don't rewrite the file
+
+Prefer `Edit` with the smallest unique `old_string` over `Write`-ing the
+whole file. A rewrite regenerates untouched lines from memory, so content
+silently drifts and the diff is unreviewable. `Write` is for new files.
+
 ## WebFetch — do not retry the same failing URL
 
 Promoted to a skill: invoke `documentation-plugin:docs-fetch-fallbacks` when a

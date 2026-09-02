@@ -10,24 +10,28 @@ fails with `Agent type 'X' not found`. If the expected agent is missing from
 the session's list, fall back to a different agent or direct tool use rather
 than guessing a name.
 
-## Always Use Opus for Subagents and Agent Teams
+## Opus Is the Floor for Subagents and Agent Teams
 
-Every spawned subagent and every member of an agent team **must run on Opus**.
-Opus 4.8 on *low* effort beats Sonnet 4.6 on *high* effort on both quality and
-token efficiency, so a smaller model is never the right call — and because a
-subagent's output feeds back into the main loop as a tool result, a weaker
-delegate quietly degrades everything downstream. "Save tokens with Sonnet" is
-a false economy.
+Every spawned subagent and every member of an agent team runs on Opus or
+better — a delegate's output feeds back into the main loop as a tool result,
+so a weaker model quietly degrades everything downstream. Opus 4.8 at *low*
+effort beat Sonnet 4.6 at *high* effort on both quality and token efficiency
+(aliases now resolve to Opus 5 / Sonnet 5 — re-verify per pair); "save
+tokens with Sonnet" is a false economy.
 
-- **Model**: always `opus`. Never pass `model: "sonnet"` / `"haiku"` to the
-  `Agent` / `Task` tools, to `agent()`/`opts.model` in `Workflow` scripts, or
-  to per-phase `model` overrides. When a teammate or workflow agent would
-  otherwise inherit a non-Opus session model, set `model: "opus"` explicitly.
-- **Effort**: free to dial down. `low` or `medium` is fine — and preferred —
-  for most delegated tasks; reserve `high` for genuinely hard reasoning. The
-  effort knob, not the model knob, is the lever for cost.
-- **Remove Sonnet suggestions on sight** in any agent definition, workflow,
-  skill, or rule.
+- **Model**: `opus` is the floor, never `"sonnet"`/`"haiku"`, for any
+  delegate that edits, verifies facts, or returns analysis the main loop
+  builds on. `fable` is sanctioned for the hardest delegated work
+  (long-horizon, multi-file, adversarial verification); `inherit` is not
+  used for plugin agents (it would inherit a below-floor session model too).
+  When a teammate/workflow agent would otherwise inherit a non-Opus,
+  non-Fable session model, set `model: "opus"` explicitly.
+- **Effort**: the cost lever, not the model — `low`/`medium` for most
+  delegated tasks, `high`+ for genuinely hard reasoning, set via the
+  delegate's `effort:` frontmatter or a per-spawn override where supported.
+- `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` overrides every per-agent `model:`
+  choice, including plugin frontmatter that pins `opus`. Remove stray
+  Sonnet/Haiku suggestions on sight in any agent, workflow, skill, or rule.
 
 ### Sanctioned exception: cold-read gates run on Haiku
 

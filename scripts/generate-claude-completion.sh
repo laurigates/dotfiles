@@ -164,17 +164,22 @@ get_claude_models() {
     # Try to get models from config or use fallback
     if models_output=$(claude config get model 2>/dev/null); then
         # Parse available models if possible
-        echo "sonnet:Latest Sonnet model"
-        echo "opus:Latest Opus model"
-        echo "haiku:Latest Haiku model"
-        echo "claude-sonnet-4-20250514:Claude Sonnet 4"
-        echo "claude-3-5-sonnet-20241022:Claude 3.5 Sonnet"
-        echo "claude-3-5-haiku-20241022:Claude 3.5 Haiku"
-        echo "claude-3-opus-20240229:Claude 3 Opus"
+        echo "fable:Latest Fable model (Fable 5.1)"
+        echo "best:Latest Fable where available, else latest Opus"
+        echo "opus:Latest Opus model (Opus 5)"
+        echo "sonnet:Latest Sonnet model (Sonnet 5)"
+        echo "haiku:Latest Haiku model (Haiku 4.5)"
+        echo "opusplan:Plan with Opus, execute with the session default model"
+        echo "default:Default model for the session"
+        echo "claude-fable-5-1:Claude Fable 5.1"
+        echo "claude-opus-5:Claude Opus 5"
+        echo "claude-sonnet-5:Claude Sonnet 5"
+        echo "claude-haiku-4-5:Claude Haiku 4.5"
     else
-        # Fallback to known models
-        echo "sonnet:Latest Sonnet model"
+        # Fallback to known aliases
+        echo "fable:Latest Fable model"
         echo "opus:Latest Opus model"
+        echo "sonnet:Latest Sonnet model"
         echo "haiku:Latest Haiku model"
     fi
 }
