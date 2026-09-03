@@ -26,47 +26,98 @@ check_claude_cli() {
     log "Found claude CLI: $(claude --version 2>/dev/null | head -1 || echo 'unknown version')"
 }
 
-# Generate the complete zsh completion file using the current working version as a template
-# but with updated help text parsing
+# awk program that turns a `--help` "Commands:" block into TAB-separated
+# `name<TAB>description` records. Handles the three shapes the Claude CLI
+# emits: argument specs after the name (`attach <id>`, `import [options]
+# [source]`), descriptions wrapped across continuation lines, and alias
+# names (`plugin|plugins`) that must become one completion candidate each.
+# shellcheck disable=SC2016  # awk program text; $0/$1 are awk fields, not shell
+readonly AWK_PARSE_COMMANDS='
+function flush(   n, i, parts) {
+    if (cmd == "") return
+    gsub(/[ \t]+/, " ", desc)
+    sub(/^ +/, "", desc)
+    sub(/ +$/, "", desc)
+    n = split(cmd, parts, "|")
+    for (i = 1; i <= n; i++) printf "%s\t%s\n", parts[i], desc
+    cmd = ""
+    desc = ""
+    desccol = 0
+}
+/^Commands:/ && !inblock { inblock = 1; next }
+!inblock { next }
+# Any unindented line starts a new help section and ends the command block.
+/^[^ \t]/ { flush(); inblock = 0; next }
+/^[ \t]*$/ { next }
+{
+    # A command entry is indented exactly two spaces and separates its name
+    # from its description with a run of two or more spaces.
+    if ($0 ~ /^  [A-Za-z0-9]/) {
+        rest = substr($0, 3)
+        if (match(rest, /  +/)) {
+            flush()
+            cmd = substr(rest, 1, RSTART - 1)
+            sub(/ .*$/, "", cmd)          # drop `[options]` / `<id>` arg specs
+            desc = substr(rest, RSTART + RLENGTH)
+            desccol = 2 + RSTART + RLENGTH
+            next
+        }
+        next
+    }
+    # A continuation line is indented at least as far as the description
+    # column, which is what separates wrapped text from embedded examples.
+    if (cmd != "") {
+        match($0, /^ */)
+        if (RLENGTH >= desccol - 1) {
+            line = $0
+            sub(/^ +/, "", line)
+            desc = desc " " line
+        }
+    }
+}
+END { flush() }
+'
+
+# Read a "Commands:" block on stdin and emit zsh `_describe` array entries,
+# quoting each field so apostrophes in descriptions cannot terminate the
+# surrounding zsh single-quoted string.
+parse_commands() {
+    awk "$AWK_PARSE_COMMANDS" | while IFS=$'\t' read -r cmd desc; do
+        printf "        '%s:%s'\n" "${cmd//\'/\'\\\'\'}" "${desc//\'/\'\\\'\'}"
+    done
+}
+
+# Print a subcommand's help, or nothing when the subcommand does not exist.
+# An unknown subcommand makes the Claude CLI fall back to the top-level help,
+# which would otherwise be harvested as if it were the subcommand's own.
+subcommand_help() {
+    local sub="$1" out
+    out=$(claude "$sub" --help 2>/dev/null) || return 0
+    grep -q "^Usage: claude ${sub} " <<<"$out" || return 0
+    printf '%s\n' "$out"
+}
+
+# Generate the complete zsh completion file: a static skeleton with the
+# command lists extracted from the CLI's own `--help` output.
 generate_completion() {
     log "Generating updated Claude CLI completion..."
 
-    # Create directory if needed
     mkdir -p "$(dirname "$COMPLETION_FILE")"
 
-    # Get current help outputs
-    local main_help=$(claude --help 2>/dev/null)
-    local config_help=$(claude config --help 2>/dev/null)
-    local mcp_help=$(claude mcp --help 2>/dev/null)
+    local main_commands config_commands mcp_commands
+    main_commands=$(claude --help 2>/dev/null | parse_commands)
+    config_commands=$(subcommand_help config | parse_commands)
+    mcp_commands=$(subcommand_help mcp | parse_commands)
 
-    # Extract commands from main help
-    local main_commands=$(echo "$main_help" | sed -n '/^Commands:/,/^$/p' | grep -E '^  [a-z]' | sed 's/^  //' | while read -r line; do
-        cmd=$(echo "$line" | awk '{print $1}')
-        desc=$(echo "$line" | cut -d' ' -f2- | sed 's/^ *//')
-        # Clean up descriptions to remove extra formatting
-        desc=$(echo "$desc" | sed 's/\[[^]]*\]//g' | sed 's/  */ /g' | sed 's/^ *//' | sed 's/ *$//')
-        echo "        '$cmd:$desc'"
-    done)
+    [[ -n "$main_commands" ]] || error "No commands found in 'claude --help' output"
+    [[ -n "$mcp_commands" ]] || error "No commands found in 'claude mcp --help' output"
 
-    # Extract config commands
-    local config_commands=$(echo "$config_help" | sed -n '/^Commands:/,/^$/p' | grep -E '^  [a-z]' | sed 's/^  //' | while read -r line; do
-        cmd=$(echo "$line" | awk '{print $1}')
-        desc=$(echo "$line" | cut -d' ' -f2- | sed 's/^ *//')
-        # Clean up descriptions
-        desc=$(echo "$desc" | sed 's/\[[^]]*\]//g' | sed 's/  */ /g' | sed 's/^ *//' | sed 's/ *$//')
-        echo "        '$cmd:$desc'"
-    done)
+    # Build into a temporary file so a failed validation never leaves a
+    # broken completion behind in the source tree.
+    local tmp
+    tmp=$(mktemp "${TMPDIR:-/tmp}"/_claude.XXXXXX)
 
-    # Extract MCP commands
-    local mcp_commands=$(echo "$mcp_help" | sed -n '/^Commands:/,/^$/p' | grep -E '^  [a-z]' | sed 's/^  //' | while read -r line; do
-        cmd=$(echo "$line" | awk '{print $1}')
-        desc=$(echo "$line" | cut -d' ' -f2- | sed 's/^ *//')
-        # Clean up descriptions
-        desc=$(echo "$desc" | sed 's/\[[^]]*\]//g' | sed 's/  */ /g' | sed 's/^ *//' | sed 's/ *$//')
-        echo "        '$cmd:$desc'"
-    done)
-
-cat > "$COMPLETION_FILE" << 'COMPLETION_EOF'
+cat > "$tmp" << 'COMPLETION_EOF'
 #compdef claude
 
 # Zsh completion for Claude Code CLI
@@ -81,10 +132,9 @@ _claude() {
     commands=(
 COMPLETION_EOF
 
-    # Add the dynamically extracted commands
-    echo "$main_commands" >> "$COMPLETION_FILE"
+    printf '%s\n' "$main_commands" >> "$tmp"
 
-cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
+cat >> "$tmp" << 'COMPLETION_EOF'
     )
 
     _arguments -C \
@@ -145,9 +195,17 @@ cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
             ;;
         args)
             case $words[1] in
+COMPLETION_EOF
+
+    if [[ -n "$config_commands" ]]; then
+cat >> "$tmp" << 'COMPLETION_EOF'
                 config)
                     _claude_config
                     ;;
+COMPLETION_EOF
+    fi
+
+cat >> "$tmp" << 'COMPLETION_EOF'
                 mcp)
                     _claude_mcp
                     ;;
@@ -161,16 +219,19 @@ cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
             ;;
     esac
 }
+COMPLETION_EOF
+
+    if [[ -n "$config_commands" ]]; then
+cat >> "$tmp" << 'COMPLETION_EOF'
 
 _claude_config() {
     local -a config_commands
     config_commands=(
 COMPLETION_EOF
 
-    # Add config commands
-    echo "$config_commands" >> "$COMPLETION_FILE"
+    printf '%s\n' "$config_commands" >> "$tmp"
 
-cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
+cat >> "$tmp" << 'COMPLETION_EOF'
     )
 
     _arguments -C \
@@ -215,16 +276,19 @@ cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
             ;;
     esac
 }
+COMPLETION_EOF
+    fi
+
+cat >> "$tmp" << 'COMPLETION_EOF'
 
 _claude_mcp() {
     local -a mcp_commands
     mcp_commands=(
 COMPLETION_EOF
 
-    # Add MCP commands
-    echo "$mcp_commands" >> "$COMPLETION_FILE"
+    printf '%s\n' "$mcp_commands" >> "$tmp"
 
-cat >> "$COMPLETION_FILE" << 'COMPLETION_EOF'
+cat >> "$tmp" << 'COMPLETION_EOF'
     )
 
     _arguments -C \
@@ -316,6 +380,10 @@ _claude_models() {
     _describe -t models 'claude models' models
 }
 
+COMPLETION_EOF
+
+    if [[ -n "$config_commands" ]]; then
+cat >> "$tmp" << 'COMPLETION_EOF'
 # Helper function to complete config keys
 _claude_config_keys() {
     local -a config_keys
@@ -332,6 +400,10 @@ _claude_config_keys() {
     _describe -t config-keys 'config keys' config_keys
 }
 
+COMPLETION_EOF
+    fi
+
+cat >> "$tmp" << 'COMPLETION_EOF'
 # Helper function to complete MCP server names
 _claude_mcp_servers() {
     local -a servers
@@ -359,11 +431,15 @@ _claude_mcp_servers() {
 _claude "$@"
 COMPLETION_EOF
 
-    # Validate the generated completion file
-    if ! zsh -n "$COMPLETION_FILE" 2>/dev/null; then
-        error "Generated completion file has syntax errors"
+    # Validate before publishing, so a syntax error never lands in the source
+    # tree. zsh's own diagnostic is the only thing that names the bad line.
+    # Keep the rejected output outside the chezmoi source tree: any file in
+    # dot_zfunc/ becomes a managed target on the next apply.
+    if ! zsh -n "$tmp"; then
+        error "Generated completion has syntax errors; kept for inspection at $tmp"
     fi
 
+    mv "$tmp" "$COMPLETION_FILE"
     success "Updated Claude CLI completion: $COMPLETION_FILE"
 }
 

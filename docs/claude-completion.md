@@ -12,10 +12,14 @@ The completion system automatically generates zsh completion functions for the C
 - **Location**: `scripts/generate-claude-completion-simple.sh`
 - **Purpose**: Parses `claude --help` and subcommand help outputs to generate zsh completion functions
 - **Features**:
-  - Extracts commands, options, and descriptions automatically
-  - Handles nested subcommands (config, mcp, install)
-  - Provides dynamic completion for models, config keys, and MCP servers
-  - Includes proper argument completion for complex commands
+  - Extracts commands, options, and descriptions automatically, joining
+    descriptions that `--help` wraps across several lines
+  - Handles nested subcommands (`mcp`, `install`, and `config` while the CLI
+    still has it), skipping any subcommand the CLI no longer defines
+  - Emits one candidate per alias, so `plugin|plugins` completes as both
+  - Quotes every extracted description, so an apostrophe in the help text
+    cannot break the generated zsh syntax
+  - Validates with `zsh -n` before replacing the committed completion
 
 ### 2. Chezmoi Integration
 - **Location**: `run_onchange_update-claude-completion.sh`
@@ -62,7 +66,6 @@ source ~/.zfunc/_claude
 
 # Test completion
 claude <TAB>
-claude config <TAB>
 claude mcp <TAB>
 ```
 
@@ -71,20 +74,25 @@ claude mcp <TAB>
 ### 1. Help Text Parsing
 The script runs these commands to gather information:
 - `claude --help` - Main command options and subcommands
-- `claude config --help` - Config subcommand structure
 - `claude mcp --help` - MCP subcommand structure
+- `claude config --help` - Config subcommand structure, **when it exists**. An
+  unknown subcommand makes the CLI print the top-level help instead of failing,
+  so the generator only harvests a subcommand whose usage line names it. As of
+  Claude Code 2.1.259 `config` is gone, and the generated completion omits the
+  `config` branch entirely.
 
 ### 2. Dynamic Completion
 For certain completions, the script attempts to get live data:
 - **Models**: Tries to detect available models, falls back to known ones
-- **Config Keys**: Attempts to list actual config keys via `claude config list`
+- **Config Keys**: Completed from a static list, emitted only when the CLI
+  still has a `config` subcommand
 - **MCP Servers**: Tries to get server list via `claude mcp list`
 
 ### 3. Completion Structure
 The generated completion supports:
 - Main command options (`--model`, `--debug`, etc.)
-- Subcommands (`config`, `mcp`, `install`)
-- Subcommand options (`config set --global`)
+- Subcommands (`mcp`, `install`, and `config` when present)
+- Subcommand options (`mcp add --scope`)
 - Context-aware argument completion
 - Help text for all options and commands
 
@@ -102,6 +110,11 @@ If completion doesn't work:
 2. Run the generator manually to see any error messages
 3. Verify Claude CLI is available: `which claude`
 4. Check the generated completion file for syntax errors: `zsh -n ~/.zfunc/_claude`
+
+If `chezmoi apply` fails with `Generated completion has syntax errors`, the
+generator refused to publish and named a temp file holding the rejected output;
+`zsh -n <that file>` prints the offending line. The committed
+`dot_zfunc/_claude` is left at its last good version.
 
 ### Customization
 To customize the completion:
