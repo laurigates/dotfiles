@@ -15,7 +15,10 @@
       ]
     },
     "pal": {
-      "command": "pal-mcp-server"
+      "command": "uvx",
+      "args": [
+        "pal-mcp-server"
+      ]
     },
     "playwright": {
       "command": "bunx",

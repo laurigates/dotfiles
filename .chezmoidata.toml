@@ -44,8 +44,8 @@
   [mcp_servers.pal]
     enabled = false
     scope = "project"
-    command = "pal-mcp-server"
-    args = []
+    command = "uvx"
+    args = ["pal-mcp-server"]
     description = "PAL (Provider Abstraction Layer) - Multi-provider LLM integration"
     category = "productivity"
 
