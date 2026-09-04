@@ -31,6 +31,23 @@ Why `exec` over `use`:
 Reach for `mise use` only when you genuinely want to *change* the project's or
 shell's default version going forward — not for a one-off run.
 
+## `uvx` Pins Itself to a Stale Build — Request `@latest`
+
+`uvx <pkg>` does **not** consult the index on a normal run, and the cache never
+expires. Two rules hand you an old build: an installed tool wins if
+`uv tool install <pkg>` ever ran, and otherwise the first resolution sticks.
+
+The flags that look like the fix are not — `--refresh`, `--reinstall` and
+`--refresh-package` act on the wheel cache, which is not what selects the
+version. Only `@latest` and `--isolated` re-resolve (uv 0.12.6). To tell the
+two rules apart, point `UV_TOOL_DIR` at an empty dir and re-run: if the version
+jumps, an installed copy was shadowing the index.
+
+**Write `uvx <pkg>@latest` in any config that must track releases**, MCP server
+entries in `.mcp.json` above all: a bare `uvx <pkg>` pins each machine to
+whatever it cached and published fixes never arrive. Pin `<pkg>==1.2.3` instead
+when reproducibility outranks currency.
+
 ## Upgrade Patterns
 
 - Replace deprecated tools promptly — don't maintain compatibility shims
