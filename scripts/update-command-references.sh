@@ -62,7 +62,6 @@ MAPPINGS=(
     "/daily-catchup|/sync:daily"
     "/disseminate|/sync:github-podio"
     "/handoff|/deploy:handoff"
-    "/vectorcode:init|/tools:vectorcode"
 
     # File path references: commands/<path>.md → commands/<namespace>/<new-name>.md
     ".claude/commands/smartcommit.md|.claude/commands/git/commit.md"
@@ -93,7 +92,6 @@ MAPPINGS=(
     ".claude/commands/experimental/devloop.md|.claude/commands/workflow/dev.md"
     ".claude/commands/experimental/devloop-zen.md|.claude/commands/workflow/dev-zen.md"
     ".claude/commands/setup/new-project.md|.claude/commands/project/new.md"
-    ".claude/commands/vectorcode/init.md|.claude/commands/tools/vectorcode.md"
 )
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}"

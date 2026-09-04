@@ -14,7 +14,6 @@ MCP (Model Context Protocol) servers extend Claude Code with specialized capabil
 - `github` - GitHub API integration for issues, PRs, repos
 - `context7` - Documentation lookup and context management
 - `playwright` - Browser automation and testing
-- `vectorcode` - Semantic code search using embeddings
 - `sequential-thinking` - Enhanced reasoning for complex tasks
 
 ### The User-Scoped Problem
@@ -23,7 +22,7 @@ Initially, MCP servers were configured in the user-scoped settings file:
 
 ```
 ~/.claude/settings.json
-  └── mcpServers: { github, playwright, vectorcode, ... }
+  └── mcpServers: { github, playwright, ... }
 ```
 
 **Problems with user-scoped configuration:**
@@ -53,7 +52,6 @@ Analysis revealed distinct server categories:
 | **Version Control** | github | Most projects |
 | **Documentation** | context7 | Research-heavy projects |
 | **Testing** | playwright | Web projects |
-| **Search** | vectorcode | Large codebases |
 | **Infrastructure** | argocd-mcp, sentry | DevOps projects |
 | **Productivity** | podio-mcp | Specific workflows |
 | **AI** | sequential-thinking, pal | Complex reasoning |
@@ -138,7 +136,6 @@ The **mcp-management skill** suggests servers based on project structure:
 |----------------|------------------|
 | `.github/` directory | github |
 | `playwright.config.*` | playwright |
-| Large codebase (>1000 files) | vectorcode |
 | `.argocd/` or ArgoCD refs | argocd-mcp |
 | `sentry.client.config.*` | sentry |
 
@@ -190,7 +187,7 @@ Servers requiring API tokens reference environment variables:
 |--------------|---------------------|
 | **CLI Tool** | github |
 | **Web App** | github, playwright |
-| **Large Monorepo** | github, vectorcode |
+| **Large Monorepo** | github |
 | **DevOps/Infrastructure** | github, argocd-mcp, context7 |
 | **Research/Documentation** | github, context7 |
 | **Complex Reasoning** | sequential-thinking |

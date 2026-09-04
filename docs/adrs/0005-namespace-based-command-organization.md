@@ -131,7 +131,6 @@ Skills work flat because Claude handles discovery. Commands need namespaces beca
 | `project` | Project setup | `new`, `init`, `modernize` |
 | `sync` | Synchronization | `github-podio`, `daily` |
 | `test` | Testing infrastructure | `quick`, `full`, `consult`, `setup` |
-| `tools` | Tool initialization | `vectorcode` |
 | `workflow` | Development automation | `dev`, `dev-zen` |
 | (root) | Cross-cutting concerns | `delegate`, `blueprint-*`, `project-*` |
 

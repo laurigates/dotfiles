@@ -92,9 +92,6 @@ declare -a MIGRATIONS=(
 
     # lint: namespace (already correct)
     "lint/check.md|lint|check.md"
-
-    # tools: namespace
-    "vectorcode/init.md|tools|vectorcode.md"
 )
 
 # Namespace directories to create
