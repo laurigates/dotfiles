@@ -8,6 +8,17 @@
 
 set shell := ["bash", "-uc"]
 
+# Which chezmoi source tree these recipes operate on.
+#
+# chezmoi's sourceDir is PINNED in ~/.config/chezmoi/chezmoi.toml and NOTHING in
+# the environment overrides it — CHEZMOI_SOURCE_DIR and CHEZMOI_SOURCE are both
+# ignored; only the --source flag takes effect. So a bare `chezmoi apply` run
+# from a Claude Code worktree under .claude/worktrees/ silently applies MAIN's
+# content, not the edits you are looking at. `git rev-parse --show-toplevel`
+# resolves to the worktree root inside a worktree and to the checkout root
+# otherwise, so one expression is correct from both.
+chezmoi_src := `git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/.local/share/chezmoi"`
+
 # Claude plugins recipes (plugins-*) — single source of truth, also imported by
 # the global ~/.user.justfile so `just -g plugins-*` works from any directory.
 import 'private_dot_config/just/plugins.just'
@@ -40,7 +51,7 @@ help:
 [group: "chezmoi"]
 apply target="":
     @echo "{{BLUE}}Applying dotfiles configuration...{{NORMAL}}"
-    chezmoi apply {{ if target != "" { target } else { "" } }} -v
+    chezmoi --source "{{ chezmoi_src }}" apply {{ if target != "" { target } else { "" } }} -v
 
 # Check what changes would be made (alias for status)
 [group: "chezmoi"]
@@ -50,19 +61,19 @@ check: status
 [group: "chezmoi"]
 diff:
     @echo "{{BLUE}}Showing configuration differences...{{NORMAL}}"
-    chezmoi diff
+    chezmoi --source "{{ chezmoi_src }}" diff
 
 # Show status of dotfiles vs current system state
 [group: "chezmoi"]
 status:
     @echo "{{BLUE}}Checking dotfiles status...{{NORMAL}}"
-    chezmoi status
+    chezmoi --source "{{ chezmoi_src }}" status
 
 # Verify dotfiles configuration integrity
 [group: "chezmoi"]
 verify:
     @echo "{{BLUE}}Verifying configuration integrity...{{NORMAL}}"
-    chezmoi verify .
+    chezmoi --source "{{ chezmoi_src }}" verify .
 
 # Drift = `chezmoi status` FIRST column M (target modified since chezmoi last
 # wrote it). A second-column-only change is a pending SOURCE edit, NOT drift —
@@ -74,12 +85,12 @@ verify:
 capture-drift *targets:
     #!/usr/bin/env bash
     set -uo pipefail
-    drift=$(chezmoi status {{targets}} 2>/dev/null | awk 'substr($0,1,1)=="M"{print substr($0,4)}')
+    drift=$(chezmoi --source "{{ chezmoi_src }}" status {{targets}} 2>/dev/null | awk 'substr($0,1,1)=="M"{print substr($0,4)}')
     if [ -z "$drift" ]; then echo "{{GREEN}}No target drift — nothing to capture.{{NORMAL}}"; exit 0; fi
     plain=""; tmpl=""
     while IFS= read -r t; do
         [ -z "$t" ] && continue
-        case "$(chezmoi source-path "$HOME/$t" 2>/dev/null || true)" in
+        case "$(chezmoi --source "{{ chezmoi_src }}" source-path "$HOME/$t" 2>/dev/null || true)" in
             *.tmpl) tmpl+="    chezmoi merge ~/$t"$'\n' ;;
             *)      plain+="    ~/$t"$'\n' ;;
         esac
@@ -95,18 +106,18 @@ capture-drift *targets:
 capture-drift-apply *targets:
     #!/usr/bin/env bash
     set -euo pipefail
-    drift=$(chezmoi status {{targets}} 2>/dev/null | awk 'substr($0,1,1)=="M"{print substr($0,4)}')
+    drift=$(chezmoi --source "{{ chezmoi_src }}" status {{targets}} 2>/dev/null | awk 'substr($0,1,1)=="M"{print substr($0,4)}')
     paths=()
     while IFS= read -r t; do
         [ -z "$t" ] && continue
-        case "$(chezmoi source-path "$HOME/$t" 2>/dev/null || true)" in
+        case "$(chezmoi --source "{{ chezmoi_src }}" source-path "$HOME/$t" 2>/dev/null || true)" in
             *.tmpl) ;;
             *) paths+=("$HOME/$t") ;;
         esac
     done <<< "$drift"
     if [ ${#paths[@]} -eq 0 ]; then echo "{{GREEN}}No non-template target drift to capture.{{NORMAL}}"; exit 0; fi
     echo "{{BLUE}}Capturing into source via re-add:{{NORMAL}}"; printf '  %s\n' "${paths[@]}"
-    chezmoi re-add "${paths[@]}"
+    chezmoi --source "{{ chezmoi_src }}" re-add "${paths[@]}"
     echo "{{GREEN}}Done.{{NORMAL}} Drifted templates still need {{BOLD}}chezmoi merge{{NORMAL}} — see {{BOLD}}just capture-drift{{NORMAL}}."
 
 # ─────────────────────────────────────────────────────────────────────────────

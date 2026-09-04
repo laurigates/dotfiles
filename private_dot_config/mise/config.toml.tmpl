@@ -189,21 +189,54 @@ _.file = "~/.api_tokens"
 # ----------------------------------------------------------------------------
 # Dotfiles Management
 # ----------------------------------------------------------------------------
+# These four tasks resolve the chezmoi SOURCE tree at run time instead of
+# letting chezmoi pick it up from the pinned `sourceDir` in
+# ~/.config/chezmoi/chezmoi.toml. Nothing in the environment overrides that pin
+# — CHEZMOI_SOURCE_DIR and CHEZMOI_SOURCE are both ignored; only --source takes
+# effect — so a bare `chezmoi apply` run from a Claude Code worktree under
+# .claude/worktrees/ silently applies MAIN's content rather than the edits in
+# front of you.
+#
+# This is a GLOBAL mise config, so a task runs from wherever it was invoked and
+# `git rev-parse --show-toplevel` can name any repo at all. The `case` guard is
+# what makes that safe: the git toplevel is used only when it IS the dotfiles
+# source dir or sits underneath it (which is exactly where worktrees live).
+# Everywhere else it falls back to the pinned $DOTFILES_DIR.
 [tasks.apply]
 description = "Apply dotfiles configuration to system"
-run = "chezmoi apply -v"
+run = """
+src="$DOTFILES_DIR"
+top=$(git rev-parse --show-toplevel 2>/dev/null || true)
+case "$top" in "$src"|"$src"/*) src="$top" ;; esac
+chezmoi --source "$src" apply -v
+"""
 
 [tasks.diff]
 description = "Show differences between current state and dotfiles"
-run = "chezmoi diff"
+run = """
+src="$DOTFILES_DIR"
+top=$(git rev-parse --show-toplevel 2>/dev/null || true)
+case "$top" in "$src"|"$src"/*) src="$top" ;; esac
+chezmoi --source "$src" diff
+"""
 
 [tasks.status]
 description = "Show status of dotfiles vs current system state"
-run = "chezmoi status"
+run = """
+src="$DOTFILES_DIR"
+top=$(git rev-parse --show-toplevel 2>/dev/null || true)
+case "$top" in "$src"|"$src"/*) src="$top" ;; esac
+chezmoi --source "$src" status
+"""
 
 [tasks.verify]
 description = "Verify dotfiles configuration integrity"
-run = "chezmoi verify ."
+run = """
+src="$DOTFILES_DIR"
+top=$(git rev-parse --show-toplevel 2>/dev/null || true)
+case "$top" in "$src"|"$src"/*) src="$top" ;; esac
+chezmoi --source "$src" verify .
+"""
 
 [tasks.check]
 alias = "status"
