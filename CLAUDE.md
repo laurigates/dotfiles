@@ -6,6 +6,31 @@ Chezmoi dotfiles repository with cross-platform development environment configur
 
 This repo is **public** (`github.com/laurigates/dotfiles`). Never commit private information: secrets/API tokens (use `~/.api_tokens`, sourced by mise), personal hostnames/IPs, internal-only org facts, or machine-specific identifiers. Secret-adjacent files use the chezmoi `private_` prefix and stay out of templates that render to tracked output. When in doubt, leave it out — assume anything committed is world-readable and indexed.
 
+## Work in a Worktree
+
+Make changes to this repo in a Claude Code worktree, not in the main checkout —
+enter one before the first edit of a change task. Reading, answering questions,
+and running `chezmoi diff`/`status` do not need one.
+
+Two mechanical reasons:
+
+- `.claude/scripts/repos-sync-nudge.sh` auto-fast-forwards this checkout only
+  when `git status --porcelain` is empty. Uncommitted work in the main checkout
+  silently switches that freshness auto-pull off — the exact thing the nudge
+  exists to keep running.
+- `worktree.baseRef` is `fresh`, so a worktree branch starts from `origin/main`
+  rather than from wherever this checkout happens to be sitting.
+
+**Inside a worktree, chezmoi needs `--source`.** The source dir is pinned in
+`~/.config/chezmoi/chezmoi.toml` and nothing in the environment overrides it —
+`CHEZMOI_SOURCE_DIR` and `CHEZMOI_SOURCE` are both ignored, only the flag takes
+effect. So a bare `chezmoi apply` from a worktree exits 0 having applied
+**main's** content instead of the edits in front of you, with no error and no
+empty result to notice. Use `just apply` / `just diff` / `just status` (or
+`mise run apply`), which pass `--source "$(git rev-parse --show-toplevel)"` for
+you; `exact_dot_claude/hooks/executable_chezmoi-worktree-source-guard.sh` warns
+when a bare one slips through.
+
 ## Chezmoi Quick Reference
 
 - **Source directory**: `~/.local/share/chezmoi/` (always edit here)

@@ -11,6 +11,23 @@ This directory contains project repositories organized by owner/origin. Running 
 | `external/` | Third-party clones and forks (bevy, esp-idf, llama.cpp, moodle, etc.) |
 | `archive/` | Inactive/deprecated projects |
 
+## Work in a Worktree
+
+Make changes to **this** repo (its `CLAUDE.md`, `.claude/` rules, scripts and
+skills) in a Claude Code worktree, not in the main checkout — enter one before
+the first edit of a change task. Reading and answering questions do not need one.
+
+The reason is mechanical, not stylistic: `.claude/scripts/repos-sync-nudge.sh`
+auto-fast-forwards this checkout only when `git status --porcelain` is empty, so
+uncommitted work sitting in the main checkout silently switches that freshness
+auto-pull off — in the one repo whose whole job is to hand fresh rules to
+everything underneath it. `worktree.baseRef` is `fresh`, so the branch starts
+from `origin/main` rather than from wherever this checkout is sitting.
+
+This does **not** extend to the nested project repos underneath: those are
+separate checkouts with their own conventions, and `~/repos` deliberately
+ignores them.
+
 ## Key Workflows
 
 ### Repository Activity

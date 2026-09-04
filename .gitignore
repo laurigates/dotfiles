@@ -35,3 +35,12 @@ docs/blueprint/work-orders/
 *.key
 .api_tokens
 credentials*
+
+# Claude Code runtime state (managed by /configure:gitignore)
+#
+# .claude/worktrees/ is load-bearing beyond tidiness: .claude/scripts/repos-sync-nudge.sh
+# auto-fast-forwards ONLY when `git status --porcelain` is empty, so an untracked
+# worktree would silently disable this repo's freshness auto-pull.
+.claude/worktrees/
+/worktrees/
+.claude/scheduled_tasks.lock
