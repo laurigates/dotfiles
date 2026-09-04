@@ -19,7 +19,9 @@ Run `/repo-activity` (user-global skill) to scan all repos and see recent activi
 
 ### Scheduled Routines
 
-Run `just routines` to list the portfolio's scheduled jobs (macOS LaunchAgents in `.routines/`) with live status — schedule, load state, run count, last exit, last run, and log path. The routines and how to choose a scheduler substrate (LaunchAgent vs cloud routine vs Desktop task) are documented in `.routines/README.md`. These are experimental/stop-gap; promote useful ones to a cloud routine or CI.
+Scheduled work runs on two substrates: **macOS LaunchAgents** defined in `.routines/`, and **Claude scheduled tasks** defined user-globally in `~/.claude/scheduled-tasks/`. `.routines/README.md` inventories both, and documents how to choose a substrate (LaunchAgent vs cloud routine vs Desktop task).
+
+`just routines` lists the LaunchAgents with live status — schedule, load state, run count, last exit, last run, log path. It does not cover the Claude scheduled tasks; their schedule and run history live at claude.ai/code/routines. These are experimental/stop-gap; promote useful ones to a cloud routine or CI.
 
 ### Podio Ticket Management
 
