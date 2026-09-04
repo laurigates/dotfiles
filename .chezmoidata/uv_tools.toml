@@ -24,6 +24,11 @@
   # Each entry: { package = "<name in `uv tool list`>", url = "git+https://…", with = ["extra-dep", …] }
   # (`with` is optional). pal-mcp-server is installed globally so MCP configs can
   # invoke the bare `pal-mcp-server` command instead of re-resolving git via uvx on every launch.
+  # git-repo-agent and vault-agent were extracted out of laurigates/claude-plugins
+  # (claude-plugins@87f2b3e6, phase 3 of #1017/#1973) and are not published to PyPI,
+  # so they install from their standalone repos.
   git_tools = [
     { package = "pal-mcp-server", url = "git+https://github.com/laurigates/pal-mcp-server" },
+    { package = "git-repo-agent", url = "git+https://github.com/laurigates/git-repo-agent" },
+    { package = "vault-agent", url = "git+https://github.com/laurigates/vault-agent" },
   ]
