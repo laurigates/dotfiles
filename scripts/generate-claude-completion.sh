@@ -222,7 +222,6 @@ playwright:Playwright MCP server
 context7:Context7 MCP server
 github:GitHub MCP server
 pal:PAL MCP server
-vectorcode:VectorCode MCP server
 graphiti-memory:Graphiti Memory MCP server
 sequential-thinking:Sequential Thinking MCP server
 sentry:Sentry MCP server

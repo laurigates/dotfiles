@@ -45,7 +45,6 @@ Shell completions are managed via chezmoi's data-driven approach:
 | `<tool> completion zsh` | gh, kubectl, helm, argocd, docker |
 | `<tool> --completions zsh` | just, rustup |
 | `<tool> completions` | bun |
-| `<tool> -s zsh` | vectorcode |
 | `<tool> gen-completions --shell zsh` | atuin |
 | `<tool> generate-shell-completion zsh` | uv |
 
