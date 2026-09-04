@@ -97,6 +97,11 @@ Prefer `Edit` with the smallest unique `old_string` over `Write`-ing the
 whole file. A rewrite regenerates untouched lines from memory, so content
 silently drifts and the diff is unreviewable. `Write` is for new files.
 
+Programmatic rewrites count too: a `json.load` → `json.dumps` round-trip drifts
+no values and still reformats untouched siblings — rewriting one `.mcp.json`
+entry collapsed inline `args` across six unrelated servers, nearly shipping
+that churn in ten PRs. Splice the target span in the raw text instead.
+
 ## WebFetch — do not retry the same failing URL
 
 Promoted to a skill: invoke `documentation-plugin:docs-fetch-fallbacks` when a
