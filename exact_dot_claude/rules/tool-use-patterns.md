@@ -146,6 +146,18 @@ there is no earlier moment to invoke a skill: **control-test any negative that
 gates an action** — re-run the same command shape against a term you know is
 present. If the control is also empty, the tool is broken, not the tree clean.
 
+The control must exercise the part of the pattern that can fail, not just
+the command name. Observed 2026-09-02: `git grep -nE 'parseFloat\([^)]*\)\s*\|\|'`
+returned nothing and was "confirmed" by a control counting bare `parseFloat`
+— which tests neither the `[^)]*` (it cannot span the nested parens in
+`parseFloat((e.target as HTMLInputElement).value)`) nor the `|| fallback`.
+The bug was live at four sites and was reported to the user as fixed. A
+second attempt returned empty *including its control*, which is what finally
+named the tool rather than the tree; `rg` with the same pattern found all four.
+Two lessons: negated character classes cannot span nested delimiters, and
+`git grep -E` and `rg` do not agree on every regex — when a negative matters,
+confirm it with the other tool.
+
 For mechanical work (parsing, counting, audits) prefer one inline
 `python3`/`rg` pass over an agent fan-out — see
 `offload-to-deterministic-substrate.md`.
