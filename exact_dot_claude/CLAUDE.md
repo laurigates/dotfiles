@@ -17,7 +17,9 @@ When debugging issues, do not assume the root cause without evidence. Verify hyp
 
 ## PR Reviews
 
-When a PR review comment suggests a code change, verify the suggestion against official documentation or source code before applying it. Do not blindly accept review feedback as correct.
+Verify review feedback against docs or source before acting on it — its **blockers** as much as its suggestions. A wrong "do not merge" kills good work silently and nothing downstream contradicts it, so control-test each blocker against the repo before it changes a merge decision. This bites hardest with a review delegated to another model, whose wrong findings arrive as well-formed as its right ones; when one contradicts the PR's own recorded measurements, re-derive them rather than splitting the difference.
+
+> 2026-09 (R4C-Cesium-Viewer #959): a delegated review returned **DO NOT MERGE** on three blockers. Each died to one read — `tsconfig.json` sets `checkJs: true`, the "missing symbols" list was an exact match against `src/`, and the claimed "1–3% bundle gain" was a measured −13.95%.
 
 ## Tool Installation Priority
 
