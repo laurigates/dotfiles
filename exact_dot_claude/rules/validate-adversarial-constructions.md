@@ -91,6 +91,20 @@ the bypass introduced a *different* failure which the test caught by accident.
   a total that matches expectation can still be the wrong tests.
 - **A pass during a teeth-check is a finding, not a relief.** Diagnose it
   before touching the test.
+- **A faithful bypass can still land in the wrong place.** When the mutation is
+  applied by a whole-file regex, it can hit an **earlier occurrence** than the
+  one under test: the edit succeeds, the run is green, and it reads as "no
+  teeth" though the assertion was never touched. `grep -c` the pattern before
+  substituting — more than one hit means the regex cannot express the edit —
+  then `grep -n` the inserted marker to confirm where it landed. The same check
+  applies to the restore afterwards.
+
+  > Observed 2026-09 (R4C-Cesium-Viewer #960). A `perl -0pi` teeth-check
+  > inserted a CDP `Network.clearBrowserCache` before the **first** of three
+  > `await page.reload()` in the file — inside an unrelated load-time test. The
+  > cache assertion still passed, which read as a weak assertion. Re-targeted to
+  > the real site it failed at once: `expected +0 to be 42`. The gate was fine;
+  > the mutation had missed.
 
 ## A comparison harness pinned to a moving baseline stops discriminating
 
