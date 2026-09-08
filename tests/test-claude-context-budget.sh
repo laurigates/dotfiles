@@ -83,13 +83,38 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 # still small enough that a second one triggers a cleanup pass. Ratchet again
 # when the next consolidation lands.
 #
-# Next cleanup candidates (largest unconditional, measured 2026-08-19, none yet
-# triaged). Note prefer-diy-over-heavy-dependency.md (651 B) and
-# pr-merge-hazards.md (2,163 B) have LEFT this list — both are now pointers:
-#   tool-use-patterns.md ~7.7 kB · communication.md ~5.8 kB
-#   offload-to-deterministic-substrate.md ~5.4 kB
-#   diagnose-at-the-failure-point.md ~4.9 kB · git-hazards.md ~4.7 kB
-TOTAL_BUDGET_BYTES=86000
+# 2026-09-08 → 92,000. The surface reached 85,979 of 86,000 (21 bytes free) on
+# origin/main at a0a3eb2, so the 5,537-byte margin the 2026-08-19 ratchet set
+# aside had been fully consumed and the gate was again a hard stop on any new
+# unconditional content rather than a cleanup trigger — the state #2324
+# describes, where the gate cannot distinguish "this addition is not worth its
+# bytes" from "nothing fits". Measured on disk in a clean worktree off
+# origin/main, before and after the addition that hit it:
+#
+#   unconditional_rule_bytes + CLAUDE.md = 85,979   (39 unconditional rules)
+#   after a 620-byte CLAUDE.md addition  = 86,599
+#   path_scoped_bytes                    = 55,459   (not counted; loads on match)
+#
+# 92,000 leaves 5,401 bytes (5.9%) free above the post-addition reading — the
+# same margin the last ratchet chose deliberately (5,537 / 6.4%) and for the
+# same reason: enough for one normal addition, small enough that a second
+# triggers a cleanup pass.
+#
+# NO cleanup is claimed here. This is a bump, not a ratchet, and per the
+# 2026-08-19 correction above it cites only bytes measured on disk. The surface
+# grew 80,463 → 85,979 (+5,516) since that ratchet with no consolidation in
+# between; that growth is untriaged and is the debt this bump defers. Ratchet
+# back toward 86,000 when the next consolidation lands.
+#
+# Next cleanup candidates (largest unconditional, re-measured 2026-09-08 in a
+# clean worktree). The previous list had drifted: tool-use-patterns.md was
+# recorded at ~7.7 kB and is 5,890 B since its split, and
+# never-fabricate-test-identifiers.md has entered the list.
+#   communication.md 6,284 B · git-hazards.md 6,081 B
+#   tool-use-patterns.md 5,890 B · offload-to-deterministic-substrate.md 5,378 B
+#   never-fabricate-test-identifiers.md 5,106 B
+#   diagnose-at-the-failure-point.md 4,901 B
+TOTAL_BUDGET_BYTES=92000
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 
