@@ -112,7 +112,14 @@ rust = { version = "latest", components = "rust-analyzer" }
 
 # Terminal & Shell
 "aqua:ajeetdsouza/zoxide" = "latest"
+{{- if eq .chezmoi.os "darwin" }}
 "aqua:atuinsh/atuin" = "latest"
+{{- else }}
+# mise's aqua backend ignores the registry's linux -> unknown-linux-musl replacement and
+# installs the glibc asset, which needs GLIBC 2.38+ (Pop!_OS 22.04 ships 2.35). Pin the
+# musl asset explicitly via the github backend. Verified against mise 2026.9.3.
+"github:atuinsh/atuin" = { version = "latest", matching_regex = "^atuin-(x86_64|aarch64)-unknown-linux-musl", exe = "atuin" }
+{{- end }}
 "aqua:junegunn/fzf" = "latest"
 "github:starship/starship" = "latest"
 
