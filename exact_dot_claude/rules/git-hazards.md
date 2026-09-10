@@ -11,9 +11,35 @@ nor the squash commit. A fresh branch off `origin/main` silently lacks that
 work; the first symptom is an ImportError far downstream.
 
 - **Check** before follow-up work: `git grep <symbol> origin/main -- <path>` —
-  don't trust "the PR merged".
+  don't trust "the PR merged". The symbol must be **unique to the change**: a
+  grep for `tier == "deliver"` reported a change as landed when the hit came
+  from a pre-existing line that merely contained the same text (2026-08-19).
+  Prefer `git cherry origin/main <branch>` — `+` means not upstream, and it
+  survives squash and SHA rewriting, which plain ancestry checks do not.
 - **Fix**: replay only the orphans: `git rebase --onto origin/main <squash-point> <branch>`,
   then verify `git log --oneline origin/main..HEAD` shows only the orphaned + new commits.
+  Confirm nothing was lost by comparing **trees**, not diffs:
+  `git rev-parse HEAD^{tree} <old-tip>^{tree}` must match.
+
+### The variant with no symptom at all: the PR merges WHILE you are still on the branch
+
+The framing above assumes you come back later and branch afresh. The quieter
+case is that you **never leave**: the PR is merged mid-session — by CI, by a
+teammate, by the user in another window — and you keep committing to the same
+branch. Every `git push` succeeds, `git status` is clean, and nothing says the
+branch's PR is closed. Observed 2026-08-19: two commits, and the source that
+produced an hour-long delivery render, sat on a branch whose PR had already
+merged. It surfaced only because an unrelated `git switch main` failed on local
+changes.
+
+- **The tell is on the remote, not locally.** `gh pr list --head <branch>`
+  returns nothing (and `--state all` shows MERGED) while you still have commits
+  in `origin/main..HEAD`.
+- **Do not reuse the merged branch for the new PR.** A merged PR cannot take new
+  commits; push the rebased work to a **new** branch name so the fresh PR is not
+  tangled with the closed one.
+- Cheap habit: before the *second* push to any branch in a long session, run
+  `gh pr list --head "$(git branch --show-current)" --json number,state`.
 
 ## 2. Unpushed commits on local `main` ride into new branches
 
