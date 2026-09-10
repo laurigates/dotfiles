@@ -17,6 +17,13 @@ source ~/.api_tokens
 
 export OLLAMA_KEEP_ALIVE=30m
 
+# rustup toolchain. mise's rust install is a symlink to ~/.cargo/bin, so
+# `mise activate` (in .zshrc) already covers interactive shells. This covers
+# NON-interactive zsh, where only .zshenv is sourced and nothing else supplies
+# cargo/rustc/rustup/rust-analyzer — brew carries no rust. Guarded so a machine
+# without rustup doesn't error at startup.
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
 {{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | contains "truenas") }}
 # TrueNAS: /tmp is mounted noexec, breaking chezmoi's run_* scripts.
 # Redirect TMPDIR to an exec-allowed dataset.
