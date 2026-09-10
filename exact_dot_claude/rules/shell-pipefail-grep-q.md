@@ -68,6 +68,36 @@ cleaner and conveys intent.
 trades a localized cosmetic bug for a class of *silent* ones. Fix the single
 pipeline, keep the option.
 
+## The mirror image: WITHOUT pipefail, a pipe hides a real failure
+
+Same law — *the pipeline's exit status is not the command's* — in the opposite
+and more dangerous direction. Without `pipefail`, `$?` is the **last** stage's
+status, so piping a gate into anything reports that pipe's success:
+
+```bash
+just test 2>&1 | tail -40 ; echo $?   # 0 — even when the suite exited 101
+```
+
+The false-failure case above is loud (you investigate a green thing that reads
+red). This one is **silent**: a failing build, test suite, or lint reads as
+green.
+
+What makes it bite is the reason the pipe is usually there. `| tail`, `| head`,
+`| grep` get added to **limit output** — so the same edit that discards the exit
+code also discards the failure message that would have contradicted it. Observed
+2026-08-09 running a Rust gate as `just test 2>&1 | tail -40`: exit 0 over a real
+`101`, with the failing assertion scrolled past the truncation window. It was
+caught only because a separate tally of `test result:` lines showed `failed=1`.
+
+**Never pipe a command whose exit status is the thing you care about.** Redirect
+and read instead — `cmd > out.log 2>&1; echo $?` — or, if the pipe is
+unavoidable, take `${PIPESTATUS[0]}` immediately (it is clobbered by the next
+command, including `echo`).
+
+This applies to any *gate*: test suites, `cargo`/`tsc`/`ruff`, deploy scripts,
+CI steps. A summarizing pipe belongs on output you are *reading*, never on
+output you are *judging*.
+
 ## Verify
 
 Reproduce the failure and confirm the fix by forcing a large writer so SIGPIPE
@@ -76,6 +106,13 @@ actually fires (a small input won't show it):
 ```bash
 bash -c 'set -o pipefail; seq 1 100000 | grep -q "^5$"; echo "pipe exit=$?"'   # 141 (false fail)
 bash -c 'set -o pipefail; grep -q "^5$" <<<"$(seq 1 100000)"; echo "hs exit=$?"' # 0   (correct)
+```
+
+And the mirror direction — a failing command laundered into success by a pipe:
+
+```bash
+bash -c '(exit 101) | tail -1; echo "piped exit=$?"'                  # 0   (hides it)
+bash -c '(exit 101) | tail -1; echo "real exit=${PIPESTATUS[0]}"'     # 101 (correct)
 ```
 
 ## When it bites
