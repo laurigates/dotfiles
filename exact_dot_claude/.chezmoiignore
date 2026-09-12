@@ -3,6 +3,7 @@
 # MUST stay ignored: ~/.claude is an exact_ dir, so an unlisted top-level
 # entry is DELETED on chezmoi apply.
 friction-reports/
+skill-usage.jsonl
 
 # Vendored third-party skill, installed and updated by `notebooklm skill
 # install` (ships with the notebooklm-py package). Not chezmoi-managed so
@@ -39,6 +40,7 @@ daemon.status.json
 gh-pr-status-cache.json
 jobs/
 .last-update-result.json
+feedback/
 
 # Runtime files created by Claude Code
 .credentials.json
