@@ -73,6 +73,37 @@ attributed to the code under test rather than to your transcription.
 An empty run and a broken harness produce the same output. Only the control
 tells them apart.
 
+## Don't fabricate the *environment* either — an inert stub means the real tool ran
+
+The third form. The subject is real and the inputs are real, but the harness
+never took effect: a stubbed CLI placed on `PATH` that is **not executable** is
+skipped by PATH lookup in silence, and the real binary runs instead. Nothing
+warns. The run completes, prints plausible output, and — if the real tool has
+side effects — performs them.
+
+> Observed 2026-08 (FVH `infrastructure`): testing a workflow step that posts a
+> PR comment, I wrote a fake `gh` onto `PATH` with the Write tool, which does
+> not set the executable bit. The real `gh` ran, and what was framed as a local
+> test **POSTed and then PATCHed a comment onto a live PR**. It surfaced only
+> because the output carried a real comment ID where the stub's canned `12345`
+> was expected. Re-running with `chmod +x` behaved correctly.
+
+- **Set the bit and check it.** `chmod +x <stub>` via Bash after any Write, then
+  `ls -l`. File-creation tools generally do not set the executable bit.
+- **Assert the stub is the one in effect before trusting any case.**
+  `command -v <tool>` at the top of the harness, or better, have the stub print
+  a sentinel the real tool never would and fail the run if it is absent.
+- **Make the stub's output impossible to mistake for the real thing** — a canned
+  `12345` beats a realistic-looking id, so a discrepancy is visible at a glance
+  rather than plausible.
+- **Treat "it's only a local test" as a reason for more isolation, not less.**
+  That framing is what suppresses the caution normally applied to a command that
+  writes to shared state, and whether the writing tool runs is precisely what is
+  in question.
+
+Same law as the two forms above, one layer out: the harness was green while
+measuring production.
+
 ## When it bites
 
 - Diagnosing whether an endpoint, credential, or permission works — exactly where a
