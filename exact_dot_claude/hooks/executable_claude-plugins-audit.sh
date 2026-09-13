@@ -64,6 +64,23 @@ decided="$(jq -r --arg m "$MARKETPLACE" '
 undecided_list="$(comm -23 <(printf '%s\n' "$mkt") <(printf '%s\n' "$decided"))"
 stale_list="$(comm -13 <(printf '%s\n' "$mkt") <(printf '%s\n' "$decided"))"
 
+# --- project installs lagging the user install ---------------------------------
+# Session start adds a project-scope registry entry for every plugin a project's
+# committed settings enable; inside that project it loads instead of the user
+# install and does not follow its updates. Entries at the SAME version are
+# re-created every session and harmless, so only LAGGING ones are counted —
+# flagging all of them would nudge on every session in a pinned repo.
+REGISTRY="${HOME}/.claude/plugins/installed_plugins.json"
+lagging=0
+if [ -f "$REGISTRY" ]; then
+  lagging="$(jq -r --arg m "$MARKETPLACE" '
+    [ .plugins | to_entries[] | select(.key | endswith("@" + $m))
+      | ([.value[] | select(.scope == "user") | .version] | first) as $uv
+      | select($uv != null)
+      | .value[] | select(.scope != "user" and .version != $uv) ] | length' "$REGISTRY" 2>/dev/null)"
+  [ -z "$lagging" ] && lagging=0
+fi
+
 # --- recommended env flags ----------------------------------------------------
 missing_flags=()
 for f in "${RECOMMENDED_ENV_FLAGS[@]}"; do
@@ -76,6 +93,7 @@ have_news=0
 [ -n "$undecided_list" ] && have_news=1
 [ -n "$stale_list" ] && have_news=1
 [ "${#missing_flags[@]}" -gt 0 ] && have_news=1
+[ "$lagging" -gt 0 ] 2>/dev/null && have_news=1
 [ "$have_news" -eq 0 ] && exit 0
 
 echo "── claude-plugins audit ─────────────────────────────────────"
@@ -92,6 +110,10 @@ fi
 if [ "${#missing_flags[@]}" -gt 0 ]; then
   echo "Recommended opt-in env flag(s) absent from settings.env:"
   printf '  • %s\n' "${missing_flags[@]}"
+fi
+if [ "$lagging" -gt 0 ] 2>/dev/null; then
+  echo "${lagging} project-scope plugin install(s) lag the user install (the older copy loads inside that project):"
+  echo "  → just -g plugins-prune-project-installs        (dry run; add 'apply' to fix)"
 fi
 echo "─────────────────────────────────────────────────────────────"
 exit 0
