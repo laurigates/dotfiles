@@ -84,6 +84,7 @@ plugins-install:
 
 # Audit plugin INSTALL SCOPE (project-scoped-only plugins, and project installs shadowing user ones)
 [group: "plugins"]
+[no-exit-message]
 plugins-install-audit:
     #!/usr/bin/env bash
     set -uo pipefail
@@ -113,10 +114,14 @@ plugins-install-audit:
       echo "{{BLUE}}Inspect: just -g plugins-prune-project-installs    Fix: just -g plugins-prune-project-installs apply{{NORMAL}}"
       rc=1
     fi
+    # Exit 1 on findings so scripts can gate on it; [no-exit-message] keeps just
+    # from printing "error: recipe failed", which read as the audit itself breaking.
+    [ "$rc" -eq 0 ] || echo "{{YELLOW}}Audit complete: install-scope issues found (fixes above).{{NORMAL}}"
     exit "$rc"
 
 # Remove project/local installs that shadow a user-scope install (dry run unless mode=apply)
 [group: "plugins"]
+[no-exit-message]
 plugins-prune-project-installs mode="dry-run":
     #!/usr/bin/env bash
     # Only entries whose plugin ALSO has a user-scope install are touched, so no
@@ -188,6 +193,13 @@ plugins-prune-project-installs mode="dry-run":
     done <<<"$rows"
     left="$(rows_of | wc -l | tr -d ' ')"
     echo "{{BLUE}}Remaining shadowing installs: $left{{NORMAL}}"
+    if [ "$fail" -eq 0 ] && [ "$left" -gt 0 ]; then
+      # 2026-09-14: all 94 rows removed, 6 back with one shared installedAt from
+      # mid-run — a `claude plugin list` run inside claude-plugins at that moment.
+      echo "{{YELLOW}}Every entry was removed, but $left came back during the run — most likely a claude command"
+      echo "running inside one of those projects re-registered them. Re-run apply:{{NORMAL}}"
+      rows_of | cut -f1,4 | sed 's/^/  /'
+    fi
     [ "$fail" -eq 0 ] && [ "$left" -eq 0 ]
 
 # Run `claude plugin <action>` over every installed plugin from this marketplace,
