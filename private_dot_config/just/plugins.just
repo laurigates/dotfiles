@@ -64,12 +64,30 @@ plugins-install:
 # Lists marketplace plugins that have NO user-scope install — i.e. are invisible
 # outside the single project they were installed from. Distinct from
 # `plugins-audit-scope`, which audits committed pins over a domain scope.
+#
+# Also flags the inverse hazard: a project- or local-scope install of a plugin
+# that DOES have a user-scope install. Inside that projectPath the project copy
+# loads instead of the user copy, and it lags behind it.
+#
+# These entries are not leftovers from a manual install. At session start Claude
+# Code "Syncing installed_plugins.json with enabledPlugins from all settings.json
+# files" adds a project-scope entry for every plugin the project's committed
+# .claude/settings.json enables, at the version current at that moment; the user
+# install then updates and the project entry does not. So pruning fixes today's
+# lag and the next session in that repo re-creates the entries — this audit is
+# the recurring check, the prune is the repair. Observed 2026-09-13:
+# 468 project-scope entries over 27 paths (11 of them deleted worktrees). In
+# ForumViriumHelsinki/infrastructure a `--debug plugins` session loaded
+# git-plugin 2.54.2 and github-actions-plugin 1.9.6 (8 skills) while user scope
+# held 2.55.0 and 1.10.0 (10 skills) — and `claude plugin details` run from the
+# same cwd reported 1.10.0, so it cannot detect this.
 
-# Audit plugin INSTALL SCOPE (flags project-scoped-only plugins that won't load elsewhere)
+# Audit plugin INSTALL SCOPE (project-scoped-only plugins, and project installs shadowing user ones)
 [group: "plugins"]
 plugins-install-audit:
     #!/usr/bin/env bash
     set -uo pipefail
+    rc=0
     json="$(CLAUDECODE= claude plugin list --json)"
     bad="$(jq -r '[.[] | select(.id | endswith("@{{marketplace}}"))]
         | group_by(.id)
@@ -81,8 +99,96 @@ plugins-install-audit:
       echo "{{YELLOW}}Project-scoped only (will NOT load outside their install dir):{{NORMAL}}"
       printf '  %s\n' $bad
       echo "{{BLUE}}Fix: just -g plugins-install{{NORMAL}}"
-      exit 1
+      rc=1
     fi
+    shadow="$(jq -r '[.[] | select(.id | endswith("@{{marketplace}}"))]
+        | group_by(.id)
+        | map(select(any(.[]; .scope == "user")) | {id: .[0].id, n: ([.[] | select(.scope != "user")] | length)} | select(.n > 0))
+        | .[] | "\(.id)  (\(.n) project/local install(s))"' <<<"$json")"
+    if [ -z "$shadow" ]; then
+      echo "{{GREEN}}No project/local install shadows a user-scope install.{{NORMAL}}"
+    else
+      echo "{{YELLOW}}Shadowed inside their projectPath (the project copy loads instead of the user install):{{NORMAL}}"
+      sed 's/^/  /' <<<"$shadow"
+      echo "{{BLUE}}Inspect: just -g plugins-prune-project-installs    Fix: just -g plugins-prune-project-installs apply{{NORMAL}}"
+      rc=1
+    fi
+    exit "$rc"
+
+# Remove project/local installs that shadow a user-scope install (dry run unless mode=apply)
+[group: "plugins"]
+plugins-prune-project-installs mode="dry-run":
+    #!/usr/bin/env bash
+    # Only entries whose plugin ALSO has a user-scope install are touched, so no
+    # plugin loses its last install. Two paths per entry:
+    #   - projectPath exists: `claude plugin uninstall --scope <scope>` from that
+    #     dir. The CLI also rewrites the project's COMMITTED .claude/settings.json
+    #     — it dropped the plugin's enabledPlugins key and reordered keys in
+    #     laurigates/gh-board (2026-09-13) — so both settings files are
+    #     snapshotted first and restored byte-for-byte afterwards.
+    #   - projectPath is gone (a deleted worktree): there is no cwd to run the
+    #     CLI from, so the entry is dropped from installed_plugins.json with jq.
+    # The registry is backed up before the first change, and every removal is
+    # verified by re-reading the registry rather than trusting the exit code.
+    set -uo pipefail
+    reg="$HOME/.claude/plugins/installed_plugins.json"
+    mp="{{marketplace}}"
+    case "{{mode}}" in dry-run|apply) : ;; *) echo "{{YELLOW}}mode must be dry-run or apply{{NORMAL}}" >&2; exit 2 ;; esac
+    [ -f "$reg" ] || { echo "{{YELLOW}}No $reg{{NORMAL}}"; exit 1; }
+    rows_of() {
+      jq -r --arg m "$mp" '.plugins | to_entries[]
+          | select(.key | endswith("@" + $m))
+          | select(any(.value[]; .scope == "user"))
+          | .key as $id | .value[] | select(.scope != "user")
+          | [$id, .scope, .version, .projectPath] | @tsv' "$reg"
+    }
+    present() {
+      jq -e --arg id "$1" --arg s "$2" --arg p "$3" \
+        'any((.plugins[$id] // [])[]; .scope == $s and .projectPath == $p)' "$reg" >/dev/null
+    }
+    rows="$(rows_of)"
+    if [ -z "$rows" ]; then echo "{{GREEN}}No project/local install shadows a user-scope install.{{NORMAL}}"; exit 0; fi
+    echo "{{BLUE}}$(wc -l <<<"$rows" | tr -d ' ') shadowing install(s):{{NORMAL}}"
+    while IFS=$'\t' read -r id scope version proj; do
+      state="live"; [ -d "$proj" ] || state="GONE"
+      printf '  %-4s %-50s %-7s %-8s %s\n' "$state" "$id" "$scope" "$version" "$proj"
+    done <<<"$rows"
+    if [ "{{mode}}" = "dry-run" ]; then
+      echo "{{BLUE}}Dry run — nothing changed. Apply with: just -g plugins-prune-project-installs apply{{NORMAL}}"
+      exit 0
+    fi
+    backup="$reg.bak-$(date +%Y%m%dT%H%M%S)"
+    cp -p "$reg" "$backup" || { echo "{{RED}}Backup failed — aborting{{NORMAL}}" >&2; exit 1; }
+    echo "{{BLUE}}Registry backup: $backup{{NORMAL}}"
+    fail=0
+    while IFS=$'\t' read -r id scope version proj; do
+      if [ ! -d "$proj" ]; then
+        tmp="$(mktemp)"
+        if jq --arg id "$id" --arg s "$scope" --arg p "$proj" \
+             '.plugins[$id] |= map(select((.scope == $s and .projectPath == $p) | not))' "$reg" >"$tmp"; then
+          cat "$tmp" >"$reg"
+        fi
+        rm -f "$tmp"
+      else
+        snap="$(mktemp -d)"
+        for f in settings.json settings.local.json; do
+          [ -f "$proj/.claude/$f" ] && cp -p "$proj/.claude/$f" "$snap/$f"
+        done
+        (cd "$proj" && CLAUDECODE= claude plugin uninstall "$id" --scope "$scope" </dev/null >/dev/null 2>&1)
+        for f in settings.json settings.local.json; do
+          if [ -f "$snap/$f" ]; then cp -p "$snap/$f" "$proj/.claude/$f"; else rm -f "$proj/.claude/$f"; fi
+        done
+        rm -rf "$snap"
+      fi
+      if present "$id" "$scope" "$proj"; then
+        echo "  {{RED}}STILL PRESENT{{NORMAL}} $id $scope $proj"; fail=1
+      else
+        echo "  removed $id $scope $proj"
+      fi
+    done <<<"$rows"
+    left="$(rows_of | wc -l | tr -d ' ')"
+    echo "{{BLUE}}Remaining shadowing installs: $left{{NORMAL}}"
+    [ "$fail" -eq 0 ] && [ "$left" -eq 0 ]
 
 # Run `claude plugin <action>` over every installed plugin from this marketplace,
 # narrowed by an optional jq {{filter}} fragment. Single source of truth for the
