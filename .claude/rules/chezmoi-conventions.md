@@ -14,7 +14,6 @@ paths:
   - "run_once_*"
   - "run_onchange_*"
   - "**/*.tmpl"
-  - "Brewfile"
   - "justfile"
   - "aliases.zsh"
 ---

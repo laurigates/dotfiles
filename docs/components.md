@@ -27,17 +27,16 @@ Configuration is managed via Lua (`private_dot_config/nvim/lua/`).
     -   **[Lazy.nvim](https://github.com/folke/lazy.nvim)** (Assumed): Likely used as the plugin manager (standard practice).
     -   **[Treesitter](https://github.com/nvim-treesitter/nvim-treesitter)**: Provides advanced syntax parsing for features like highlighting, text objects, and navigation.
         -   `nvim-treesitter-textobjects`: Defines text objects based on Treesitter nodes (e.g., functions, loops).
-        -   `nvim-treesitter-textsubjects`: Provides additional text subjects for selection/operation.
     -   **[Tabout](https://github.com/abecodes/tabout.nvim)**: Allows using `<Tab>` to navigate out of pairs (parentheses, brackets, etc.).
     -   **[Flash](https://github.com/folke/flash.nvim)**: Enhanced motion/search within the viewport.
     -   **[Snacks](https://github.com/folke/snacks.nvim)**: Used in conjunction with Flash for picker actions.
 -   **Language Server Protocol (LSP):**
     -   **Built-in LSP Client**: Neovim's core LSP functionality.
-    -   **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)** (Implied): Standard configurations for various language servers.
+    -   **Native server configuration**: `vim.lsp.config()` / `vim.lsp.enable()` (Neovim 0.11+ API); nvim-lspconfig is not used.
     -   **[Navic](https://github.com/SmiteshP/nvim-navic)**: Displays LSP symbol context (like current function/class) in the status line or winbar.
 -   **Completion & Snippets:**
     -   **[Blink](https://github.com/saghen/blink.cmp)**: Performant completion plugin with LSP, snippets, and fuzzy matching.
-    -   **[LuaSnip](https://github.com/L3MON4D3/LuaSnip)**: Snippet engine.
+    -   **[friendly-snippets](https://github.com/rafamadriz/friendly-snippets)**: Snippet collection, loaded by blink.cmp's built-in snippet support.
 -   **Formatting & Linting:**
     -   **[Conform](https://github.com/stevearc/conform.nvim)**: Manages and runs code formatters.
     -   **[nvim-lint](https://github.com/mfussenegger/nvim-lint)**: Asynchronous linting framework, running linters on events like saving.

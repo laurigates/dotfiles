@@ -94,8 +94,8 @@ exact line from a dump. Anthropic token counts in the ledger are calibrated esti
 
 ## If we adopt (trial plan)
 
-1. Install via `brew install fkiene/tap/llmtrim` (add to `Brewfile` under the `dev`
-   profile), pin the version.
+1. Install via `brew install fkiene/tap/llmtrim` (add to `.chezmoidata/packages.toml`
+   under `[packages.profiles.dev]`), pin the version.
 2. **Do not let `llmtrim setup` edit the shell profile** — it writes a managed block into
    the rc file, which chezmoi would flag as drift and clobber on apply. Instead run
    `llmtrim ca` + `llmtrim setup --print` (or equivalent) and port the exports

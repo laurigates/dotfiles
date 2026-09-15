@@ -29,7 +29,7 @@ Modern Neovim configuration using Lua with lazy.nvim plugin management.
 
 ## LSP Approach
 
-Uses **native Neovim 0.11 APIs** (`vim.lsp.config()` / `vim.lsp.enable()`). Does NOT use nvim-lspconfig or mason-lspconfig. Requires Neovim 0.11+.
+Uses **native Neovim 0.11 APIs** (`vim.lsp.config()` / `vim.lsp.enable()`). Does NOT use nvim-lspconfig or mason-lspconfig. The LSP APIs need Neovim 0.11+, but the config as a whole requires **0.12+** because the treesitter main-branch rewrite does (see `lua/exact_plugins/treesitter.lua`).
 
 ### Adding a New LSP Server
 

@@ -9,11 +9,14 @@ Make. This document covers the *layout* after the 2026-07 grouping/dedup pass.
 
 ## Module layout
 
-The recipes live in one root justfile plus three shared modules under
-`private_dot_config/just/` (chezmoi source → `~/.config/just/`). The modules are
-the **single source of truth**: they are imported by both the in-repo root
-justfile *and* the global justfile, so `just <recipe>` (inside this repo) and
-`just -g <recipe>` (from anywhere) resolve the exact same recipe.
+The recipes live in one root justfile plus four shared modules under
+`private_dot_config/just/` (chezmoi source → `~/.config/just/`): `plugins.just`,
+`claude.just`, `git.just`, and `maint.just`. The modules are the **single source
+of truth**: `plugins.just` and `claude.just` are imported by both the in-repo
+root justfile *and* the global justfile, so `just <recipe>` (inside this repo)
+and `just -g <recipe>` (from anywhere) resolve the exact same recipe;
+`git.just` and `maint.just` are imported by the global justfile only. A fifth
+module file, `nvim.just`, is imported by the repo root only.
 
 ```mermaid
 flowchart TD
@@ -21,6 +24,7 @@ flowchart TD
         plugins["plugins.just<br/>group: plugins<br/>(marketplace install/enable/audit)"]
         claude["claude.just<br/>group: claude<br/>(mcp-*, settings-audit)"]
         git["git.just<br/>group: git<br/>(branch-audit)"]
+        maint["maint.just<br/>(home-audit, reclaim, ollama-*)"]
     end
 
     root["/justfile (repo root)<br/>groups: chezmoi · test · setup · maintain · info<br/>+ nvim.just (nvim-*)"]
@@ -32,13 +36,14 @@ flowchart TD
     plugins -->|import| global
     claude  -->|import| global
     git     -->|import| global
+    maint   -->|import| global
 
     root -->|"just recipe"| dev["Run inside dotfiles repo"]
     global -->|"just -g recipe"| any["Run from ANY directory"]
 
     classDef mod fill:#dbeafe,stroke:#3b82f6;
     classDef entry fill:#dcfce7,stroke:#22c55e;
-    class plugins,claude,git mod;
+    class plugins,claude,git,maint mod;
     class root,global entry;
 ```
 
@@ -70,6 +75,7 @@ the imported modules:
 | `claude` | `claude.just` | `mcp-*`, `claude-setup`, `settings-audit` |
 | `git` | `git.just` | `branch-audit` |
 | `nvim` | `nvim.just` | `nvim-plugins-audit` |
+| *(ungrouped)* | `maint.just` | `home-audit`, `reclaim-dry`, `reclaim`, `ollama-idle`, `ollama-prune` |
 
 ### Consolidations applied (2026-07)
 

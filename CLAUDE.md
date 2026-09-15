@@ -43,7 +43,7 @@ when a bare one slips through.
 Two distinct `.claude/`-shaped directories exist here:
 
 - `exact_dot_claude/` — chezmoi source for the user-global `~/.claude/` tree (exact-match semantics; orphaned files auto-removed). Edit source here, then run `chezmoi apply -v ~/.claude` to sync. A PostToolUse hook (`exact_dot_claude/hooks/chezmoi-workflow-nudge.sh`) reminds you to apply after edits under this path.
-- `.claude/` at the repo root — project-scoped Claude Code config for working inside *this* repo: `settings.json` (permissions allowlist, pinned plugins, hooks), `skills/`, `commands/`, `agents/`, `hooks/`. Tracked in git. Only per-machine runtime state (`sessions/`, `projects/`, `todos/`, `.credentials*`) is gitignored.
+- `.claude/` at the repo root — project-scoped Claude Code config for working inside *this* repo: `settings.json` (permissions allowlist, pinned plugins, hooks), `rules/`, `skills/`, `scripts/`. Commands and agents come from the plugin marketplace (see [Plugins](#plugins)). Tracked in git. Only per-machine runtime state (`sessions/`, `projects/`, `todos/`, `.credentials*`) is gitignored.
 
 ## Plugins
 
@@ -51,13 +51,14 @@ Managed in [laurigates/claude-plugins](https://github.com/laurigates/claude-plug
 
 ## MCP Servers
 
-Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`. Use `/configure:mcp` for guided setup.
+Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`. Use `/configure-mcp` for guided setup.
 
 ## Linting
 
 ### mise tasks (recommended):
 ```bash
-mise run lint          # All linters (shell, lua, actions, Brewfile)
+mise run lint          # All linters (shell, lua, actions, docs)
+mise run lint:docs     # Dangling doc references only
 mise run lint:shell    # Shell scripts only
 mise run lint:lua      # Neovim config only
 mise run lint:actions  # GitHub Actions only
@@ -69,7 +70,6 @@ mise run test          # All tests (linting + docker)
 shellcheck **/*.sh                    # Shell scripts
 luacheck private_dot_config/nvim/lua  # Neovim config
 actionlint                            # GitHub Actions
-brew bundle check --file=Brewfile     # Brewfile integrity
 pre-commit run --all-files            # All pre-commit hooks
 ```
 
@@ -81,12 +81,12 @@ pre-commit run gitleaks --all-files      # via pre-commit
 
 ## Key Files & Directories
 
-- `.chezmoidata.toml` — Template data (MCP servers, uv_tools, shell completions)
+- `.chezmoidata.toml` — Template data (MCP servers, Claude hooks, platform data)
+- `.chezmoidata/` — Split-out template data: `packages.toml` (profile-based Homebrew registry), `profiles.toml` (profile activation flags), `uv_tools.toml`, `completions.toml`
 - `dot_zshrc.tmpl`, `dot_zshenv.tmpl` — Zsh shell configuration
 - `private_dot_config/mise/config.toml.tmpl` — mise tool versions and tasks
 - `private_dot_config/nvim/` — Neovim setup (see `nvim/CLAUDE.md`)
 - `private_dot_config/private_fish/` — Fish shell (experimental)
-- `Brewfile` — Homebrew packages
 - `justfile` — Task runner recipes (`just --list`); shared modules in `private_dot_config/just/*.just` (see `docs/justfile-architecture.md`)
 - `mise.lock` — Reproducible tool versions
 

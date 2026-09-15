@@ -7,7 +7,6 @@ paths:
   - ".chezmoidata/profiles.toml"
   - ".chezmoidata/uv_tools.toml"
   - ".chezmoidata.toml"
-  - "Brewfile"
   - "run_onchange_01-update-packages.sh.tmpl"
   - "run_onchange_03-install-packages.sh.tmpl"
   - "**/.mcp.json"
@@ -33,4 +32,4 @@ Packages are managed through `.chezmoidata/packages.toml` with profile activatio
 - Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`
 - Enable/disable per server — `enabled = true/false`
 - Servers are installed per-project into that project's `.mcp.json`
-- Use `/configure:mcp` to install servers into a project; `./cleanup-mcp-servers.sh` to remove them (run only when no Claude sessions are active)
+- Use `/configure-mcp` to install servers into a project; `./cleanup-mcp-servers.sh` to remove them (run only when no Claude sessions are active)

@@ -90,7 +90,7 @@ Example configuration:
   transport = "stdio"  # optional
 ```
 
-**Installing servers into a project**: run the `/configure:mcp` command for interactive, project-scoped selection — it writes the chosen servers to that project's `.mcp.json`.
+**Installing servers into a project**: run the `/configure-mcp` command for interactive, project-scoped selection — it writes the chosen servers to that project's `.mcp.json`.
 
 **Removing servers** (WARNING: disrupts active Claude sessions):
 
@@ -98,25 +98,28 @@ Example configuration:
 ./cleanup-mcp-servers.sh  # Run only when no Claude sessions are active
 ```
 
-> **Note**: `cleanup-mcp-servers.sh` removes MCP servers from user and project scope, so run it only when no Claude Code sessions are active. Afterwards, reinstall per-project with `/configure:mcp`.
+> **Note**: `cleanup-mcp-servers.sh` removes MCP servers from user and project scope, so run it only when no Claude Code sessions are active. Afterwards, reinstall per-project with `/configure-mcp`.
 
 ## Claude Code Configuration
 
 Plugins are managed externally in [laurigates/claude-plugins](https://github.com/laurigates/claude-plugins). See the [Claude Code Plugins](#claude-code-plugins-) section above for installation.
 
-The `.claude` directory is managed via `exact_dot_claude/` with chezmoi's exact-match semantics (orphaned files auto-removed). Run `chezmoi apply -v ~/.claude` after editing skills or commands.
+Two `.claude`-shaped trees live in this repo:
+
+- `exact_dot_claude/` is the chezmoi source for the user-global `~/.claude/` directory, with chezmoi's exact-match semantics (orphaned files auto-removed). Run `chezmoi apply -v ~/.claude` after editing it.
+- `.claude/` at the repo root is project-scoped config for working inside this repo. It is tracked in plain git; `chezmoi apply` does not touch it.
 
 Full guide: See [CLAUDE.md](./CLAUDE.md)
 
 ### Skills
 
-Auto-discovered skills provide contextual guidance:
+Project-scoped skills in `.claude/skills/` provide contextual guidance when working in this repo:
 
 - **chezmoi-expert** - Dotfiles management, templates, cross-platform configs
 - **neovim-configuration** - Lua config, plugin management, LSP setup
 - **obsidian-bases** - Obsidian Bases database feature for YAML-based views
 
-Skills activate automatically based on your work context. See [CLAUDE.md](./CLAUDE.md) for details.
+User-global skills are sourced from `exact_dot_claude/skills/` and applied to `~/.claude/skills/`. Skills activate automatically based on your work context. See [CLAUDE.md](./CLAUDE.md) for details.
 
 ## Further Documentation
 
