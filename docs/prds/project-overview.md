@@ -50,7 +50,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 | FR-002 | Zsh shell configuration | Starship prompt, FZF integration, syntax highlighting, autosuggestions, vi-mode, completions | P0 |
 | FR-003 | Neovim configuration | Lua-based config with lazy.nvim, Treesitter, LSP, completion (blink.cmp), formatters, linters | P0 |
 | FR-004 | Tool version management | mise manages Node, Python, Go, Rust, Bun and CLI tools via pipx/aqua backends | P0 |
-| FR-005 | Package management | Homebrew Brewfile with profile-based package selection (core, dev, infra, gui) | P0 |
+| FR-005 | Package management | Profile-based Homebrew registry (`.chezmoidata/packages.toml`) with package selection by profile (core, dev, infra, gui) | P0 |
 | FR-006 | Claude Code integration | Plugins from laurigates/claude-plugins; MCP server registry in `.chezmoidata.toml`; per-project `.mcp.json` | P1 |
 | FR-007 | Secret management | API tokens in `~/.api_tokens` (sourced by mise); private files use `private_` prefix; gitleaks scanning | P0 |
 | FR-008 | Cross-platform templates | Chezmoi templates handle macOS/Linux differences for shell config, tool paths, platform-specific packages | P1 |
@@ -98,7 +98,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 - **exact_** prefix for directories where orphaned files should be removed (e.g., `exact_dot_claude/`)
 - **private_** prefix for secret/sensitive config files (chmod 600)
 - **mise** for all runtime tool versions; backends: `pipx:` for Python CLIs, `aqua:` for binaries
-- **Brewfile** with profile-based package selection via `.chezmoidata/profiles.toml`
+- **Homebrew package registry** (`.chezmoidata/packages.toml`) with profile activation via `.chezmoidata/profiles.toml`
 
 ### Key Configuration Files
 - `.chezmoidata.toml` — MCP servers, platform data
@@ -112,7 +112,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 
 ### Dependencies
 - chezmoi, mise, Homebrew (macOS), git
-- Neovim 0.9+, Lua 5.1+
+- Neovim 0.12+, Lua 5.1+
 - Claude Code CLI (for AI-assisted development features)
 
 ### Integration Points
@@ -143,7 +143,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 - Secret management patterns
 
 ### Out of Scope
-- GUI application configuration (beyond Brewfile cask installs)
+- GUI application configuration (beyond Homebrew cask installs)
 - Windows/WSL support
 - NixOS full support (intent documented in ADR-0013, not yet implemented)
 - Team/organization rollout (solo project)

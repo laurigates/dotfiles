@@ -22,14 +22,14 @@ The completion system automatically generates zsh completion functions for the C
   - Validates with `zsh -n` before replacing the committed completion
 
 ### 2. Chezmoi Integration
-- **Location**: `run_onchange_update-claude-completion.sh`
+- **Location**: `run_onchange_update-claude-completion.sh.tmpl`
 - **Purpose**: Automatically updates the completion when the script changes or when manually triggered
 - **Trigger**: Runs whenever chezmoi detects changes to the script or dotfiles
 
-### 3. Makefile Integration
-- **Target**: `make update-claude-completion`
+### 3. Justfile Integration
+- **Recipe**: `just update-claude-completion` (group: `maintain`)
 - **Purpose**: Provides an easy way to manually update the completion
-- **Integration**: Included in the main `make update` target
+- **Integration**: Included in the main `just update` recipe
 
 ### 4. Generated Completion File
 - **Location**: `dot_zfunc/_claude`
@@ -41,10 +41,10 @@ The completion system automatically generates zsh completion functions for the C
 ### Manual Update
 ```bash
 # Update just the Claude completion
-make update-claude-completion
+just update-claude-completion
 
 # Update everything including Claude completion
-make update
+just update
 
 # Run the generator directly
 ./scripts/generate-claude-completion-simple.sh

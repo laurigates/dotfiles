@@ -24,11 +24,11 @@ mise exec -- zsh -x -c 'printenv PATH' 2>&1 | rg PATH
 
 -   **Debug LSP configuration:**
     ```
-    :LspInfo
-    :LspLog
+    :checkhealth vim.lsp
+    :lua vim.cmd('edit ' .. vim.lsp.log.get_filename())
     :checkhealth
     ```
-    *(Note: `:Neoconf` might be specific to a plugin; standard commands are `:LspInfo`, `:LspLog`, `:checkhealth`)*
+    *(Note: `:LspInfo` and `:LspLog` come from nvim-lspconfig, which this config does not install; use the built-in equivalents above.)*
 
 ## Debugging Zsh Completions
 
