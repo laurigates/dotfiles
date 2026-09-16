@@ -133,6 +133,22 @@ fails to parse returns no matches and exit 0, indistinguishable from a clean
 tree. The control test in *Results that lie* applies unchanged — and control it
 against a term you know is present, in the tool you are actually using.
 
+## `gh api` sends every field as a string unless you use `-F`
+
+`-f key=value` types the value as a **string**, so an endpoint expecting a
+number rejects it:
+
+```
+gh api -X POST repos/O/R/issues/2380/sub_issues -f sub_issue_id=5471095685
+Invalid property /sub_issue_id: "5471095685" is not of type `integer`. (HTTP 422)
+```
+
+`-F key=value` reads the value as a typed literal (number, boolean, null, or
+`@file`) and the identical call succeeds. Observed 2026-09-16: six sub-issue
+links failed this way before the flag changed. The error quotes the value and
+names the property, so it reads as a bad id — the id was right and the flag was
+wrong.
+
 ## WebFetch — do not retry the same failing URL
 
 Promoted to a skill: invoke `documentation-plugin:docs-fetch-fallbacks` when a
