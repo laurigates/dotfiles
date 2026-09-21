@@ -68,7 +68,7 @@ jobs:
           bun-version: latest
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Install pre-commit
         run: pip install pre-commit
