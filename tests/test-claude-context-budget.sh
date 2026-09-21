@@ -132,6 +132,27 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 #   tool-use-patterns.md 8,801 B · git-hazards.md 7,727 B
 #   never-fabricate-test-identifiers.md 6,917 B · communication.md 6,284 B
 #   offload-to-deterministic-substrate.md 5,378 B
+#
+# 2026-09-21 → 104,000 (UNCHANGED, cleanup landed). dotfiles #428 pushed the
+# surface to 105,649 of 104,000 — over budget, and origin/main was red on this
+# gate. The four always-loaded zsh rules (colon-modifiers 2,123 · equals-expansion
+# 1,846 · no-word-splitting 2,455 · special-variables-path 2,819 = 9,243 B) were
+# promoted to tools-plugin:zsh-gotchas, leaving one 1,486-byte pointer stub.
+# Measured on disk in a clean worktree off origin/main:
+#
+#   before the promotion                 = 105,649   (44 unconditional rules)
+#   after  the promotion (-7,757)        =  97,892   (41 unconditional rules)
+#   path_scoped_bytes                    =  58,140   (not counted; loads on match)
+#
+# The ceiling stays at 104,000 rather than ratcheting: it now leaves 6,108 bytes
+# (6.2%) free, which is the margin the last two entries chose deliberately
+# (5,537 / 6.4% and 5,401 / 5.9%). Ratcheting to ~103,800 would move the number
+# without changing what the gate does. This entry is a ratchet in substance — the
+# 6,091 bytes the 2026-09-12 bump deferred as untriaged debt are now repaid by a
+# real consolidation, not by a larger number.
+#
+# Next cleanup candidate is unchanged: tool-use-patterns.md, now 9,447 B after
+# the gh api -f entry, within 553 B of PER_FILE_CAP_BYTES.
 TOTAL_BUDGET_BYTES=104000
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
