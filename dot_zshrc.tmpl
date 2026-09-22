@@ -184,6 +184,24 @@ if type /opt/homebrew/bin/brew &> /dev/null; then
   path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
   export HOMEBREW_PREFIX="/opt/homebrew"
 fi
+
+# macOS ships bsdtar (libarchive) as /usr/bin/tar, which lacks the GNU flags that
+# every Linux doc, CI runner and Stack Overflow answer assumes: --one-top-level
+# (the tarbomb guard), --sort=name/--mtime (reproducible archives), --transform,
+# --wildcards. gnubin symlinks gtar -> tar, so `tar` means GNU tar 1.35 here and
+# on the ubuntu runners alike.
+#
+# This PREPENDS on purpose: `path+=(...)` would land gnubin behind /usr/bin and
+# the shadow would silently do nothing. It stays ABOVE `mise activate` so mise
+# still wins overall (mise > gnubin > brew > system); mise does not manage tar,
+# so nothing contends.
+#
+# Trade-off accepted 2026-09: GNU tar drops the macOS xattrs/ACLs that bsdtar
+# stores in pax headers, and cannot read zip/7z/iso. Use /usr/bin/tar explicitly
+# for those (e.g. `/usr/bin/tar tf foo.zip`).
+if [ -d /opt/homebrew/opt/gnu-tar/libexec/gnubin ]; then
+  path=("/opt/homebrew/opt/gnu-tar/libexec/gnubin" $path)
+fi
 {{ else if eq .chezmoi.os "linux" }}
 if type /home/linuxbrew/.linuxbrew/bin/brew &> /dev/null; then
   path=("/home/linuxbrew/.linuxbrew/bin" "/home/linuxbrew/.linuxbrew/sbin" $path)
