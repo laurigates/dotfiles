@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790053645786,
+  "lastUpdate": 1790086326702,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -87,6 +87,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.01098115358,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a95de74b73f975b2a78e3b402040eb0f1ff2469c",
+          "message": "feat(zsh): shadow macOS bsdtar with GNU tar for Linux/CI parity (#432)\n\n## What\n\nPrepends Homebrew's `gnu-tar` gnubin directory to `PATH` on macOS, so\n`tar` resolves to GNU tar 1.35 instead of the system bsdtar.\n\n## Why\n\nmacOS ships bsdtar (libarchive) as `/usr/bin/tar`. I probed the\ninstalled `bsdtar 3.5.3` directly and cross-checked every result against\nits man page — these GNU flags are simply absent:\n\n| Capability | GNU flags | Present in bsdtar 3.5.3 |\n|---|---|---|\n| Tarbomb guard | `--one-top-level` | no |\n| Reproducible archives | `--sort=name`, `--mtime=`, `--clamp-mtime` |\nno |\n| Archive surgery | `--delete`, `--concatenate` | no |\n| Incremental backups | `--listed-incremental` | no |\n| Overwrite policy | `--overwrite`, `--skip-old-files`, `--backup` | no\n|\n\nThe immediate motivation was the first row. Extracting an archive whose\nmembers sit at the root spills them into the current directory, and the\nflag that prevents it doesn't exist here. The broader motivation is that\nubuntu runners have GNU tar, so a `tar` invocation that works in CI can\nfail locally and vice versa.\n\nNot gaps, and worth recording so nobody \"fixes\" them later:\n`--transform` has a bsdtar equivalent in `-s`, and `-u`/`--update` and\n`--no-recursion` are both supported.\n\n## How\n\nTwo placement details, both load-bearing:\n\n- **Prepended, not appended.** `path+=(...)` would land gnubin behind\n`/usr/bin` and the shadow would silently do nothing.\n- **Above `mise activate`**, per the rule this file already documents,\nso the established order holds: `mise > gnubin > brew > system`. mise\ndoes not manage tar, so nothing contends.\n\nGuarded on the directory existing, so a machine without `gnu-tar`\ninstalled is unaffected.\n\n## Trade-off accepted\n\nGNU tar drops the macOS xattrs/ACLs that bsdtar stores in pax headers,\nand cannot read zip/7z/iso. `/usr/bin/tar` stays available for those,\nand the comment in the file says so. I checked the tree first: nothing\nuses `tar -s`, `--mac-metadata`, `COPYFILE_DISABLE`, or reads a zip\nthrough `tar`, so nothing regresses.\n\n## Verification\n\n- Fresh `zsh -ic` resolves `tar` to `.../gnu-tar/libexec/gnubin/tar`,\nreporting `tar (GNU tar) 1.35`\n- `tar --one-top-level=out -xzf <tarbomb>.tar.gz` wraps correctly end to\nend\n\n`tests/test-shell-precedence.sh` reports 29 failures on this branch, all\npre-existing and unrelated: every one is `~/.cargo/bin` shadowing a\nmise-managed Rust tool. `.cargo/bin` sits at PATH index 8, interleaved\ninside mise's own entries, while gnubin lands at index 77 — and gnubin\ncontains exactly two symlinks, `tar` and `man`, neither of which appears\nin the failure list. Worth a separate look, since `.cargo/bin` is not\nadded by this file at all.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_013G6Px3PdxeXEjihCjyQCKp\n\nCo-authored-by: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-22T17:11:28+03:00",
+          "tree_id": "f6d36a35133965a9dcfef1211c97a0e8ed494b92",
+          "url": "https://github.com/laurigates/dotfiles/commit/a95de74b73f975b2a78e3b402040eb0f1ff2469c"
+        },
+        "date": 1790086326213,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.008287842420000002,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00151497472,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012512151200000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.012547189019999998,
             "unit": "s"
           }
         ]
