@@ -152,7 +152,10 @@ while IFS= read -r file; do
                 # Escape special characters for sed
                 old_escaped=$(printf '%s\n' "$old" | sed 's:[][\/$.^*]:\\&:g')
                 new_escaped=$(printf '%s\n' "$new" | sed 's:[][\/.^*$]:\\&:g')
-                sed -i '' "s|$old_escaped|$new_escaped|g" "$temp_file"
+                # `sed -i ""` is BSD-only; GNU sed reads the script as a filename.
+                # `-i.bak` is the one spelling both accept.
+                sed -i.bak "s|$old_escaped|$new_escaped|g" "$temp_file"
+                rm -f "$temp_file.bak"
             fi
             file_modified=true
             count=$(grep -oF "$old" "$file" 2>/dev/null | wc -l | tr -d ' ')
