@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790086326702,
+  "lastUpdate": 1790086372016,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -131,6 +131,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.012547189019999998,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "be2fd3bdbd2436517d623673082bb10ecdfa4a7a",
+          "message": "fix(scripts): use portable sed -i.bak in update-command-references (#433)\n\n## What\n\n`scripts/update-command-references.sh` rewrites references with `sed -i\n'' \"s|…|…|g\"`. That spelling is BSD-only. This switches it to `sed\n-i.bak` plus an immediate `rm -f`.\n\n## Why\n\nGNU sed's `-i` takes an *optional suffix that must be attached*, so `-i\n''` parses as `-i` with no suffix and the `''` becomes the script. The\nreal script is then read as a filename:\n\n```\n$ sed -i '' 's|a|b|g' file     # GNU sed 4.9\nsed: can't read s|a|b|g: No such file or directory\nexit=2\n```\n\nThe script runs under `set -euo pipefail`, so on a Linux machine it\naborts rather than doing the rewriting it exists to do. Dotfiles are the\none repo most likely to be cloned onto a Linux box, which is what makes\nthis worth fixing rather than noting.\n\n`-i.bak` is the only in-place spelling both implementations accept.\nMeasured on both:\n\n| Invocation | BSD sed (macOS) | GNU sed 4.9 |\n|---|---|---|\n| `sed -i '' 's/a/b/' f` | works | exit 2, file unchanged |\n| `sed -i 's/a/b/' f` | exit≠0, file unchanged | works |\n| `sed -i.bak 's/a/b/' f` | works | works |\n\n## Why not `perl -i -pe`\n\nIt is the tidier one-liner and is equally portable, but this call site\nbuilds its pattern from shell-escaped content (`$old_escaped`,\n`$new_escaped`, escaped for sed's BRE by the two lines directly above\nit). Perl's regex dialect has different escaping rules, so swapping\nengines would mean re-deriving that escaping. `-i.bak` changes only the\nflag spelling and leaves the substitution byte-identical.\n\n## Verification\n\n- `bash -n scripts/update-command-references.sh` passes\n- Both spellings exercised against real GNU sed 4.9 in a container and\nBSD sed on macOS\n- Repo pre-commit suite passes\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_013G6Px3PdxeXEjihCjyQCKp\n\nCo-authored-by: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-22T17:12:07+03:00",
+          "tree_id": "6e65174ccdf6aee163921603c96a7d26af617f78",
+          "url": "https://github.com/laurigates/dotfiles/commit/be2fd3bdbd2436517d623673082bb10ecdfa4a7a"
+        },
+        "date": 1790086371539,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.008254833833333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00152961462,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012411460200000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011070930980000001,
             "unit": "s"
           }
         ]
