@@ -9,7 +9,7 @@
 # configure-workflows skill still emit a per-repo renovate.yml, so the second
 # runner can come back without anyone deciding to add it.
 #
-# Runner shapes detected on non-comment lines of .github/workflows/*.y{a,}ml:
+# Runner shapes detected in `uses:` values of .github/workflows/*.y{a,}ml:
 #   - renovatebot/github-action   the self-hosted action
 #   - reusable-renovate.yml       a caller of the org reusable workflow
 # Other shapes (a renovate container image, `npx renovate`) are not detected.
@@ -32,8 +32,12 @@ fi
 [ -d "$WORKFLOWS_DIR" ] || { echo "FAIL: not a directory: $WORKFLOWS_DIR"; exit 1; }
 
 RUNNER_RE='renovatebot/github-action|reusable-renovate\.ya?ml'
+# A `uses:` value naming a runner. `^[^#]*` skips commented-out lines, and the
+# value stops at whitespace, a quote or `#`, so names and trailing comments that
+# mention a runner are not flagged.
+USES_RE="^[^#]*uses:[[:space:]]*['\"]?[^'\"#[:space:]]*(${RUNNER_RE})"
 
-# Print file:line:text for each non-comment line that runs Renovate.
+# Print file:line:text for each `uses:` line that runs Renovate.
 # Exit 0 = found, 1 = none, 2 = grep error.
 scan() {
     local dir="$1" files
@@ -41,8 +45,7 @@ scan() {
     files=("$dir"/*.yml "$dir"/*.yaml)
     shopt -u nullglob
     [ "${#files[@]}" -gt 0 ] || return 1
-    # `^[^#]*` keeps comment-only mentions out.
-    grep -HnE "^[^#]*(${RUNNER_RE})" "${files[@]}"
+    grep -HnE "$USES_RE" "${files[@]}"
 }
 
 fail=0
@@ -72,6 +75,14 @@ jobs:
     steps:
       - run: npx --yes --package renovate -- renovate-config-validator renovate.json5
 EOF
+cat >"$FIXTURES/name-mention.yml" <<'EOF'
+jobs:
+  lint:
+    name: Validate renovatebot/github-action inputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5  # reusable-renovate.yml is called elsewhere
+EOF
 
 control=$(scan "$FIXTURES")
 for f in reusable-caller.yml action.yaml; do
@@ -80,10 +91,12 @@ for f in reusable-caller.yml action.yaml; do
         fail=1
     fi
 done
-if grep -q "/validator-only.yml:" <<<"$control"; then
-    echo "FAIL: control fixture validator-only.yml was flagged; the patterns match non-runner lines"
-    fail=1
-fi
+for f in validator-only.yml name-mention.yml; do
+    if grep -q "/$f:" <<<"$control"; then
+        echo "FAIL: control fixture $f was flagged; the patterns match non-runner lines"
+        fail=1
+    fi
+done
 
 # --- The real tree --------------------------------------------------------
 hits=$(scan "$WORKFLOWS_DIR")
