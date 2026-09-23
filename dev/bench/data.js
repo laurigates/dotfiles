@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790147444722,
+  "lastUpdate": 1790147553019,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -263,6 +263,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.06484195164,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3f296f414e303c16b0df964b5cc5e90072863833",
+          "message": "chore(claude): document why scheduled-tasks/ stays unversioned (#436)\n\n## What\n\n- `exact_dot_claude/.chezmoiignore`: `scheduled-tasks/` moves out of the\ngeneric \"Runtime directories created by Claude Code\" block into its own\ncommented block. The comment names the owner (Claude Desktop), what\n`SKILL.md` holds and does not hold, and why the line must stay (`exact_`\nparent). The directory stays deliberately unversioned.\n- The same file registers two runtime entries that were neither managed\nnor ignored: `state/` (Claude Code) and `settings.json.bak` (writer\nunknown, and the comment says so).\n- New `tests/test-claude-runtime-ignored.sh`, wired as a local\npre-commit hook, fails when any known app-written entry under\n`~/.claude` would be deleted by `chezmoi apply`.\n\nFixes #399\n\n## Why\n\n`~/.claude` is an `exact_` directory, so apply deletes every entry that\nis neither in the source nor in `.chezmoiignore`. `scheduled-tasks/`\ncame in as a drive-by in #190 with no comment of its own, so a later\nreader could not tell a deliberate exclusion from an oversight (#399).\n\nOption 3 of #399 (app-owned, deliberately unversioned) follows from the\nDesktop docs (code.claude.com/docs/en/desktop-scheduled-tasks):\n\n- The Desktop app creates, edits (Edit form, `update_scheduled_task` MCP\ntool) and deletes `scheduled-tasks/<name>/SKILL.md`.\n- \"Schedule, folder, model, and enabled state are not in this file.\"\nThey live in the app's registry outside `~/.claude`, so a versioned\n`SKILL.md` could not recreate a task on another machine.\n- Tracking the directory under an `exact_` parent would either delete\napp-created tasks (`exact_scheduled-tasks/`) or leave them unmanaged\n(plain subdir), and app edits would show up as drift.\n\n`chezmoi status ~/.claude` at `be2fd3b` also listed ` D .claude/state`\nand ` D .claude/settings.json.bak`. Both would have been deleted by the\nnext apply, and the exact-guard hook blocks every apply until they are\nhandled.\n\n## How\n\nThe test seeds a scratch destination with one fixture per known runtime\nentry, runs `chezmoi status --source=<repo> --destination=<tmp>` with\nscratch `--config`, `--cache` and `--persistent-state` and\n`--exclude=scripts,externals`, and fails on any ` D` line. The\ndestination holds only fixtures, so every ` D` line names one.\n\n- **Canary control:** a deliberately unregistered canary must be\nreported as ` D`. If it is not, the harness could not see a deletion and\nthe test fails.\n- **chezmoi errors:** a non-zero exit fails the test.\n- **Fixture list:** kept separate from `.chezmoiignore`, so removing an\nignore line cannot also remove its fixture.\n- **Dependencies:** `exact_dot_claude/modify_settings.json` still runs\nduring status. It reads stdin, writes stdout, and needs `jq`.\n\nThe hook runs on changes to `exact_dot_claude/.chezmoiignore` or the\ntest. It also runs in the Linters CI job, which installs chezmoi before\n`pre-commit run --all-files` (`.github/workflows/smoke.yml:35-39`).\n\n## Tests\n\nRED at `be2fd3b` (test file only, ignore file unchanged), exit 1:\n\n```\n$ tests/test-claude-runtime-ignored.sh\nFAIL: chezmoi apply would DELETE these runtime entries under ~/.claude.\n      Register each in exact_dot_claude/.chezmoiignore with an owner comment:\n        .claude/settings.json.bak\n        .claude/state\n```\n\nRED at `be2fd3b` with the `scheduled-tasks/` line deleted (scratch\ncopy), exit 1:\n\n```\n        .claude/scheduled-tasks\n        .claude/settings.json.bak\n        .claude/state\n```\n\nGREEN at branch tip, exit 0:\n\n```\nPASS: 45 runtime entries survive chezmoi apply (canary deletion detected)\n```\n\nNegative controls, each on a scratch copy of the fixed tree, all exit 1:\n\n| Planted change | Output |\n|---|---|\n| delete `scheduled-tasks/` | `FAIL: ... .claude/scheduled-tasks` |\n| delete `state/` | `FAIL: ... .claude/state` |\n| append `/bogus` (fatal ignore pattern) | `FAIL: chezmoi status exited\n1` / `.chezmoiignore:79: /bogus: invalid path` |\n| ignore the canary | `FAIL: control: the unregistered canary ... was\nnot reported as a pending deletion` |\n\nHook wiring, in a scratch clone of the branch: with `scheduled-tasks/`\ndeleted, `pre-commit run claude-runtime-ignored --files\nexact_dot_claude/.chezmoiignore` reports `Failed` and lists\n`.claude/scheduled-tasks`. On the unmodified clone, `pre-commit run\nclaude-runtime-ignored --all-files` reports `Passed`.\n\nClean environment: `env -i HOME=<empty dir> PATH=<chezmoi dir>:<jq\ndir>:/usr/bin:/bin /bin/bash tests/test-claude-runtime-ignored.sh`\nprints `PASS` (exit 0) under macOS `/bin/bash` 3.2, and the empty `HOME`\nis still empty afterwards. The test reads nothing from the real\n`~/.claude` or chezmoi config.\n\n## Other instances\n\n- `~/.claude/state/` holds `mcp-discover-verdicts.json`, a filename that\nappears in the Claude Code CLI binary's strings. Registered.\n- `~/.claude/settings.json.bak` has no known writer: nothing in this\nrepo, the plugin cache, or the CLI binary's strings names it. Registered\nwith a comment saying the writer is unknown.\n- The other entries in the generic runtime blocks keep their shared\nheader. They are now all fixtures in the test, so removing any of them\nfails the hook. `scheduled-tasks/` was the only one owned by a different\napp and holding user-authored content.\n- `private_repos/CLAUDE.md:41` says the Claude scheduled tasks'\n\"schedule and run history live at claude.ai/code/routines\". That holds\nfor cloud routines, but Desktop local tasks keep both in the Desktop\napp. This PR does not change it because the rendered `~/repos/CLAUDE.md`\nis also tracked in another repository, so an edit here would diverge\nfrom that copy. See Follow-ups.\n\n## Verification\n\n- `shellcheck tests/test-claude-runtime-ignored.sh`: exit 0.\n- `pre-commit run --files tests/test-claude-runtime-ignored.sh\n.pre-commit-config.yaml exact_dot_claude/.chezmoiignore`: all hooks\nPassed (trailing-whitespace, end-of-file, check-yaml, the new hook, doc\nreferences, gitleaks).\n- `chezmoi --source <worktree> status ~/.claude`: before, ` D\n.claude/settings.json.bak` and ` D .claude/state`. After, only `MM\n.claude/settings.json`, which is existing runtime drift in the `modify_`\ntarget and unrelated to this change.\n- `chezmoi --source <worktree> ignored` lists `.claude/scheduled-tasks`,\n`.claude/settings.json.bak` and `.claude/state`.\n- Not verified: the new hook inside the Linters CI job on Ubuntu. It\nruns there on the next push.\n\n## Follow-ups\n\n- #444: correct `private_repos/CLAUDE.md:41` on where Desktop local task\nschedules live (the file is also tracked in another repository), and\nname the writer of `~/.claude/settings.json.bak` once identified.\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01Q6aDMonZX35gYM9ZsKUfPv\n\n---------\n\nCo-authored-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-23T10:11:52+03:00",
+          "tree_id": "38a3b037fa51d0f4398989d34ba842d8610dbe21",
+          "url": "https://github.com/laurigates/dotfiles/commit/3f296f414e303c16b0df964b5cc5e90072863833"
+        },
+        "date": 1790147552333,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.00980133774,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00149343536,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00122533536,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011367556000000001,
             "unit": "s"
           }
         ]
