@@ -30,6 +30,14 @@ jobs:
       - name: Setup Homebrew (Linux)
         uses: Homebrew/actions/setup-homebrew@main
 
+      - name: Authenticate GitHub API for pre-commit hook installs
+        # stylua-github builds through release-gitter, which reads only
+        # $NETRC; anonymous calls hit the shared 60/h limit (#434). The
+        # script exports NETRC and fails if GitHub rejects the credential.
+        run: .github/scripts/github-api-netrc.sh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Install Dependencies
         run: |
           brew install chezmoi
