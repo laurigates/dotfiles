@@ -129,8 +129,9 @@ to run, and chezmoi reports only the *first* offending line, so a file with
 several absolute patterns looks like it has one problem. Older chezmoi
 tolerated the form silently; ≥2.72 rejects it. This broke the repo's CI for
 two weeks in 2026-08 — the `Build (Ubuntu)` job died at `chezmoi apply`
-while every other check stayed green, because CI installs chezmoi unpinned
-(`brew install chezmoi`) and a release changed the rule underneath it.
+while every other check stayed green, because CI installed chezmoi unpinned
+(`brew install chezmoi`) and a release changed the rule underneath it. CI now
+takes chezmoi from the repo-root `.mise.toml` pin (#418).
 
 The same applies to `.chezmoiremove`. There, a path genuinely outside `$HOME`
 (e.g. `/tmp/some.log`) is not expressible at all — `.chezmoiremove` can only

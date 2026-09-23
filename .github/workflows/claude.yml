@@ -5,9 +5,9 @@ name: Claude Code
 # claude-code-action -> failure handling and defaults to ubuntu-slim, which
 # carries no Homebrew and no Go; a reusable workflow cannot accept
 # caller-supplied steps, so the toolchain below (node + bun for the MCP
-# servers, Homebrew + chezmoi + pre-commit for the repo's own checks) has
-# nowhere to go. Revisit if reusable-claude.yml ever grows a setup-action or
-# pre-steps input.
+# servers, Homebrew + pre-commit + chezmoi via mise for the repo's own checks)
+# has nowhere to go. Revisit if reusable-claude.yml ever grows a setup-action
+# or pre-steps input.
 #
 # MCP servers are scoped to .github/claude-mcp-ci.json via --strict-mcp-config.
 # The project .mcp.json declares five servers, but CI only ever installed the
@@ -68,7 +68,7 @@ jobs:
           bun-version: latest
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@main
+        uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
 
       - name: Authenticate GitHub API for pre-commit hook installs
         # Same fix as smoke.yml (#434): the agent runs pre-commit, and
@@ -82,9 +82,14 @@ jobs:
       - name: Install pre-commit
         run: pip install pre-commit
 
-      - name: Install pre-commit dependencies
-        run: |
-          brew install chezmoi
+      - name: Setup mise
+        # Installs chezmoi at the version pinned in .mise.toml (#418).
+        uses: jdx/mise-action@v4
+        with:
+          version: 2026.9.12
+
+      - name: Assert chezmoi matches the .mise.toml pin
+        run: tests/test-ci-pins.sh --assert-installed
 
       - name: Install Claude CLI
         run: |

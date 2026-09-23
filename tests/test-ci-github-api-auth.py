@@ -213,7 +213,7 @@ jobs:
   lint:
     steps:
       - run: |
-          brew install chezmoi
+          brew install shellcheck
           pip install pre-commit
 """, ["R1"]),
     ("pre-commit/action, no NETRC", """
