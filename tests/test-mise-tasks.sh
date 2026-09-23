@@ -316,7 +316,7 @@ else
     # off PATH; apply also gets --dry-run in case the stub is ever bypassed.
     for t in status diff verify apply; do
         extra=(); [ "$t" = apply ] && extra=(--dry-run)
-        out=$(run_mise "$REPO/tests" "$WORK/mise/state" "$EMPTY_DATA" "$STUB_CZ:$PATH" run "$t" "${extra[@]}"); rc=$?
+        out=$(run_mise "$REPO/tests" "$WORK/mise/state" "$EMPTY_DATA" "$STUB_CZ:$PATH" run "$t" ${extra[@]+"${extra[@]}"}); rc=$?
         line=$(grep 'MISE-TASKS-STUB chezmoi' <<<"$out" | head -1)
         if [ -z "$line" ]; then
             log_fail "$t: the stub chezmoi never ran (rc=$rc): $(grep -v '^\[' <<<"$out" | head -1)"
