@@ -51,6 +51,18 @@
       groupSlug: 'pre-commit',
     },
     {
+      description: 'chezmoi pin in .mise.toml: its own PR, never automerged (2.72.0 was a minor release that broke main, #418)',
+      matchManagers: [
+        'mise',
+      ],
+      matchDepNames: [
+        'chezmoi',
+      ],
+      groupName: 'chezmoi',
+      groupSlug: 'chezmoi',
+      automerge: false,
+    },
+    {
       description: 'Group chezmoi external dependencies',
       matchManagers: [
         'custom.regex',
@@ -73,6 +85,7 @@
     'github-actions',
     'pre-commit',
     'custom.regex',
+    'mise',
   ],
   'github-actions': {
     managerFilePatterns: [
