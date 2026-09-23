@@ -53,6 +53,15 @@ repos:
         language: script
         files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
         pass_filenames: false
+      # Runtime entries that other programs write under ~/.claude stay
+      # registered in exact_dot_claude/.chezmoiignore; ~/.claude is exact_, so
+      # an unregistered entry is deleted on apply (#399). Needs chezmoi + jq.
+      - id: claude-runtime-ignored
+        name: check Claude runtime entries survive chezmoi apply
+        entry: tests/test-claude-runtime-ignored.sh
+        language: script
+        files: '^(exact_dot_claude/\.chezmoiignore|tests/test-claude-runtime-ignored\.sh)$'
+        pass_filenames: false
       # CI jobs that call api.github.com must carry a credential the calling
       # tool reads: NETRC for pre-commit (release-gitter), a token for mise,
       # explicit auth for curl/wget (#434). Self-tests before scanning.
