@@ -30,10 +30,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install chezmoi neovim zsh hyperfine
+          brew install neovim zsh hyperfine
 
       - name: Setup mise
+        # Installs chezmoi at the version pinned in .mise.toml (#418).
         uses: jdx/mise-action@v4
+        with:
+          version: 2026.9.12
 
       - name: Benchmark chezmoi apply
         id: chezmoi-bench

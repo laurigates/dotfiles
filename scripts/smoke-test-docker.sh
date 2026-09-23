@@ -62,16 +62,16 @@ ensure_dependencies() {
         log_success "pre-commit found: $(pre-commit --version)"
     fi
 
-    # Check for chezmoi
+    # Check for chezmoi. It must be the version pinned in .mise.toml (#418), so
+    # a missing chezmoi is installed by mise from the repo root, as in CI.
     if ! command -v chezmoi &> /dev/null; then
-        log_warning "chezmoi not found, attempting to install..."
-        if command -v brew &> /dev/null; then
-            log_info "Installing chezmoi via brew..."
-            brew install chezmoi
-        else
-            log_info "Installing chezmoi via official installer..."
-            sh -c "$(curl -fsSL https://www.chezmoi.io/get)" -- -b "$HOME/.local/bin"
+        log_warning "chezmoi not found, installing the .mise.toml pin via mise..."
+        if ! command -v mise &> /dev/null; then
+            log_error "Cannot install chezmoi: mise not found (https://mise.jdx.dev)"
+            return 1
         fi
+        mise install chezmoi
+        export PATH="${MISE_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/mise}/shims:$PATH"
         # Verify installation
         if command -v chezmoi &> /dev/null; then
             log_success "chezmoi installed successfully"
