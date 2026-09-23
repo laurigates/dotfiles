@@ -70,6 +70,15 @@ jobs:
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
+      - name: Authenticate GitHub API for pre-commit hook installs
+        # Same fix as smoke.yml (#434): the agent runs pre-commit, and
+        # stylua-github's release-gitter build reads only $NETRC. This adds no
+        # exposure: setup-homebrew already exports this token to every later
+        # step as HOMEBREW_GITHUB_API_TOKEN.
+        run: .github/scripts/github-api-netrc.sh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Install pre-commit
         run: pip install pre-commit
 
