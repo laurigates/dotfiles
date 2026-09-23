@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790086372016,
+  "lastUpdate": 1790146984467,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -175,6 +175,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011070930980000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a00191306f42c2b83630a263f502eca5603a2483",
+          "message": "fix(ci): authenticate pre-commit hook installs against the GitHub API (#435)\n\n## What\n\nCI jobs that run pre-commit now give it an authenticated path to the\nGitHub REST API. A new regression check fails any workflow job that\ncalls api.github.com through a tool without a credential that tool\nreads.\n\nFixes #434\n\n## Why\n\nStyLua's `stylua-github` hook (`.pre-commit-config.yaml`, rev v2.1.0) is\n`language: python`, and its wheel is built by release-gitter.\nrelease-gitter lists releases with\n`requests.get(remote.get_releases_url(), headers={\"Accept\":\n\"application/json\"})` (release_gitter.py:233-238) and reads no token\nvariable. Nothing caches `~/.cache/pre-commit`, so every Linters run\nmakes this call anonymously and it counts against the runner IP's 60/h\nlimit, which hosted runners share. 3 of 432 Smoke runs since the hook\nlanded failed with `403 Client Error: rate limit exceeded for url:\nhttps://api.github.com/repos/JohnnyMorganz/StyLua/releases`, most\nrecently 35728723228.\n\nThe fix proposed in the issue, setting `GITHUB_TOKEN`, has no effect.\nThe triage ran release-gitter 3.1.3's own `fetch_release` with\n`GITHUB_TOKEN`, `GH_TOKEN`, `GITHUB_API_TOKEN` and\n`HOMEBREW_GITHUB_API_TOKEN` set. The response still reported\n`X-RateLimit-Limit=60` and no `Authorization` header was sent. The\nfailing step in 35728723228 already had `HOMEBREW_GITHUB_API_TOKEN` in\nits env. requests does read `$NETRC` (else `~/.netrc`) when no auth is\npassed. The triage then ran an end-to-end A/B of the `stylua-github`\ninstall with a fresh `PRE_COMMIT_HOME`. With `NETRC` set, the install\nmade 1 authenticated API call. Without it, the install made only\nanonymous calls. So the variable reaches release-gitter through pip's\nisolated build.\n\n## How\n\n- `.github/scripts/github-api-netrc.sh` writes `machine api.github.com\nlogin x-access-token password <token>` to\n`$RUNNER_TEMP/github-api.netrc` under `umask 077`, which gives mode 600\noutside the workspace. It then appends `NETRC=<path>` to `$GITHUB_ENV`.\nThe token is written with the `printf` builtin, so it never appears in a\nprocess argv or in the log.\n- The script then calls `/rate_limit` through the netrc and fails the\nstep unless `.resources.core.limit > 60`. That call does not count\nagainst the limit. A rejected credential does not produce an HTTP error\nhere: locally, an invalid token returned 200 with limit 60. The limit is\ntherefore the check, and a failure stops the job before pre-commit can\nfall back to anonymous calls.\n- `smoke.yml` (Linters) and `claude.yml` (agent job) run the script with\n`GITHUB_TOKEN: ${{ github.token }}` before installing pre-commit. In\n`claude.yml` this adds no exposure: setup-homebrew already exports the\nsame token to every later step as `HOMEBREW_GITHUB_API_TOKEN`\n(setup-homebrew main.sh:172-174), and `allowed_non_write_users` is\nunset, so claude-code-action does not scrub subprocess env.\n- `tests/test-ci-github-api-auth.py` is wired as a local pre-commit hook\n(`language: python`, `additional_dependencies: [pyyaml]`, scoped to\n`.github/workflows/`, `.github/scripts/` and itself). It therefore runs\nin CI through the Linters job's `pre-commit run --all-files`. It parses\nevery workflow and fails when a job:\n- R1: runs or installs pre-commit (`pre-commit\nrun|install|install-hooks|try-repo|autoupdate`, `uses:\npre-commit/action`, or pip/pipx/uv/brew install) without `NETRC` in env\nor exported by an earlier step;\n- R2: runs `mise` without an earlier `jdx/mise-action` or a\n`MISE_GITHUB_TOKEN`/`GITHUB_API_TOKEN`/`GITHUB_TOKEN`;\n- R3: calls api.github.com with curl or wget and no\n`-u`/`-n`/`--netrc*`/`Authorization` on the command.\n\nRepo shell scripts invoked by a run step are scanned with it, so the\nhelper counts as the auth step. A 16-fixture self-test runs before every\nscan.\n\nThe check lives in `tests/`, which `.chezmoiignore` lists, so it never\ndeploys to `$HOME`. No pre-commit environment cache was added: a cache\nmiss, which happens on any hook bump, still needs the netrc. The cache\nis listed under Follow-ups.\n\n## Tests\n\nRED: the check run against the unfixed tree (be2fd3b plus the test\nfile):\n\n```\npython3 tests/test-ci-github-api-auth.py            # exit 1\nPASS self-test: 16 fixtures\nWORKFLOWS=13 JOBS=15 CONSUMERS=4\nFAIL R1 .github/workflows/claude.yml job `claude` step 5 `Install pre-commit`: runs or installs pre-commit without NETRC; ...\nFAIL R1 .github/workflows/smoke.yml job `lint` step 4 `Install Dependencies`: runs or installs pre-commit without NETRC; ...\nFAIL R1 .github/workflows/smoke.yml job `lint` step 5 `Run pre-commit`: runs or installs pre-commit without NETRC; ...\nSTATUS=FAIL\n```\n\nGREEN, after the fix:\n\n```\npython3 tests/test-ci-github-api-auth.py            # exit 0\nPASS self-test: 16 fixtures\nWORKFLOWS=13 JOBS=15 CONSUMERS=6\nPASS every GitHub-API consumer in CI carries a credential its tool reads\nSTATUS=PASS\n```\n\nThrough pre-commit, with only `smoke.yml` swapped back to its be2fd3b\ncontent: `pre-commit run ci-github-api-auth --all-files --verbose` exits\n1 with the two `smoke.yml` R1 lines. With the fixed file restored it\nexits 0.\n\nControls for the negatives:\n\n- A planted workflow (`pip install pre-commit && pre-commit\ninstall-hooks`, then `mise install` after mise-action, then an anonymous\n`curl -fsSL https://api.github.com/...` split over a `\\` continuation)\nis flagged R1 and R3, and not R2, via `--root`.\n- Mutating the check makes the self-test fail. A `pre-commit` subcommand\nregex that matches nothing gives 4 fixture failures. A `GITHUB_ENV`\nexport regex that matches nothing gives 2 fixture failures.\n- `github-api-netrc.sh` was run locally with scratch\n`RUNNER_TEMP`/`GITHUB_ENV` and a user token. It printed\n`{\"limit\":5000,...}`, exited 0, and wrote the netrc as `-rw-------`.\n  - With an invalid token it exits 1 with `core limit <= 60`.\n- With the netrc `machine` mutated to another host it exits 1 with `core\nlimit <= 60`.\n- requests, reading the netrc the script wrote, sent Basic auth and got\nlimit 5000. With `NETRC=/nonexistent` it sent no auth and got limit 60.\n\n## Other instances\n\n- `claude.yml` job `claude`: installs pre-commit for the agent\n(`claude-tools-config.json` allows `Bash(pre-commit:*)`). R1 flagged it\nat be2fd3b. Fixed in this PR.\n- `auto-fix-ci-failures.yml` calls `laurigates/.github`\n`reusable-auto-fix.yml@main`. At its current main that workflow installs\nneither pre-commit nor pip packages. The check skips `jobs.<id>.uses`\njobs because their steps live in another repo.\n- `jdx/mise-action@v4` in `smoke.yml` (Build jobs) and `benchmarks.yml`\nis already authenticated: `github_token` defaults to `github.token` and\nthe action exports `MISE_GITHUB_TOKEN`. R2 pins this.\n- Not in the check: brew. The api.github.com calls in its auto-update\n(`Library/Homebrew/cmd/update.sh`) run `--silent --max-time 3` and fall\nthrough on failure. They also read `HOMEBREW_GITHUB_API_TOKEN`, which\nsetup-homebrew sets on every Linux job. The triage's proposed R4 (Linux\nbrew without setup-homebrew) was dropped because no failure mode was\nshown for it.\n- Other hooks do not call the API: pre-commit-hooks and\nconventional-pre-commit install from PyPI, and actionlint and gitleaks\nbuild through the Go module proxy.\n\n## Verification\n\n- `shellcheck .github/scripts/github-api-netrc.sh`: clean.\n- `actionlint .github/workflows/smoke.yml .github/workflows/claude.yml`:\nclean.\n- `pre-commit run --all-files`: exit 0, including the new\n`ci-github-api-auth` hook, StyLua, actionlint and gitleaks. Both commits\nalso passed the commit hooks.\n- `ruff check --select E,F,W,B,UP tests/test-ci-github-api-auth.py`:\nclean.\n- Verified in this PR's Smoke Test CI (run 35829214635): with the\nActions `GITHUB_TOKEN`, the Linters step printed `api.github.com core\nrate limit via netrc: {\"limit\":5000,\"used\":0,\"remaining\":5000,...}`, and\nthe StyLua hook environment installed and passed. api.github.com accepts\nthe installation token through Basic auth.\n\n## Follow-ups\n\n- #447: exercise `claude.yml` once after merge; it has no `pull_request`\ntrigger, so this PR's CI does not run its new netrc step.\n- #440: cache `~/.cache/pre-commit` in the Linters job, with the other\nCI tools still resolved at run time.\n- IamTheFij/release-gitter#6: asks release-gitter to send `GITHUB_TOKEN`\n/ `GH_TOKEN` itself.\n- The \"Cache mise tools\" key in `smoke.yml` hashed files that do not\nexist; the chezmoi pin PR (#416, #418) removes those cache steps.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01Q6aDMonZX35gYM9ZsKUfPv\n\n---------\n\nCo-authored-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-23T10:02:23+03:00",
+          "tree_id": "9331040b4898362add4c11ea3f839ee8f8d3cdb1",
+          "url": "https://github.com/laurigates/dotfiles/commit/a00191306f42c2b83630a263f502eca5603a2483"
+        },
+        "date": 1790146983737,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.006337221053333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00123410598,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009983925800000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.00914222206,
             "unit": "s"
           }
         ]
