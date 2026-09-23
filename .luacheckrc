@@ -4,6 +4,7 @@
 globals = {
     "vim",
     "Snacks",
+    "MiniIcons", -- set by require("mini.icons").setup()
 }
 
 -- Ignore unused self warnings (common in Lua OOP patterns)

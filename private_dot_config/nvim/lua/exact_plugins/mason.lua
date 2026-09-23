@@ -1,4 +1,5 @@
--- Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.
+-- Portable package manager for Neovim that runs everywhere Neovim runs.
+-- Easily install and manage LSP servers, DAP servers, linters, and formatters.
 return {
   {
     "jay-babu/mason-nvim-dap.nvim",
