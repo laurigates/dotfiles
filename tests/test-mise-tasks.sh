@@ -247,9 +247,11 @@ done <"$WORK/static.out"
 
 # --- mise harness -------------------------------------------------------------
 # run_mise <cwd> <state-dir> <data-dir> <path> <mise args...>: output + rc.
-# The ceiling is the parent of the git checkout holding <cwd>, so mise reads
-# that checkout's .mise.toml and nothing above it (a worktree sits inside the
-# main checkout).
+# Two ceilings. The parent of the git checkout holding <cwd>: mise reads that
+# checkout's .mise.toml and nothing above it (a worktree sits inside the main
+# checkout). $WORK: a task that runs in the empty $HOME does not pick up
+# configs above it, such as the real ~/.config/mise/config.toml when $TMPDIR
+# is under the real home.
 run_mise() {
     local cwd="$1" state="$2" data="$3" path="$4" top
     shift 4
@@ -258,7 +260,7 @@ run_mise() {
         ${LANG:+LANG="$LANG"} ${LC_ALL:+LC_ALL="$LC_ALL"} ${LC_CTYPE:+LC_CTYPE="$LC_CTYPE"} \
         MISE_GLOBAL_CONFIG_FILE="$WORK/global-tasks.toml" MISE_CONFIG_DIR="$WORK/mise/cfg" \
         MISE_STATE_DIR="$state" MISE_CACHE_DIR="$WORK/mise/cache" MISE_DATA_DIR="$data" \
-        MISE_CEILING_PATHS="$(dirname "$top")" MISE_TASK_RUN_AUTO_INSTALL=0 \
+        MISE_CEILING_PATHS="$(dirname "$top"):$WORK" MISE_TASK_RUN_AUTO_INSTALL=0 \
         "$MISE_BIN" "$@" </dev/null 2>&1)
 }
 # run_task <root> <task> [extra args]: run with the real tool installs.
