@@ -53,6 +53,15 @@ repos:
         language: script
         files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
         pass_filenames: false
+      # Per-location git identity: the identity script writes ~/.gitconfig
+      # and its includeIf rules route personal locations to personal.inc
+      # (scratch HOME, no network; refs #290).
+      - id: git-identity
+        name: check per-location git identity routing
+        entry: tests/test-git-identity.sh
+        language: script
+        files: '^(run_onchange_after_10-git-identity\.sh|private_dot_config/git/personal\.inc|tests/test-git-identity\.sh)$'
+        pass_filenames: false
       # Advisory doc-drift nudge: flags docs that reference scripts/paths/links
       # which no longer exist. ADVISORY (always exits 0) so it never blocks a
       # commit; `mise run lint:docs` is the strict/enforcing variant for CI.
