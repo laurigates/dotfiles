@@ -59,7 +59,8 @@ RUN curl https://mise.run | MISE_VERSION=v2026.9.12 sh
 ENV PATH="/home/tester/.local/bin:${PATH}"
 
 # chezmoi comes from the .mise.toml pin, as in CI (#418); the shims resolve
-# `chezmoi` to the pinned version. The tools-only .mise.toml needs no trust.
+# `chezmoi` to the pinned version. .mise.toml holds only tool versions and
+# template-free tasks, so it needs no trust.
 # MISE_TRUSTED_CONFIG_PATHS mirrors the environment jdx/mise-action sets for
 # the CI workspace.
 ENV MISE_TRUSTED_CONFIG_PATHS=/tmp/dotfiles
