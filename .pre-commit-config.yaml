@@ -53,6 +53,15 @@ repos:
         language: script
         files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
         pass_filenames: false
+      # Per-location git identity: the identity script writes ~/.gitconfig
+      # and its includeIf rules route personal locations to personal.inc
+      # (scratch HOME, no network; refs #290).
+      - id: git-identity
+        name: check per-location git identity routing
+        entry: tests/test-git-identity.sh
+        language: script
+        files: '^(run_onchange_after_10-git-identity\.sh|private_dot_config/git/personal\.inc|tests/test-git-identity\.sh)$'
+        pass_filenames: false
       # Runtime entries that other programs write under ~/.claude stay
       # registered in exact_dot_claude/.chezmoiignore; ~/.claude is exact_, so
       # an unregistered entry is deleted on apply (#399). Needs chezmoi + jq.
