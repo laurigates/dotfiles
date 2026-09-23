@@ -58,9 +58,10 @@ RUN brew install neovim
 RUN curl https://mise.run | MISE_VERSION=v2026.9.12 sh
 ENV PATH="/home/tester/.local/bin:${PATH}"
 
-# chezmoi comes from the .mise.toml pin, as in CI (#418). Trust the source dir
-# the way jdx/mise-action trusts the CI workspace; from there the shims resolve
-# `chezmoi` to the pinned version.
+# chezmoi comes from the .mise.toml pin, as in CI (#418); the shims resolve
+# `chezmoi` to the pinned version. The tools-only .mise.toml needs no trust.
+# MISE_TRUSTED_CONFIG_PATHS mirrors the environment jdx/mise-action sets for
+# the CI workspace.
 ENV MISE_TRUSTED_CONFIG_PATHS=/tmp/dotfiles
 ENV PATH="/home/tester/.local/share/mise/shims:${PATH}"
 COPY --chown=tester:tester .mise.toml /tmp/dotfiles/.mise.toml
