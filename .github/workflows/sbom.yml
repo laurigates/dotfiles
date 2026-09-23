@@ -22,12 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
       - name: Generate SBOM with Syft
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
         with:
           format: spdx-json
           output-file: sbom-spdx.json
@@ -35,14 +35,14 @@ jobs:
           upload-release-assets: ${{ github.event_name == 'release' }}
 
       - name: Generate CycloneDX SBOM
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
         with:
           format: cyclonedx-json
           output-file: sbom-cyclonedx.json
           upload-artifact: true
 
       - name: Scan SBOM for vulnerabilities with Grype
-        uses: anchore/scan-action@v4
+        uses: anchore/scan-action@64a33b277ea7a1215a3c142735a1091341939ff5 # v4.1.2
         with:
           sbom: sbom-spdx.json
           fail-build: false # Set to true to fail on vulnerabilities
@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload vulnerability report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: vulnerability-report
           path: |
