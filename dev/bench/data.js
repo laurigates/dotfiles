@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790147553019,
+  "lastUpdate": 1790147817659,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -307,6 +307,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011367556000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0de4b160e9693138b5c6b6141f4e1803ccc559c3",
+          "message": "test(git): pin per-location identity and fix the includeIf location comment (#437)\n\n## What\n\n- `private_dot_config/git/personal.inc:1` now says the `includeIf` rules\nlive in `~/.gitconfig`. It used to say `~/.config/git/config`.\n- New `tests/test-git-identity.sh` runs\n`run_onchange_after_10-git-identity.sh` under a scratch `HOME` and\nchecks which file the script writes and which identity each location\nresolves.\n- New local pre-commit hook `git-identity` runs the test when the\nidentity script, `personal.inc`, or the test changes. CI already runs\n`pre-commit run --all-files` in `smoke.yml`, so the test runs there too.\n\nRefs #290\n\n## Why\n\n#290 was closed with option A (additive `git config --global` writes).\nThe triage traced its option B to a wrong assumption: that the scripted\nglobal config is `~/.config/git/config`. `git config --global` writes\n`~/.gitconfig` unless that file is absent and\n`$XDG_CONFIG_HOME/git/config` already exists (git-config(1),\n`--global`). On a fresh machine neither file exists, so the first write\nin `run_once_before_00-initial-setup.sh.tmpl` creates `~/.gitconfig` and\nall later writes go there. `personal.inc:1` recorded the same wrong\nassumption, and no check covered which file the identity script writes\nor whether the `includeIf` routing resolves.\n\nThe file matters for more than the comment. git reads the XDG file\nbefore `~/.gitconfig`, so an `includeIf` rule placed in the XDG file is\noverridden by the default `[user]` block in `~/.gitconfig`. The\n`includeif-written-to-xdg` mutation below shows this: all four personal\nlocations then resolve the work address.\n\n## How\n\nThe test copies `personal.inc` into `$HOME/.config/git/`, the same order\nchezmoi uses (files before `run_after` scripts). It then runs the\nidentity script under `env -i PATH=… HOME=<scratch>\nGIT_CONFIG_NOSYSTEM=1 GIT_CEILING_DIRECTORIES=<scratch>`. `env -i` also\ndrops the `GIT_DIR`/`GIT_INDEX_FILE` a calling git hook exports, and\n`XDG_CONFIG_HOME`/`GIT_CONFIG_GLOBAL` are unset. Assertions:\n\n1. Every config entry the script writes has origin `$HOME/.gitconfig`,\nand `includeIf.gitdir` entries are among them.\n2. `$HOME/.config/git/config` does not exist.\n3. Any `~/.gitconfig` or `~/.config/git/config` mention in\n`personal.inc` or the identity script names the file git actually wrote.\n4. New repos at `~/repos` (umbrella, exact `.git` match),\n`~/repos/laurigates/probe`, `~/.local/share/chezmoi` and\n`~/Documents/LakuVault` resolve `personal.inc`'s `user.email`.\n5. New repos at `~/work/probe` and `~/repos/other-org/probe` resolve the\ndefault `user.email`. The second one checks that the umbrella rule does\nnot widen to a `~/repos/` prefix.\n\nThe expected emails are not repeated in the test. The personal one is\nread with `git config --file personal.inc`, and the default is read from\nthe config the script wrote. A guard fails the run if either is empty or\nif they are equal, because the routing checks would then prove nothing.\n\nConfig reads use no scope flag and run outside any repo. On git 2.43,\n2.54 and 2.55, `git config --global --list` reads only `~/.gitconfig`\nonce that file exists and hides the XDG file, so a `--global` read would\nmiss entries written there. git-config(1) says `--global` reads both\nfiles. The hook's `files:` regex covers only the three files the test\nreads or executes. The triage suggested including\n`run_once_before_00-initial-setup.sh.tmpl`, but the test does not run\nit. There is no mise task because another PR is moving repo tasks into a\nrepo `.mise.toml`.\n\nTwo commits: the comment fix, then the test plus hook.\n\n## Tests\n\nIn the output below, `<default>` and `<personal>` stand for the two\naddresses.\n\nRED: the final test run against `be2fd3b`'s\n`run_onchange_after_10-git-identity.sh` and `personal.inc`, copied into\na scratch layout:\n\n```\ntests/test-git-identity.sh      # exit 1\n✗ FAIL: Comment names a file other than ~/.gitconfig:\n    private_dot_config/git/personal.inc:1:~/.config/git/config\nPassed: 5\nFailed: 1\n```\n\nThe same RED through the hook, with `be2fd3b`'s `personal.inc`\ntemporarily in the worktree:\n\n```\npre-commit run git-identity --files private_dot_config/git/personal.inc      # exit 1\ncheck per-location git identity routing..................................Failed\n✗ FAIL: Comment names a file other than ~/.gitconfig:\n    private_dot_config/git/personal.inc:1:~/.config/git/config\n```\n\nAt `be2fd3b` the behaviour was already correct, so assertions 1, 2, 4\nand 5 were checked against mutations. Each mutation is an exact-string\nedit of a scratch copy of the fixed files, and the harness first checks\nthat the edit string matched the expected number of times:\n\n| Mutation | Exit | Failing assertion(s) |\n|---|---|---|\n| none (control) | 0 | none |\n| script plants an empty `~/.config/git/config` before its first write |\n1 | 1 (all 6 entries in the XDG file), 2, 3 |\n| the four `includeIf` writes use `--file ~/.config/git/config` | 1 | 1\n(4 entries), 2, 4 (all four personal locations resolve `<default>`) |\n| umbrella `includeIf.gitdir:~/repos/.git` line removed | 1 | 4:\n`~/repos resolves '<default>', want personal` |\n| `~/repos/laurigates/` line removed | 1 | 4: `~/repos/laurigates/probe\nresolves '<default>'` |\n| trailing slash dropped (`gitdir:~/repos/laurigates`) | 1 | 4:\n`~/repos/laurigates/probe resolves '<default>'` |\n| umbrella widened to `gitdir:~/repos/` | 1 | 5:\n`~/repos/other-org/probe resolves '<personal>', want default` |\n| catch-all `includeIf.gitdir:~/` added | 1 | 5: both default locations\nresolve `<personal>` |\n| default `user.email` set to the personal address | 1 | guard (`Default\nand personal user.email are the same`), 5 |\n| `email` line removed from `personal.inc` | 1 | guard (`No user.email\nin …personal.inc`), 4 |\n| `personal.inc:1` comment reverted to `~/.config/git/config` | 1 | 3 |\n\nGREEN on the fixed tree:\n\n```\ntests/test-git-identity.sh      # exit 0\n✓ PASS: default=<default> personal=<personal>\n✓ PASS: 6 entries, all in ~/.gitconfig\n✓ PASS: ~/.config/git/config absent\n✓ PASS: 1 mention(s), all ~/.gitconfig\n✓ PASS: 4 personal locations resolve <personal>\n✓ PASS: 2 default locations resolve <default>\nPassed: 6\nFailed: 0\n```\n\n## Other instances\n\n`rg --hidden -g '!.git' -e '\\.config/git/config' -e\n'XDG_CONFIG_HOME[}]?/git/config' -e 'git/config\\b'` found only\n`personal.inc:1`, which is fixed. The control search for `personal.inc`\nfound its references in the identity script, so the search was reading\nthe tree. A wider search (`config/git`, `gitconfig`, `global git\nconfig`, `includeIf`, `git identity`) found no other wrong claims. The\nidentity script's own header names `~/.config/git/personal.inc`, which\nis correct, and assertion 3 now covers both files.\n\n## Verification\n\n- `shellcheck tests/test-git-identity.sh`: exit 0.\n- `tests/test-git-identity.sh` on macOS (git 2.55.0): exit 0, 6 passed.\n- Ubuntu 24.04 container (git 2.43.0), scratch copies: control exit 0.\nThe `removed-laurigates`, `planted-xdg-config`, `umbrella-widened` and\n`comment-reverted` mutations each exit 1 with the same failures as on\nmacOS.\n- `pre-commit run --all-files`: exit 0, including `check per-location\ngit identity routing ... Passed`.\n- `git commit` of the test ran the hook in the commit-hook environment:\n`Passed`.\n- Scoping: `pre-commit run git-identity --files README.md` reports `(no\nfiles to check) Skipped`.\n\n## Follow-ups\n\n- None. This PR needs no post-merge manual action. The next `chezmoi\napply` updates the comment in `~/.config/git/personal.inc`. The identity\nscript is unchanged, so its `run_onchange` hash does not change and it\ndoes not re-run.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01Q6aDMonZX35gYM9ZsKUfPv\n\n---------\n\nCo-authored-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-23T10:16:18+03:00",
+          "tree_id": "692a0d7a3acbe2dc3f995962c4abc1329bd35233",
+          "url": "https://github.com/laurigates/dotfiles/commit/0de4b160e9693138b5c6b6141f4e1803ccc559c3"
+        },
+        "date": 1790147817034,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.010892340833333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0016312093000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013479191000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.01193512596,
             "unit": "s"
           }
         ]
