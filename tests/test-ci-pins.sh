@@ -10,23 +10,34 @@
 # referenced `setup-homebrew@master`.
 #
 # Static checks (default mode, offline; run by the `ci-pins` pre-commit hook):
-#   A. Workflow `uses:` refs. A third-party ref named like a branch (main,
-#      master, ...) fails; a 40-hex SHA needs a trailing `# <tag>` comment.
-#      laurigates/.github reusable workflows are first-party and stay on @main.
+#   A. `uses:` refs in workflows and composite actions (.github/actions/*). A
+#      third-party ref named like a branch (main, master, ...) fails; a 40-hex
+#      SHA needs a trailing `# <tag>` comment. laurigates/.github reusable
+#      workflows are first-party and stay on @main.
 #   B. chezmoi comes from one pin. .mise.toml pins chezmoi to an exact X.Y.Z;
-#      no tracked non-Markdown file installs chezmoi another way (brew, apt,
-#      installer script, release download, `mise use`, `chezmoi@<v>`); a mise
-#      tool entry for chezmoi outside .mise.toml must read the pin through
-#      `include ".mise.toml"`; any explicit chezmoi version equals the pin.
+#      no tracked non-Markdown file installs chezmoi another way (brew
+#      install/upgrade, apt, installer script, release download, `mise use`,
+#      `chezmoi@<v>`, `chezmoi latest` in .tool-versions form,
+#      MISE_CHEZMOI_VERSION); a mise tool entry for chezmoi outside .mise.toml
+#      must read the pin through `include ".mise.toml"`; any explicit chezmoi
+#      version equals the pin.
 #   C. Per workflow job: a job that runs chezmoi sets up jdx/mise-action; a job
 #      that sets up mise or runs chezmoi runs `--assert-installed`; a job that
 #      runs `chezmoi apply` also runs `--assert-installed --rendered`.
-#   D. Every jdx/mise-action step pins `version:` to one exact mise release.
+#   D. Every jdx/mise-action step pins `version:` to one exact mise release; a
+#      job with mise-action does not also restore ~/.local/share/mise with
+#      actions/cache (that can put an older mise binary back); a mise.run
+#      install sets MISE_VERSION to the same release.
 #
 # Out of scope by design: the Homebrew `chezmoi` entry in
 # .chezmoidata/packages.toml. It bootstraps a machine before any mise config
 # exists, and `mise activate` puts the pinned chezmoi ahead of it on PATH
 # (tests/test-shell-precedence.sh pins that order).
+#
+# Known limits of the static checks: C sees chezmoi only as a literal
+# `chezmoi <subcommand>` in a step, not through a wrapper such as `just apply`;
+# C and D do not parse composite actions. A job reaching chezmoi only through a
+# wrapper is caught only if it already runs --assert-installed.
 #
 # Other modes:
 #   --online     static checks, then resolve every non-SHA third-party ref with
@@ -57,14 +68,17 @@ BRANCH_NAMES='main|master|develop|dev|trunk|stable|nightly|beta|HEAD'
 SEMVER_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
 
 # Install routes other than the pin. `[^#]` stops a match at a trailing comment.
-PKG_INSTALL_RE='(brew|apt|apt-get|snap|dnf|yum|pacman|apk|zypper|port|nix-env)[[:space:]]+(install|add|-S)([[:space:]]+[^#[:space:]]+)*[[:space:]]+([^#[:space:]]*/)?chezmoi([[:space:];&|"'"'"']|$)'
-OTHER_INSTALL_RE='go[[:space:]]+install[^#]*chezmoi|get\.chezmoi\.io|chezmoi\.io/get|twpayne/chezmoi/releases|(^|[^[:alnum:]_/.-])chezmoi@|mise[[:space:]]+(use|u)[[:space:]][^#]*chezmoi'
+PKG_INSTALL_RE='(brew|apt|apt-get|snap|dnf|yum|pacman|apk|zypper|port|nix-env)[[:space:]]+(install|reinstall|upgrade|add|-S)([[:space:]]+[^#[:space:]]+)*[[:space:]]+([^#[:space:]]*/)?chezmoi([[:space:];&|"'"'"']|$)'
+# Also: a .tool-versions-style `chezmoi latest` (a file, or mise-action's
+# tool_versions input) and mise's per-tool version override variable.
+OTHER_INSTALL_RE='go[[:space:]]+install[^#]*chezmoi|get\.chezmoi\.io|chezmoi\.io/get|twpayne/chezmoi/releases|(^|[^[:alnum:]_/.-])chezmoi@|mise[[:space:]]+(use|u)[[:space:]][^#]*chezmoi|(^|[^[:alnum:]_/.-])chezmoi[[:space:]]+(latest|stable|lts|system|ref:|prefix:|sub-|path:)|MISE_CHEZMOI_VERSION'
 # A mise [tools] entry for chezmoi, any backend.
 TOOL_ENTRY_RE='^[[:space:]]*"?((aqua|ubi|github|asdf|vfox|core):)?(twpayne/)?chezmoi"?[[:space:]]*='
 # An explicit chezmoi version next to the word chezmoi.
 VERSION_RE='chezmoi([_-]?version)?[@ =:"'"'"'v-]+[0-9]+\.[0-9]+\.[0-9]+'
 
 fails=0
+MISE_ACTION_VERSION=""
 fail() { printf 'FAIL: %s\n' "$*"; fails=$((fails + 1)); }
 
 # read_pin <repo>: the chezmoi version in <repo>/.mise.toml, empty if none.
@@ -147,7 +161,8 @@ parse_workflow() {
             if (step_ver == "") printf "F\t%s:%d: jdx/mise-action step has no version: input\n", jfile, step_line
             else printf "V\t%s\n", step_ver
         }
-        in_step = 0; step_mise = 0; step_ver = ""
+        if (in_step && step_cache && step_misedir && !cache_line) cache_line = step_line
+        in_step = 0; step_mise = 0; step_ver = ""; step_cache = 0; step_misedir = 0
     }
     function flush_job() {
         flush_step()
@@ -156,8 +171,12 @@ parse_workflow() {
             if (runs && !mise) printf "F\t%s: job %s runs chezmoi but has no jdx/mise-action step\n", jfile, job
             if ((runs || mise) && !asserted) printf "F\t%s: job %s installs or runs chezmoi but never runs %s --assert-installed\n", jfile, job, self
             if (applies && !rendered) printf "F\t%s: job %s runs chezmoi apply but never runs %s --assert-installed --rendered\n", jfile, job, self
+            # mise-action caches the mise data dir under a key built from the
+            # mise version. A second cache of it can restore an older mise
+            # binary over the pinned one.
+            if (mise && cache_line) printf "F\t%s:%d: job %s restores ~/.local/share/mise with actions/cache, which can replace the mise that jdx/mise-action pinned; mise-action caches that dir itself\n", jfile, cache_line, job
         }
-        job = ""; runs = 0; mise = 0; asserted = 0; applies = 0; rendered = 0
+        job = ""; runs = 0; mise = 0; asserted = 0; applies = 0; rendered = 0; cache_line = 0
         insteps = 0; step_indent = -1
     }
     # One awk run covers every workflow, so close the last job of the previous file.
@@ -176,7 +195,8 @@ parse_workflow() {
     }
     {
         line = $0
-        if (match(line, /(^|[[:space:]])uses:[[:space:]]*/)) {
+        # A step or job `uses:` key only, so `run: echo "uses: x"` is not a ref.
+        if (match(line, /^[[:space:]]*(-[[:space:]]+)?uses:[[:space:]]*/)) {
             rest = substr(line, RSTART + RLENGTH)
             comment = ""
             c = index(rest, "#")
@@ -185,8 +205,10 @@ parse_workflow() {
             sub(/^[[:space:]]+/, "", comment); sub(/[[:space:]]+$/, "", comment)
             printf "R\t%s\t%d\t%s\t%s\n", FILENAME, FNR, rest, comment
             if (rest ~ /^jdx\/mise-action@/) { mise = 1; if (in_step) step_mise = 1 }
+            if (rest ~ /^actions\/cache(\/restore)?@/ && in_step) step_cache = 1
         }
         if (!injobs || job == "") next
+        if (in_step && line ~ /\.local\/share\/mise|MISE_DATA_DIR/) step_misedir = 1
         if (in_step && match(line, /^[[:space:]]*version:[[:space:]]*/)) {
             v = substr(line, RSTART + RLENGTH); sub(/[[:space:]]*#.*$/, "", v); gsub("[\"" q "]", "", v)
             step_ver = v
@@ -248,8 +270,12 @@ tag_sha() {
 check_workflows() {
     local repo="$1" online="$2" wfs=() f
     while IFS= read -r f; do
+        # Composite actions are parsed for their `uses:` refs (check A) only.
         case "$f" in
-            .github/workflows/*.yml | .github/workflows/*.yaml) [ -f "$repo/$f" ] && wfs+=("$f") ;;
+            .github/workflows/*.yml | .github/workflows/*.yaml | \
+                .github/actions/*/action.yml | .github/actions/*/action.yaml)
+                [ -f "$repo/$f" ] && wfs+=("$f")
+                ;;
         esac
     done < <(list_files "$repo")
     if [ "${#wfs[@]}" -eq 0 ]; then
@@ -280,6 +306,8 @@ check_workflows() {
     done <<<"$versions"
     if [ "$(printf '%s' "$versions" | grep -c . || true)" -gt 1 ]; then
         fail "jdx/mise-action steps pin different mise versions: $(printf '%s' "$versions" | tr '\n' ' ')"
+    elif grep -Eq "$SEMVER_RE" <<<"$versions"; then
+        MISE_ACTION_VERSION="$versions"
     fi
 
     local cache="" file lineno target comment
@@ -332,10 +360,35 @@ check_workflows() {
     done < <(printf '%s\n' "$records" | grep '^R')
 }
 
+# --- D (outside workflows). The mise.run installer pins the CI mise release ---
+# https://mise.run installs whatever mise released last unless MISE_VERSION is
+# set. The Docker smoke image uses it; it must match jdx/mise-action's version:.
+check_mise_installers() {
+    local repo="$1" files=() f hit v
+    while IFS= read -r f; do
+        case "$f" in
+            *.md | "$SELF") continue ;;
+        esac
+        [ -f "$repo/$f" ] && files+=("$f")
+    done < <(list_files "$repo")
+    [ "${#files[@]}" -gt 0 ] || return 0
+    while IFS= read -r hit; do
+        [ -n "$hit" ] || continue
+        v=$(printf '%s' "${hit#*:*:}" | sed -nE 's/.*MISE_VERSION=v?([0-9][0-9.]*).*/\1/p')
+        if [ -z "$v" ]; then
+            fail "mise.run install does not pin MISE_VERSION: $hit"
+        elif [ -n "$MISE_ACTION_VERSION" ] && [ "$v" != "$MISE_ACTION_VERSION" ]; then
+            fail "mise.run install pins mise $v, but jdx/mise-action pins $MISE_ACTION_VERSION: $hit"
+        fi
+    done < <(cd "$repo" && grep -nIHE 'mise\.run' -- "${files[@]}" | drop_comments)
+}
+
 run_static() {
     local repo="$1" online="${2:-0}"
+    MISE_ACTION_VERSION=""
     check_workflows "$repo" "$online"
     check_chezmoi_pin "$repo"
+    check_mise_installers "$repo"
 }
 
 # --- Runtime assertion --------------------------------------------------------
@@ -392,6 +445,11 @@ jobs:
         with:
           version: 2026.9.12
       - run: tests/test-ci-pins.sh --assert-installed
+      - name: Cache Homebrew
+        uses: actions/cache@v4
+        with:
+          path: /home/linuxbrew/.cache/Homebrew
+          key: brew
       - name: Run chezmoi apply
         run: chezmoi apply -v --source=. --exclude=scripts
       - run: tests/test-ci-pins.sh --assert-installed --rendered
@@ -408,7 +466,7 @@ jobs:
 EOF
     printf 'chezmoi = "{{ (fromToml (include ".mise.toml")).tools.chezmoi }}"\n' \
         >"$d/private_dot_config/mise/config.toml.tmpl"
-    printf 'FROM ubuntu:24.04\nRUN brew install neovim\n' >"$d/Dockerfile"
+    printf 'FROM ubuntu:24.04\nRUN brew install neovim\nRUN curl https://mise.run | MISE_VERSION=v2026.9.12 sh\n' >"$d/Dockerfile"
     printf '#!/bin/sh\nmise install chezmoi\n' >"$d/scripts/setup.sh"
     printf '{ "allow": ["Bash(chezmoi diff *)"] }\n' >"$d/tools.json"
 }
@@ -506,6 +564,24 @@ self_test() {
         "printf '  other:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: jdx/mise-action@v4\n        with:\n          version: 2026.1.1\n      - run: tests/test-ci-pins.sh --assert-installed\n' >>$wf"
     selftest_case "C: failures name the right file and job across workflows" fail "z.yml: job zjob runs chezmoi" \
         "printf 'on: push\njobs:\n  zjob:\n    runs-on: x\n    steps:\n      - run: chezmoi apply --source=.\n' >.github/workflows/z.yml"
+    selftest_case "A: third-party ref on a branch in a composite action fails" fail "is a branch" \
+        "mkdir -p .github/actions/setup && printf 'name: setup\nruns:\n  using: composite\n  steps:\n    - uses: someone/thing@main\n' >.github/actions/setup/action.yml"
+    selftest_case "A: 'uses:' inside a run string is not a ref" pass "" \
+        "sed -i.bak 's|echo \"no chezmoi in this job\"|echo \"this step uses: nothing\"|' $wf"
+    selftest_case "B: brew upgrade chezmoi fails" fail "installed outside" \
+        "printf 'RUN brew upgrade chezmoi\n' >>Dockerfile"
+    selftest_case "B: .tool-versions with chezmoi latest fails" fail "installed outside" \
+        "printf 'chezmoi latest\n' >.tool-versions"
+    selftest_case "B: mise-action tool_versions input with chezmoi latest fails" fail "installed outside" \
+        "awk '{ print } /version: 2026.9.12/ { print \"          tool_versions: chezmoi latest\" }' $wf >x && mv x $wf"
+    selftest_case "B: MISE_CHEZMOI_VERSION override fails" fail "installed outside" \
+        "printf 'ENV MISE_CHEZMOI_VERSION=latest\n' >>Dockerfile"
+    selftest_case "D: actions/cache of the mise data dir in a mise-action job fails" fail "restores ~/.local/share/mise" \
+        "printf '  cached:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: jdx/mise-action@v4\n        with:\n          version: 2026.9.12\n      - run: tests/test-ci-pins.sh --assert-installed\n      - name: Cache mise tools\n        uses: actions/cache@v4\n        with:\n          path: |\n            ~/.local/share/mise\n          key: x\n' >>$wf"
+    selftest_case "D: mise.run install without MISE_VERSION fails" fail "mise.run install does not pin MISE_VERSION" \
+        "sed -i.bak 's|MISE_VERSION=v2026.9.12 ||' Dockerfile"
+    selftest_case "D: mise.run install at another mise version fails" fail "but jdx/mise-action pins 2026.9.12" \
+        "sed -i.bak 's|MISE_VERSION=v2026.9.12|MISE_VERSION=v2026.1.1|' Dockerfile"
     selftest_case "guard: workflows with no parseable uses: fail" fail "parsed 0 uses:" \
         "printf 'name: x\non: push\njobs:\n  a:\n    runs-on: x\n    steps:\n      - run: true\n' >$wf"
 
