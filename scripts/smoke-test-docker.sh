@@ -82,6 +82,9 @@ ensure_dependencies() {
     else
         log_success "chezmoi found: $(chezmoi --version)"
     fi
+    # A chezmoi that was already on PATH may be another version; CI asserts the
+    # same thing in every job that installs chezmoi.
+    "$(dirname "${BASH_SOURCE[0]}")/../tests/test-ci-pins.sh" --assert-installed
 
     log_success "All dependencies satisfied"
 }

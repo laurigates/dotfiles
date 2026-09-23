@@ -88,6 +88,9 @@ jobs:
         with:
           version: 2026.9.12
 
+      - name: Assert chezmoi matches the .mise.toml pin
+        run: tests/test-ci-pins.sh --assert-installed
+
       - name: Install Claude CLI
         run: |
           npm install -g @anthropic-ai/claude-code

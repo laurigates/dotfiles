@@ -41,11 +41,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Assert chezmoi matches the .mise.toml pin
+        run: tests/test-ci-pins.sh --assert-installed
+
       - name: Install Dependencies
         run: pip install pre-commit
 
       - name: Run pre-commit
         run: pre-commit run --all-files
+
+      - name: Check CI toolchain pins (self-test, online)
+        # pre-commit ran the offline checks (hook ci-pins). --self-test proves
+        # they still fail on planted bad input with this runner's awk and grep.
+        # --online adds a git ls-remote lookup per ref, which is how a branch
+        # named like a tag (benchmark-action/github-action-benchmark@v1) gets caught.
+        run: |
+          tests/test-ci-pins.sh --self-test
+          tests/test-ci-pins.sh --online
 
       - name: Validate chezmoi source tree
         # chezmoi verify requires a configured source dir at ~/.local/share/chezmoi
@@ -83,6 +95,9 @@ jobs:
         uses: jdx/mise-action@v4
         with:
           version: 2026.9.12
+
+      - name: Assert chezmoi matches the .mise.toml pin
+        run: tests/test-ci-pins.sh --assert-installed
 
       - name: Cache mise tools
         uses: actions/cache@v4
@@ -131,6 +146,11 @@ jobs:
         # brew packages, sync nvim plugins, etc. — stateful work that is
         # meaningful on user machines but not in ephemeral runners.
         run: chezmoi apply -v --source=. --exclude=scripts
+
+      - name: Assert the rendered mise config pins the same chezmoi
+        # apply wrote ~/.config/mise/config.toml, which names chezmoi for every
+        # shell outside this checkout; it must render the .mise.toml pin.
+        run: tests/test-ci-pins.sh --assert-installed --rendered
 
       - name: Test zsh shell initialization
         run: |
@@ -202,6 +222,9 @@ jobs:
         with:
           version: 2026.9.12
 
+      - name: Assert chezmoi matches the .mise.toml pin
+        run: tests/test-ci-pins.sh --assert-installed
+
       - name: Cache mise tools
         uses: actions/cache@v4
         with:
@@ -217,6 +240,9 @@ jobs:
         # source dir does not exist on a fresh runner, and --exclude=scripts to
         # skip the stateful run_once_/run_onchange_ installers.
         run: chezmoi apply -v --source=. --exclude=scripts
+
+      - name: Assert the rendered mise config pins the same chezmoi
+        run: tests/test-ci-pins.sh --assert-installed --rendered
 
       - name: Test zsh shell initialization
         # Uses the system zsh (/bin/zsh, 5.9) for the reason given above.

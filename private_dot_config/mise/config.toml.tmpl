@@ -256,7 +256,7 @@ description = "Check what changes would be made (alias for status)"
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -306,6 +306,19 @@ run = """
 SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-shell-precedence.sh"
 if [ -x "$SCRIPT" ]; then
     "$SCRIPT"
+else
+    echo "⚠️  Warning: $SCRIPT not found or not executable"
+    exit 1
+fi
+"""
+
+[tasks."test:ci-pins"]
+description = "Regression test: CI toolchain pins (no branch-ref actions, chezmoi only from .mise.toml, mise-action version pinned)"
+run = """
+#!/usr/bin/env bash
+SCRIPT="{{ .chezmoi.sourceDir }}/tests/test-ci-pins.sh"
+if [ -x "$SCRIPT" ]; then
+    "$SCRIPT" --self-test && "$SCRIPT"
 else
     echo "⚠️  Warning: $SCRIPT not found or not executable"
     exit 1
