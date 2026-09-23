@@ -79,12 +79,15 @@ if [ -n "$scoped_paths" ]; then
     [ -z "$deletions" ] && exit 0
 fi
 
+# Indent every line by two spaces (the same result as sed 's/^/  /').
+indented="  ${deletions//$'\n'/$'\n'  }"
+
 cat >&2 <<EOF
 BLOCKED: this 'chezmoi apply' would DELETE the following target file(s)
 (unmanaged entries inside an exact_-managed tree are removed on apply,
 silently under --force):
 
-$(sed 's/^/  /' <<<"$deletions")
+$indented
 
 Before re-running, register or resolve each one:
   - keep + manage:     chezmoi add <target>

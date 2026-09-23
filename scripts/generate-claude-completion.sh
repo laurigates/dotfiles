@@ -13,9 +13,12 @@ readonly BLUE='\033[0;34m'
 readonly NC='\033[0m' # No Color
 
 # Directories and files
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+readonly DOTFILES_DIR
 readonly COMPLETION_FILE="${DOTFILES_DIR}/dot_zfunc/_claude"
+# shellcheck disable=SC2155 # split, a failed mktemp would abort under set -e; combined, the script carries on with an empty TEMP_DIR
 readonly TEMP_DIR="$(mktemp -d)"
 
 # Cleanup temp directory on exit
@@ -77,6 +80,7 @@ parse_help() {
 parse_options() {
     local help_output="$1"
 
+    # shellcheck disable=SC1003 # the printf quoting below splices shell and awk text; rewriting it changes the generated completion
     echo "$help_output" | awk '
         BEGIN { in_options = 0 }
         /^Options:/ { in_options = 1; next }
@@ -160,9 +164,8 @@ parse_arguments() {
 
 # Get available models dynamically
 get_claude_models() {
-    local models_output
     # Try to get models from config or use fallback
-    if models_output=$(claude config get model 2>/dev/null); then
+    if claude config get model >/dev/null 2>&1; then
         # Parse available models if possible
         echo "fable:Latest Fable model (Fable 5.1)"
         echo "best:Latest Fable where available, else latest Opus"

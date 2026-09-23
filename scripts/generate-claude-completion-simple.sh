@@ -7,12 +7,13 @@ set -euo pipefail
 # Colors and formatting
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
 readonly NC='\033[0m'
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+readonly DOTFILES_DIR
 readonly COMPLETION_FILE="${DOTFILES_DIR}/dot_zfunc/_claude"
 
 log() { echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $*" >&2; }
@@ -222,16 +223,17 @@ cat >> "$tmp" << 'COMPLETION_EOF'
 COMPLETION_EOF
 
     if [[ -n "$config_commands" ]]; then
-cat >> "$tmp" << 'COMPLETION_EOF'
+    {
+cat << 'COMPLETION_EOF'
 
 _claude_config() {
     local -a config_commands
     config_commands=(
 COMPLETION_EOF
 
-    printf '%s\n' "$config_commands" >> "$tmp"
+    printf '%s\n' "$config_commands"
 
-cat >> "$tmp" << 'COMPLETION_EOF'
+cat << 'COMPLETION_EOF'
     )
 
     _arguments -C \
@@ -277,18 +279,20 @@ cat >> "$tmp" << 'COMPLETION_EOF'
     esac
 }
 COMPLETION_EOF
+    } >> "$tmp"
     fi
 
-cat >> "$tmp" << 'COMPLETION_EOF'
+    {
+cat << 'COMPLETION_EOF'
 
 _claude_mcp() {
     local -a mcp_commands
     mcp_commands=(
 COMPLETION_EOF
 
-    printf '%s\n' "$mcp_commands" >> "$tmp"
+    printf '%s\n' "$mcp_commands"
 
-cat >> "$tmp" << 'COMPLETION_EOF'
+cat << 'COMPLETION_EOF'
     )
 
     _arguments -C \
@@ -381,6 +385,7 @@ _claude_models() {
 }
 
 COMPLETION_EOF
+    } >> "$tmp"
 
     if [[ -n "$config_commands" ]]; then
 cat >> "$tmp" << 'COMPLETION_EOF'
