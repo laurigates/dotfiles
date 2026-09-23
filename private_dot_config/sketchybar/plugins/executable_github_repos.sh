@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2153 # sketchybar sets $NAME (the item name) for every plugin script
 
 # GitHub Repos plugin for sketchybar
 # Shows recently pushed repos with PR/issue counts in a popup menu
@@ -46,6 +47,7 @@ fetch_repos() {
         name="${repo#*/}"
 
         local counts
+        # shellcheck disable=SC2016 # $owner and $name are GraphQL variables, not shell
         counts=$(gh api graphql -f query='
           query($owner: String!, $name: String!) {
             repository(owner: $owner, name: $name) {

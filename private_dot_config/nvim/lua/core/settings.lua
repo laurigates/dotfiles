@@ -9,7 +9,8 @@ local opt = vim.opt -- Set options (global/buffer/windows-scoped)
 -- opt.mouse = "a" -- Enable mouse support
 opt.swapfile = false -- Swap file isn't needed
 opt.undofile = true -- But persistent undo is nice
--- Show autocomplete even when only one item is available, don't automatically select or insert an option. User must do the selection.
+-- Show autocomplete even when only one item is available, don't automatically select or insert an option.
+-- User must do the selection.
 -- opt.completeopt = "menuone,noselect,noinsert" -- Autocomplete options
 -- opt.clipboard = "unnamedplus"
 opt.exrc = true -- Allow loading additional neovim config from local directory `.nvim.lua`

@@ -5,3 +5,232 @@
 # tests/test-ci-pins.sh fails if chezmoi is installed any other way (#418).
 [tools]
 chezmoi = "2.72.2"
+# lint:shell and the smoke Linters job use this shellcheck, so a local run and
+# CI report the same findings.
+shellcheck = "0.11.0"
+
+# ============================================================================
+# Tasks for working in this repo
+# ============================================================================
+# These live here, not in the global mise config, because a task runs in the
+# root of the config that defines it: global tasks run in $HOME, these run in
+# the checkout or worktree holding this file, from any subdirectory (#398).
+# The global config keeps only tasks that do not read the repo.
+#
+# Keep mise templates out of this file: with only [tools] version strings and
+# template-free [tasks], mise reads it without `mise trust`.
+#
+# tests/test-mise-tasks.sh checks where each task runs, and that every lint
+# task fails on a planted finding and on a missing or broken linter.
+
+# ----------------------------------------------------------------------------
+# Dotfiles management
+# ----------------------------------------------------------------------------
+# chezmoi's source dir is pinned in ~/.config/chezmoi/chezmoi.toml and only
+# --source overrides it, so a bare `chezmoi apply` in a worktree applies the
+# main checkout. $PWD is the root of the checkout running the task (#397).
+[tasks.apply]
+description = "Apply this checkout's dotfiles to the system"
+run = 'chezmoi --source "$PWD" apply -v'
+
+[tasks.diff]
+description = "Show differences between this checkout and the system"
+run = 'chezmoi --source "$PWD" diff'
+
+[tasks.status]
+description = "Show status of this checkout vs current system state"
+run = 'chezmoi --source "$PWD" status'
+
+[tasks.verify]
+description = "Verify the system matches this checkout"
+run = 'chezmoi --source "$PWD" verify'
+
+[tasks.check]
+alias = "status"
+description = "Check what changes would be made (alias for status)"
+
+[tasks.edit]
+description = "Edit dotfiles configuration"
+run = """
+#!/usr/bin/env bash
+if command -v nvim >/dev/null 2>&1; then
+    nvim .
+elif command -v code >/dev/null 2>&1; then
+    code .
+else
+    echo "⚠️  No preferred editor found, please edit manually"
+fi
+"""
+
+# ----------------------------------------------------------------------------
+# Testing & quality assurance
+# ----------------------------------------------------------------------------
+[tasks.test]
+description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "docker"]
+
+[tasks."test:setup"]
+description = "Test initial setup script handles missing commands gracefully (Issue #128)"
+run = "tests/test-initial-setup.sh"
+
+[tasks."test:plugin-refs"]
+description = "Regression test: Claude plugin/marketplace references resolve (alias, plugin existence, slash commands)"
+run = "tests/test-claude-plugin-references.sh"
+
+[tasks."test:context-budget"]
+description = "Regression test: always-loaded Claude global context stays within budget (size, repo-specific markers, frontmatter)"
+run = "tests/test-claude-context-budget.sh"
+
+[tasks."test:shell-precedence"]
+description = "Regression test: interactive-shell lookup order (PATH mise > brew > system; fpath ~/.zfunc > zsh > brew)"
+run = "tests/test-shell-precedence.sh"
+
+[tasks."test:ci-pins"]
+description = "Regression test: CI toolchain pins (no branch-ref actions, chezmoi only from .mise.toml, mise-action version pinned)"
+run = "tests/test-ci-pins.sh --self-test && tests/test-ci-pins.sh"
+
+[tasks."test:gh-completion"]
+description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"
+run = "tests/test-gh-completion.sh"
+
+[tasks."test:mise-tasks"]
+description = "Regression test: repo tasks run in the checkout, and lint tasks fail on findings and on a broken linter (#398)"
+run = "tests/test-mise-tasks.sh"
+
+# Every linter runs even after one fails; the task fails if any did.
+[tasks.lint]
+description = "Run all linters (shell, lua, actions, docs)"
+run = "mise run --continue-on-error --jobs 1 lint:shell ::: lint:lua ::: lint:actions ::: lint:docs"
+
+# Each lint task first runs its linter's --version, so a missing or broken
+# linter fails the task instead of letting it pass having checked nothing.
+[tasks."lint:shell"]
+description = "Run shellcheck on every tracked *.sh file"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+shellcheck --version >/dev/null || { echo "lint:shell: shellcheck is missing or cannot run" >&2; exit 1; }
+git ls-files --error-unmatch '*.sh' >/dev/null
+git ls-files -z '*.sh' | xargs -0 shellcheck
+"""
+
+[tasks."lint:lua"]
+description = "Run luacheck on Neovim configuration"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if ! luacheck --version >/dev/null; then
+    echo "lint:lua: luacheck is missing or cannot run" >&2
+    echo "  luacheck 1.2.0 crashes on Lua 5.5 (lunarmodules/luacheck#147, fixed on master, not released)." >&2
+    echo "  Install the fixed build with: luarocks install --dev luacheck" >&2
+    exit 1
+fi
+luacheck private_dot_config/nvim/lua
+"""
+
+[tasks."lint:actions"]
+description = "Run actionlint on GitHub Actions workflows"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+actionlint --version >/dev/null || { echo "lint:actions: actionlint is missing or cannot run" >&2; exit 1; }
+actionlint
+"""
+
+[tasks."lint:docs"]
+description = "Check docs for dangling repo-relative references (scripts/paths/links)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+python3 --version >/dev/null || { echo "lint:docs: python3 is missing or cannot run" >&2; exit 1; }
+python3 scripts/check-doc-references.py --strict
+"""
+
+[tasks.docker]
+description = "Test full environment using Docker Compose"
+run = """
+#!/usr/bin/env bash
+if [ -f docker-compose.yml ]; then
+    docker-compose up --build
+else
+    echo "❌ Error: docker-compose.yml not found"
+    exit 1
+fi
+"""
+
+[tasks.qa]
+description = "Run quality assurance checks"
+depends = ["lint", "check"]
+
+[tasks.ci]
+description = "Run CI checks locally"
+depends = ["lint"]
+
+# ----------------------------------------------------------------------------
+# Cleanup
+# ----------------------------------------------------------------------------
+# The finds skip .git and other worktrees under .claude/worktrees. They use
+# -not -path, not -prune: -delete implies -depth, which disables -prune.
+[tasks.clean]
+description = "Clean up temporary files and caches"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🧹 Cleaning up..."
+
+# Homebrew cache
+if command -v brew >/dev/null 2>&1; then
+    echo "  🍺 Cleaning Homebrew cache..."
+    brew cleanup
+fi
+
+# mise unused versions
+if command -v mise >/dev/null 2>&1; then
+    echo "  🛠️  Pruning unused mise versions..."
+    mise prune
+fi
+
+# Temporary files in this checkout
+echo "  🗑️  Removing temporary files..."
+find . -name "*.tmp" -not -path "./.git/*" -not -path "./.claude/worktrees/*" -delete 2>/dev/null || true
+find . -name ".DS_Store" -not -path "./.git/*" -not -path "./.claude/worktrees/*" -delete 2>/dev/null || true
+
+echo "✅ Cleanup complete!"
+"""
+
+# ----------------------------------------------------------------------------
+# Security
+# ----------------------------------------------------------------------------
+[tasks."security:audit"]
+description = "Run security audit on configurations"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔒 Running security audit..."
+
+# Check for obvious secrets in files
+if command -v rg >/dev/null 2>&1; then
+    echo "  🔍 Checking for secrets in files..."
+    rg -i "password|secret|token|key" --type-not lock --type-not json . || {
+        echo "  ✅ No obvious secrets found"
+    }
+else
+    echo "  ⚠️  Warning: ripgrep not installed, cannot check for secrets"
+fi
+
+# Run gitleaks if available
+if command -v gitleaks >/dev/null 2>&1; then
+    echo "  🔍 Running gitleaks scan..."
+    gitleaks dir . --config .gitleaks.toml --no-banner
+else
+    echo "  ⚠️  Warning: gitleaks not installed"
+fi
+
+echo "✅ Security audit complete!"
+"""
+
+[tasks."security:scan"]
+description = "Scan for secrets with gitleaks"
+run = "gitleaks dir . --config .gitleaks.toml --no-banner"

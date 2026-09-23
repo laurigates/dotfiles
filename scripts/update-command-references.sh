@@ -168,7 +168,7 @@ while IFS= read -r file; do
         ((files_modified++))
         ((total_replacements += file_replacements))
 
-        relative_path="${file#$REPO_ROOT/}"
+        relative_path="${file#"$REPO_ROOT"/}"
         if [[ "$DRY_RUN" == false ]]; then
             mv "$temp_file" "$file"
             echo -e "${GREEN}  ✓ $relative_path (${file_replacements} changes)${NC}"

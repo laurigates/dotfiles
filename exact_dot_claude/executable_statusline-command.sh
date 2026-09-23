@@ -131,6 +131,7 @@ if [[ -n "$pr_number" && -n "$repo_owner" && -n "$repo_name" ]] && command -v gh
     : > "$lock_file"
     (
       # Unresolved gemini-code-assist review threads
+      # shellcheck disable=SC2016 # $owner, $name and $pr are GraphQL variables, not shell
       gql='query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved comments(first:1){nodes{author{login}}}}}}}}'
       gem=$(gh api graphql -f query="$gql" \
         -F owner="$repo_owner" -F name="$repo_name" -F pr="$pr_number" \

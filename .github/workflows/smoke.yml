@@ -66,6 +66,14 @@ jobs:
         # confirm templates parse by rendering a trivial one against this repo.
         run: chezmoi execute-template --source=. '{{ .chezmoi.os }}'
 
+      - name: Check mise tasks (#398)
+        # Runs the .mise.toml tasks against planted findings and this tree.
+        # Setup mise installed shellcheck from the .mise.toml pin; --require
+        # fails the step instead of skipping when shellcheck or python3 is
+        # missing. luacheck and actionlint are not installed here, so their
+        # fixture checks skip (pre-commit runs actionlint).
+        run: tests/test-mise-tasks.sh --require shellcheck,python3
+
   build:
     name: Build (Ubuntu)
     runs-on: ubuntu-latest
