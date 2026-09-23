@@ -65,5 +65,14 @@ statsig
 todos
 mcp-needs-auth-cache.json
 
+# Claude Code runtime state: state/mcp-discover-verdicts.json (the filename
+# is a string in the Claude Code CLI binary).
+state/
+
+# Writer UNKNOWN: no match in this repo, the plugin cache, or the Claude Code
+# CLI binary's strings. Ignored so apply does not delete it; name the owner
+# here once identified.
+settings.json.bak
+
 # Local settings override - not managed by chezmoi
 settings.local.json
