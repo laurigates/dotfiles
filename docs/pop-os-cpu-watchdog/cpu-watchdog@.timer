@@ -1,0 +1,9 @@
+[Unit]
+Description=Check %i.service for runaway CPU every 15 minutes
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=15min
+
+[Install]
+WantedBy=timers.target

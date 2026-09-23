@@ -1,0 +1,39 @@
+#!/bin/sh
+# cpu-watchdog UNIT [LIMIT]
+# Stop UNIT when its main process averaged >= LIMIT% of one core since the
+# previous check. Only the daemon's own process is measured, so child work
+# (apt/dpkg during a real upgrade) never counts toward the limit.
+set -eu
+
+unit="$1"
+limit="${2:-50}"
+systemctl="${SYSTEMCTL:-systemctl}"
+state_dir="${STATE_DIR:-/run/cpu-watchdog}"
+state="$state_dir/$unit"
+mkdir -p "$state_dir"
+
+pid=$($systemctl show -p MainPID --value "$unit")
+if [ "$pid" -eq 0 ]; then
+  rm -f "$state"
+  exit 0
+fi
+
+# Fields after "pid (comm) ": $1=state ... $12=utime $13=stime (clock ticks).
+ticks=$(sed 's/.*) //' "/proc/$pid/stat" | awk '{print $12 + $13}')
+now=$(date +%s)
+
+if [ -f "$state" ]; then
+  read -r prev_pid prev_ticks prev_time <"$state"
+  elapsed=$((now - prev_time))
+  if [ "$prev_pid" = "$pid" ] && [ "$elapsed" -gt 0 ]; then
+    pct=$(((ticks - prev_ticks) * 100 / $(getconf CLK_TCK) / elapsed))
+    if [ "$pct" -ge "$limit" ]; then
+      echo "$unit (pid $pid) averaged ${pct}% CPU over ${elapsed}s (limit ${limit}%); stopping it"
+      $systemctl stop "$unit"
+      rm -f "$state"
+      exit 0
+    fi
+  fi
+fi
+
+echo "$pid $ticks $now" >"$state"
