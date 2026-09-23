@@ -701,16 +701,6 @@ legacy_version_file = true
 # Enable experimental features
 experimental = true
 
-# Trust every mise config under the chezmoi source dir, including PR-branch
-# worktrees under .claude/worktrees/. The repo .mise.toml does not need it:
-# mise reads a config that holds only [tools] version strings without trust.
-# Trust matters for configs with [env], hooks or templates, which mise
-# prompts for, skips or rejects until trusted; a trusted one applies them on
-# cd without a prompt. The path is the source dir of the last apply, so an
-# apply from a worktree (`just apply`) trusts that worktree, not the main
-# checkout.
-trusted_config_paths = ["{{ .chezmoi.sourceDir }}"]
-
 # Always route the pipx backend through uvx (see comment above the
 # Python Tools section). Belt-and-suspenders for jdx/mise#7477.
 pipx.uvx = true
