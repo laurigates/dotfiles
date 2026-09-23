@@ -69,6 +69,10 @@ mise prune                            # Remove unused versions
 
 ### Common Tasks
 
+The dotfiles, testing, `clean`, `security:*` and `edit` tasks are defined in
+the repo-root `.mise.toml` and run only inside the dotfiles checkout or one of
+its worktrees. Setup, update, `info`, `doctor` and `dev` are global.
+
 ```bash
 # Dotfiles
 mise run apply                        # Apply dotfiles to system
