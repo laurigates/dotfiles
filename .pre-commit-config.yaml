@@ -62,6 +62,16 @@ repos:
         language: script
         files: '^(exact_dot_claude/\.chezmoiignore|tests/test-claude-runtime-ignored\.sh)$'
         pass_filenames: false
+      # CI jobs that call api.github.com must carry a credential the calling
+      # tool reads: NETRC for pre-commit (release-gitter), a token for mise,
+      # explicit auth for curl/wget (#434). Self-tests before scanning.
+      - id: ci-github-api-auth
+        name: check CI GitHub API consumers are authenticated
+        entry: python tests/test-ci-github-api-auth.py
+        language: python
+        additional_dependencies: [pyyaml]
+        files: '^(\.github/(workflows|scripts)/.*|tests/test-ci-github-api-auth\.py)$'
+        pass_filenames: false
       # Advisory doc-drift nudge: flags docs that reference scripts/paths/links
       # which no longer exist. ADVISORY (always exits 0) so it never blocks a
       # commit; `mise run lint:docs` is the strict/enforcing variant for CI.
