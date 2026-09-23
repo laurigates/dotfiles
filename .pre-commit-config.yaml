@@ -53,6 +53,15 @@ repos:
         language: script
         files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
         pass_filenames: false
+      # Renovate for this repo runs from the account-wide App. A workflow that
+      # also runs Renovate adds a second identity that contends for the same
+      # renovate/* branches (#373, #379).
+      - id: renovate-single-owner
+        name: check no per-repo Renovate runner workflow
+        entry: tests/test-renovate-single-owner.sh
+        language: script
+        files: '^(\.github/workflows/.*\.ya?ml|tests/test-renovate-single-owner\.sh)$'
+        pass_filenames: false
       # Advisory doc-drift nudge: flags docs that reference scripts/paths/links
       # which no longer exist. ADVISORY (always exits 0) so it never blocks a
       # commit; `mise run lint:docs` is the strict/enforcing variant for CI.
