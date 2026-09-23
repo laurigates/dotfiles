@@ -62,6 +62,24 @@ repos:
         language: script
         files: '^(\.github/workflows/.*\.ya?ml|tests/test-renovate-single-owner\.sh)$'
         pass_filenames: false
+      # Per-location git identity: the identity script writes ~/.gitconfig
+      # and its includeIf rules route personal locations to personal.inc
+      # (scratch HOME, no network; refs #290).
+      - id: git-identity
+        name: check per-location git identity routing
+        entry: tests/test-git-identity.sh
+        language: script
+        files: '^(run_onchange_after_10-git-identity\.sh|private_dot_config/git/personal\.inc|tests/test-git-identity\.sh)$'
+        pass_filenames: false
+      # Runtime entries that other programs write under ~/.claude stay
+      # registered in exact_dot_claude/.chezmoiignore; ~/.claude is exact_, so
+      # an unregistered entry is deleted on apply (#399). Needs chezmoi + jq.
+      - id: claude-runtime-ignored
+        name: check Claude runtime entries survive chezmoi apply
+        entry: tests/test-claude-runtime-ignored.sh
+        language: script
+        files: '^(exact_dot_claude/\.chezmoiignore|tests/test-claude-runtime-ignored\.sh)$'
+        pass_filenames: false
       # CI jobs that call api.github.com must carry a credential the calling
       # tool reads: NETRC for pre-commit (release-gitter), a token for mise,
       # explicit auth for curl/wget (#434). Self-tests before scanning.
@@ -72,6 +90,16 @@ repos:
         additional_dependencies: [pyyaml]
         files: '^(\.github/(workflows|scripts)/.*|tests/test-ci-github-api-auth\.py)$'
         pass_filenames: false
+      # CI toolchain pins (#416, #418): no third-party action on a branch ref,
+      # chezmoi installed only from the .mise.toml pin, mise-action version
+      # pinned. Offline; the smoke Linters job adds --online. always_run
+      # because an install route can be added to any file; a run takes ~0.5 s.
+      - id: ci-pins
+        name: check CI toolchain pins
+        entry: tests/test-ci-pins.sh
+        language: script
+        pass_filenames: false
+        always_run: true
       # Advisory doc-drift nudge: flags docs that reference scripts/paths/links
       # which no longer exist. ADVISORY (always exits 0) so it never blocks a
       # commit; `mise run lint:docs` is the strict/enforcing variant for CI.

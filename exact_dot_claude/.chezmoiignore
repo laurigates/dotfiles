@@ -12,6 +12,17 @@ skill-usage.jsonl
 # refresh the skill file.
 skills/notebooklm/
 
+# Claude Desktop local scheduled tasks (Desktop: Code tab > Routines, Local).
+# The Desktop app creates, edits (its Edit form, or a running task calling the
+# update_scheduled_task MCP tool) and deletes scheduled-tasks/<name>/SKILL.md.
+# That file holds only the prompt: schedule, folder, model and enabled state
+# live in the app's own registry outside ~/.claude, so a versioned SKILL.md
+# could not recreate a task on another machine. Deliberately unversioned
+# (#399); task inventory: ~/repos/.routines/README.md.
+# MUST stay ignored: ~/.claude is an exact_ dir, so an unlisted top-level
+# entry is DELETED on chezmoi apply.
+scheduled-tasks/
+
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
 downloads/
@@ -29,7 +40,6 @@ telemetry/
 usage-data/
 teams/
 chrome/
-scheduled-tasks/
 sessions/
 .last-cleanup
 .last-update
@@ -54,6 +64,15 @@ stats-cache.json
 statsig
 todos
 mcp-needs-auth-cache.json
+
+# Claude Code runtime state: state/mcp-discover-verdicts.json (the filename
+# is a string in the Claude Code CLI binary).
+state/
+
+# Writer UNKNOWN: no match in this repo, the plugin cache, or the Claude Code
+# CLI binary's strings. Ignored so apply does not delete it; name the owner
+# here once identified.
+settings.json.bak
 
 # Local settings override - not managed by chezmoi
 settings.local.json

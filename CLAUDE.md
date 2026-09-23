@@ -56,6 +56,8 @@ Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoida
 ## Linting
 
 ### mise tasks (recommended):
+Defined in the repo-root `.mise.toml`, so they run in the checkout or worktree
+you invoke them from.
 ```bash
 mise run lint          # All linters (shell, lua, actions, docs)
 mise run lint:docs     # Dangling doc references only
@@ -84,7 +86,8 @@ pre-commit run gitleaks --all-files      # via pre-commit
 - `.chezmoidata.toml` — Template data (MCP servers, Claude hooks, platform data)
 - `.chezmoidata/` — Split-out template data: `packages.toml` (profile-based Homebrew registry), `profiles.toml` (profile activation flags), `uv_tools.toml`, `completions.toml`
 - `dot_zshrc.tmpl`, `dot_zshenv.tmpl` — Zsh shell configuration
-- `private_dot_config/mise/config.toml.tmpl` — mise tool versions and tasks
+- `private_dot_config/mise/config.toml.tmpl` — global mise tool versions, env, and tasks that do not read this repo
+- `.mise.toml` — chezmoi and shellcheck pins, and the tasks for working in this repo (lint, test, apply, …)
 - `private_dot_config/nvim/` — Neovim setup (see `nvim/CLAUDE.md`)
 - `private_dot_config/private_fish/` — Fish shell (experimental)
 - `justfile` — Task runner recipes (`just --list`); shared modules in `private_dot_config/just/*.just` (see `docs/justfile-architecture.md`)

@@ -50,11 +50,23 @@ ENV HOMEBREW_NO_AUTO_UPDATE=1
 ENV HOMEBREW_NO_ANALYTICS=1
 
 # Install core tools via Homebrew (matching CI)
-RUN brew install chezmoi neovim
+RUN brew install neovim
 
-# Install mise
-RUN curl https://mise.run | sh
+# Install mise at the release the CI workflows pin with jdx/mise-action
+# `version:` (tests/test-ci-pins.sh check D); mise.run otherwise installs the
+# newest release.
+RUN curl https://mise.run | MISE_VERSION=v2026.9.12 sh
 ENV PATH="/home/tester/.local/bin:${PATH}"
+
+# chezmoi comes from the .mise.toml pin, as in CI (#418); the shims resolve
+# `chezmoi` to the pinned version. .mise.toml holds only tool versions and
+# template-free tasks, so it needs no trust.
+# MISE_TRUSTED_CONFIG_PATHS mirrors the environment jdx/mise-action sets for
+# the CI workspace.
+ENV MISE_TRUSTED_CONFIG_PATHS=/tmp/dotfiles
+ENV PATH="/home/tester/.local/share/mise/shims:${PATH}"
+COPY --chown=tester:tester .mise.toml /tmp/dotfiles/.mise.toml
+RUN mise --cd /tmp/dotfiles install chezmoi
 
 # Install pre-commit for linting stage
 RUN brew install pre-commit

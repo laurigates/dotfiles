@@ -15,7 +15,8 @@ PROCESS_ALL="${PROCESS_ALL:-false}"
 log() {
   local level="$1"
   local msg="$2"
-  local timestamp=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+  local timestamp
+  timestamp=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
   echo "[$timestamp] $level: $msg" | tee -a "$LOG_FILE"
 }
 
@@ -135,7 +136,8 @@ load_state() {
 # Save state
 save_state() {
   local last_starred_at="$1"
-  local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   cat > "$STATE_FILE" << EOF
 {
   "last_run": "$now",
@@ -164,7 +166,6 @@ get_list_id() {
 add_to_list() {
   local repo_id="$1"
   local list_id="$2"
-  local repo_name="$3"
 
   gh api graphql -f query='
 mutation {
@@ -186,7 +187,9 @@ main() {
   info "Starting GitHub star organization"
 
   # Load state
-  local state=$(load_state)
+  local state
+  state=$(load_state)
+  # shellcheck disable=SC2155 # split, a state file jq cannot parse would abort under set -e; combined, it processes all stars
   local last_starred_at=$(echo "$state" | jq -r '.last_starred_at // empty')
 
   if [[ "$PROCESS_ALL" == "true" ]]; then
@@ -200,6 +203,7 @@ main() {
 
   # Fetch starred repos with metadata
   info "Fetching starred repositories..."
+  # shellcheck disable=SC2155 # split, a failed gh api call would abort under set -e; combined, the run continues with no repos
   local repos_json=$(gh api user/starred --paginate --jq '.[] | {
     name: .full_name,
     id: .node_id,
@@ -215,7 +219,8 @@ main() {
     repos_json=$(echo "$repos_json" | jq -s '.')
   fi
 
-  local count=$(echo "$repos_json" | jq 'length')
+  local count
+  count=$(echo "$repos_json" | jq 'length')
   info "Found $count repos to process"
 
   if [[ "$count" -eq 0 ]]; then
@@ -246,13 +251,19 @@ main() {
   local latest_starred_at=""
 
   while read -r line; do
-    local name=$(echo "$line" | jq -r '.name')
-    local id=$(echo "$line" | jq -r '.id')
-    local starred_at=$(echo "$line" | jq -r '.starred_at')
-    local language=$(echo "$line" | jq -r '.language')
-    local topics=$(echo "$line" | jq -r '.topics')
+    local name
+    name=$(echo "$line" | jq -r '.name')
+    local id
+    id=$(echo "$line" | jq -r '.id')
+    local starred_at
+    starred_at=$(echo "$line" | jq -r '.starred_at')
+    local language
+    language=$(echo "$line" | jq -r '.language')
+    local topics
+    topics=$(echo "$line" | jq -r '.topics')
 
-    local category=$(categorize "$topics" "$language" "$name")
+    local category
+    category=$(categorize "$topics" "$language" "$name")
     local list_id="${list_cache[$category]:-}"
 
     if [[ -z "$list_id" ]]; then

@@ -26,14 +26,20 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@main
+        uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
 
       - name: Install dependencies
         run: |
-          brew install chezmoi neovim zsh hyperfine
+          brew install neovim zsh hyperfine
 
       - name: Setup mise
+        # Installs chezmoi at the version pinned in .mise.toml (#418).
         uses: jdx/mise-action@v4
+        with:
+          version: 2026.9.12
+
+      - name: Assert chezmoi matches the .mise.toml pin
+        run: tests/test-ci-pins.sh --assert-installed
 
       - name: Benchmark chezmoi apply
         id: chezmoi-bench
@@ -138,7 +144,8 @@ jobs:
         # github-action-benchmark requires a gh-pages branch that may not exist
         # on forks/PRs. Only run on pushes to main, which matches auto-push.
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: benchmark-action/github-action-benchmark@v1
+        # v1 is a branch upstream (no v1 tag), so pin the release commit.
+        uses: benchmark-action/github-action-benchmark@4322e5726e6334590d251fc4f92bec0efafc45dc # v1.22.2
         with:
           tool: 'customSmallerIsBetter'
           output-file-path: benchmark-results.json
