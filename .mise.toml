@@ -1,0 +1,7 @@
+# The one chezmoi version for CI (jdx/mise-action), the Docker smoke image, and
+# every machine this repo is applied to (private_dot_config/mise/config.toml.tmpl
+# reads it with `include ".mise.toml"`). Renovate's mise manager proposes bumps.
+# chezmoi skips dot-prefixed files at the source root, so this is never deployed.
+# tests/test-ci-pins.sh fails if chezmoi is installed any other way (#418).
+[tools]
+chezmoi = "2.72.2"
