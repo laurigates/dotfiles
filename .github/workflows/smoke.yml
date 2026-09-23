@@ -20,16 +20,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.x'
 
       - name: Setup mise
         # Installs chezmoi at the version pinned in .mise.toml (#418).
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
 
@@ -80,13 +80,13 @@ jobs:
     needs: [lint] # Run after linters pass
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup Homebrew (Linux)
         uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
 
       - name: Cache Homebrew
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: /home/linuxbrew/.cache/Homebrew
           key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
@@ -103,7 +103,7 @@ jobs:
         # It also caches ~/.local/share/mise under a key that includes the mise
         # version. A second actions/cache of that dir can restore an older mise
         # over the pinned one through its prefix fallback (test-ci-pins.sh D).
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
 
@@ -197,12 +197,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       # No setup-homebrew here: macOS runners ship Homebrew preinstalled.
       # The Linux jobs need the action because linuxbrew is not.
       - name: Cache Homebrew
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/Library/Caches/Homebrew
           key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
@@ -222,7 +222,7 @@ jobs:
         # It also caches ~/.local/share/mise under a key that includes the mise
         # version. A second actions/cache of that dir can restore an older mise
         # over the pinned one through its prefix fallback (test-ci-pins.sh D).
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
 

@@ -52,18 +52,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0 # Full history for better context
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js for MCP servers
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
       - name: Setup Bun for MCP servers
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
 
@@ -84,7 +84,7 @@ jobs:
 
       - name: Setup mise
         # Installs chezmoi at the version pinned in .mise.toml (#418).
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
 
@@ -97,7 +97,7 @@ jobs:
           echo "Claude CLI version: $(claude --version)"
 
       - name: Cache Claude Plugins
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.claude/plugins
           key: claude-plugins-v1-${{ runner.os }}-laurigates-claude-plugins
@@ -159,7 +159,7 @@ jobs:
 
       - name: Run Claude Code with MCP Integration
         id: claude
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@46a42b43239748e5b25771606bf1f551c3b1b517 # v1.0.232
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
@@ -283,7 +283,7 @@ jobs:
 
       - name: Archive workflow artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: claude-workflow-artifacts
           path: |
