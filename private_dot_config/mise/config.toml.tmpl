@@ -140,7 +140,9 @@ harper-ls = "latest"                          # Harper language server (in-edito
 "npm:typescript-language-server" = "latest"
 {{- end }}
 "go:golang.org/x/tools/gopls" = "latest"
-chezmoi = "latest"
+# Same version CI tests: read from the source repo's .mise.toml, so a chezmoi
+# upgrade reaches machines only through a merged pin bump (#418).
+chezmoi = "{{ (fromToml (include ".mise.toml")).tools.chezmoi }}"
 usage = "latest"
 uv = "latest"
 "aqua:EmbarkStudios/cargo-deny" = "latest"    # Rust license/bans/sources gate (cargo deny)
@@ -685,6 +687,10 @@ legacy_version_file = true
 
 # Enable experimental features
 experimental = true
+
+# Trust config files under the chezmoi source dir without prompting: its
+# .mise.toml pins chezmoi, and worktrees under .claude/worktrees/ carry a copy.
+trusted_config_paths = ["{{ .chezmoi.sourceDir }}"]
 
 # Always route the pipx backend through uvx (see comment above the
 # Python Tools section). Belt-and-suspenders for jdx/mise#7477.
