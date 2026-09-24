@@ -152,8 +152,36 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 # real consolidation, not by a larger number.
 #
 # Next cleanup candidate is unchanged: tool-use-patterns.md, now 9,447 B after
-# the gh api -f entry, within 553 B of PER_FILE_CAP_BYTES.
-TOTAL_BUDGET_BYTES=104000
+# the gh api -f entry, within 553 B of PER_FILE_CAP_BYTES. (Done in the
+# 2026-09-24 entry below.)
+#
+# 2026-09-24 → 78,400 (RATCHET DOWN, -25,600). Wave 2 of the context diet
+# promoted four always-loaded rules to plugin skills, leaving stubs that keep
+# only their decision-time gate lines: tool-use-patterns.md 9,447 → 1,625
+# (agent-patterns-plugin:harness-tool-errors, code-quality-plugin:ast-grep-search,
+# git-plugin:gh-cli-agentic, agent-patterns-plugin:tool-result-traps),
+# git-hazards.md 7,727 → 1,392 (git-plugin:git-local-hazards),
+# never-fabricate-test-identifiers.md 6,917 → 1,023
+# (agent-patterns-plugin:probe-input-integrity), and
+# diagnose-at-the-failure-point.md 4,901 → 864
+# (code-quality-plugin:debugging-methodology). Measured on disk in a clean
+# worktree off origin/main at 7b39ac5:
+#
+#   before the promotion                 = 97,892   (41 unconditional rules)
+#   after  the promotion (-24,088)       = 73,804   (41 unconditional rules)
+#   path_scoped_bytes                    = 59,330   (not counted; loads on match)
+#
+# 78,400 leaves 4,596 bytes (5.9%) free — within the percentage range the
+# earlier entries chose (5.9–6.4%), for the same reason. The absolute margin is
+# the smallest yet because the surface is the smallest yet. The
+# skills live in laurigates/claude-plugins; until that release is installed the
+# stubs point at skills a session does not yet have, which is a reachability
+# gap, not a byte-count one.
+#
+# Next cleanup candidates (largest unconditional, measured 2026-09-24):
+#   communication.md 6,284 B · offload-to-deterministic-substrate.md 5,378 B
+#   skill-and-agent-catalog-check.md 4,039 B
+TOTAL_BUDGET_BYTES=78400
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 

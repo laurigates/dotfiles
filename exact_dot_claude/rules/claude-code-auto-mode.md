@@ -93,7 +93,7 @@ at launch).
 Colon-form patterns prefix-match the raw command string, so
 `Bash(git push --force:*)` also hard-blocks `git push --force-with-lease …`
 — locking out the safe recovery form that the stacked-PR protocol
-(`git-hazards.md` trap #7) depends on. The space form
+(`git-plugin:git-merge-hazards` §3) depends on. The space form
 `Bash(git push --force *)` stops the match at the exact flag (the trailing
 space can't match `-with-lease`), leaving lease-guarded pushes to the
 classifier's soft-deny instead of a hard block. (Caught in loractl PR #39
