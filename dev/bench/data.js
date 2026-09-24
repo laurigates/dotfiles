@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790187978459,
+  "lastUpdate": 1790246761912,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -527,6 +527,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.01107282754,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7b39ac51b6ebcad3339c4964d59b84ceaac2a672",
+          "message": "docs(claude): wave 1 context diet — react-slot rule, podio skill, ~/repos stub repoint (#455)\n\nPart of wave 1 of the Claude context diet. Always-loaded instructions\nmeasured 278k chars against a 150k limit; wave 1 brings it to about\n211k.\n\n## Changes\n\n- **`duplicate-stateful-module.md`**: `react-slot` is reclassified from\nharmless to harmful. `Slot` inspects its child's element identity, which\ndoes not survive two copies of the module. One paragraph records the\nthelma 2026-08-19 incident (`<Button asChild>` 500 on `/admin/users`).\n- **`skills/podio-ticket-updates`**: moved here from\n`~/repos/ForumViriumHelsinki/.claude/skills/`. Skills are not discovered\nabove a repo root, so the old copy was never offered in subrepo\nsessions. Because this repo is public, the skill was sanitised with the\n`public-export-sanitization` tripwire. Board and space labels, the\nresponsible person and the org now come from `PODIO_ORG_LABEL`,\n`PODIO_SPACE_LABEL`, `PODIO_APP_LABEL`, `PODIO_RESPONSIBLE` and\n`PODIO_GITHUB_ORG`; the skill asks for them when they are unset.\n-\n**`private_repos/.../rules/{ci-cd-multirepo,tool-migration-cutover}.md`**:\nsame one-line repoint as laurigates/repos-claude-config#60 (bare skill\nnames to `github-actions-plugin:multirepo-ci-cd` /\n`migration-patterns-plugin:tool-migration-cutover`). chezmoi owns these\ntwo files, so without this edit the next `chezmoi apply` reverts #60 and\nleaves `~/repos` dirty.\n\n## Merge order\n\n1. laurigates/claude-plugins#2810 and this PR\n2. ForumViriumHelsinki/.github#144\n3. laurigates/repos-claude-config#60 (deletes the portfolio copies of\nthe skills)\n\n## Follow-up\n\n- Set the five `PODIO_*` variables in `~/.api_tokens`.\n\n## Verification\n\n- `check-public-export.sh` over the skill: clean. The control run on the\noriginal FVH copy flagged the internal identifiers.\n- pre-commit on every commit: no failures.\n- `chezmoi --source <worktree> diff` shows only the intended hunks.\n- Not verified: skill discovery after `chezmoi apply`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01Sdq9pGAa4Fe2KhFdQPrnbm\n\n---------\n\nCo-authored-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-24T13:45:24+03:00",
+          "tree_id": "ba7772e64cef7e5e92bda3980166619a3821dc6e",
+          "url": "https://github.com/laurigates/dotfiles/commit/7b39ac51b6ebcad3339c4964d59b84ceaac2a672"
+        },
+        "date": 1790246761246,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.008115565966666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00131015416,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00107491196,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.00967093972,
             "unit": "s"
           }
         ]
