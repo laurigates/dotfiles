@@ -13,6 +13,11 @@ Promoted to skills — invoke the one matching the moment:
 - `agent-patterns-plugin:tool-result-traps` when an empty or negative result is
   about to gate an action or be reported as done.
 
+## Before editing
+
+Prefer the smallest unique `Edit` over rewriting a file with `Write`, and pass
+absolute paths in agent prompts (agent threads do not keep their cwd).
+
 ## Bash permission denials are terminal
 
 When a Bash call returns "Permission to use Bash has been denied", the denial is

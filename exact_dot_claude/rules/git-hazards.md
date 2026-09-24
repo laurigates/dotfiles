@@ -1,7 +1,8 @@
 # Git Hazards — Verify the Content, Not the Exit Code
 
 Promoted to a skill: invoke `git-plugin:git-local-hazards` when a local git
-result looks wrong, or before follow-up work on a squash-merged branch — it
+result looks wrong, after a merge or rebase that replayed cleanly across many
+upstream commits, or before follow-up work on a squash-merged branch — it
 carries the six traps (orphans after a squash-merge, stray local-`main`
 commits, clean merges and rebases that break the build, atomic `git add`
 aborts, a coworker's mid-flight commit, `reset --hard` recovery from

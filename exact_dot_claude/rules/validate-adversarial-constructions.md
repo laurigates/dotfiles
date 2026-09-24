@@ -81,8 +81,8 @@ the bypass introduced a *different* failure which the test caught by accident.
 
 - **Prefer deleting the new code to neutering it.** `git stash`, or check out
   the pre-fix file, and run against that. A hand-written bypass is the same
-  retyping hazard as `never-fabricate-test-identifiers.md` § *extract the code,
-  don't retype it*.
+  retyping hazard as `agent-patterns-plugin:probe-input-integrity` § *extract
+  the code, don't retype it*.
 - **When a bypass is unavoidable, name the old behaviour and reproduce it
   exactly** — including what the removed call returned on the failure path.
   Short-circuiting a conditional leaves every binding it fed in a state the

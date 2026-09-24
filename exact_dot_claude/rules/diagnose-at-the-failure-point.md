@@ -10,3 +10,6 @@ the cubecl canonical break.
   theorizing on the entity.
 - **Any exhaustion symptom** (OOM, `ENOSPC`, `EMFILE`, pool full): read the
   actual resource at the failing call site, not from an earlier sample.
+- **An inherited root cause** (a handoff issue, an upstream tracker, a
+  maintainer's diagnosis) is an input to verify, not a conclusion. When a
+  theory and a measurement disagree, re-diagnose.
