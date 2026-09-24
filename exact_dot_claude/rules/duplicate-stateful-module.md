@@ -43,11 +43,28 @@ Only the stateful ones are bugs. Triage before spending time:
 | Duplicate holds… | Verdict | Examples (React/Radix flavour) |
 |---|---|---|
 | A stack/registry/counter shared across instances | **bug** | focus-scope (focus-trap stack), focus-guards, dismissable-layer (layer stack), portal, presence, context providers |
-| Pure functions, hooks, type-only helpers | harmless | slot, id, primitive wrappers, compose-refs, `use-*` hooks |
+| Code that inspects the identity of what it is handed (`isValidElement`, `instanceof`, symbol brands) | **bug** | slot |
+| Pure functions, hooks, type-only helpers | harmless | id, compose-refs, `use-*` hooks |
 
 The same split applies outside React: a duplicated logging *formatter* is fine;
-a duplicated logging *root registry* is not. Ask "does this module own a
-process-wide singleton?"
+a duplicated logging *root registry* is not. Ask two questions: "does this
+module own a process-wide singleton?" and "does it check the identity of
+values created elsewhere?" A yes to either makes a duplicate a bug.
+
+`slot` holds no registry, which is why it once sat in the harmless row. That
+was the wrong test: `Slot` checks its child with
+`Children.count(children) === 1 && isValidElement(children)`, and element
+identity does not survive two copies of the module. In thelma (2026-08-19),
+`@radix-ui/react-slot` was in the tree at 1.2.3, 1.3.0 and 1.3.3, and a
+`<Button asChild>` wrapping a single `<Link>` threw `Slot failed to slot onto
+its children`, so `/admin/users` returned 500 on a cold server. The failure is
+perturbation-sensitive: editing unrelated props or deleting a neighbouring
+element changes the module graph and makes it vanish, so an HMR-driven bisect
+blames whichever line was touched last. Bisect against a cold server and check
+the lockfile before the component. The fix was an `overrides` pin on
+`@radix-ui/react-slot` to the version `radix-ui` bundles, re-checked on every
+`radix-ui` bump. Primitive wrappers that re-export `Slot` are suspect for the
+same reason.
 
 ## Check the tree, not the intent
 
