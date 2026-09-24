@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790246761912,
+  "lastUpdate": 1790280752836,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -571,6 +571,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.00967093972,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7c0b211c14d3cd83fc2ffebac4cc856c152a0776",
+          "message": "docs(claude): wave-2 context diet — promote four user rules to plugin skills (#456)\n\nWave 2 of the Claude context diet. Four user-tier rules that load into\nevery session become stubs. Each stub keeps the gate lines that apply\nwhile a decision is being made and names the plugin skill that now\ncarries the body.\n\n| Rule | Bytes before → after | Skill home |\n|---|---:|---|\n| `tool-use-patterns.md` | 9,447 → 1,455 |\n`agent-patterns-plugin:harness-tool-errors` (Read/Edit errors),\n`code-quality-plugin:ast-grep-search` (reference ladder),\n`git-plugin:gh-cli-agentic` (`gh api -f`/`-F`),\n`agent-patterns-plugin:tool-result-traps` (parseFloat control example) |\n| `git-hazards.md` | 7,727 → 1,316 | `git-plugin:git-local-hazards` |\n| `never-fabricate-test-identifiers.md` | 6,917 → 904 |\n`agent-patterns-plugin:probe-input-integrity` |\n| `diagnose-at-the-failure-point.md` | 4,901 → 669 |\n`code-quality-plugin:debugging-methodology` |\n\nThese stay inline: the Bash-permission-denial rule, the\ncontrol-test-negatives line, the existing WebFetch pointer, and the\nper-rule gates (cut PR branches from `origin/main`, `gh pr list --head`\nbefore the second push, one pathspec per `git add`, list before you get,\n`chmod +x` a stub and assert it, verify that a zero/default identifier\ncame from a real success, read the resource at the failing call).\n\n**Budget.** The always-loaded surface measured on disk goes from 97,892\nto 73,244 bytes. `TOTAL_BUDGET_BYTES` ratchets down from 104,000 to\n77,700, which leaves 6.1% headroom. The dated history note in\n`tests/test-claude-context-budget.sh` cites the measured bytes.\n\n**Dependency.** `harness-tool-errors`, `git-local-hazards` and\n`probe-input-integrity` are new skills, and the other homes gain\nsections. All of them land in the claude-plugins wave-2 PR. Merge this\nPR after that release is installed, then run `chezmoi apply`. The\ndoc-reference checker does not resolve `plugin:skill` names, so its\nclean result says nothing about whether those skills exist.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_014iSXiKVfiBKcxGsSX1WnnH\n\n---------\n\nCo-authored-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-24T23:11:42+03:00",
+          "tree_id": "55f70a7a9947226db8d85791ddf4e0c739750977",
+          "url": "https://github.com/laurigates/dotfiles/commit/7c0b211c14d3cd83fc2ffebac4cc856c152a0776"
+        },
+        "date": 1790280750948,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.007078163346666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00099205172,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00085230732,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.02321595082,
             "unit": "s"
           }
         ]
