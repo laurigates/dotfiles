@@ -153,7 +153,33 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 #
 # Next cleanup candidate is unchanged: tool-use-patterns.md, now 9,447 B after
 # the gh api -f entry, within 553 B of PER_FILE_CAP_BYTES.
-TOTAL_BUDGET_BYTES=104000
+#
+# 2026-09-24 → 77,700 (RATCHET DOWN, -26,300). Wave 2 of the context diet
+# promoted four always-loaded rules to plugin skills, leaving stubs that keep
+# only their decision-time gate lines: tool-use-patterns.md 9,447 → 1,455
+# (agent-patterns-plugin:harness-tool-errors, code-quality-plugin:ast-grep-search,
+# git-plugin:gh-cli-agentic, agent-patterns-plugin:tool-result-traps),
+# git-hazards.md 7,727 → 1,316 (git-plugin:git-local-hazards),
+# never-fabricate-test-identifiers.md 6,917 → 904
+# (agent-patterns-plugin:probe-input-integrity), and
+# diagnose-at-the-failure-point.md 4,901 → 669
+# (code-quality-plugin:debugging-methodology). Measured on disk in a clean
+# worktree off origin/main at 7b39ac5:
+#
+#   before the promotion                 = 97,892   (41 unconditional rules)
+#   after  the promotion (-24,648)       = 73,244   (41 unconditional rules)
+#   path_scoped_bytes                    = 59,330   (not counted; loads on match)
+#
+# 77,700 leaves 4,456 bytes (6.1%) free — the margin range the earlier entries
+# chose (5,537 / 6.4%, 5,401 / 5.9%, 6,108 / 6.2%), for the same reason. The
+# skills live in laurigates/claude-plugins; until that release is installed the
+# stubs point at skills a session does not yet have, which is a reachability
+# gap, not a byte-count one.
+#
+# Next cleanup candidates (largest unconditional, measured 2026-09-24):
+#   communication.md 6,284 B · offload-to-deterministic-substrate.md 5,378 B
+#   skill-and-agent-catalog-check.md 4,039 B
+TOTAL_BUDGET_BYTES=77700
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 
