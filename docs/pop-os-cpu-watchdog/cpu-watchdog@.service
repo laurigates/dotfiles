@@ -1,0 +1,6 @@
+[Unit]
+Description=Stop %i.service if its main process spins on CPU
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cpu-watchdog %i.service 50
