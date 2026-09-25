@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790346602607,
+  "lastUpdate": 1790346641494,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -659,6 +659,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.01152479386,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "75a2747d3e9b667e4ae356d0e321d834bde1b358",
+          "message": "fix(mise): approve low-download npm:ocx so mise upgrade stops failing (#457)\n\nmise refuses to install npm packages with fewer than 1000 weekly\ndownloads unless they are approved explicitly. `ocx` has 487 per week,\nso `mise upgrade` exited 1. That aborted the `01-update-packages.sh`\nrun_onchange script, and `chezmoi apply` stopped partway.\n\nThis PR sets `allow_low_downloads = true` on `npm:ocx` in\n`private_dot_config/mise/config.toml.tmpl`. The version stays pinned at\n2.0.14.\n\nVerification:\n- `mise install npm:ocx` using the new entry installed 2.0.14, and `ocx\n--version` printed `2.0.14`.\n- The rendered template parses as TOML and resolves to `{version =\n\"2.0.14\", allow_low_downloads = true}`.\n- Pre-commit hooks passed.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>",
+          "timestamp": "2026-09-25T17:29:37+03:00",
+          "tree_id": "50e3295db69bcf2dd275a46114fd8884012fd62e",
+          "url": "https://github.com/laurigates/dotfiles/commit/75a2747d3e9b667e4ae356d0e321d834bde1b358"
+        },
+        "date": 1790346640760,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.010351790346666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012134417200000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00104965792,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.00965613812,
             "unit": "s"
           }
         ]
