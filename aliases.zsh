@@ -11,7 +11,7 @@ alias cprd='claude "/git:commit-push-pr --pr --draft"'
 # just --justfile="$HOME/justfile" --list
 
 alias chap='chezmoi apply'
-alias ccd='chezmoi cd'
+alias ccd='cd "$(chezmoi source-path)"'
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
