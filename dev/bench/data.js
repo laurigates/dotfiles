@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790675947985,
+  "lastUpdate": 1790679757891,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -835,6 +835,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.01085487962,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6ef9020eb550b16353cdc107841a27c4d752bd5b",
+          "message": "chore(claude): enable documentation-plugin at user scope (#461)\n\nChanges `documentation-plugin@laurigates-claude-plugins` from `false` to\n`true` in the `enabledPlugins` overlay of\n`exact_dot_claude/modify_settings.json`.\n\nThree always-loaded global rules point at skills in this plugin:\n`documentation-authoring.md`,\n`verify-machine-facts-before-publishing.md` and `tool-use-patterns.md`.\nThey name `docs-single-source`, `docs-verify-machine-facts` and\n`docs-fetch-fallbacks`. `public-export-sanitization` also moved into\nthis plugin in laurigates/claude-plugins#2810. While the plugin is\ndisabled, none of those pointers resolve outside thelma, which enables\nthe plugin itself.\n\nVerified by piping the live `~/.claude/settings.json` through the modify\nscript: the rendered\n`enabledPlugins[\"documentation-plugin@laurigates-claude-plugins\"]` is\n`true`.\n\nTakes effect after `chezmoi apply` and a new session.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_018X1UhPee6LFXJK7L5Awinj\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-29T14:01:42+03:00",
+          "tree_id": "00b96bfb4cfaa8e12f4796fa5a983e13f55f2e47",
+          "url": "https://github.com/laurigates/dotfiles/commit/6ef9020eb550b16353cdc107841a27c4d752bd5b"
+        },
+        "date": 1790679757503,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.009653642873333335,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015067633599999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012568655600000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0114310703,
             "unit": "s"
           }
         ]
