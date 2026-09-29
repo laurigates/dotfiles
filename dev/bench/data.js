@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790533351510,
+  "lastUpdate": 1790667724698,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -747,6 +747,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009444356880000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e3879db9e0e66ea51a41fe3eb7fff2f0033cab8f",
+          "message": "chore(claude): context diet wave 3 — promote, consolidate, and lean always-loaded rules (#459)\n\n## What\n\nContext diet, wave 3 (`meta-context-diet` audit). Cuts ~24.1k chars\n(~6.0k tokens) from the every-turn context: ~21.5k from `~/.claude`\nrules (applies in every project) and ~2.6k from this repo's own\n`CLAUDE.md` and `.claude/rules/`.\n\n**Global rules (`exact_dot_claude/rules/`)**\n- Promoted to skills, rule left as a pointer stub:\n`verify-license-position-before-declaring-blocked` →\n`code-quality-plugin:code-license-position`; `workflow-agent-scale` →\n`workflow-orchestration-plugin:workflow-scale-budget`\n- Consolidated and deleted: `mise-stale-tool-copies` (now in\n`configure-mise` REFERENCE), `orbstack-gui-quit-orphans-helper`\n(`macos-performance-triage`)\n- Leaned, invariant wording kept: `communication`,\n`offload-to-deterministic-substrate`, `skill-and-agent-catalog-check`,\n`agent-and-tool-selection`, `front-load-executive-decisions`,\n`copy-paste-commands`, `dependency-management`. The three-tics and\nend-on-the-fact sections of `communication.md` are unchanged because\n`prose-plugin:prose-check` names that file as canonical.\n- Path-scoped: `local-ci-parity` (CI workflows, justfiles, pre-commit,\nmise, Makefile)\n\n**Project context**\n- `CLAUDE.md` § Linting points at `.claude/rules/testing.md` (which\ngains the `lint:docs` and gitleaks rows); § Tools dropped; § Blueprint\ncut to one line\n- `development.md` trimmed to the commit type/scope list; its bare\n`chezmoi apply` advice contradicted the worktree guidance\n- `document-management.md` deleted\n(`blueprint-plugin:document-detection` covers it)\n\n## Depends on\n\nlaurigates/claude-plugins#2860 — the new skills and the consolidation\ntargets. Merge that first.\n\n## After merge\n\n`just apply`: `exact_dot_claude/` removes the two deleted rules from\n`~/.claude/rules/`.\n\n## Checks\n\nPre-commit passed on both commits (context-budget and doc-reference\nhooks included). `mise run lint` passes except `lint:lua`, which fails\nlocally because luacheck 1.2.0 crashes on Lua 5.5\n(lunarmodules/luacheck#147); no Lua files changed.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01Juiaf9kfaYKgrm7gYYCNk4\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-29T10:41:02+03:00",
+          "tree_id": "52594e7fe13a2641e188c175ec788445e2963860",
+          "url": "https://github.com/laurigates/dotfiles/commit/e3879db9e0e66ea51a41fe3eb7fff2f0033cab8f"
+        },
+        "date": 1790667723963,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.010745521786666665,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017590429400000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012938193400000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011584583240000002,
             "unit": "s"
           }
         ]
