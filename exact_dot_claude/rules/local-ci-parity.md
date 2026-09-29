@@ -1,3 +1,15 @@
+---
+paths:
+  - "**/.github/workflows/**"
+  - "**/justfile"
+  - "**/Justfile"
+  - "**/*.just"
+  - "**/.pre-commit-config.yaml"
+  - "**/.mise.toml"
+  - "**/mise.toml"
+  - "**/Makefile"
+---
+
 # Local ↔ CI Parity
 
 **Aspiration, not a hard rule.** When adding or changing a quality gate (linter, formatter, type check, test tier), prefer configurations where the local command and the CI step run the same checks. This prevents the "passes locally, fails in CI" footgun.
