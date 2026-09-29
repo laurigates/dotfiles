@@ -283,7 +283,7 @@ read -r -d '' overlay <<'OVERLAY' || true
     "component-patterns-plugin@laurigates-claude-plugins": false,
     "configure-plugin@laurigates-claude-plugins": true,
     "container-plugin@laurigates-claude-plugins": false,
-    "documentation-plugin@laurigates-claude-plugins": false,
+    "documentation-plugin@laurigates-claude-plugins": true,
     "git-plugin@laurigates-claude-plugins": true,
     "github-actions-plugin@laurigates-claude-plugins": true,
     "health-plugin@laurigates-claude-plugins": true,
