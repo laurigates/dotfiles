@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790667724698,
+  "lastUpdate": 1790675947985,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -791,6 +791,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011584583240000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a60a24f477780d72b1031d79785dbf20225b0625",
+          "message": "fix(zsh): make ccd cd in the current shell instead of spawning a subshell (#460)\n\n`ccd` was `chezmoi cd`, which starts a child `$SHELL` in the source\ndirectory because a subprocess cannot change its parent shell's working\ndirectory. Each use stacked a nested shell that had to be left with\n`exit`.\n\nThe alias now resolves the path with `chezmoi source-path` and runs a\nplain `cd`, so it moves the current shell and `cd -` returns to the\nprevious directory.\n\nThe alias no longer accepts a target-path argument (`chezmoi cd\n<target>`); `ccd` always goes to the source root.\n\nVerified: `cd \"$(chezmoi source-path)\" && pwd` prints\n`/Users/lgates/.local/share/chezmoi`; `mise run lint:shell` exits 0.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01LGcuLvq4b6uf6X5oMQBSiU\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-29T12:58:14+03:00",
+          "tree_id": "ee07a6f4329c187d3c3053d6bb885b4273b28a1d",
+          "url": "https://github.com/laurigates/dotfiles/commit/a60a24f477780d72b1031d79785dbf20225b0625"
+        },
+        "date": 1790675947598,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.00948788622,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015233585200000004,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012602765200000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.01085487962,
             "unit": "s"
           }
         ]
