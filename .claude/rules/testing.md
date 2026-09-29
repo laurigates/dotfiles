@@ -8,6 +8,8 @@
 | Shell | `mise run lint:shell` | After modifying shell scripts |
 | Lua | `mise run lint:lua` | After modifying Neovim config |
 | Actions | `mise run lint:actions` | After modifying workflows |
+| Docs | `mise run lint:docs` | After renaming or moving files referenced by docs |
+| Secrets | `gitleaks dir . --config .gitleaks.toml` | Before committing (also a pre-commit hook) |
 | Full | `mise run test` | Before committing |
 | Docker | `mise run docker` | For environment changes |
 

@@ -55,31 +55,9 @@ Managed per-project in `.mcp.json`. Registry of available servers in `.chezmoida
 
 ## Linting
 
-### mise tasks (recommended):
-Defined in the repo-root `.mise.toml`, so they run in the checkout or worktree
-you invoke them from.
-```bash
-mise run lint          # All linters (shell, lua, actions, docs)
-mise run lint:docs     # Dangling doc references only
-mise run lint:shell    # Shell scripts only
-mise run lint:lua      # Neovim config only
-mise run lint:actions  # GitHub Actions only
-mise run test          # All tests (linting + docker)
-```
-
-### Direct commands:
-```bash
-shellcheck **/*.sh                    # Shell scripts
-luacheck private_dot_config/nvim/lua  # Neovim config
-actionlint                            # GitHub Actions
-pre-commit run --all-files            # All pre-commit hooks
-```
-
-### Secret scanning:
-```bash
-gitleaks dir . --config .gitleaks.toml   # scan the working tree
-pre-commit run gitleaks --all-files      # via pre-commit
-```
+Test tiers, commands, and when to run each: `.claude/rules/testing.md`. The
+`mise run lint*` tasks live in the repo-root `.mise.toml`, so they run in the
+checkout or worktree you invoke them from.
 
 ## Key Files & Directories
 
@@ -93,14 +71,6 @@ pre-commit run gitleaks --all-files      # via pre-commit
 - `justfile` — Task runner recipes (`just --list`); shared modules in `private_dot_config/just/*.just` (see `docs/justfile-architecture.md`)
 - `mise.lock` — Reproducible tool versions
 
-## Tools
-
-- **just** — Task runner; `justfile` in repo root
-- **mise** — Tool version management; backends: `pipx:`, `aqua:`
-- **Zsh** — Primary shell with Starship prompt
-- **Neovim** — Editor with LSP, formatting, debugging
-- **Homebrew** — Package management (bootstrap and system tools)
-
 ## CI Pipeline
 
 - **smoke.yml** — Linting on Ubuntu; build + zsh smoke test on Ubuntu and macOS (see [ADR-0017](docs/adrs/0017-ci-platform-coverage.md))
@@ -108,13 +78,7 @@ pre-commit run gitleaks --all-files      # via pre-commit
 
 ## Blueprint Documentation
 
-Blueprint v3.3.0 manages project documentation and rules.
-
-- **PRD**: `docs/prds/project-overview.md` — Feature requirements and scope
-- **ADRs**: `docs/adrs/` — 17 Architecture Decision Records ([index](docs/adrs/README.md))
-- **PRPs**: `docs/prps/` — Implementation plans (fish, NixOS, sketchybar)
-- **Manifest**: `docs/blueprint/manifest.json` — Configuration and task registry
-- **Commands**: `/blueprint-status`, `/blueprint-execute`, `/blueprint-derive-plans`
+PRD in `docs/prds/`, ADRs in `docs/adrs/` ([index](docs/adrs/README.md)), PRPs in `docs/prps/`; layout in `docs/blueprint/README.md`.
 
 ## Sub-documentation
 

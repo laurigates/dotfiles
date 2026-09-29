@@ -4,7 +4,6 @@ When a task will run long enough that a mid-run question would stall it — a
 multi-step workflow, a plan-mode design, a parallel-agent dispatch, an
 autonomous session — identify every decision that is genuinely Lauri's to
 make and ask them **all at the start, in one batch**, before work begins.
-One question round at time zero buys an uninterrupted run to completion.
 
 This is "ask *earlier*", never "ask *more*": the total number of questions
 should go down, because mid-run stalls and post-hoc rework disappear.
@@ -26,10 +25,8 @@ Never front-load (or ask at all):
 
 - **Choices with a conventional default** — pick it, state it in the
   response, and proceed
-- **Anything already answered by `decision-defaults.md`** — the standing
-  defaults exist precisely so these are not re-asked
+- **Anything already answered by `decision-defaults.md`**
 - **Facts verifiable from the codebase, docs, or tools** — go look instead
-  of asking
 
 ## Protocol
 
@@ -49,26 +46,10 @@ Never front-load (or ask at all):
    ("I'll now run the tests") without making the call is the same stall by
    another route — nobody types "continue" unattended, so make the call.
 5. **Brief the answers into subagents.** A dispatched agent cannot re-ask
-   the user — write the relevant decisions into its prompt, the same way
-   matched skills are briefed per `skill-and-agent-catalog-check.md`. Relay
-   each answer as given and attributed (`Lauri chose: two PRs`) rather than
-   widening it into a mandate, and never write the brief in Lauri's voice —
-   the delegate must be able to tell Lauri's decision from Claude's own.
+   the user — write the relevant decisions into its prompt. Relay each answer
+   as given and attributed (`Lauri chose: two PRs`) rather than widening it
+   into a mandate, and never write the brief in Lauri's voice — the delegate
+   must be able to tell Lauri's decision from Claude's own.
 
-## Feedback loop
-
-When the same question gets front-loaded across multiple sessions, promote
-the answer into `decision-defaults.md` (its "Adding New Defaults" section
-invites this) so it stops being asked at all. Front-loading is for *novel*
-decisions; *recurring* ones become standing defaults.
-
-## Rationale
-
-A question asked mid-workflow blocks everything behind it — and in an
-unattended session it can block for hours, or worse, tempt a guess at a
-decision that wasn't Claude's to make. The decision points of most tasks are
-visible at kickoff with a minute of thought; surfacing them there converts
-"start, stall, ask, resume" into "ask once, run clean". This is the
-complement of `decision-defaults.md`: defaults eliminate the recurring
-questions, front-loading batches the novel ones, and together they keep the
-execution phase question-free.
+When the same question gets front-loaded across multiple sessions, promote the
+answer into `decision-defaults.md` so it stops being asked.
