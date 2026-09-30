@@ -10,4 +10,4 @@ mechanics that bite (kimi + `temperature`, `provider_used` vs `model_used`,
 attachment budgets, retired registry models).
 
 Scope: *external* models consulted for judgment. Claude subagents doing work
-are covered by `agent-and-tool-selection.md` (always Opus).
+are covered by `agent-and-tool-selection.md` (model selection).
