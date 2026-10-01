@@ -35,7 +35,8 @@ one.
   `high`+ for genuinely hard reasoning.
 - **Sonnet 5.5 specifics**, from the
   [announcement](https://www.anthropic.com/claude-sonnet-5-5):
-  - Set effort explicitly on a Sonnet delegate. Claude Code defaults it to
+  - Set effort explicitly on a Sonnet delegate wherever it can be set (agent
+    frontmatter `effort:`, `claude --effort` in CI). Claude Code defaults it to
     Medium.
   - Cap it at `high`/`xhigh` for scoped edits, never `max`. On FrontierCode,
     Sonnet 5.5 at Max scored below Xhigh because it ran the code-review skill's
