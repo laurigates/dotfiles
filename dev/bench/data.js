@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790679757891,
+  "lastUpdate": 1790853261111,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -879,6 +879,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0114310703,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1b7ea784ae5294c639a9686a72f673033a5a3bf3",
+          "message": "docs(claude): replace the Opus-only subagent floor with per-task model selection (#462)\n\n## What\n\nReplaces the \"Opus is the floor\" section of\n`agent-and-tool-selection.md` with per-task model selection, and records\nthe evidence behind it.\n\nThe Opus-only rule came from one comparison: Opus 4.8 at low effort beat\nSonnet 4.6 at high effort (#237). The rule text dropped the model\nversions, so it read as a permanent law, and it kept ruling Sonnet out\nafter Sonnet 5.5 shipped.\n\nNew section:\n- **Opus stays the default** for delegates that edit, verify facts, or\nreturn analysis the main loop builds on, and **stays the choice for\nopen-ended review and audit**.\n- **Sonnet 5.5 is allowed** for well-specified work (a bounded\ndiagnosis, an implementation against an explicit brief) when an\nindependent check stands behind it: a mechanical gate, or an Opus re-run\nof its claims. It is also allowed whenever Lauri asks for it.\n- \"Remove Sonnet suggestions on sight\" becomes \"don't hard-code a\ncheaper model as a blanket cost default; choose per task\".\n- **Sonnet 5.5 specifics** from the\n[announcement](https://www.anthropic.com/claude-sonnet-5-5): set effort\nexplicitly where it can be set (Claude Code defaults Sonnet to Medium);\ncap it at `high`/`xhigh` for scoped edits, never `max`; send security\nreview to Opus; re-run the comparison for the Haiku cold-read exception\nwhen Haiku 5.5 ships.\n- The Haiku cold-read exception, `inherit`, effort as a cost lever, and\nthe `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` note are unchanged in substance.\n\n`multi-model-delegation.md` pointed at the rule as \"(always Opus)\" and\nnow says \"(model selection)\".\n\n## Evidence\n\nA comparison ran on 2026-09-30 in the FVH `infrastructure` repo. Both\nmodels got identical read-only briefs against a frozen snapshot\n(`3c8767ba`), at the same default effort, and were graded against\ndefects verified before the runs:\n\n| Task | Sonnet 5.5 | Opus 5.5 | Tokens (S / O) |\n|---|---|---|---|\n| Diagnosis: why a classifier resolves nothing (4 known causes) | 4/4 |\n4/4 | 178k / 180k |\n| Review of three justfile recipes (12 known defects) | 10/12 | 12/12 |\n156k / 161k |\n\nEach model's unique claims were checked against the repo and live data,\nand neither run made a false claim. Separately, a Sonnet 5.5\nimplementation task (infrastructure #2517–#2519) held on every claim\nre-run against the pushed branches.\n\nThe Sonnet 5.5 specifics come from the announcement rather than these\nruns. On FrontierCode, Sonnet 5.5 at Max scored below Xhigh because it\nran the code-review skill's subagents more often, which led to timeouts\nand out-of-scope edits. Higher-risk cyber tasks fall back to Sonnet 5,\nwhich is why security review stays on Opus.\n\n**Limits:** four graded runs, scored by an Opus session, at default\neffort only. The Agent tool can't set effort per call, so this doesn't\nretest the old low-vs-high pairing. The rule says to re-run the\ncomparison when either model changes.\n\n## Not in this PR\n\n`laurigates/claude-plugins` may still restate the Opus-only standard,\nfor example `agents-plugin:agents-analyze` (\"auditing agents against the\nalways-Opus standard\"). Aligning it is a separate change in that repo.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01RWYU5hjKTtT37CkLELMimM\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-01T14:13:11+03:00",
+          "tree_id": "44d9ecc040edb7f1d7a9e51f8f2f74ccb7a1dc7e",
+          "url": "https://github.com/laurigates/dotfiles/commit/1b7ea784ae5294c639a9686a72f673033a5a3bf3"
+        },
+        "date": 1790853260458,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.010832734886666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015265302000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.001260196,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.01209552702,
             "unit": "s"
           }
         ]
