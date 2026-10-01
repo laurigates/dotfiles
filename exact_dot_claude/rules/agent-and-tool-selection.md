@@ -33,6 +33,17 @@ one.
   session model, set `model:` explicitly.
 - **Effort** is the other cost lever: `low`/`medium` for most delegated tasks,
   `high`+ for genuinely hard reasoning.
+- **Sonnet 5.5 specifics**, from the
+  [announcement](https://www.anthropic.com/claude-sonnet-5-5):
+  - Set effort explicitly on a Sonnet delegate. Claude Code defaults it to
+    Medium.
+  - Cap it at `high`/`xhigh` for scoped edits, never `max`. On FrontierCode,
+    Sonnet 5.5 at Max scored below Xhigh because it ran the code-review skill's
+    subagents more often, which led to timeouts and out-of-scope edits.
+  - Send security review to Opus. Sonnet 5.5 falls back to Sonnet 5 on
+    higher-risk cyber tasks.
+- **When Haiku 5.5 ships**, re-run the comparison below for the cold-read
+  exception and for any Haiku delegate before changing either.
 - `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` overrides every per-agent `model:` choice,
   including plugin frontmatter. Don't hard-code a cheaper model into an agent
   definition, workflow or skill as a blanket cost default; choose per task under
