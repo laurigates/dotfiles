@@ -33,3 +33,27 @@ ollama-idle days="45":
 # Remove ollama models idle `days`+ (re-pullable)
 ollama-prune days="45":
     bash "$HOME/scripts/ollama-idle.sh" --days {{ days }} --apply
+
+# Local SearXNG — the web-search backend for local models (pi's web-search tool,
+# ketch). compose.yaml and settings.yml are chezmoi-managed in ~/.config/searxng;
+# the rationale for each deviation from upstream is in compose.yaml.
+searxng_compose := env("HOME") / ".config/searxng/compose.yaml"
+
+# Start the local SearXNG instance (loopback only)
+searxng-up:
+    docker compose -f "{{ searxng_compose }}" up -d
+
+# Stop the local SearXNG instance
+searxng-down:
+    docker compose -f "{{ searxng_compose }}" down
+
+# The host port is read from the running container, so it never drifts from
+# .chezmoidata.toml [searxng].port. A 403 here means `json` is missing from
+# search.formats in settings.yml.
+# Check the JSON API agents query (results count + unresponsive engines)
+searxng-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    addr=$(docker compose -f "{{ searxng_compose }}" port core 8080)
+    curl -fsS "http://${addr}/search?q=searxng&format=json" \
+        | jq '{query, results: (.results | length), unresponsive_engines}'

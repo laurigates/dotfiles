@@ -1,0 +1,25 @@
+# SearXNG settings for a loopback-only instance used by local-model agents.
+# Inherits every upstream default and overrides only what is listed here:
+#   https://docs.searxng.org/admin/settings/settings.html#use-default-settings
+use_default_settings: true
+
+general:
+  instance_name: "searxng-local"
+
+server:
+  # secret_key is supplied as $SEARXNG_SECRET from ~/.config/searxng/.env
+  # (never committed). base_url comes from compose.yaml ($SEARXNG_BASE_URL).
+  # https://docs.searxng.org/admin/settings/settings_server.html
+  limiter: false
+  public_instance: false
+  image_proxy: false
+
+search:
+  # JSON is off upstream (formats: [html]); agent clients query
+  # /search?format=json and get HTTP 403 without it.
+  # https://docs.searxng.org/admin/settings/settings_search.html
+  formats:
+    - html
+    - json
+  safe_search: 0
+  autocomplete: ""

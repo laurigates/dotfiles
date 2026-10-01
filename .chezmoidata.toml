@@ -122,3 +122,14 @@
   # Platform-specific settings will be populated by templates
   cpu_cores = 0
   cpu_threads = 0
+
+[searxng]
+  # Local SearXNG metasearch instance — the web-search backend for local models
+  # (pi's `web-search` tool via pi-lean-search, and ketch). One source of truth
+  # for the address: rendered into ~/.config/searxng/compose.yaml, the mise env
+  # (KETCH_SEARXNG_URL), and ~/.pi/agent/settings.json (searxng.url).
+  # Bound to loopback only; the limiter is off, so never expose it publicly.
+  # https://docs.searxng.org/admin/installation-docker.html
+  port = 8888
+  # Image tag (org.opencontainers.image.version label). Bump deliberately.
+  version = "2026.9.30-a9d990033"

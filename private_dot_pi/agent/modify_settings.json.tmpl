@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# modify_ script for ~/.pi/agent/settings.json (pi coding agent, personal scope)
+#
+# pi rewrites this file at runtime — lastChangelogVersion after an update,
+# defaultProvider/defaultModel from /model, `packages` from `pi install` — so a
+# plain managed file would drift on every session. chezmoi pipes the CURRENT
+# target on stdin; stdout becomes the new target. The overlay below is
+# deep-merged over it (overlay wins), and every key it does not name passes
+# through. Same pattern as exact_dot_claude/modify_settings.json.
+#
+# `packages` is NOT replaced wholesale (jq's `*` would): it is a union keyed by
+# package identity — npm name without version, which is how pi itself
+# deduplicates (docs/packages.md "Understand scope and identity"). A managed
+# entry replaces an older pin of the same package; anything installed by hand
+# with `pi install` survives. Pi installs a declared package that is missing, or
+# whose installed version differs from the pin, on the next start — so bumping
+# a version here and applying is the whole upgrade.
+#
+# Official references (pi docs ship in the npm package under docs/):
+#   settings  — https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/settings.md
+#   packages  — https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md
+#   pi-lean-search  (web-search → SearXNG; reads searxng.url)
+#     https://www.npmjs.com/package/pi-lean-search
+#   pi-smart-fetch  (web_fetch / batch_web_fetch; reads smartFetch* keys)
+#     https://www.npmjs.com/package/pi-smart-fetch
+#
+# smartFetchDefaultMaxChars: upstream default is 50000 chars (~12k tokens) per
+# page. 12000 (~3k tokens) keeps a few fetched pages inside a local model's
+# context window; the model can still pass a larger maxChars per call.
+set -euo pipefail
+
+current="$(cat)"
+[ -z "$current" ] && current='{}'
+
+read -r -d '' overlay <<'OVERLAY' || true
+{
+  "packages": [
+    "npm:pi-lean-search@0.6.0",
+    "npm:pi-smart-fetch@0.3.17"
+  ],
+  "searxng": {
+    "url": "http://127.0.0.1:{{ .searxng.port }}"
+  },
+  "smartFetchDefaultMaxChars": 12000
+}
+OVERLAY
+
+jq --argjson ov "$overlay" '
+  def pkg_source: if type == "object" then .source else . end;
+  # npm:@scope/name@1.2.3 -> npm:@scope/name ; other sources compare verbatim.
+  def pkg_id:
+    pkg_source
+    | if startswith("npm:") then "npm:" + (capture("^npm:(?<n>@?[^@]+)").n) else . end;
+
+  . as $cur
+  | ($ov.packages | map(pkg_id)) as $managed
+  | ($cur * ($ov | del(.packages)))
+  | .packages = (
+      [ ($cur.packages // [])[] | select((pkg_id | IN($managed[])) | not) ]
+      + $ov.packages
+    )
+' <<<"$current"

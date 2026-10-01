@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -88,6 +88,10 @@ run = "tests/test-shell-precedence.sh"
 [tasks."test:ci-pins"]
 description = "Regression test: CI toolchain pins (no branch-ref actions, chezmoi only from .mise.toml, mise-action version pinned)"
 run = "tests/test-ci-pins.sh --self-test && tests/test-ci-pins.sh"
+
+[tasks."test:pi-settings"]
+description = "Regression test: ~/.pi/agent/settings.json modify_ script keeps pi-owned keys and unions packages by identity"
+run = "tests/test-pi-settings-modify.sh"
 
 [tasks."test:gh-completion"]
 description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"

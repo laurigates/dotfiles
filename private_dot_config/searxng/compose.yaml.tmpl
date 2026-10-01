@@ -1,0 +1,41 @@
+# Local SearXNG — web-search backend for local-model agents (pi, ketch).
+# Start: `just -g searxng-up` (or `docker compose -f ~/.config/searxng/compose.yaml up -d`).
+#
+# Derived from the official compose file, trimmed for a loopback-only instance:
+#   https://docs.searxng.org/admin/installation-docker.html
+#   https://github.com/searxng/searxng/blob/master/container/docker-compose.yml
+# Deviations from upstream, and why:
+#   - Port published on 127.0.0.1 only: the limiter is off (settings.yml), so
+#     the instance must not be reachable from the network.
+#   - No valkey service: valkey backs the limiter, which a loopback instance
+#     does not run.
+#   - settings.yml is bind-mounted as a single read-only file instead of the
+#     whole config dir. The entrypoint `chown -R`s a mounted config dir to the
+#     container's searxng user (FORCE_OWNERSHIP, default true), which would
+#     leave chezmoi unable to rewrite ~/.config/searxng on the next apply.
+#   - Image tag pinned from .chezmoidata.toml [searxng].version.
+#   - GRANIAN_HOST forced to IPv4 (see below).
+# The secret comes from ./.env (SEARXNG_SECRET), generated once by chezmoi.
+
+name: searxng
+
+services:
+  core:
+    container_name: searxng-core
+    image: docker.io/searxng/searxng:{{ .searxng.version }}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:{{ .searxng.port }}:8080"
+    env_file: ./.env
+    environment:
+      SEARXNG_BASE_URL: "http://127.0.0.1:{{ .searxng.port }}/"
+      # The image binds Granian to `::`, which aborts with "Address family not
+      # supported" when Docker's IPv6 is off (the default daemon config). Only
+      # IPv4 loopback is published above, so an IPv4 listener is sufficient.
+      GRANIAN_HOST: "0.0.0.0"
+    volumes:
+      - ./settings.yml:/etc/searxng/settings.yml:ro,Z
+      - core-data:/var/cache/searxng/
+
+volumes:
+  core-data:
