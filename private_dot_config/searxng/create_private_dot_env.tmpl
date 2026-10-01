@@ -1,0 +1,5 @@
+# SearXNG container environment (docker compose env_file).
+# create_ prefix: chezmoi writes this ONCE when absent and never overwrites it,
+# so the generated secret stays stable and never reaches the repo.
+# https://docs.searxng.org/admin/settings/settings_server.html ($SEARXNG_SECRET)
+SEARXNG_SECRET={{ randAlphaNum 64 }}

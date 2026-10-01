@@ -135,6 +135,9 @@ harper-ls = "latest"                          # Harper language server (in-edito
 "aqua:tmux/tmux-builds" = "latest"
 "aqua:gitleaks/gitleaks" = "latest"
 "aqua:tree-sitter/tree-sitter" = "latest"     # tree-sitter CLI (required by nvim-treesitter main branch)
+# ketch — stateless web search/scrape CLI for agents (https://github.com/1broseidon/ketch).
+# Pinned like the agent CLIs below; backend is set to the local SearXNG in [env].
+"github:1broseidon/ketch" = "0.18.1"
 {{- if eq .chezmoi.os "darwin" }}
 "npm:pyright" = "latest"
 "npm:typescript-language-server" = "latest"
@@ -159,7 +162,7 @@ uv = "latest"
 # an apiKeyHelper + ANTHROPIC_BASE_URL proxy wrapper (and ~/.codex/config.toml
 # with its own provider), which breaks Claude Code. Do not re-add.
 "npm:@dotenvx/dotenvx" = "2.21.0"                # .env encryption/loading
-"npm:@earendil-works/pi-coding-agent" = "0.84.1" # pi
+"npm:@earendil-works/pi-coding-agent" = "0.99.2" # pi
 "npm:@google/gemini-cli" = "0.55.1"              # gemini
 "npm:@mermaid-js/mermaid-cli" = "11.16.0"        # mmdc (see tools-plugin:mermaid-diagrams)
 "npm:@playwright/test" = "1.62.1"                # playwright (browsers need `playwright install`)
@@ -187,6 +190,13 @@ XDG_DATA_HOME = "{{ .chezmoi.homeDir }}/.local/share"
 XDG_STATE_HOME = "{{ .chezmoi.homeDir }}/.local/state"
 XDG_CACHE_HOME = "{{ .chezmoi.homeDir }}/.cache"
 {{- end }}
+
+# ketch: search only through the local SearXNG instance. Pinning the backend
+# (instead of only setting the URL) stops `auto` from falling back to hosted
+# providers (Exa, Parallel, You.com, ...) when SearXNG is down. Env keys are
+# KETCH_ + the upper-snake config key: https://github.com/1broseidon/ketch#configuration
+KETCH_BACKEND = "searxng"
+KETCH_SEARXNG_URL = "http://127.0.0.1:{{ .searxng.port }}"
 
 # Load API tokens from secure file (gitignored)
 _.file = "~/.api_tokens"

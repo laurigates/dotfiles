@@ -24,7 +24,7 @@ flowchart TD
         plugins["plugins.just<br/>group: plugins<br/>(marketplace install/enable/audit)"]
         claude["claude.just<br/>group: claude<br/>(mcp-*, settings-audit)"]
         git["git.just<br/>group: git<br/>(branch-audit)"]
-        maint["maint.just<br/>(home-audit, reclaim, ollama-*)"]
+        maint["maint.just<br/>(home-audit, reclaim, ollama-*, searxng-*)"]
     end
 
     root["/justfile (repo root)<br/>groups: chezmoi · test · setup · maintain · info<br/>+ nvim.just (nvim-*)"]
@@ -75,7 +75,7 @@ the imported modules:
 | `claude` | `claude.just` | `mcp-*`, `claude-setup`, `settings-audit` |
 | `git` | `git.just` | `branch-audit` |
 | `nvim` | `nvim.just` | `nvim-plugins-audit` |
-| *(ungrouped)* | `maint.just` | `home-audit`, `reclaim-dry`, `reclaim`, `ollama-idle`, `ollama-prune` |
+| *(ungrouped)* | `maint.just` | `home-audit`, `reclaim-dry`, `reclaim`, `ollama-idle`, `ollama-prune`, `searxng-up/down/check` |
 
 ### Consolidations applied (2026-07)
 

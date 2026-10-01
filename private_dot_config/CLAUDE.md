@@ -22,3 +22,4 @@ Application configuration files managed by chezmoi. Uses chezmoi naming conventi
 | `private_dunst/` | Notification daemon (Linux) |
 | `fd/` | fd ignore patterns |
 | `pet/` | Snippet manager |
+| `searxng/` | Local SearXNG compose + settings (web-search backend for pi/ketch; `just -g searxng-up`) |
