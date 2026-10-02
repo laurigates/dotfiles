@@ -161,6 +161,14 @@ history_filter = [
 
   # Empty or whitespace-only
   "^\\s*$",
+
+  # secrets
+  "/mnt/sabrent",
+  "\\.safetensors",
+
+  # gcloud
+  "\\|\\sgcloud\\ssecrets",
+
 ]
 
 ## prevent commands run with cwd matching any of these regexes from being written
