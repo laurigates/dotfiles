@@ -58,13 +58,14 @@ check "empty target: searxng.url from chezmoi data" "$out" ".searxng.url == \"$w
 check "empty target: managed packages present" "$out" \
     '[.packages[] | select(type == "string" and (startswith("npm:pi-lean-search@") or startswith("npm:pi-smart-fetch@")))] | length == 2'
 
-# 2-4. Live file with pi-owned keys, a stale pin, and unmanaged packages.
+# 2-4. Live file with pi-owned keys, a stale pin, superseded packages, and unmanaged packages.
 live='{
   "defaultProvider": "ollama",
   "defaultModel": "qwen3-coder:30b",
   "lastChangelogVersion": "0.84.1",
   "searxng": { "url": "http://stale:1234", "extra": true },
   "packages": [
+    "npm:@ollama/pi-web-search",
     "npm:pi-smart-fetch@0.1.7",
     "npm:some-other-pkg@2.0.0",
     { "source": "npm:@scope/tools@1.0.0", "skills": [] },
@@ -78,6 +79,8 @@ check "overlay wins on searxng.url" "$out" ".searxng.url == \"$want_url\""
 check "nested unmanaged key survives deep merge" "$out" '.searxng.extra == true'
 check "stale pin replaced, not duplicated" "$out" \
     '[.packages[] | select(type == "string" and startswith("npm:pi-smart-fetch@"))] | length == 1 and (.[0] != "npm:pi-smart-fetch@0.1.7")'
+check "superseded package @ollama/pi-web-search pruned" "$out" \
+    'any(.packages[]; (if type == "object" then .source else . end) | startswith("npm:@ollama/pi-web-search")) | not'
 check "unmanaged string packages survive" "$out" \
     '(.packages | index("npm:some-other-pkg@2.0.0")) != null and (.packages | index("git:github.com/example/pi-thing@v1")) != null'
 check "unmanaged object-form package survives" "$out" \

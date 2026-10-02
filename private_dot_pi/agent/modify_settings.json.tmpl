@@ -52,11 +52,16 @@ jq --argjson ov "$overlay" '
     pkg_source
     | if startswith("npm:") then "npm:" + (capture("^npm:(?<n>@?[^@]+)").n) else . end;
 
+  # Packages superseded by managed tools or retired upstream that conflict:
+  # - npm:@ollama/pi-web-search: superseded by pi-lean-search + pi-smart-fetch (conflicts on web_fetch)
+  def is_pruned:
+    pkg_id | IN("npm:@ollama/pi-web-search");
+
   . as $cur
   | ($ov.packages | map(pkg_id)) as $managed
   | ($cur * ($ov | del(.packages)))
   | .packages = (
-      [ ($cur.packages // [])[] | select((pkg_id | IN($managed[])) | not) ]
+      [ ($cur.packages // [])[] | select(((pkg_id | IN($managed[])) or is_pruned) | not) ]
       + $ov.packages
     )
 ' <<<"$current"
