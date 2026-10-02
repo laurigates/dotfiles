@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790865023604,
+  "lastUpdate": 1790940786866,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -967,6 +967,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.01146814996,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7634207217411f43b0745f75dfd3e8e703069cb4",
+          "message": "chore: lazy-lock refresh, atuin history filters, pi superseded-package prune (#464)\n\n## Summary\n\nThree independent tidying changes bundled as one PR:\n\n1. **`lazy-lock.json` refresh** — routine plugin pin bump across 11\nplugins (blink-ripgrep, fzf-lua, gitsigns, kitty-scrollback, kulala,\nmini, neoconf, nvim-treesitter, opencode, render-markdown, schemastore).\n\n2. **atuin history filters** — extend `history_filter` for commands\ntouching `/mnt/sabrent` (external SSD with models), `.safetensors` paths\n(large model files), and piped `gcloud secrets` output.\n\n3. **pi `modify_settings` pruning** — the `modify_settings` overlay that\npins `pi-lean-search`/`pi-smart-fetch` now also removes\n`npm:@ollama/pi-web-search` when present in the live file, so the two\ndon't fight over `web_fetch`. Adds `is_pruned` to the jq filter with a\ncomment naming the supersession, and a test case asserting survival of\nunmanaged entries.\n\n## Testing\n- `bash tests/test-pi-settings-modify.sh` — 10/10 pass (includes the new\n`@ollama/pi-web-search` prune assertion).\n- `just status` confirms the only remaining local drift is\n`.config/mise/config.toml` and `.pi/agent/settings.json` (already\ncovered by earlier issues #448/#447 family).\n- `just lint` advisory flagged the \"safetensors → safe tensor\" typo\nsuggestion as info-level; cosmetic only and pre-committed as-is.\n- Pre-commit hooks pass on all three commits.",
+          "timestamp": "2026-10-02T14:32:12+03:00",
+          "tree_id": "ada536898fd3ef4443a0b497af749464eee4c205",
+          "url": "https://github.com/laurigates/dotfiles/commit/7634207217411f43b0745f75dfd3e8e703069cb4"
+        },
+        "date": 1790940786271,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.008983698533333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0010900858000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008606170000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.007818286800000001,
             "unit": "s"
           }
         ]
