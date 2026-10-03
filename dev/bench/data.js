@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790940786866,
+  "lastUpdate": 1791050294952,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1011,6 +1011,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.007818286800000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "911ef2270ed500fb0ebc319acc98d5a818683789",
+          "message": "chore(deps): update GitHub Actions (#465)\n\nThis PR contains the following updates:\n\n| Package | Type | Update | Change | Pending |\n|---|---|---|---|---|\n|\n[anthropics/claude-code-action](https://redirect.github.com/anthropics/claude-code-action)\n| action | patch | `v1.0.233` → `v1.0.237` | `v1.0.240` (+2) |\n|\n[codelytv/pr-size-labeler](https://redirect.github.com/codelytv/pr-size-labeler)\n| action | minor | `v1.10.4` → `v1.11.1` | `v1.12.0` |\n\n---\n\n> [!WARNING]\n> Some dependencies could not be looked up. Check the [Dependency\nDashboard](../issues/379) for more information.\n\n---\n\n### Release Notes\n\n<details>\n<summary>anthropics/claude-code-action\n(anthropics/claude-code-action)</summary>\n\n###\n[`v1.0.237`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.237)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.236...v1.0.237)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.236...v1.0.237>\n\n###\n[`v1.0.236`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.236)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.235...v1.0.236)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.235...v1.0.236>\n\n###\n[`v1.0.235`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.235)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.234...v1.0.235)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.234...v1.0.235>\n\n###\n[`v1.0.234`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.234)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.233...v1.0.234)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.233...v1.0.234>\n\n</details>\n\n<details>\n<summary>codelytv/pr-size-labeler (codelytv/pr-size-labeler)</summary>\n\n###\n[`v1.11.1`](https://redirect.github.com/CodelyTV/pr-size-labeler/releases/tag/v1.11.1)\n\n[Compare\nSource](https://redirect.github.com/codelytv/pr-size-labeler/compare/v1.11.0...v1.11.1)\n\n#### What's Changed\n\n- fix: preserve labels added by other automations by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#110](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/110)\n\n**Full Changelog**:\n<https://github.com/CodelyTV/pr-size-labeler/compare/v1.11.0...v1.11.1>\n\n###\n[`v1.11.0`](https://redirect.github.com/CodelyTV/pr-size-labeler/releases/tag/v1.11.0)\n\n[Compare\nSource](https://redirect.github.com/codelytv/pr-size-labeler/compare/v1.10.5...v1.11.0)\n\n#### What's Changed\n\n- docs: clarify `files_to_ignore` path matching by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#108](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/108)\n- feat: improve DX when required permissions are missing and reduce the\nnumber of required permissions by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#109](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/109)\n\n**Full Changelog**:\n<https://github.com/CodelyTV/pr-size-labeler/compare/v1.10.5...v1.11.0>\n\n###\n[`v1.10.5`](https://redirect.github.com/CodelyTV/pr-size-labeler/releases/tag/v1.10.5)\n\n[Compare\nSource](https://redirect.github.com/codelytv/pr-size-labeler/compare/v1.10.4...v1.10.5)\n\n#### What's Changed\n\n- ci: pin checkout action to v7.0.1 by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#104](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/104)\n- fix(ci): use current bashunit installer by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#105](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/105)\n- build(deps): upgrade bashunit to 0.51.0 by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#106](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/106)\n- ci: configure Dependabot for GitHub Actions by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#107](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/107)\n- fix: paginate PR files when counting changes by\n[@&#8203;caugner](https://redirect.github.com/caugner) in\n[CodelyTV#102](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/102)\n- fix(labeler): generate comment after XL label is added by\n[@&#8203;scastd](https://redirect.github.com/scastd) in\n[CodelyTV#99](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/99)\n\n#### New Contributors\n\n- [@&#8203;caugner](https://redirect.github.com/caugner) made their\nfirst contribution in\n[CodelyTV#102](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/102)\n- [@&#8203;scastd](https://redirect.github.com/scastd) made their first\ncontribution in\n[CodelyTV#99](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/99)\n\n**Full Changelog**:\n<https://github.com/CodelyTV/pr-size-labeler/compare/v1.10.4...v1.10.5>\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend\nRenovate](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0My4yODguMCIsInVwZGF0ZWRJblZlciI6IjQzLjI4OC4wIiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-03T17:57:04Z",
+          "tree_id": "2e95a5a5185db272c9e5a72857a014d8c874fc0e",
+          "url": "https://github.com/laurigates/dotfiles/commit/911ef2270ed500fb0ebc319acc98d5a818683789"
+        },
+        "date": 1791050294520,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.01061858542,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00153047124,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00123500844,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011110848,
             "unit": "s"
           }
         ]
