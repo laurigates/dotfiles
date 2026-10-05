@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791050294952,
+  "lastUpdate": 1791198170672,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1055,6 +1055,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011110848,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "df3d35d60d00f899cd2cd61ae34f236fcbf66ce7",
+          "message": "docs(macos): point to macos-sudo-touchid-context for sudo Touch ID (#468)\n\nAdds a short **Touch ID for sudo** note to `docs/platform_specific.md`,\npointing to\n[laurigates/macos-sudo-touchid-context](https://github.com/laurigates/macos-sudo-touchid-context).\nThat's the PAM module this machine uses instead of Apple's `pam_tid.so`,\nso the Touch ID dialog names the command and the requesting process.\n\n`sudo_local` is root-owned under `/etc`, so chezmoi doesn't manage it.\nThe note records the manual install and the lockout caveat.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_014K1A7GNV5GDcQyJdbazbG7\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-05T14:01:53+03:00",
+          "tree_id": "e5bb1c373a5c23cb53c0f1d231798be58ff452fd",
+          "url": "https://github.com/laurigates/dotfiles/commit/df3d35d60d00f899cd2cd61ae34f236fcbf66ce7"
+        },
+        "date": 1791198170360,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.00889988454,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0014963980199999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012505486199999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011078179440000002,
             "unit": "s"
           }
         ]
