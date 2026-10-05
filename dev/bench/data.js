@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791198170672,
+  "lastUpdate": 1791235844681,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1099,6 +1099,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011078179440000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c6e04ab6de653db651cc7680d4fe6c38453f792b",
+          "message": "chore(deps): update GitHub Actions (#467)\n\nThis PR contains the following updates:\n\n| Package | Type | Update | Change | Pending |\n|---|---|---|---|---|\n| [anchore/sbom-action](https://redirect.github.com/anchore/sbom-action)\n| action | patch | `v0.24.2` → `v0.24.3` | |\n|\n[anthropics/claude-code-action](https://redirect.github.com/anthropics/claude-code-action)\n| action | patch | `v1.0.237` → `v1.0.240` | `v1.0.241` |\n|\n[codelytv/pr-size-labeler](https://redirect.github.com/codelytv/pr-size-labeler)\n| action | minor | `v1.11.1` → `v1.12.0` | |\n| [laurigates/.github](https://redirect.github.com/laurigates/.github)\n([changelog](https://redirect.github.com/laurigates/.github/compare/308861c8c7ab920bd60c05d7f562960c3a6dd02d..6b009f6e3a319852d3efcb4794bdaaa3c5a6772c))\n| action | digest | `308861c` → `6b009f6` | |\n\n---\n\n> [!WARNING]\n> Some dependencies could not be looked up. Check the [Dependency\nDashboard](../issues/379) for more information.\n\n---\n\n### Release Notes\n\n<details>\n<summary>anchore/sbom-action (anchore/sbom-action)</summary>\n\n###\n[`v0.24.3`](https://redirect.github.com/anchore/sbom-action/releases/tag/v0.24.3)\n\n[Compare\nSource](https://redirect.github.com/anchore/sbom-action/compare/v0.24.2...v0.24.3)\n\n##### Added Features\n\n- bump type-fest from 5.9.0 to 5.10.0 \\[PR\n[#&#8203;742](https://redirect.github.com/anchore/sbom-action/pull/742)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump [@&#8203;types/node](https://redirect.github.com/types/node) from\n26.5.1 to 26.6.1 \\[PR\n[#&#8203;741](https://redirect.github.com/anchore/sbom-action/pull/741)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump [@&#8203;types/node](https://redirect.github.com/types/node) from\n26.4.1 to 26.5.1 \\[PR\n[#&#8203;737](https://redirect.github.com/anchore/sbom-action/pull/737)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump typescript-eslint from 8.69.0 to 8.70.0 \\[PR\n[#&#8203;736](https://redirect.github.com/anchore/sbom-action/pull/736)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump type-fest from 5.8.0 to 5.9.0 \\[PR\n[#&#8203;732](https://redirect.github.com/anchore/sbom-action/pull/732)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump eslint from 10.9.1 to 10.10.0 \\[PR\n[#&#8203;733](https://redirect.github.com/anchore/sbom-action/pull/733)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump typescript-eslint from 8.68.0 to 8.69.0 \\[PR\n[#&#8203;730](https://redirect.github.com/anchore/sbom-action/pull/730)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump [@&#8203;types/node](https://redirect.github.com/types/node) from\n26.2.0 to 26.4.0 \\[PR\n[#&#8203;727](https://redirect.github.com/anchore/sbom-action/pull/727)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump typescript-eslint from 8.67.0 to 8.68.0 \\[PR\n[#&#8203;726](https://redirect.github.com/anchore/sbom-action/pull/726)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n\n##### Bug Fixes\n\n- bump github.com/anchore/go-make from 0.8.0 to 0.8.1 in /.make \\[PR\n[#&#8203;738](https://redirect.github.com/anchore/sbom-action/pull/738)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump anchore/go-make/.github/actions/setup from 0.8.0 to 0.8.1 in\n/.github/actions/bootstrap \\[PR\n[#&#8203;740](https://redirect.github.com/anchore/sbom-action/pull/740)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump zizmorcore/zizmor-action from 0.6.3 to 0.6.4 \\[PR\n[#&#8203;739](https://redirect.github.com/anchore/sbom-action/pull/739)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump zizmorcore/zizmor-action from 0.6.2 to 0.6.3 \\[PR\n[#&#8203;734](https://redirect.github.com/anchore/sbom-action/pull/734)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump [@&#8203;types/node](https://redirect.github.com/types/node) from\n26.4.0 to 26.4.1 \\[PR\n[#&#8203;731](https://redirect.github.com/anchore/sbom-action/pull/731)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump tsx from 4.23.12 to 4.23.13 \\[PR\n[#&#8203;729](https://redirect.github.com/anchore/sbom-action/pull/729)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump eslint from 10.9.0 to 10.9.1 \\[PR\n[#&#8203;728](https://redirect.github.com/anchore/sbom-action/pull/728)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n- bump [@&#8203;humanfs/node](https://redirect.github.com/humanfs/node)\nfrom 0.16.7 to 0.16.8 \\[PR\n[#&#8203;725](https://redirect.github.com/anchore/sbom-action/pull/725)\n[@&#8203;dependabot](https://redirect.github.com/dependabot)]\n\n**[(Full\nChangelog)](https://redirect.github.com/anchore/sbom-action/compare/v0.24.2...v0.24.3)**\n\n</details>\n\n<details>\n<summary>anthropics/claude-code-action\n(anthropics/claude-code-action)</summary>\n\n###\n[`v1.0.240`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.240)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.239...v1.0.240)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.239...v1.0.240>\n\n###\n[`v1.0.239`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.239)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.238...v1.0.239)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.238...v1.0.239>\n\n###\n[`v1.0.238`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.238)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.237...v1.0.238)\n\n##### What's Changed\n\n- ci: security hardening for GitHub Actions workflows that call Claude\nby [@&#8203;qing-ant](https://redirect.github.com/qing-ant) in\n[#&#8203;1867](https://redirect.github.com/anthropics/claude-code-action/pull/1867)\n\n##### New Contributors\n\n- [@&#8203;qing-ant](https://redirect.github.com/qing-ant) made their\nfirst contribution in\n[#&#8203;1867](https://redirect.github.com/anthropics/claude-code-action/pull/1867)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.237...v1.0.238>\n\n</details>\n\n<details>\n<summary>codelytv/pr-size-labeler (codelytv/pr-size-labeler)</summary>\n\n###\n[`v1.12.0`](https://redirect.github.com/CodelyTV/pr-size-labeler/releases/tag/v1.12.0)\n\n[Compare\nSource](https://redirect.github.com/codelytv/pr-size-labeler/compare/v1.11.1...v1.12.0)\n\n#### What's Changed\n\n- perf: stop fetching PR files at XL threshold by\n[@&#8203;caugner](https://redirect.github.com/caugner) in\n[CodelyTV#111](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/111)\n- fix: label pull requests from forks with a writable token by\n[@&#8203;JavierCane](https://redirect.github.com/JavierCane) in\n[CodelyTV#112](https://redirect.github.com/CodelyTV/pr-size-labeler/pull/112)\n\n**Full Changelog**:\n<https://github.com/CodelyTV/pr-size-labeler/compare/v1.11.1...v1.12.0>\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend\nRenovate](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0My4yODguMCIsInVwZGF0ZWRJblZlciI6IjQzLjI4OC4wIiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-05T21:29:32Z",
+          "tree_id": "6edf37c91fd1060b01bea501a0ff0273d42f09a3",
+          "url": "https://github.com/laurigates/dotfiles/commit/c6e04ab6de653db651cc7680d4fe6c38453f792b"
+        },
+        "date": 1791235844025,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.009811647533333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00123403902,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00116886582,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009741851800000001,
             "unit": "s"
           }
         ]
