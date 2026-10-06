@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791264655441,
+  "lastUpdate": 1791280572268,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1187,6 +1187,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.00954113302,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ec3ed89c5fc6f19eda430491a42b6f98869d1687",
+          "message": "docs(claude): route code-triggered follow-ups to a tripwire test (#470)\n\nAdds an exception to the Git Workflow rule in\n`exact_dot_claude/CLAUDE.md`. A post-merge follow-up that waits on a\ncondition visible in the source (a list outgrowing a limit, an enum\ngaining a member, a version bump) goes in the same PR as a tripwire\ntest, not as a GitHub issue.\n\nWithout it, the global rule keeps sending those follow-ups to issues and\noverrides the skill routing added in laurigates/claude-plugins#2911\n(`testing-plugin:test-tripwire`, plus the `session-wrap`, `git-issue`\nand `git-triage` rows).\n\nThe pre-commit suite passes, including the global context budget check.\nThe change adds one line.\n\nAfter merge, `chezmoi apply ~/.claude/CLAUDE.md` installs it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01CpsxEu51MKyvB5otaHs1mr\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-06T12:55:27+03:00",
+          "tree_id": "4c0e63204ac7feab2e1406355fb794678fccbeda",
+          "url": "https://github.com/laurigates/dotfiles/commit/ec3ed89c5fc6f19eda430491a42b6f98869d1687"
+        },
+        "date": 1791280571821,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.007331854233333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.00118312152,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.00093359392,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009208145380000001,
             "unit": "s"
           }
         ]
