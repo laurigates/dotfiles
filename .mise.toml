@@ -4,7 +4,7 @@
 # chezmoi skips dot-prefixed files at the source root, so this is never deployed.
 # tests/test-ci-pins.sh fails if chezmoi is installed any other way (#418).
 [tools]
-chezmoi = "2.72.2"
+chezmoi = "2.73.0"
 # lint:shell and the smoke Linters job use this shellcheck, so a local run and
 # CI report the same findings.
 shellcheck = "0.11.0"

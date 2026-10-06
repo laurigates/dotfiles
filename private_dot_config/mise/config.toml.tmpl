@@ -25,7 +25,7 @@ node = "latest"
 bun = "latest"
 
 # Systems programming
-go = "1.23"
+go = "1.27"
 # components: mise drives rustup, so rust-analyzer is a rustup component, not a
 # separate tool. Declaring it here reinstalls it whenever "latest" moves to a new
 # toolchain; `rustup component add` only covers the toolchain current at the time.
@@ -128,7 +128,7 @@ rust = { version = "latest", components = "rust-analyzer" }
 glab = "latest"                               # GitLab CLI (upstream interactions on code.europa.eu)
 neovim = "nightly"
 just = "latest"
-opentofu = "1.11.2"
+opentofu = "1.13.0"
 d2 = "latest"
 vale = "latest"                               # prose/style linter
 harper-ls = "latest"                          # Harper language server (in-editor grammar linting)
@@ -149,7 +149,7 @@ chezmoi = "{{ (fromToml (include ".mise.toml")).tools.chezmoi }}"
 usage = "latest"
 uv = "latest"
 "aqua:EmbarkStudios/cargo-deny" = "latest"    # Rust license/bans/sources gate (cargo deny)
-"npm:@gradient-tools/surface" = "0.8.0"       # docs-drift gate (see configure-plugin:configure-surface)
+"npm:@gradient-tools/surface" = "0.9.0"       # docs-drift gate (see configure-plugin:configure-surface)
 
 # npm-only CLI tools
 # Migrated out of a hand-maintained ~/package.json (2026-08-14); these ship
@@ -161,15 +161,15 @@ uv = "latest"
 # "global profile takeover" on first run, rewriting ~/.claude/settings.json with
 # an apiKeyHelper + ANTHROPIC_BASE_URL proxy wrapper (and ~/.codex/config.toml
 # with its own provider), which breaks Claude Code. Do not re-add.
-"npm:@dotenvx/dotenvx" = "2.21.0"                # .env encryption/loading
+"npm:@dotenvx/dotenvx" = "2.32.3"                # .env encryption/loading
 "npm:@earendil-works/pi-coding-agent" = "0.99.2" # pi
-"npm:@google/gemini-cli" = "0.55.1"              # gemini
-"npm:@mermaid-js/mermaid-cli" = "11.16.0"        # mmdc (see tools-plugin:mermaid-diagrams)
-"npm:@playwright/test" = "1.62.1"                # playwright (browsers need `playwright install`)
+"npm:@google/gemini-cli" = "0.62.0"              # gemini
+"npm:@mermaid-js/mermaid-cli" = "12.0.0"         # mmdc (see tools-plugin:mermaid-diagrams)
+"npm:@playwright/test" = "1.63.0"                # playwright (browsers need `playwright install`)
 "npm:jsonlint" = "1.6.3"
-"npm:ocx" = { version = "2.0.14", allow_low_downloads = true }  # <1000 weekly downloads; approved 2026-09
-"npm:opencode-ai" = "1.17.16"                    # opencode — pinned exact upstream of this migration
-"npm:vitest" = "4.1.10"
+"npm:ocx" = { version = "2.0.15", allow_low_downloads = true }  # <1000 weekly downloads; approved 2026-09
+"npm:opencode-ai" = "1.18.34"                    # opencode — pinned exact upstream of this migration
+"npm:vitest" = "5.0.3"
 
 # ============================================================================
 # Environment Variables
