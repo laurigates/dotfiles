@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791235844681,
+  "lastUpdate": 1791264655441,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1143,6 +1143,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009741851800000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ac8c2981ce8f7d9601d854a65887a288272df570",
+          "message": "chore(mise): capture pin bumps from the live global config (#469)\n\nPorts pins that were bumped in place in `~/.config/mise/config.toml`\nback into `private_dot_config/mise/config.toml.tmpl`, so the next\n`chezmoi apply` keeps them instead of downgrading them.\n\n| Tool | Old | New |\n|---|---|---|\n| go | 1.23 | 1.27 |\n| opentofu | 1.11.2 | 1.13.0 |\n| @gradient-tools/surface | 0.8.0 | 0.9.0 |\n| @dotenvx/dotenvx | 2.21.0 | 2.32.3 |\n| @google/gemini-cli | 0.55.1 | 0.62.0 |\n| @mermaid-js/mermaid-cli | 11.16.0 | 12.0.0 |\n| @playwright/test | 1.62.1 | 1.63.0 |\n| ocx | 2.0.14 | 2.0.15 |\n| opencode-ai | 1.17.16 | 1.18.34 |\n| vitest | 4.1.10 | 5.0.3 |\n| chezmoi (repo `.mise.toml`, read by the template) | 2.72.2 | 2.73.0 |\n\nThe in-place bump wrote ocx's `allow_low_downloads` as the string\n`\"true\"`. The template keeps the boolean.\n\nVerified: `chezmoi --source <worktree> diff ~/.config/mise/config.toml`\nnow shows only the chezmoi pin, comment alignment, and the ocx boolean.\n`tests/test-ci-pins.sh` passes.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01HHJxZ7gHUWusPaUpZ81xXn\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-06T08:29:57+03:00",
+          "tree_id": "9d662587f786f3f6b54950788603bbd2dfb3359b",
+          "url": "https://github.com/laurigates/dotfiles/commit/ac8c2981ce8f7d9601d854a65887a288272df570"
+        },
+        "date": 1791264654768,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.00805416902,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013448087400000004,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010613497400000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.00954113302,
             "unit": "s"
           }
         ]
