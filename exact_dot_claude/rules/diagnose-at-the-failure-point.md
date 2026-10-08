@@ -1,9 +1,7 @@
 # Diagnose at the Failure Point — Sentinel Values and the Resource Reading
 
 Promoted to a skill: invoke `code-quality-plugin:debugging-methodology` when an
-error names a zero/default entity or reports resource exhaustion — it carries
-the sentinel-value and resource-reading sections, the per-symptom table, and
-the cubecl canonical break.
+error names a zero/default entity or reports resource exhaustion.
 
 - **An error naming a zero/default identifier** (`page 0`, `id 0`, `index -1`,
   a null UUID): verify its identifier came from a real success before

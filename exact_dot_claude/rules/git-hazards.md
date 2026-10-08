@@ -2,11 +2,7 @@
 
 Promoted to a skill: invoke `git-plugin:git-local-hazards` when a local git
 result looks wrong, after a merge or rebase that replayed cleanly across many
-upstream commits, or before follow-up work on a squash-merged branch — it
-carries the six traps (orphans after a squash-merge, stray local-`main`
-commits, clean merges and rebases that break the build, atomic `git add`
-aborts, a coworker's mid-flight commit, `reset --hard` recovery from
-pre-commit stashes), each with its check and fix. Sibling:
+upstream commits, or before follow-up work on a squash-merged branch. Sibling:
 `pr-merge-hazards.md` (GitHub PR/merge).
 
 The law: **a green git command is not proof the result is correct** — exit 0

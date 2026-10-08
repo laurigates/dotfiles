@@ -2,8 +2,7 @@
 
 Promoted to a skill: invoke `tools-plugin:zsh-gotchas` when a zsh command —
 including any one-liner run through the Bash tool — produces a result that does
-not match what you wrote. It carries all four mechanisms in full, with the
-observed break and the fix for each:
+not match what you wrote. The symptoms that should send you there:
 
 | Symptom that should send you there | Mechanism |
 |---|---|

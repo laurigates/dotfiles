@@ -1,13 +1,8 @@
 # PR & Merge Hazards — Exit 0 Is a Claim About Mechanics
 
-Promoted to a skill: invoke `git-plugin:git-merge-hazards` before merging a PR,
-merging a stacked PR chain, auditing whether a branch really landed, or merging
-over red CI — it carries the squash-merge detection authority order, the
-stacked-base auto-close recovery (retarget-first order, the base-ref-404
-accident-vs-decision discriminator, the `check-stranded-work.sh` sweep), the
-stacked-chain push-by-SHA protocol and its three async races (HEAD refspec,
-mergeability read, CI check *registration*), the merge-over-red gate, and the
-negated-closing-keyword trap. Sibling: `git-hazards.md` (local git).
+Promoted to a skill: invoke `git-plugin:git-merge-hazards` before merging a PR
+or a chain of PRs, auditing whether a branch really landed, or merging over red
+CI. Sibling: `git-hazards.md` (local git).
 
 Two gates stay inline: both are read *while* the decision is being made, so
 there is no earlier moment at which to invoke a skill. They are reproduced
