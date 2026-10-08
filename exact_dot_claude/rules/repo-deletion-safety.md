@@ -1,11 +1,7 @@
 # Repo Deletion Safety
 
 Promoted to a skill: invoke `git-plugin:git-repo-delete-check` before `rm -rf`'ing
-a git checkout — it carries the `git remote -v` preflight, the local-only stop
-condition, the three backup options in increasing destructiveness (push to a new
-remote / date-stamped tar / delete outright) plus the tar default for a generic
-"go", and the uncommitted-changes / unpushed-commits / stashes / upstream-less-branches
-conditions to surface even when a remote does exist.
+a git checkout.
 
 Enforced automatically by `hooks-plugin:repo-deletion-safety.sh` (PreToolUse on
 Bash, exit 2 on `rm -rf` of a repo with no remote or an unpushed one). It

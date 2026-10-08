@@ -3,8 +3,7 @@
 Enforced by `hooks-plugin:workflow-scale-guard.sh` (`ask` above
 `CLAUDE_HOOKS_WORKFLOW_MAX_AGENTS`, default 10). Invoke
 `workflow-orchestration-plugin:workflow-scale-budget` before authoring a
-`Workflow` script — it carries the cost-per-agent facts, the per-item multiplier,
-group-by-theme evidence, and the re-drive-not-resume design.
+`Workflow` script.
 
 Inline invariants: state the expected agent count when proposing a workflow;
 cap the fan-out where the list is produced (`.slice(0, N)`); a run large enough

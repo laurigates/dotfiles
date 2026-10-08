@@ -3,9 +3,7 @@
 Promoted to a skill: invoke `agent-patterns-plugin:probe-input-integrity` when
 building a probe, repro, or test harness, or before using any identifier you
 did not get from the system (an issue/PR/commit number cited from memory
-included) — it carries the three forms
-(invented identifier, retyped subject, inert stub), their canonical breaks,
-and the borrowed-control-set technique for an empty target set.
+included).
 
 - **Obtain the identifier from the system itself. Never invent a
   plausible-looking one** — list before you get.
