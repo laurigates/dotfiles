@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791280572268,
+  "lastUpdate": 1791453972527,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1231,6 +1231,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009208145380000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8aad5eb7913b51a8b63b21bdee15a62eeabb70b4",
+          "message": "docs(claude): reduce promoted-rule stubs to their triggers (#471)\n\nReduces 21 `exact_dot_claude/rules/*.md` \"Promoted to a skill\" stubs to\nthe skill name and when to invoke it.\n\n## Why\n\nEach stub carried a hand-written list of what its skill contains (\"it\ncarries the …\", \"it diagnoses the three …\"), and nothing kept those\nlists in step with the skills. The `pr-merge-hazards.md` list had\nalready drifted. It never mentioned the skill's §4 or §5, and it missed\n§6 (serial merge chains, laurigates/claude-plugins#2957) the day that\nsection was added. Two other stubs stated counts (\"four categories\",\n\"three silent layers\") that would drift the same way. The skills' own\nheadings are now the only list of their contents.\n\n## Kept on purpose\n\n- **`pr-merge-hazards.md`:** the two inline gates (merged-ness authority\norder, merge over red). You read them while making the merge decision,\nand the skill notes the two copies must be edited together.\n- **`taskwarrior-tracking.md`:** the `project:` prefix-match fact. You\nneed it at the moment of filing, so it stays inline as its own sentence;\nonly the inventory around it went.\n- **`multi-model-delegation.md`:** \"it sets `user-invocable: false`\",\nwhich explains how the skill loads.\n- **`zsh-gotchas.md`:** the symptom table, which is how you know to\nreach for the skill. Only its lead-in lost the \"all four mechanisms\"\ncount.\n- **`tool-use-patterns.md`:** maps moments to skills, which is trigger\nrouting.\n- **`tui-markdown-rendering.md`:** \"it carries two behaviors\" is\nordinary prose, not a skill inventory. Unchanged.\n\n## Checks\n\n| Test | Result |\n|---|---|\n| `bash tests/test-claude-context-budget.sh` | `PASS=4 FAIL=0\nSTATUS=PASS` |\n| `bash tests/test-claude-plugin-references.sh` | all plugin-reference\nchecks passed |\n| `bash tests/test-claude-runtime-ignored.sh` | PASS |\n\n- No `it carries` / `carries the` skill inventory remains under\n`exact_dot_claude/rules/`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01EdVb2NcqENVQXagb1qBNjE\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-08T13:05:06+03:00",
+          "tree_id": "96897c9cbc4c49b691261eab929e2c917f3f8d66",
+          "url": "https://github.com/laurigates/dotfiles/commit/8aad5eb7913b51a8b63b21bdee15a62eeabb70b4"
+        },
+        "date": 1791453972018,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
             "unit": "s"
           }
         ]
