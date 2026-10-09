@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791453972527,
+  "lastUpdate": 1791521747273,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1255,6 +1255,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/8aad5eb7913b51a8b63b21bdee15a62eeabb70b4"
         },
         "date": 1791453972018,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "da882153c4812171bbe32d31bcc2126dc286422d",
+          "message": "feat(zsh): add completion for ImageMagick's magick command (#472)\n\nAdds `dot_zfunc/_magick`, a zsh completer for ImageMagick 7's `magick`.\n\nImageMagick has no completion generator, so this can't be a line in\n`.chezmoidata/completions.toml`. zsh's bundled `_imagemagick` predates\nIM7: it registers `convert`, `identify` and the other standalone tools,\nbut not `magick`. The registry now has a comment pointing to the\nhand-written file, as it does for `just`.\n\nThe completer reads the installed binary:\n\n- **Option names, descriptions and argument names:** parsed from `magick\n-help`, or from `magick <tool> -help` after a tool word (`identify`,\n`mogrify`, …). The result is cached for the rest of the shell session.\n- **Argument values:** come from `magick -list <type>` at TAB time. That\ncovers colorspace, filter, gravity, compose, colour names, `-limit`\nresources, `-ordered-dither` threshold maps, and so on.\n- **Not covered:** `+option` forms, since `-help` doesn't list them.\n\nChanging `completions.toml` (a comment only) changes the hash\n`run_onchange_02-generate-completions` watches, so the next full apply\nregenerates all completions once.\n\n## Testing\n\nA zpty harness (kept out of the commit) drove an interactive `zsh -f`\nwith this file on `fpath` and pressed TAB on 12 cases, with `echo $HOM`\nas a control.\n\n- **Results:** the control and all 11 `magick` cases complete correctly.\nThat includes `-colorspace sR` → `sRGB`, `-fill AliceB` → `AliceBlue`,\n`-limit me` → `memory`, `-ordered-dither o2` → `o2x2`, `magick identify\n-verb` → `-verbose`, and `magick mogrify -filter Lanc` → `Lanczos`.\n- **Lint:** `mise run lint` passes except `lint:lua`, which fails\nbecause the local luacheck 1.2.0 crashes on Lua 5.5. That's unrelated to\nthis change. gitleaks finds no leaks.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01E9JvWFK9DB8B1G3ubHrqrq\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-09T07:54:41+03:00",
+          "tree_id": "a1c4a404477ab371534f35b830bbcc5dc84f26c7",
+          "url": "https://github.com/laurigates/dotfiles/commit/da882153c4812171bbe32d31bcc2126dc286422d"
+        },
+        "date": 1791521746768,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
