@@ -32,6 +32,9 @@
   # just: NOT generated — the native `just --completions zsh` (clap dynamic)
   # flattens all recipes into one group. We ship a custom grouped completer
   # at dot_zfunc/_just instead.
+  # magick (ImageMagick 7): no generator, and zsh's bundled _imagemagick
+  # doesn't register `magick`. We ship dot_zfunc/_magick, which parses
+  # `magick -help` / `magick -list` at completion time.
   ruff = "ruff generate-shell-completion zsh"
   deadbranch = "deadbranch completions zsh"
   "git-repo-agent" = "git-repo-agent completion zsh"

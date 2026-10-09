@@ -1,0 +1,123 @@
+#compdef magick
+
+# Zsh completion for ImageMagick 7's `magick` CLI.
+#
+# There is no generator subcommand, and zsh's bundled _imagemagick predates
+# IM7 (it registers convert/identify/... but not `magick`). This completer
+# reads the installed binary instead: options and their argument names come
+# from `magick [tool] -help`, enumerated argument values from
+# `magick -list <type>`. Parsed specs are cached per shell session.
+
+# Complete the values `magick -list <type>` prints. _arguments prepends its
+# compadd options, so the type is the last argument.
+_magick_list_values() {
+  local type=$argv[-1] line i
+  local -a lines values
+  lines=("${(@f)$(_call_program magick-list magick -list $type 2>/dev/null)}")
+  if [[ $type == resource ]]; then
+    # "  List length: unlimited" -> list-length
+    for line in ${(M)lines:#  *:*}; do
+      line=${${line##[[:space:]]#}%%:*}
+      values+=(${(L)line// /-})
+    done
+  elif (( ${lines[(I)-##]} )); then
+    # Tabular output (color, threshold): first column of each row, skipping
+    # the header above each dashed rule, the rules, blanks and Path: lines.
+    for (( i = 1; i <= $#lines; i++ )); do
+      [[ $lines[i+1] == -## || $lines[i] == (-##|[[:space:]]#|Path:*) ]] && continue
+      values+=(${${=lines[i]}[1]})
+    done
+  else
+    values=(${(M)lines:#[[:alnum:]_-]##})
+  fi
+  _wanted values expl "$type" compadd "${(@)argv[1,-2]}" -a values
+}
+
+# Print one _arguments spec per line for `magick [tool]`, from its -help.
+_magick_specs() {
+  local line name desc type
+  local -a lists words seen
+  lists=(${(L)${(f)"$(magick -list list 2>/dev/null)"}})
+
+  _magick_flush() {
+    [[ -z $name ]] && return
+    (( ${seen[(Ie)$name]} )) && return
+    seen+=($name)
+    case $name in
+      (-orient) type=orientation ;;
+      (-quantize) type=colorspace ;;
+      (-limit) type=resource ;;
+      (-ordered-dither) type=threshold ;;
+      # Same name as a -list type, different meaning.
+      (-format|-log|-threshold|-noise) type= ;;
+      (*)
+        type=${${name#-}//-/}
+        (( ${lists[(Ie)$type]} )) || type=
+        ;;
+    esac
+    [[ $words[1] == color ]] && type=color
+    local spec="*${name}[${desc//(#m)[\[\]]/\\$MATCH}]" arg i=0
+    for arg in $words; do
+      (( i++ ))
+      if (( i == 1 )) && [[ -n $type ]]; then
+        spec+=":$arg:_magick_list_values $type"
+      elif [[ $arg == (file|filename) ]]; then
+        spec+=":$arg:_files"
+      else
+        spec+=":$arg: "
+      fi
+    done
+    print -r -- $spec
+  }
+
+  for line in "${(@f)$(magick $@ -help 2>/dev/null)}"; do
+    if [[ $line == '  -'* ]]; then
+      _magick_flush
+      # The description column starts at 24; a longer name+args pushes the
+      # description onto the next line.
+      if [[ $line[23] == ' ' && $line[24] != ' ' && $#line -gt 23 ]]; then
+        desc=${line[24,-1]}
+        words=(${=line[1,22]})
+      else
+        desc=
+        words=(${=line})
+      fi
+      name=$words[1]
+      shift words
+    elif [[ -n $name && -z $desc && $line == ' '(#c23)[^' ']* ]]; then
+      desc=${line##[[:space:]]#}
+    fi
+  done
+  _magick_flush
+  unfunction _magick_flush
+}
+
+_magick() {
+  typeset -gA _magick_cache
+  local key
+  local -a tools specs
+
+  [[ -n $_magick_cache[tools] ]] ||
+    _magick_cache[tools]=${(j: :)${(f)"$(magick -list tool 2>/dev/null)"}}
+  tools=(${=_magick_cache[tools]})
+
+  # `magick <tool> ...` runs a legacy tool (identify, mogrify, ...) with its
+  # own option set.
+  if (( CURRENT == 2 )) && [[ $PREFIX != [-+]* ]]; then
+    _alternative 'tools:tool:compadd -a tools' 'files:image file:_files'
+    return
+  fi
+  if (( CURRENT > 2 && ${tools[(Ie)$words[2]]} )); then
+    key=$words[2]
+    shift words
+    (( CURRENT-- ))
+  fi
+
+  [[ -n $_magick_cache[specs:$key] ]] ||
+    _magick_cache[specs:$key]=$(_magick_specs $key)
+  specs=("${(@f)_magick_cache[specs:$key]}")
+
+  _arguments : $specs '*:image file:_files'
+}
+
+_magick "$@"
