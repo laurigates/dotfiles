@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791521747273,
+  "lastUpdate": 1791531073786,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1299,6 +1299,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/da882153c4812171bbe32d31bcc2126dc286422d"
         },
         "date": 1791521746768,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "32424172c925267c00b28bfe220fdc4f48379497",
+          "message": "fix(zsh): pull the base branch after ghsq/ghrb merges a PR into it (#473)\n\n## What\n\n`ghsq`/`ghrb` now `git pull --ff-only` when you run them from the base\nbranch of a PR they just merged, e.g. merging from the main checkout on\n`main` while the PR's branch lives in a worktree.\n\n## Why\n\nThe post-merge step `_gh_home_if_merged` only acted when the *current*\nbranch had a merged PR. On `main`, `gh pr view` reports `no pull\nrequests found for branch \"main\"`, so the helper returned before pulling\nand `main` stayed behind origin (observed after merging #472).\n\n## How\n\n`_gh_home_if_merged` falls back to a new `_gh_pull_if_base_of_merged`\nwhen the current branch has no merged PR. It checks each PR number the\nrun acted on (`gh pr view <n> --json state,baseRefName`) and pulls if\none is `MERGED` into the current branch, printing the same what/why\nlines as the existing go-home path. Selected-but-skipped PRs are still\nopen, so they never trigger a pull. The help text for `ghsq` and the\ncomment above it describe the new case.\n\n## Verification\n\n- Scratch test (not committed): the two helpers extracted from the\nsource with `sed`, `gh` stubbed, run in a temp repo whose `main` is one\ncommit behind origin. Acted PR not merged: stays behind=1. PR merged\ninto `main`: fast-forwards to behind=0 with the what/why output.\n- `zsh -n` on the rendered template: exit 0.\n- `mise run lint`: shell, actions and docs tasks pass; `lint:lua` fails\non a local luacheck 1.2.0 / Lua 5.5 crash unrelated to this change.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01TGefgXKy2wVF1V5jdSxBGk\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-09T10:30:14+03:00",
+          "tree_id": "0dec20795fab09001ad73cfdb843d06c2498f904",
+          "url": "https://github.com/laurigates/dotfiles/commit/32424172c925267c00b28bfe220fdc4f48379497"
+        },
+        "date": 1791531073108,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
