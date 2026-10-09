@@ -984,13 +984,13 @@ _gh_current_pr() {
 # lands under an explanation instead of ahead of one.
 _gh_home_if_merged() {
   local cur_pr="$1" acted="$2"
-  [[ -n "$cur_pr" ]] || return 0
+  [[ -n "$cur_pr" ]] || { _gh_pull_if_base_of_merged "$acted"; return }
   local info state base merged_at
   info=$(gh pr view "$cur_pr" --json state,baseRefName,mergedAt \
            --jq '"\(.state)\t\(.baseRefName)\t\(.mergedAt // "")"' </dev/null 2>/dev/null)
   state="${info%%$'\t'*}"; info="${info#*$'\t'}"
   base="${info%%$'\t'*}"; merged_at="${info#*$'\t'}"
-  [[ "$state" == MERGED && -n "$base" ]] || return 0
+  [[ "$state" == MERGED && -n "$base" ]] || { _gh_pull_if_base_of_merged "$acted"; return }
   # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
   local green='' yellow='' cyan='' dim='' bold='' rst=''
   [[ -t 1 ]] && { green=$'\033[32m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
@@ -1028,12 +1028,35 @@ _gh_home_if_merged() {
   git pull --ff-only
 }
 
+# Fallback for _gh_home_if_merged when the branch you're on has no merged PR:
+# pull if it is the BASE of a PR this run merged. That is the usual case with
+# worktrees — the PR's branch lives in a worktree and ghsq runs from the main
+# checkout on `main`, where `gh pr view` finds no PR at all. $1 = the PR numbers
+# this invocation acted on; a selected PR that is now MERGED was merged by this
+# run (the picker only lists OPEN PRs), so skipped ones never trigger a pull.
+_gh_pull_if_base_of_merged() {
+  local acted="$1" cur n base
+  cur=$(git symbolic-ref --short -q HEAD 2>/dev/null) || return 0
+  local green='' cyan='' dim='' bold='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+  for n in ${=acted}; do
+    base=$(gh pr view "$n" --json state,baseRefName \
+             --jq 'select(.state == "MERGED") | .baseRefName' </dev/null 2>/dev/null)
+    [[ "$base" == "$cur" ]] || continue
+    print -r -- "  ${green}⇣${rst} ${bold}what${rst}  on ${cyan}${cur}${rst} — ${dim}git pull --ff-only${rst}"
+    print -r -- "    ${bold}why${rst}   this run merged PR ${cyan}#${n}${rst} into ${cyan}${cur}${rst}, so it has moved ahead"
+    git pull --ff-only
+    return
+  done
+}
+
 # Interactive PR merge (squash). No args → multi-select picker (Tab to mark
 # several) → sequential squash-merge in selection order. Arg form (ghsq 123,
 # via completion) merges that single PR directly. If the branch you're on has a
 # merged PR — merged by this run or already merged when you started — you're
 # left on an updated base branch, with the what/why printed first
-# (see _gh_home_if_merged).
+# (see _gh_home_if_merged). If you're on the base of a PR this run merged, it
+# pulls (see _gh_pull_if_base_of_merged).
 #
 # -x/--external includes external contributors' PRs in the picker (hidden by
 # default). Either way, merging one requires a typed confirmation — including on
@@ -1630,7 +1653,7 @@ _GH_WRAPPER_DOC=(
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If the branch you are on has a merged PR (this run or earlier), land on the updated base — it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
   ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
