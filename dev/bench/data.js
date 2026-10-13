@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791883598357,
+  "lastUpdate": 1791898066883,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1431,6 +1431,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/028c1356fb75229b277b46de6992c9db496fded6"
         },
         "date": 1791883598067,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ac14a33a9b3aefc2bf8711ea36e83fc285de93b9",
+          "message": "fix(just): worktree-audit read gh's error body as a merged PR number (#476)\n\nFollow-up to #475. `worktree-audit` reported two worktrees as MERGED\nthat aren't: `claude-plugins-model-map` (open PR #3064, 1 commit not\npushed) and `pal-mcp-server/.claude/worktrees/dogfood`. When the\ncommit-to-PR lookup fails with HTTP 422 (the commit was never pushed),\n`gh api` exits 1 but still prints the JSON error body to stdout. The\nrecipe's `|| true` kept that body, and the non-empty check took it as a\nPR number.\n\nThe fix clears the variable when the call fails and accepts only a bare\nPR number.\n\n**Verified:** both worktrees now show as REVIEW. A control call on the\nmodel-map HEAD reproduces the 422 body on stdout with exit 1. The recipe\nbody passes shellcheck.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01SRgcMKH9btxScDXZPxczY1\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-13T16:26:51+03:00",
+          "tree_id": "9805919320586ab423c8a75cb790e1f1fb0656ff",
+          "url": "https://github.com/laurigates/dotfiles/commit/ac14a33a9b3aefc2bf8711ea36e83fc285de93b9"
+        },
+        "date": 1791898066562,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
