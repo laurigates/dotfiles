@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791898066883,
+  "lastUpdate": 1791898130053,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1475,6 +1475,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/ac14a33a9b3aefc2bf8711ea36e83fc285de93b9"
         },
         "date": 1791898066562,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f4a9976fdf4dcdac6955e124718ad85b64e1d2dd",
+          "message": "docs(claude): list the disk-reclaim recipes among the just -g examples (#478)\n\n## What\n\nAdds `reclaim-dry`/`reclaim` and `ollama-idle`/`ollama-prune` to the\nexample list in the global `CLAUDE.md` paragraph that points agents at\n`just -g` recipes.\n\n## Why\n\nIn a disk-full session the agent followed the public `macos-disk-usage`\nskill and hand-rolled cache, worktree and model cleanup; the existing\nrecipes were never consulted because the example list named no disk\nrecipes. The skill lives in the public claude-plugins marketplace and\ncannot reference these personal recipes, so the pointer belongs here.\nCompanion to #477, which fixes the uv and bun purges inside\n`reclaim.sh`.\n\nOne line in an always-loaded file; the global context budget pre-commit\ncheck passes.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01QrFmip3RSwzwi61bhj5Pdz\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-13T16:27:12+03:00",
+          "tree_id": "d3ffada25330259ef13501939facc0b08f753c31",
+          "url": "https://github.com/laurigates/dotfiles/commit/f4a9976fdf4dcdac6955e124718ad85b64e1d2dd"
+        },
+        "date": 1791898129381,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
