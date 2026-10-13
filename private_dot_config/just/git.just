@@ -179,8 +179,10 @@ worktree-audit root="":
         # A detached or renamed HEAD has no head-ref PR; ask GitHub which PRs
         # contain the commit itself. Errors (commit never pushed) stay REVIEW.
         if [ -z "$verdict" ] && [ -n "$nwo" ]; then
-          via=$(gh api "repos/$nwo/commits/$head/pulls" --jq '[.[] | select(.merged_at != null) | .number][0] // empty' 2>/dev/null || true)
-          [ -n "$via" ] && { verdict=MERGED; pr="#$via"; why="$detail_br, HEAD is a commit of merged PR #$via"; }
+          # On an HTTP error gh still prints the error body to stdout, so a
+          # failed call must clear $via and only a bare PR number counts.
+          via=$(gh api "repos/$nwo/commits/$head/pulls" --jq '[.[] | select(.merged_at != null) | .number][0] // empty' 2>/dev/null) || via=""
+          [[ "$via" =~ ^[0-9]+$ ]] && { verdict=MERGED; pr="#$via"; why="$detail_br, HEAD is a commit of merged PR #$via"; }
         fi
 
         if [ -z "$verdict" ]; then
