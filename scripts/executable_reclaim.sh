@@ -10,8 +10,14 @@
 #          trimming only the stale artifacts *within* a live target/ so recent
 #          builds stay warm. Rust only — no equivalent exists for node/python.
 #
-# Plus the regenerable package caches (uv, bun, go, brew, pre-commit, docker
-# build cache), all of which rebuild on next use.
+# Plus the regenerable package caches (uv, bun, npm, go, brew, pre-commit,
+# docker build cache), all of which rebuild on next use.
+#
+# uv: `uv cache prune` needs an exclusive lock that any running `uvx`/`uv run`
+# process (long-lived MCP servers) blocks for its whole lifetime, so on lock
+# timeout the sweep falls back to `uv cache clean --force <pkg>` over the large
+# packages uv-cache-unused.py reports as unused by every lock holder. Clean never
+# touches cached environments, so running tools keep their files.
 #
 # DRY-RUN BY DEFAULT. Pass --apply to actually delete. Emits the structured
 # `KEY=VALUE` / `RECLAIM …` rollup convention so a caller (or the weekly
@@ -46,6 +52,9 @@ done
 
 test "$(uname -s)" = "Darwin" || { echo "reclaim.sh: not Darwin, refusing" >&2; exit 1; }
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+printf 'RUN_AT=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
 now=$(date +%s)
 cutoff=$(( now - days * 86400 ))
 # `du` sums st_blocks, which APFS reports at FULL size for a copy-on-write
@@ -56,7 +65,8 @@ bounded_kb=0    # node_modules/.venv: uv and bun clone these from a global cache
 cache_kb=0
 stale_list="$(mktemp)"
 active_list="$(mktemp)"
-trap 'rm -f "$stale_list" "$active_list"' EXIT
+purge_log="$(mktemp)"
+trap 'rm -f "$stale_list" "$active_list" "$purge_log"' EXIT
 
 free_kb() { df -k / | awk 'NR==2{print $4}'; }
 free_before=$(free_kb)
@@ -115,6 +125,19 @@ fi
 
 echo "=== PACKAGE CACHES ==="
 
+# Run a purge command; on failure print its last output line, so the log says
+# WHY instead of a bare `failed`.
+run_purge() {
+    local label="$1"; shift
+    if "$@" >"$purge_log" 2>&1; then
+        printf 'CACHE_RESULT name=%s status=ok\n' "$label"
+        return 0
+    fi
+    printf 'CACHE_RESULT name=%s status=failed detail="%s"\n' \
+        "$label" "$(tail -n 1 "$purge_log" | tr -d '"')"
+    return 1
+}
+
 # Each entry: label, path to measure, command to purge.
 purge() {
     local label="$1" path="$2"; shift 2
@@ -123,18 +146,54 @@ purge() {
     printf 'CACHE name=%s size_kb=%s path=%s\n' "$label" "${size_kb:-0}" "$path"
     cache_kb=$(( cache_kb + ${size_kb:-0} ))
     if [ "$apply" -eq 1 ]; then
-        if "$@" >/dev/null 2>&1; then
-            printf 'CACHE_RESULT name=%s status=ok\n' "$label"
-        else
-            # uv in particular holds a lock while MCP servers / LSPs run out of
-            # its archive dir; a failure here is expected and non-fatal.
-            printf 'CACHE_RESULT name=%s status=failed\n' "$label"
-        fi
+        run_purge "$label" "$@" || true
     fi
 }
 
-command -v uv          >/dev/null 2>&1 && purge uv         "$HOME/.cache/uv"                  uv cache prune
-command -v bun         >/dev/null 2>&1 && purge bun        "$HOME/.bun/install/cache"         bun pm cache rm
+# `bun pm` refuses to run without a package.json in the cwd, even for the global
+# cache (oven-sh/bun#6382), and launchd starts us in /. Give it a throwaway
+# project. Note: this also clears bunx's package cache under $TMPDIR.
+bun_cache_rm() {
+    local dir rc=0
+    dir="$(mktemp -d)"
+    printf '{"name":"reclaim"}\n' > "$dir/package.json"
+    (cd "$dir" && bun pm cache rm) || rc=$?
+    rm -rf "$dir"
+    return "$rc"
+}
+
+# A plain prune covers everything (including stale cached environments) but
+# waits on the cache lock. When a long-lived uvx/uv run process holds it, fall
+# back to force-cleaning the big packages no lock holder is running.
+uv_reclaim() {
+    local path size_kb=0 plan pkgs
+    path="$(uv cache dir)"
+    [ -e "$path" ] && size_kb=$(du -sxk "$path" 2>/dev/null | cut -f1)
+    printf 'CACHE name=uv size_kb=%s path=%s\n' "${size_kb:-0}" "$path"
+    cache_kb=$(( cache_kb + ${size_kb:-0} ))
+
+    if [ "$apply" -eq 1 ] && UV_LOCK_TIMEOUT=15 run_purge uv uv cache prune; then
+        return 0
+    fi
+    plan="$(python3 -I "$script_dir/uv-cache-unused.py" --min-mb 100)" || {
+        printf 'CACHE_RESULT name=uv-unused status=failed detail="planner error"\n'
+        return 0
+    }
+    grep -E '^UV_(HOLDERS|BUSY|CANDIDATE_KB)=' <<<"$plan" || true
+    pkgs="$(sed -n 's/^UV_CLEAN_PACKAGES=//p' <<<"$plan")"
+    printf 'UV_CLEAN_PACKAGES=%s\n' "$pkgs"
+    [ "$apply" -eq 1 ] || return 0
+    if [ -z "$pkgs" ]; then
+        printf 'CACHE_RESULT name=uv-unused status=skipped\n'
+        return 0
+    fi
+    # shellcheck disable=SC2086  # word-split the package list on purpose
+    run_purge uv-unused uv cache clean --force $pkgs || true
+}
+
+command -v uv          >/dev/null 2>&1 && uv_reclaim
+command -v bun         >/dev/null 2>&1 && purge bun        "$HOME/.bun/install/cache"         bun_cache_rm
+command -v npm         >/dev/null 2>&1 && purge npm        "$HOME/.npm/_cacache"              npm cache clean --force
 command -v go          >/dev/null 2>&1 && purge go-modcache "$HOME/go/pkg/mod"                go clean -modcache
 command -v brew        >/dev/null 2>&1 && purge homebrew   "$HOME/Library/Caches/Homebrew/downloads" brew cleanup -s
 command -v pre-commit  >/dev/null 2>&1 && purge pre-commit "$HOME/.cache/pre-commit"          pre-commit gc
