@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791531073786,
+  "lastUpdate": 1791877140074,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1343,6 +1343,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/32424172c925267c00b28bfe220fdc4f48379497"
         },
         "date": 1791531073108,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9c12ee731cbe9b4523eb17723a45e9e9086be7fc",
+          "message": "feat(just): add worktree-audit recipe for stray and merged worktrees (#475)\n\nAdds `worktree-audit` to `git.just`, next to `branch-audit`, so `just -g\nworktree-audit [root]` lists which linked worktrees can be removed. With\nno argument it audits the current repo; with a directory it audits every\nrepo up to three levels below it.\n\nIt is read-only, like `branch-audit`: it prints `git worktree remove` /\n`git worktree prune` commands and runs nothing.\n\n**Columns**\n- `LOC=stray`: the worktree is outside `<repo>/.claude/worktrees/`. This\nis the `git worktree add ../<name>` pattern that left 41 worktrees next\nto their repos under `~/repos`.\n- `VERDICT`, first match wins:\n  - `PRUNE`: the directory is gone.\n  - `IN-USE`: a running process has its cwd inside it (`lsof`).\n  - `DIRTY`: uncommitted or untracked files.\n- `MERGED`: one of `branch-audit`'s signals, or a commit-to-PR lookup\n(`repos/{nwo}/commits/{sha}/pulls`) that finds the PR for a detached\nworkflow or agent worktree.\n- `REVIEW`: none of the above. This includes a merged PR whose worktree\nhas local commits past the PR head.\n\n**Tested** on `just -g worktree-audit ~/repos`, exit 0: 184 MERGED, 7\nDIRTY, 2 IN-USE, 4 REVIEW, 6 PRUNE. Spot-checked against `gh` while\nbuilding it:\n- `claude-plugins-lean-reader` and `-sedview` show as MERGED; #3047 and\n#3072 merged in the last hour.\n- Three detached mcu-tinkering-lab worktrees that previously showed as\nREVIEW resolve to merged PRs #630, #672 and #620.\n\nThe recipe body passes `shellcheck`. Pre-commit passes, including the\njustfile parse check and the context-budget check.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01SRgcMKH9btxScDXZPxczY1\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-13T10:38:02+03:00",
+          "tree_id": "46218f4d96abf04b446f43b5f802cc392077619d",
+          "url": "https://github.com/laurigates/dotfiles/commit/9c12ee731cbe9b4523eb17723a45e9e9086be7fc"
+        },
+        "date": 1791877139352,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
