@@ -23,7 +23,7 @@ flowchart TD
     subgraph src["chezmoi source: private_dot_config/just/"]
         plugins["plugins.just<br/>group: plugins<br/>(marketplace install/enable/audit)"]
         claude["claude.just<br/>group: claude<br/>(mcp-*, settings-audit)"]
-        git["git.just<br/>group: git<br/>(branch-audit)"]
+        git["git.just<br/>group: git<br/>(branch-audit, worktree-audit)"]
         maint["maint.just<br/>(home-audit, reclaim, ollama-*, searxng-*)"]
     end
 
@@ -73,7 +73,7 @@ the imported modules:
 | `info` | root | `docs`, `dev`, `edit`, `info`, `doctor` |
 | `plugins` | `plugins.just` | `plugins-install/enable/disable/update/uninstall`, `plugins-audit`, `plugins-setup-repo` |
 | `claude` | `claude.just` | `mcp-*`, `claude-setup`, `settings-audit` |
-| `git` | `git.just` | `branch-audit` |
+| `git` | `git.just` | `branch-audit`, `worktree-audit` |
 | `nvim` | `nvim.just` | `nvim-plugins-audit` |
 | *(ungrouped)* | `maint.just` | `home-audit`, `reclaim-dry`, `reclaim`, `ollama-idle`, `ollama-prune`, `searxng-up/down/check` |
 
