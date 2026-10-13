@@ -60,7 +60,7 @@ branch-audit:
       #    A non-zero exit is NOT containment (no merge base, bad ref), so
       #    require rc 0 before reading an empty '+' set as "landed".
       crc=0; cout=$(git cherry "$base" "$b" 2>/dev/null) || crc=$?
-      if [ "$crc" -eq 0 ] && ! printf '%s\n' "$cout" | grep -q '^+'; then
+      if [ "$crc" -eq 0 ] && ! printf '%s\n' "$cout" | grep -c '^+' >/dev/null; then
         printf '%-44s %-9s %-16s %s\n' "$b" MERGED "${pr:-—}" "patch-equivalent in $base"; merged+=("$b"); continue
       fi
 
@@ -78,6 +78,139 @@ branch-audit:
       echo
       echo "# ${#merged[@]} branch(es) safe to delete:"
       echo "git branch -D ${merged[*]}"
+    fi
+
+# Classify linked worktrees as MERGED / REVIEW / DIRTY / IN-USE / PRUNE. Read-only.
+#
+# With no argument, audits the current repo. With a directory, audits every
+# repo found up to three levels below it (`just -g worktree-audit ~/repos`).
+# Repos are discovered by their `.git` DIRECTORY and worktrees read from
+# `git worktree list`, so a worktree is found wherever it was created.
+#
+# LOC is `stray` for a worktree outside `<repo>/.claude/worktrees/` — the
+# sibling-dir `git worktree add ../<name>` pattern that littered ~/repos with
+# 41 of them by 2026-10.
+#
+# VERDICT, first match wins:
+#   PRUNE  — the directory is gone; only the metadata is left.
+#   IN-USE — a running process has its cwd inside it (lsof).
+#   DIRTY  — uncommitted or untracked files; removing them needs --force.
+#   MERGED — the branch-audit signals: a MERGED PR whose head (or one of its
+#            commits) is the worktree HEAD, else `git cherry` with no '+',
+#            else a merge-tree no-op. A merged PR with commits past its head is
+#            REVIEW: those commits did not ride the squash. A detached HEAD
+#            (workflow/agent worktrees) is matched by commit via
+#            `repos/{nwo}/commits/{sha}/pulls`, which finds the PR whatever its
+#            branch was called.
+#   REVIEW — none of the above.
+# Compares against origin/<default> as last fetched; fetch first for a fresh read.
+# Prints copy-paste `git worktree remove` commands for MERGED rows only.
+#
+# Audit linked worktrees (stray + merged); prints removal commands, read-only.
+[group: "git"]
+worktree-audit root="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [ -n "{{root}}" ]; then
+      mapfile -t repos < <(find "{{root}}" -mindepth 1 -maxdepth 3 -type d -name .git -prune 2>/dev/null \
+        | sed 's#/\.git$##' | sort)
+    else
+      repos=("$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")")
+    fi
+
+    # cwds of every running process, for the IN-USE check.
+    cwds=$(lsof -a -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | sort -u || true)
+
+    removes=(); prunes=()
+    printf '%-58s %-5s %-8s %-10s %s\n' WORKTREE LOC VERDICT PR DETAIL
+    printf '%.0s-' {1..110}; echo
+    for repo in "${repos[@]}"; do
+      wts=$(git -C "$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p' | tail -n +2)
+      [ -z "$wts" ] && continue
+
+      base=$(git -C "$repo" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+      [ -z "$base" ] && base=$(git -C "$repo" rev-parse --verify --quiet origin/main >/dev/null && echo origin/main || echo origin/master)
+      base_tree=$(git -C "$repo" rev-parse "$base^{tree}" 2>/dev/null || true)
+
+      # Same no-small-limit reasoning as branch-audit: a capped window reads as "no PR".
+      prs=$(cd "$repo" && gh pr list --state all --limit 10000 --json number,headRefName,state,headRefOid \
+        --jq '.[] | [.headRefName, (.number|tostring), .state, .headRefOid] | @tsv' 2>/dev/null || true)
+      nwo=$(cd "$repo" && gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)
+
+      while IFS= read -r wt; do
+        name=${wt#"$HOME"/}
+        case "$wt" in "$repo"/.claude/worktrees/*) loc=ok ;; *) loc=stray ;; esac
+        row() { printf '%-58s %-5s %-8s %-10s %s\n' "$name" "$loc" "$1" "$2" "$3"; }
+
+        if [ ! -d "$wt" ]; then
+          row PRUNE — "directory missing"; prunes+=("$repo"); continue
+        fi
+        if printf '%s\n' "$cwds" | awk -v p="$wt" '$0==p || index($0, p"/")==1 {f=1} END {exit !f}'; then
+          row IN-USE — "a process has its cwd here"; continue
+        fi
+
+        head=$(git -C "$wt" rev-parse HEAD)
+        br=$(git -C "$wt" symbolic-ref --quiet --short HEAD || echo "")
+        detail_br=${br:-detached@${head:0:8}}
+        dirty=$(git -C "$wt" status --porcelain | wc -l | tr -d ' ')
+        if [ "$dirty" -gt 0 ]; then
+          row DIRTY — "$detail_br, $dirty uncommitted/untracked path(s)"; continue
+        fi
+
+        pr="—"; verdict=""; why=""; state=""
+        if [ -n "$br" ]; then
+          line=$(printf '%s\n' "$prs" | awk -F'\t' -v b="$br" '$1==b && $3=="MERGED" && !l {l=$0} END {print l}')
+          [ -z "$line" ] && line=$(printf '%s\n' "$prs" | awk -F'\t' -v b="$br" '$1==b && !l {l=$0} END {print l}')
+          if [ -n "$line" ]; then
+            IFS=$'\t' read -r _ num state prhead <<<"$line"
+            pr="#$num"
+            if [ "$state" = MERGED ]; then
+              if [ "$head" = "$prhead" ] || git -C "$wt" merge-base --is-ancestor "$head" "$prhead" 2>/dev/null \
+                 || { [ -n "$nwo" ] && gh api "repos/$nwo/pulls/$num/commits" --paginate --jq '.[].sha' 2>/dev/null | grep -cx "$head" >/dev/null; }; then
+                verdict=MERGED; why="$br, PR merged at this HEAD"
+              fi
+            else
+              pr="#$num:$state"
+            fi
+          fi
+        fi
+
+        # A detached or renamed HEAD has no head-ref PR; ask GitHub which PRs
+        # contain the commit itself. Errors (commit never pushed) stay REVIEW.
+        if [ -z "$verdict" ] && [ -n "$nwo" ]; then
+          via=$(gh api "repos/$nwo/commits/$head/pulls" --jq '[.[] | select(.merged_at != null) | .number][0] // empty' 2>/dev/null || true)
+          [ -n "$via" ] && { verdict=MERGED; pr="#$via"; why="$detail_br, HEAD is a commit of merged PR #$via"; }
+        fi
+
+        if [ -z "$verdict" ]; then
+          crc=0; cout=$(git -C "$wt" cherry "$base" HEAD 2>/dev/null) || crc=$?
+          if [ "$crc" -eq 0 ] && ! printf '%s\n' "$cout" | grep -c '^+' >/dev/null; then
+            verdict=MERGED; why="$detail_br, patch-equivalent in $base"
+          else
+            mt=$(git -C "$wt" merge-tree --write-tree "$base" HEAD 2>/dev/null) && rc=0 || rc=$?
+            if [ "$rc" -eq 0 ] && [ "$mt" = "$base_tree" ]; then
+              verdict=MERGED; why="$detail_br, contained in $base"
+            else
+              n=$(printf '%s\n' "$cout" | grep -c '^+' || true)
+              verdict=REVIEW; why="$detail_br, $n commit(s) not in $base"
+              [ "${state:-}" = MERGED ] && why="$why (past the merged PR head)"
+            fi
+          fi
+        fi
+
+        row "$verdict" "$pr" "$why"
+        [ "$verdict" = MERGED ] && removes+=("git -C '$repo' worktree remove '$wt'")
+      done <<<"$wts"
+    done
+
+    if [ ${#removes[@]} -gt 0 ]; then
+      echo; echo "# ${#removes[@]} merged worktree(s) safe to remove (branches are kept):"
+      printf '%s\n' "${removes[@]}"
+    fi
+    if [ ${#prunes[@]} -gt 0 ]; then
+      echo; echo "# stale worktree metadata:"
+      printf '%s\n' "${prunes[@]}" | sort -u | sed "s#^#git -C '#; s#\$#' worktree prune#"
     fi
 
 # List your own open PRs blocked on YOU — changes requested or CI failing. Read-only.
