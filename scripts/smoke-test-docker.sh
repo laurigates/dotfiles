@@ -155,10 +155,21 @@ run_build() {
         log_warning "mise not installed, skipping mise doctor"
     fi
 
+    # exact_dot_claude/modify_settings.json runs jq during apply. Without it
+    # chezmoi only reports "exit status 127" for .claude/settings.json (#441),
+    # so fail up front with the actual cause.
+    if ! command -v jq &> /dev/null; then
+        log_error "jq not found (chezmoi apply needs it for .claude/settings.json)"
+        return 1
+    fi
+
     # Apply dotfiles
     log_info "Running chezmoi apply..."
-    # Use --source to specify current directory as source (works without chezmoi init)
-    if chezmoi apply --source=. -v; then
+    # Same flags as the CI build jobs (smoke.yml). --source=. points chezmoi at
+    # the checkout (works without chezmoi init). --exclude=scripts skips the
+    # run_once_/run_onchange_ scripts, which install brew packages and sync
+    # nvim plugins: meaningful on user machines, not in an ephemeral container.
+    if chezmoi apply --source=. -v --exclude=scripts; then
         log_success "chezmoi apply succeeded"
     else
         log_error "chezmoi apply failed"
@@ -168,18 +179,16 @@ run_build() {
     # Test zsh initialization (if zsh is available)
     if command -v zsh &> /dev/null; then
         log_info "Testing zsh shell initialization..."
-        if timeout 10s zsh -c "
+        # Mirrors the zsh step in smoke.yml. $PROMPT/$PS1 are deliberately not
+        # checked: the prompt comes from starship, which this image does not
+        # install, so that assertion failed on every correct apply (#441). The
+        # timeout guards against a hang, not slowness, hence 60s like CI.
+        if timeout 60s zsh -c "
             source ~/.zshrc
             if [[ -n \"\$ZSH_VERSION\" ]]; then
                 echo '✅ zsh configuration loaded successfully'
             else
                 echo '❌ zsh configuration failed to load'
-                exit 1
-            fi
-            if [[ -n \"\$PROMPT\" ]] || [[ -n \"\$PS1\" ]]; then
-                echo '✅ zsh prompt configured'
-            else
-                echo '❌ zsh prompt not configured'
                 exit 1
             fi
         "; then

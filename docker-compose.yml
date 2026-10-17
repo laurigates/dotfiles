@@ -1,11 +1,15 @@
 # Docker Compose for local smoke testing
 # Reproduces CI environment for faster iteration
 #
-# Usage:
-#   docker-compose up --build              # Run full smoke test
-#   docker-compose run --rm smoke lint     # Run lint stage only
-#   docker-compose run --rm smoke build    # Run build stage only
-#   docker-compose run --rm smoke-shell    # Interactive shell for debugging
+# Usage (or `just smoke*` / `mise run docker`, which wrap these):
+#   docker compose up --build --exit-code-from smoke smoke  # Run full smoke test
+#   docker compose run --rm smoke lint     # Run lint stage only
+#   docker compose run --rm smoke build    # Run build stage only
+#   docker compose run --rm smoke-shell    # Interactive shell for debugging
+#
+# A plain `docker compose up` exits 0 even when the smoke container fails, so
+# the full run needs --exit-code-from for the failure to reach the caller (#441).
+# `run` already returns the container's exit code.
 #
 services:
   smoke:

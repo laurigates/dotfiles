@@ -178,7 +178,7 @@ pre-commit:
 [group: "test"]
 smoke:
     @echo "{{BLUE}}Running smoke test in Docker...{{NORMAL}}"
-    docker compose up --build smoke
+    docker compose up --build --exit-code-from smoke smoke
 
 # Run lint stage only in Docker
 [group: "test"]

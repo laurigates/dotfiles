@@ -171,7 +171,9 @@ description = "Test full environment using Docker Compose"
 run = """
 #!/usr/bin/env bash
 if [ -f docker-compose.yml ]; then
-    docker-compose up --build
+    # A plain `up` exits 0 even when the smoke container fails (#441);
+    # --exit-code-from hands the container's exit code to this task.
+    docker compose up --build --exit-code-from smoke smoke
 else
     echo "❌ Error: docker-compose.yml not found"
     exit 1
