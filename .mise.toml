@@ -101,6 +101,10 @@ run = "tests/test-gh-completion.sh"
 description = "Regression test: repo tasks run in the checkout, and lint tasks fail on findings and on a broken linter (#398)"
 run = "tests/test-mise-tasks.sh"
 
+[tasks."test:organize-stars"]
+description = "Regression test: organize-stars.sh exits non-zero when gh fails, and its counters do not abort the run (#443)"
+run = "tests/test-organize-stars.sh"
+
 # Every linter runs even after one fails; the task fails if any did.
 [tasks.lint]
 description = "Run all linters (shell, lua, actions, docs)"
