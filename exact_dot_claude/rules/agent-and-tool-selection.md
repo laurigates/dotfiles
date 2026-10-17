@@ -72,6 +72,15 @@ one.
 > client IDs. A separate Sonnet 5.5 implementation task (infrastructure
 > #2517–#2519) held on every claim re-run against the pushed branches. Four graded runs, scored by an Opus session, are
 > a small sample. Re-run the comparison when either model changes.
+>
+> 2026-10-14 (claude-plugins #3088–#3090): three Sonnet 5.5 implementers at
+> `high` effort, each followed by a fresh Sonnet verifier that re-ran the gates
+> against the pushed branch. Not every claim held. A verifier caught a new helper
+> reporting an unrunnable gate (exit 127) as a caught mutation, and one
+> implementer's follow-up put a hook's timeout headroom at about 1 s when the
+> worst case overran the 5 s budget by about 3 s; the main loop found that while
+> checking the follow-up before filing it (claude-plugins #3093). The run had no
+> Opus arm and was not graded.
 
 ### Sanctioned exception: cold-read gates run on Haiku
 
