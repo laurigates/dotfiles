@@ -29,7 +29,7 @@ repos:
         stages: [commit-msg]
         args: []
   - repo: https://github.com/JohnnyMorganz/StyLua
-    rev: v2.5.2
+    rev: v2.6.0
     hooks:
       # Prebuilt-binary variant: the default `stylua` hook (language: rust)
       # builds from source and needs a C linker, which isn't available on
