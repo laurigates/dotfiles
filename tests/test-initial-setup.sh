@@ -82,25 +82,54 @@ test_failfast_enabled() {
     fi
 }
 
+# bare_precommit_calls <file>: print "<line>: <text>" for each line that uses
+# pre-commit outside the `if command -v pre-commit` branch. Comments and echo
+# lines are messages, not calls. The branch runs from the `if` to the `else`
+# or `fi` at the same indentation, so a nested if inside it does not end it.
+#
+# This replaced a `grep -A 3 "if command -v pre-commit" | grep "pre-commit
+# install"` window. The script grew a comment and a core.hooksPath guard
+# between the `if` and `pre-commit install`, the window stopped reaching it,
+# and the test failed on a correct script (#439).
+bare_precommit_calls() {
+    awk '
+        /^[[:space:]]*if command -v pre-commit/ { match($0, /^[[:space:]]*/); indent = RLENGTH; inside = 1; next }
+        inside {
+            match($0, /^[[:space:]]*/)
+            if (RLENGTH == indent && $0 ~ /^[[:space:]]*(else|fi)([[:space:]]|$)/) inside = 0
+            next
+        }
+        /^[[:space:]]*#/ { next }
+        /^[[:space:]]*echo[[:space:]]/ { next }
+        /pre-commit/ { printf "%d: %s\n", NR, $0 }
+    ' "$1"
+}
+
 # Test 5: Verify no bare pre-commit calls (must be conditional)
 test_no_bare_precommit_calls() {
     log_test "Verifying pre-commit is never called without checking availability"
-    # Look for pre-commit calls NOT preceded by command -v check
-    # This regex finds 'pre-commit' that's not in a comment or command -v line
-    if grep -n "pre-commit" "$SETUP_SCRIPT" | grep -v "command -v pre-commit" | grep -v "^[[:space:]]*#" | grep -v "pre-commit not installed"; then
-        # Found pre-commit usage - check if it's inside the conditional block
-        if grep -A 3 "if command -v pre-commit" "$SETUP_SCRIPT" | grep -q "pre-commit install"; then
-            log_pass "pre-commit calls are properly conditional"
-            return 0
-        else
-            log_fail "Found pre-commit call outside conditional check"
-            return 1
-        fi
-    else
-        # No pre-commit calls found outside the check
-        log_pass "No bare pre-commit calls found"
-        return 0
+    local bare
+    bare=$(bare_precommit_calls "$SETUP_SCRIPT")
+    if [[ -n "$bare" ]]; then
+        echo "$bare"
+        log_fail "Found pre-commit call outside conditional check"
+        return 1
     fi
+    # A detector that finds nothing proves nothing: plant a bare call before
+    # the check and another in the not-installed branch; both must be found.
+    local planted found
+    planted=$(mktemp)
+    awk '/^if command -v pre-commit/ { print "pre-commit run --all-files"; seen = 1 }
+         { print }
+         seen && /^else/ && !planted { print "pre-commit install"; planted = 1 }' "$SETUP_SCRIPT" > "$planted"
+    found=$(bare_precommit_calls "$planted" | wc -l)
+    rm -f "$planted"
+    if [[ $found -ne 2 ]]; then
+        log_fail "Detector found $found of 2 planted bare pre-commit calls"
+        return 1
+    fi
+    log_pass "pre-commit calls are all inside the availability check (detector finds planted bare calls)"
+    return 0
 }
 
 # Test 6: Verify helpful skip messages exist
