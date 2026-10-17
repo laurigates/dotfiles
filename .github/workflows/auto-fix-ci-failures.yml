@@ -29,19 +29,15 @@ jobs:
       workflow_name: ${{ github.event.workflow_run.name }}
       head_sha: ${{ github.event.workflow_run.head_sha }}
       claude_args: --model ${{ vars.CLAUDE_MODEL || 'opus' }} --max-turns 50
-      # Repo-specific grants on top of the reusable workflow's built-in set
-      # (Write/Edit/Grep/Glob/Task/TodoWrite, the git verbs, gh pr/issue/run).
-      # A dotfiles CI failure is almost always a lint failure, and fixing one
-      # means re-running the linter to confirm — hence the linters, and chezmoi
-      # for source-tree validation.
-      additional_permissions: |
-        Bash(pre-commit *)
-        Bash(actionlint *)
-        Bash(shellcheck *)
-        Bash(luacheck *)
-        Bash(gitleaks *)
-        Bash(chezmoi diff *)
-        Bash(chezmoi status *)
-        Bash(mise run lint*)
+      # Repo-specific Claude tool grants on top of the reusable workflow's
+      # built-in set (Write/Edit/Grep/Glob/Task/TodoWrite, the git verbs, gh
+      # pr/issue/run). They go in additional_allowed_tools, which the reusable
+      # workflow appends to --allowedTools as one comma-separated string. This
+      # list used to sit in additional_permissions, a GitHub permissions map,
+      # where it was inert (#445). A dotfiles CI failure is almost always a lint
+      # failure, and fixing one means re-running the linter to confirm — hence
+      # the linters, and chezmoi for source-tree validation. No
+      # additional_permissions here: the reusable workflow adds actions: read.
+      additional_allowed_tools: 'Bash(pre-commit *),Bash(actionlint *),Bash(shellcheck *),Bash(luacheck *),Bash(gitleaks *),Bash(chezmoi diff *),Bash(chezmoi status *),Bash(mise run lint*)'
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
