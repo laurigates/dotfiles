@@ -306,19 +306,15 @@ clean:
     @find . -name "*.tmp" -delete 2>/dev/null || true
     @find . -name ".DS_Store" -delete 2>/dev/null || true
 
+# Delegates to the mise task: the ripgrep fallback this recipe had matched every
+# variable named token or key and could not fail, and a missing gitleaks only
+# warned (#439).
 # Scan for secrets in repository
 [group: "maintain"]
 secrets:
-    @echo "{{BLUE}}Scanning for secrets...{{NORMAL}}"
-    @if command -v gitleaks >/dev/null 2>&1; then \
-        gitleaks dir . --config .gitleaks.toml --no-banner \
-            && echo "{{GREEN}}Secret scan complete (no leaks){{NORMAL}}"; \
-    elif command -v rg >/dev/null 2>&1; then \
-        echo "{{YELLOW}}gitleaks not installed, using ripgrep fallback{{NORMAL}}"; \
-        rg -i "password|secret|token|api.?key" --type-not lock --type-not json . || echo "{{GREEN}}No obvious secrets found{{NORMAL}}"; \
-    else \
-        echo "{{YELLOW}}Warning: neither gitleaks nor ripgrep installed{{NORMAL}}"; \
-    fi
+    @echo "{{BLUE}}Scanning for secrets via mise...{{NORMAL}}"
+    @mise run security:scan
+    @echo "{{GREEN}}Secret scan complete (no leaks){{NORMAL}}"
 
 # Display terminal color capabilities
 [private]

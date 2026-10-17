@@ -296,7 +296,7 @@ report() {
 # lint-brew checked a Brewfile the repo does not have. Each lint* recipe is now
 # one `mise run lint[:x]`, so one implementation (the mise task, tested below)
 # serves both entry points.
-echo "Just: lint* recipes are one mise call each"
+echo "Just: lint* and secrets recipes are one mise call each"
 python3 - "$REPO/justfile" "$REPO/.mise.toml" >"$WORK/just-static.out" <<'PY'
 import re, sys, tomllib
 
@@ -313,12 +313,20 @@ for line in open(jpath, encoding="utf-8").read().splitlines():
     elif line.strip() and not line.startswith("#") and not line[0].isspace():
         cur = None
 
+# recipe -> the one mise task it runs. `secrets` joined the lint recipes when
+# its ripgrep fallback, which could not fail, was dropped for security:scan.
 lint = {n: r for n, r in recipes.items() if n == "lint" or n.startswith("lint-")}
-if not lint:
+delegates = {n: n.replace("-", ":", 1) for n in lint}
+if "secrets" in recipes:
+    lint["secrets"] = recipes["secrets"]
+    delegates["secrets"] = "security:scan"
+else:
+    print("FAIL the justfile has no secrets recipe")
+if len(lint) < 2:
     print("FAIL the justfile has no lint recipe")
 bad = 0
 for name, r in sorted(lint.items()):
-    want = name.replace("-", ":", 1)
+    want = delegates[name]
     work = [b for b in r["body"] if not re.match(r"@?(echo|printf)\b", b)]
     got = [re.sub(r"^@", "", b) for b in work]
     if r["deps"]:
@@ -331,7 +339,7 @@ for name, r in sorted(lint.items()):
         print(f"FAIL just {name} runs `mise run {want}`, but .mise.toml has no task {want}")
         bad += 1
 if lint and not bad:
-    print(f"PASS all {len(lint)} lint recipes ({', '.join(sorted(lint))}) are one `mise run` of an existing task")
+    print(f"PASS all {len(lint)} lint and secret recipes ({', '.join(sorted(lint))}) are one `mise run` of an existing task")
 PY
 report "$WORK/just-static.out"
 
@@ -503,6 +511,7 @@ mkfix() {  # <dir> bad|clean
     cp "$REPO/justfile" "$d/justfile"
     mkdir -p "$d/private_dot_config/just"
     cp "$REPO"/private_dot_config/just/*.just "$d/private_dot_config/just/"
+    cp "$REPO/.gitleaks.toml" "$d/.gitleaks.toml"
     printf '#!/bin/sh\necho "ok"\n' >"$d/ok.sh"
     printf 'local M = {}\nreturn M\n' >"$d/private_dot_config/nvim/lua/ok.lua"
     printf 'on: push\njobs:\n  j:\n    runs-on: ubuntu-latest\n    steps:\n      - run: "true"\n' \
@@ -515,6 +524,9 @@ mkfix() {  # <dir> bad|clean
         printf 'on: push\njobs:\n  j:\n    runs-on: ubuntu-latest\n    zz_fixture_bogus: 1\n    steps:\n      - run: "true"\n' \
             >"$d/.github/workflows/zz-fixture.yml"
         printf '# Fixture\n\nSee [missing](./zz-fixture-missing.md).\n' >"$d/docs/zz-fixture.md"
+        # A GitHub token shape, built here in two pieces so this script holds no
+        # token for the repo's own scan to find.
+        printf 'export GH_TOKEN=%s%s\n' "ghp_" "aB3dE5gH7jK9mN1pQ3sT5vW7yZ9bC1dE3fG5" >"$d/zz-fixture-secret.env"
     fi
     git -C "$d" init -q && git -C "$d" add -A
 }
@@ -592,8 +604,25 @@ else
     else log_fail "lint: this repo fails (rc=$rc)"; fi
 fi
 
-# --- just lint* recipes run the mise tasks (#439) -------------------------------
-echo "Just: each lint* recipe reaches mise and fails when its tool is gone"
+# --- security tasks fail on a leak and on a missing scanner (#439) ---------------
+# security:audit used to warn and exit 0 when rg or gitleaks was missing, and its
+# rg keyword grep could not fail. Same checks as the linters: broken tool, clean
+# fixture, planted token (named in the output), this repo.
+echo "Security: fail on a leak and on a broken gitleaks, pass clean input"
+check_lint security:scan  gitleaks zz-fixture-secret.env
+check_lint security:audit gitleaks zz-fixture-secret.env
+# Absent, not just broken: the old audit printed "gitleaks not installed" and passed.
+for t in security:scan security:audit; do
+    out=$(run_mise "$WORK/clean" "$WORK/mise/state" "$EMPTY_DATA" "$(path_without gitleaks)" run "$t"); rc=$?
+    if [ $rc -ne 0 ] && grep -q "gitleaks is missing or cannot run" <<<"$out"; then
+        log_pass "$t: with gitleaks off PATH it fails (rc=$rc) and names it"
+    else
+        log_fail "$t: with gitleaks off PATH, rc=$rc and no 'gitleaks is missing or cannot run': $(grep -v '^\[' <<<"$out" | head -2 | tr '\n' ' ')"
+    fi
+done
+
+# --- just recipes run the mise tasks (#439) --------------------------------------
+echo "Just: each lint* and secrets recipe reaches mise and fails when its tool is gone"
 if [ -z "$JUST_BIN" ]; then
     skip_or_fail just "just is not installed; recipe behaviour not run (the delegation is checked statically above)"
 else
@@ -605,7 +634,8 @@ else
         "lint-lua lint:lua luacheck zz_fixture.lua" \
         "lint-actions lint:actions actionlint zz-fixture.yml" \
         "lint-docs lint:docs python3 zz-fixture-missing.md" \
-        "lint lint shellcheck zz-fixture.sh"; do
+        "lint lint shellcheck zz-fixture.sh" \
+        "secrets security:scan gitleaks zz-fixture-secret.env"; do
         read -r recipe task tool marker <<<"$row"
 
         # Delegation: with mise stubbed, the recipe's whole effect is this call.
