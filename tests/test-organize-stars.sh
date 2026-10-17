@@ -24,6 +24,9 @@
 #   Fail     gh fails on every call: non-zero exit, no "No new starred repos".
 #   Lists    the list-ID fetch fails: non-zero exit, and no repo is checked
 #            against a list cache that never loaded.
+#   NoLists  the account has no GitHub Lists (nodes: []): exit 0, each star is
+#            reported as "List ... not found", and the cache loop does not
+#            crash on an empty subscript.
 #   State    a state file jq cannot parse: non-zero exit, no star is re-added.
 #            With PROCESS_ALL=true ("ignore state") the same file is not read:
 #            exit 0, the star is added, and the file is rewritten.
@@ -138,6 +141,10 @@ case "$*" in
             echo "HTTP 502" >&2
             exit 1
         fi
+        if [ "$STUB_MODE" = lists-empty ]; then
+            echo '{"data":{"viewer":{"lists":{"nodes":[]}}}}'
+            exit 0
+        fi
         echo '{"data":{"viewer":{"lists":{"nodes":[{"id":"L_mcp","name":"MCP"}]}}}}'
         ;;
     *)
@@ -202,6 +209,20 @@ check "list-ID fetch failing: the run must exit non-zero (got $RC)" test "$RC" -
 check_not "list-ID fetch failing: no star is checked against an empty list cache" \
     grep -qF -- 'not found for' "$(out_file)"
 check_not "list-ID fetch failing: nothing is added to a list" \
+    grep -qF -- 'updateUserListsForItem' "$CASE_DIR/gh-calls.log"
+
+# Lists, empty: an account with no GitHub Lists is not an error. The cache loop
+# must not run once on an empty string: bash 5.2 rejects the empty subscript.
+new_case lists-empty
+run_organizer lists-empty mcp.jsonl
+check "account with no lists: the run must exit 0 (got $RC)" test "$RC" -eq 0
+check_not "account with no lists: no 'bad array subscript' from the list cache" \
+    grep -qF -- 'bad array subscript' "$(out_file)"
+check "account with no lists: the missing list is reported" \
+    grep -qF -- "List 'MCP' not found for octo/mcp-server" "$(out_file)"
+check "account with no lists: the summary reports Failed: 1" \
+    grep -qF -- 'Failed: 1' "$(out_file)"
+check_not "account with no lists: nothing is added to a list" \
     grep -qF -- 'updateUserListsForItem' "$CASE_DIR/gh-calls.log"
 
 # State: a state file that exists but jq cannot parse must stop the run.
