@@ -763,9 +763,19 @@ ghpc() {
 # GitHub recomputes a repo's other open PRs' mergeability after each merge and
 # refuses to merge a PR while its status is UNKNOWN. So merge sequentially and,
 # per PR, poll until mergeability settles, then merge.
-#   _gh_poll_merge <repo|""> <num> <merge-flags...>   ("" repo = current repo)
+#
+# A PR whose base already took a merge earlier in the batch is brought up to
+# date (gh pr update-branch) and its CI re-run before it merges: its green CI
+# only ran against the old base, so a PR that merges cleanly could still break
+# it. update-branch cannot fix a real conflict, so a CONFLICTING PR is returned
+# to the batch, which offers to hand it to Claude once the merges are done.
+#   _gh_poll_merge <repo|""> <num> <moved> <merge-flags...>   ("" repo = current repo)
+#   <moved> = space-separated "repo:base" keys that took a merge this run.
+#   → 0 + REPLY="repo:base": merged · 0 + REPLY="": skipped
+#     2 + REPLY="repo:base": conflicting · 1: failed
 _gh_poll_merge() {
-  local repo="$1" num="$2"; shift 2
+  local repo="$1" num="$2" moved="$3"; shift 3
+  REPLY=
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
   # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
@@ -775,11 +785,16 @@ _gh_poll_merge() {
   # stranger's PR must not even reach "mark ready & merge". This is also what
   # makes `a`=all in _gh_batch_merge safe — `a` skips the per-PR y/N prompt but
   # still lands here, and an external PR demands a typed word regardless.
-  _gh_trust_gate "$repo" "$num" || return 0
+  _gh_trust_gate "$repo" "$num" || { REPLY=; return 0 }
+  local meta draft base
+  meta=$(gh pr view "$num" "${repo_flag[@]}" --json isDraft,baseRefName \
+           --jq '"\(.isDraft)\t\(.baseRefName)"' </dev/null 2>/dev/null)
+  draft="${meta%%$'\t'*}" base="${meta#*$'\t'}"
+  local key="${repo}:${base}"
   # Draft PRs report mergeable=MERGEABLE (that field tracks conflicts, not draft
   # state), so the poll loop below never catches them — `gh pr merge` just fails.
   # Detect the draft up front and prompt: mark ready & merge, or skip.
-  if [[ $(gh pr view "$num" "${repo_flag[@]}" --json isDraft --jq '.isDraft' </dev/null 2>/dev/null) == true ]]; then
+  if [[ "$draft" == true ]]; then
     local dans
     read -k 1 "dans?  ${magenta}draft${rst} ${cyan}${id}${rst} — [${green}r${rst}=ready&merge/${dim}s${rst}=skip] "; print
     case "$dans" in
@@ -792,21 +807,132 @@ _gh_poll_merge() {
       *) print -r -- "  ${dim}– skipped draft ${id}${rst}"; return 0 ;;
     esac
   fi
+  local state
+  state=$(_gh_wait_mergeable "$repo" "$num" "$id")
+  if [[ "$state" == CONFLICTING ]]; then
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — left open"
+    REPLY="$key"; return 2
+  fi
+  local -a pin
+  if [[ " $moved " == *" ${key} "* ]]; then
+    local -a upd; (( ${argv[(Ie)--rebase]} )) && upd=(--rebase)
+    _gh_update_and_wait "$repo" "$num" "$id" "${upd[@]}"
+    case $? in
+      0) ;;
+      2) print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — left open"
+         REPLY="$key"; return 2 ;;
+      *) return 1 ;;
+    esac
+    # Merge exactly the head CI just passed on; a push landing in between fails
+    # the merge instead of slipping through untested.
+    [[ -n "$REPLY" ]] && pin=(--match-head-commit "$REPLY")
+    REPLY=
+    _gh_wait_mergeable "$repo" "$num" "$id" >/dev/null
+  fi
+  if gh pr merge "$num" "${repo_flag[@]}" "${pin[@]}" "$@" </dev/null; then
+    print -r -- "  ${green}✓ merged${rst} ${cyan}${id}${rst}"
+    REPLY="$key"
+  else
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}merge failed${rst} (left open — re-run to retry)"; return 1
+  fi
+}
+
+# Poll until GitHub settles a PR's mergeability; prints the final state.
+#   _gh_wait_mergeable <repo|""> <num> <id>
+_gh_wait_mergeable() {
+  local repo="$1" num="$2" id="$3"
+  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  local yellow='' cyan='' rst=''
+  [[ -t 2 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' rst=$'\033[0m' }
   local state tries=0
   while (( tries < 20 )); do
     state=$(gh pr view "$num" "${repo_flag[@]}" --json mergeable --jq '.mergeable' </dev/null 2>/dev/null)
     [[ -n "$state" && "$state" != UNKNOWN ]] && break
-    (( tries == 0 )) && print -r -- "  ${yellow}…${rst} waiting for ${cyan}${id}${rst} mergeability to settle"
+    (( tries == 0 )) && print -r -- "  ${yellow}…${rst} waiting for ${cyan}${id}${rst} mergeability to settle" >&2
     sleep 2; (( tries++ ))
   done
-  if [[ "$state" == CONFLICTING ]]; then
-    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — skipped"; return 1
+  print -r -- "$state"
+}
+
+# Bring a PR up to date with its base, then block until CI on the new head
+# finishes. --rebase (ghrb) rebases the branch; the default merges the base in.
+#   _gh_update_and_wait <repo|""> <num> <id> [--rebase]
+#   → 0 + REPLY=<new head SHA> (REPLY="" if already up to date)
+#     2 conflicting · 1 update failed or CI failed
+_gh_update_and_wait() {
+  local repo="$1" num="$2" id="$3"; shift 3
+  local -a repo_flag upd=("$@"); [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  local green='' red='' yellow='' cyan='' dim='' rst=''
+  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' rst=$'\033[0m' }
+  REPLY=
+  local old new out tries
+  old=$(gh pr view "$num" "${repo_flag[@]}" --json headRefOid --jq .headRefOid </dev/null 2>/dev/null)
+  print -r -- "  ${yellow}⟳${rst} ${cyan}${id}${rst}: base moved this run — ${dim}gh pr update-branch${upd:+ ${upd[*]}}${rst}"
+  if ! out=$(gh pr update-branch "$num" "${repo_flag[@]}" "${upd[@]}" </dev/null 2>&1); then
+    # gh prints "Cannot update PR branch due to conflicts" for both of its own
+    # conflict checks (see update_branch.go); anything else is a real failure.
+    [[ "$out" == *conflict* ]] && return 2
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: update-branch failed — ${out}"; return 1
   fi
-  if gh pr merge "$num" "${repo_flag[@]}" "$@" </dev/null; then
-    print -r -- "  ${green}✓ merged${rst} ${cyan}${id}${rst}"
-  else
-    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}merge failed${rst} (left open — re-run to retry)"; return 1
+  [[ "$out" == *up-to-date* ]] && { print -r -- "    ${dim}already up to date${rst}"; return 0 }
+
+  tries=0
+  while (( tries++ < 15 )); do
+    new=$(gh pr view "$num" "${repo_flag[@]}" --json headRefOid --jq .headRefOid </dev/null 2>/dev/null)
+    [[ -n "$new" && "$new" != "$old" ]] && break
+    sleep 2
+  done
+  if [[ -z "$new" || "$new" == "$old" ]]; then
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: head did not move after update-branch — left open"; return 1
   fi
+
+  # `gh pr checks --watch` errors out at once when no check has registered yet
+  # (checks.go: "no checks reported"), so wait for the first one to appear.
+  print -r -- "    ${dim}waiting for CI on ${new[1,7]}${rst}"
+  tries=0
+  until gh pr checks "$num" "${repo_flag[@]}" --json name --jq length </dev/null >/dev/null 2>&1; do
+    if (( ++tries > 30 )); then
+      print -r -- "    ${yellow}!${rst} no checks registered after 60s — merging without a CI wait"
+      REPLY="$new"; return 0
+    fi
+    sleep 2
+  done
+  if ! gh pr checks "$num" "${repo_flag[@]}" --watch --fail-fast </dev/null; then
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}CI failed${rst} on the updated branch — left open"; return 1
+  fi
+  print -r -- "    ${green}✓${rst} CI passed on ${new[1,7]}"
+  REPLY="$new"
+}
+
+# Offer to start Claude on each PR the batch left CONFLICTING. Runs after the
+# batch, so Claude resolves against the base as it ends up, not mid-run.
+# Claude runs in the foreground, one PR at a time, in a fresh worktree.
+#   _gh_conflict_handoff <rebase: 0 = no, else yes> <"repo\tnum\tbase" lines>
+_gh_conflict_handoff() {
+  local rebase="$1" blob="$2"
+  [[ -n "$blob" ]] || return 0
+  local yellow='' cyan='' dim='' bold='' rst=''
+  [[ -t 1 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+  local here; here=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  local r n b id ans how
+  print
+  print -r -- "${bold}Conflicting PRs${rst} — gh pr update-branch can't resolve these:"
+  while IFS=$'\t' read -r r n b; do
+    [[ -n "$n" ]] || continue
+    [[ -n "$r" ]] && id="${r}#${n}" || id="#${n}"
+    if [[ -n "$r" && "$r" != "$here" ]]; then
+      print -r -- "  ${yellow}!${rst} ${cyan}${id}${rst}: not this checkout's repo — resolve it from a checkout of ${r}"
+      continue
+    fi
+    read -k 1 "ans?  Hand ${cyan}${id}${rst} to Claude to resolve? [y/${bold}N${rst}] " </dev/tty; print
+    [[ "$ans" == [yY] ]] || { print -r -- "  ${dim}– left ${id} for later${rst}"; continue }
+    if (( rebase )); then
+      how="rebase it onto origin/${b}, resolve the conflicts, and push with --force-with-lease"
+    else
+      how="merge origin/${b} into it, resolve the conflicts, and push"
+    fi
+    claude --worktree "PR #${n} conflicts with ${b} after other PRs merged into it. Check out its branch (gh pr checkout ${n}), ${how}. Keep the intent of both sides, run the project's lint and tests before pushing, and do not merge the PR." </dev/tty
+  done <<< "$blob"
 }
 
 # Confirm a selected set, then merge sequentially in selection order.
@@ -842,7 +968,10 @@ _gh_batch_merge() {
   done
   print
 
-  local all=false ans
+  # moved: "repo:base" keys that took a merge this run (later PRs on the same
+  # base get updated before merging). conflicts: "repo\tnum\tbase" lines for the
+  # Claude handoff after the loop.
+  local all=false ans moved= conflicts= rc
   for (( i = 1; i <= count; i++ )); do
     [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
     if ! $all; then
@@ -854,8 +983,14 @@ _gh_batch_merge() {
         *)   print -r -- "  ${dim}– skipped ${lbl}${rst}"; continue ;;
       esac
     fi
-    _gh_poll_merge "${repos[$i]}" "${nums[$i]}" "${flags[@]}"
+    _gh_poll_merge "${repos[$i]}" "${nums[$i]}" "$moved" "${flags[@]}"; rc=$?
+    if (( rc == 0 )) && [[ -n "$REPLY" && " $moved " != *" $REPLY "* ]]; then
+      moved+=" $REPLY"
+    elif (( rc == 2 )); then
+      conflicts+="${repos[$i]}"$'\t'"${nums[$i]}"$'\t'"${REPLY#*:}"$'\n'
+    fi
   done
+  _gh_conflict_handoff "${flags[(Ie)--rebase]}" "$conflicts"
 }
 
 # fzf multi-select over current-repo PRs → TSV "repo<tab>num<tab>title" lines
@@ -1653,8 +1788,8 @@ _GH_WRAPPER_DOC=(
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
-  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. A PR whose base took a merge earlier in the run is updated (gh pr update-branch) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
+  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same update-and-wait-for-CI and Claude conflict handoff as ghsq, but rebasing (update-branch --rebase). Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
   ghi  'Pick a GitHub issue and hand it to Claude.'
