@@ -32,6 +32,10 @@ plugins/
 # target of the same basename.
 LICENSE
 DOCKER.md
+# Renovate config for THIS repo; unignored it applied to ~/renovate.json5 (#442).
+# .chezmoiremove cannot clean up the stray: chezmoi never removes ignored targets,
+# so delete ~/renovate.json5 by hand on each machine.
+renovate.json5
 docs/
 tests/
 # ~/tmp is a scratch dir, not dotfiles state — chezmoi shouldn't manage it or the
