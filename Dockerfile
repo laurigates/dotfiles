@@ -80,5 +80,8 @@ RUN brew install pre-commit
 COPY --chown=tester:tester . /tmp/dotfiles
 WORKDIR /tmp/dotfiles
 
-# Default: run full smoke test (lint + build)
-CMD ["/tmp/dotfiles/scripts/smoke-test-docker.sh"]
+# Default: run full smoke test (lint + build). ENTRYPOINT rather than CMD so a
+# stage name is an argument to the script: `docker compose run --rm smoke lint`
+# (`just smoke-lint`) would otherwise replace CMD and try to exec `lint` (#441).
+# smoke-shell overrides the entrypoint with /bin/zsh in docker-compose.yml.
+ENTRYPOINT ["/tmp/dotfiles/scripts/smoke-test-docker.sh"]

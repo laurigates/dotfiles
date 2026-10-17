@@ -26,8 +26,15 @@ The image can also be built and run without Compose (Docker or Podman):
 
 ```bash
 docker build . -t laurigates/dotfiles
-docker run --rm -it laurigates/dotfiles:latest
+docker run --rm -it laurigates/dotfiles:latest          # all stages
+docker run --rm laurigates/dotfiles:latest lint         # one stage: lint or build
+docker run --rm -it --entrypoint /bin/zsh laurigates/dotfiles:latest  # shell
 ```
+
+The image's entrypoint is `scripts/smoke-test-docker.sh`, so anything after the
+image name is a stage argument, not a command. That is what lets
+`just smoke-lint` and `just smoke-build` select one stage; use `--entrypoint`
+(as the `smoke-shell` service does) to run something else.
 
 ## Limitations
 
