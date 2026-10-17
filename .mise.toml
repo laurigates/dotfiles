@@ -214,35 +214,22 @@ echo "✅ Cleanup complete!"
 # ----------------------------------------------------------------------------
 # Security
 # ----------------------------------------------------------------------------
-[tasks."security:audit"]
-description = "Run security audit on configurations"
+# gitleaks is the only secret check. security:audit used to run a keyword grep
+# first (`rg -i "password|secret|token|key"`) that matched about a thousand lines, every
+# variable that merely has such a name, and printed them with exit 0: its
+# "no obvious secrets" branch ran only when nothing matched, so the step could
+# not fail. gitleaks' rules plus the .gitleaks.toml allowlist tell a secret from
+# a name; --verbose names the file and rule of a leak, --redact keeps the secret
+# out of the log. A missing gitleaks fails instead of warning (#439).
+[tasks."security:scan"]
+description = "Scan the working tree for secrets with gitleaks (fails on a leak or a missing gitleaks)"
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-
-echo "🔒 Running security audit..."
-
-# Check for obvious secrets in files
-if command -v rg >/dev/null 2>&1; then
-    echo "  🔍 Checking for secrets in files..."
-    rg -i "password|secret|token|key" --type-not lock --type-not json . || {
-        echo "  ✅ No obvious secrets found"
-    }
-else
-    echo "  ⚠️  Warning: ripgrep not installed, cannot check for secrets"
-fi
-
-# Run gitleaks if available
-if command -v gitleaks >/dev/null 2>&1; then
-    echo "  🔍 Running gitleaks scan..."
-    gitleaks dir . --config .gitleaks.toml --no-banner
-else
-    echo "  ⚠️  Warning: gitleaks not installed"
-fi
-
-echo "✅ Security audit complete!"
+gitleaks version >/dev/null || { echo "security:scan: gitleaks is missing or cannot run" >&2; exit 1; }
+gitleaks dir . --config .gitleaks.toml --no-banner --redact --verbose
 """
 
-[tasks."security:scan"]
-description = "Scan for secrets with gitleaks"
-run = "gitleaks dir . --config .gitleaks.toml --no-banner"
+[tasks."security:audit"]
+description = "Run security audit on configurations (the gitleaks scan)"
+depends = ["security:scan"]
