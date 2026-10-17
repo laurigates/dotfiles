@@ -90,9 +90,10 @@ repos:
         additional_dependencies: [pyyaml]
         files: '^(\.github/(workflows|scripts)/.*|tests/test-ci-github-api-auth\.py)$'
         pass_filenames: false
-      # CI toolchain pins (#416, #418): no third-party action on a branch ref,
-      # chezmoi installed only from the .mise.toml pin, mise-action version
-      # pinned. Offline; the smoke Linters job adds --online. always_run
+      # CI toolchain pins (#416, #418, #440): no third-party action on a branch
+      # ref, chezmoi installed only from the .mise.toml pin, mise-action version
+      # pinned, Python/bun/pre-commit/Claude Code CLI at exact versions.
+      # Offline; the smoke Linters job adds --online. always_run
       # because an install route can be added to any file; a run takes ~0.5 s.
       - id: ci-pins
         name: check CI toolchain pins
