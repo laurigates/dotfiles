@@ -175,7 +175,7 @@ After full mise migration:
 - Smaller Brewfile = faster `brew bundle` operations
 - Reduced duplication = clearer dependency management
 - Better security = aqua backend verification for CLI tools
-- Version pinning = mise.lock for reproducibility
+- Version pinning = exact versions in `.mise.toml` (no `mise.lock` is committed; see the 2026-10 note in ADR-0002)
 
 **Risk Level**: ⚠️ **Medium**
 - Ensure mise tools are installed before removing Homebrew versions

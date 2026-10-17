@@ -329,7 +329,7 @@ alias md='mise doctor'
 - **Task**: Automated script (replaces Makefile targets)
 - **Environment**: Variables and PATH modifications
 - **Config**: `.mise.toml` or `config.toml` file with tool definitions
-- **Lockfile**: `mise.lock` - pins exact versions for reproducibility
+- **Lockfile**: `mise.lock` - pins exact versions in a mise project (this repo commits none and pins exact versions in `.mise.toml` instead)
 
 ## 🎯 Common Workflows
 

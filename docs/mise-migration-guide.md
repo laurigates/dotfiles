@@ -238,7 +238,7 @@ npm install -g typescript         # Node tool
 **After:**
 ```bash
 mise install                      # Everything!
-# 1 command, 1 lockfile
+# 1 command, 1 config
 ```
 
 ### 2. **Automatic Version Switching**
@@ -270,9 +270,9 @@ brew install kubectl              # Gets newer version (1.31?)
 
 **After:**
 ```bash
-mise install                      # Reads mise.lock
-# Everyone gets EXACT same versions
-# CI, teammates, future you - all identical
+mise install                      # Installs the versions in .mise.toml
+# Exact pins ("2.73.1") give everyone the SAME version, CI included;
+# "latest" does not. This repo commits no mise.lock (see the 2026-10 note in ADR-0002)
 ```
 
 ### 4. **Better Performance**
@@ -517,16 +517,16 @@ You'll know the migration is successful when:
 - [ ] `mise run info` shows correct tool versions
 - [ ] `python --version` matches expected version
 - [ ] Tools switch automatically when you `cd` to different projects
-- [ ] `mise.lock` is committed to your dotfiles repo
+- [ ] Tools that CI or other machines must match are exact pins in `.mise.toml` (this repo commits no `mise.lock`)
 - [ ] CI/CD pipeline still passes (using `setup-mise@v0`)
 
 ## 🎉 Next Steps
 
 After completing migration:
 
-1. **Commit mise.lock**:
+1. **Commit the mise config**:
    ```bash
-   git add mise.lock private_dot_config/mise/config.toml.tmpl
+   git add private_dot_config/mise/config.toml.tmpl
    git commit -m "feat: migrate to mise for unified tool management"
    ```
 
