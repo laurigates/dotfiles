@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792244856179,
+  "lastUpdate": 1792257885804,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1671,6 +1671,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "noreply@anthropic.com",
+            "name": "Claude",
+            "username": "claude"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "a2924a5a1e43d7cff4cfa2ae41b8ff7a64e4e0c4",
+          "message": "test(mise): run the root-meta and organize-stars tests in `mise run test`\n\n#442 and #443 added test:chezmoi-root-meta and test:organize-stars but left\n[tasks.test].depends to the #439 change, whose wiring check in\ntests/test-mise-tasks.sh fails for a test:* task missing from it. Add both to\ndepends and to REPO_TASKS, and bring the test:ci-pins description and the\nci-pins hook comment up to the pins #440 added.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_0139fxxuAJxarrymWrUYf4QL",
+          "timestamp": "2026-10-17T20:23:52+03:00",
+          "tree_id": "7c5b7e59c2f28f2875c2bdacb7ca6f19645e7d9a",
+          "url": "https://github.com/laurigates/dotfiles/commit/a2924a5a1e43d7cff4cfa2ae41b8ff7a64e4e0c4"
+        },
+        "date": 1792257885506,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12026963966666666,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015925016,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013253684000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0113076956,
             "unit": "s"
           }
         ]
