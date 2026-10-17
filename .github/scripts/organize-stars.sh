@@ -249,6 +249,9 @@ main() {
   }
 }' | jq -r '.data.viewer.lists.nodes[] | "\(.name)|\(.id)"')
   while IFS='|' read -r name id; do
+    # An account with no Lists leaves lists_json empty, and a here-string still
+    # feeds read one empty line; bash 5.2 rejects the empty subscript (#443).
+    [[ -n "$name" ]] || continue
     list_cache["$name"]="$id"
   done <<<"$lists_json"
 
