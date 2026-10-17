@@ -43,9 +43,14 @@ trap 'rm -rf "$WORK"' EXIT
 # Rendering through `chezmoi cat` rather than reading dot_zshrc.tmpl means the
 # test exercises the text that actually reaches ~/.zshrc. Retyping the logic
 # into the harness would test the copy, not the shipped code.
+#
+# --source is this checkout. chezmoi's source dir is pinned in its config and
+# nothing else overrides it, so a bare `chezmoi cat` renders the main
+# checkout's template from a worktree, or fails with "not managed" where no
+# chezmoi config exists (a CI runner, a container) (#439).
 # ---------------------------------------------------------------------------
 echo "Extracting completion functions from the rendered ~/.zshrc"
-if ! chezmoi cat ~/.zshrc > "$WORK/zshrc" 2>"$WORK/render.err"; then
+if ! chezmoi cat --source "$REPO_ROOT" ~/.zshrc > "$WORK/zshrc" 2>"$WORK/render.err"; then
     log_fail "chezmoi cat ~/.zshrc failed: $(head -1 "$WORK/render.err")"
     echo "1 failure"; exit 1
 fi
