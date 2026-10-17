@@ -30,14 +30,18 @@
 #      job with mise-action does not also restore ~/.local/share/mise with
 #      actions/cache (that can put an older mise binary back); a mise.run
 #      install sets MISE_VERSION to the same release.
-#   E. Tools CI installs outside mise. `python-version:` and `bun-version:` are
-#      an exact X.Y.Z, not `3.x` or `latest`. pre-commit and
+#   E. Tools CI installs outside mise. Every actions/setup-python and
+#      oven-sh/setup-bun step has a `python-version:` or `bun-version:` input,
+#      and it is an exact X.Y.Z, not `3.x` or `latest`; leaving it out (or
+#      using only a `*-version-file:`) floats to the runner's Python or the
+#      latest Bun. pre-commit and
 #      @anthropic-ai/claude-code are installed at an exact version, written
 #      inline (`pre-commit==4.7.0`) or read from PRE_COMMIT_VERSION /
 #      CLAUDE_CODE_VERSION. Such a variable is an exact X.Y.Z, defined in the
 #      file that reads it, equal in every workflow, and has the line
 #      `# renovate: datasource=<ds> depName=<name>` directly above it: that is
-#      what the customManagers entry in renovate.json5 matches to bump it.
+#      what the customManagers entry in renovate.json5 matches to bump it, so
+#      renovate.json5 must still hold that entry.
 #      node-version is not covered; it stays a major-only pin.
 #
 # Out of scope by design: the Homebrew `chezmoi` entry in
@@ -48,7 +52,11 @@
 # Known limits of the static checks: C sees chezmoi only as a literal
 # `chezmoi <subcommand>` in a step, not through a wrapper such as `just apply`;
 # C and D do not parse composite actions. A job reaching chezmoi only through a
-# wrapper is caught only if it already runs --assert-installed.
+# wrapper is caught only if it already runs --assert-installed. E sees pre-commit
+# only through `pip`, `pipx` or `uv` install lines: `pre-commit/action`,
+# `brew install pre-commit`, `pipx run` and `uvx` are not detected. The
+# renovate.json5 check is a tripwire on the entry's named groups, not a run of
+# its regex.
 #
 # Other modes:
 #   --online     static checks, then resolve every non-SHA third-party ref with
@@ -423,11 +431,56 @@ tool_var_defs() {
         }' "$@"
 }
 
-# check_version_inputs <repo> <file>...: the python-version and bun-version
-# inputs of setup-python and setup-bun.
+# setup_steps <file>...: one `F <message>` line per actions/setup-python or
+# oven-sh/setup-bun step without an exact-version input. Omitting it floats:
+# setup-bun installs the latest Bun, and setup-python falls back to
+# .python-version and then to whatever Python is on PATH. A *-version-file
+# input names a file, not a version, so it floats the same way; next to an exact
+# *-version it is ignored, so that combination passes.
+# A step runs from its `- ` line to the next line at that indent or less.
+setup_steps() {
+    awk '
+    function flush() {
+        if (act != "" && !has[act, "ver"]) {
+            key = (act == "python") ? "python-version" : "bun-version"
+            action = (act == "python") ? "actions/setup-python" : "oven-sh/setup-bun"
+            if (has[act, "file"]) why = key "-file: is not an exact pin"
+            else why = "so it floats (" ((act == "python") ? "the Python on PATH or in .python-version" : "the latest Bun") ")"
+            printf "F\t%s:%d: %s step has no %s: input, %s; set an exact X.Y.Z (#440)\n", file, uses_line, action, key, why
+        }
+        act = ""; open = 0
+        delete has
+    }
+    FNR == 1 { flush() }
+    /^[[:space:]]*$/ || /^[[:space:]]*#/ { next }
+    {
+        match($0, /^[[:space:]]*/); ind = RLENGTH
+        if (open && ind <= sind) flush()
+        if (!open && $0 ~ /^[[:space:]]*-[[:space:]]/) { open = 1; sind = ind; file = FILENAME }
+        if (!open) next
+        if (match($0, /^[[:space:]]*(-[[:space:]]+)?uses:[[:space:]]*["'"'"']?/)) {
+            u = substr($0, RSTART + RLENGTH)
+            if (u ~ /^actions\/setup-python@/) { act = "python"; uses_line = FNR }
+            else if (u ~ /^oven-sh\/setup-bun@/) { act = "bun"; uses_line = FNR }
+        }
+        # Keys may precede `uses:` in a step, so note them all and judge at the end.
+        if ($0 ~ /^[[:space:]]*python-version:/) has["python", "ver"] = 1
+        if ($0 ~ /^[[:space:]]*python-version-file:/) has["python", "file"] = 1
+        if ($0 ~ /^[[:space:]]*bun-version:/) has["bun", "ver"] = 1
+        if ($0 ~ /^[[:space:]]*bun-version-file:/) has["bun", "file"] = 1
+    }
+    END { flush() }
+    ' "$@"
+}
+
+# check_version_inputs <repo> <file>...: every setup-python and setup-bun step
+# has a python-version or bun-version input, and its value is an exact X.Y.Z.
 check_version_inputs() {
-    local repo="$1" hit loc key v
+    local repo="$1" hit loc key v msg
     shift
+    while IFS= read -r msg; do
+        [ -n "$msg" ] && fail "$msg"
+    done < <(cd "$repo" && setup_steps "$@" | awk -F'\t' '$1 == "F" { print $2 }')
     while IFS= read -r hit; do
         [ -n "$hit" ] || continue
         loc=$(printf '%s' "$hit" | cut -d: -f1,2)
@@ -491,6 +544,24 @@ check_tool_install() {
     fi
 }
 
+# check_renovate_entry <repo> <file>...: the `# renovate:` comments only bump
+# anything because renovate.json5 has a customManagers entry that reads them.
+# Deleting that entry (say, in a merge) would leave the pins standing and
+# silently stop their updates.
+check_renovate_entry() {
+    local repo="$1" cfg="$1/renovate.json5" need
+    shift
+    (cd "$repo" && grep -qE '^[[:space:]]*#[[:space:]]*renovate:[[:space:]]+datasource=' -- "$@") || return 0
+    if [ ! -f "$cfg" ]; then
+        fail "renovate.json5 is missing, but the workflows carry '# renovate: datasource=...' comments only it can read (#440)"
+        return
+    fi
+    for need in '(?<datasource>' 'depName=(?<depName>' '(?<currentValue>'; do
+        grep -qF -- "$need" "$cfg" ||
+            fail "renovate.json5 has no customManagers entry matching '# renovate: datasource=... depName=...' (no $need): Renovate would never bump PRE_COMMIT_VERSION or CLAUDE_CODE_VERSION (#440)"
+    done
+}
+
 check_tool_pins() {
     local repo="$1" files=() f
     # check_workflows already printed the SKIP when there are no workflows.
@@ -502,6 +573,7 @@ check_tool_pins() {
         PRE_COMMIT_VERSION pypi pre-commit "${files[@]}"
     check_tool_install "$repo" "Claude Code CLI" '@anthropic-ai/claude-code' '@anthropic-ai/claude-code@' \
         CLAUDE_CODE_VERSION npm @anthropic-ai/claude-code "${files[@]}"
+    check_renovate_entry "$repo" "${files[@]}"
 }
 
 run_static() {
@@ -610,6 +682,19 @@ EOF
     printf 'FROM ubuntu:24.04\nRUN brew install neovim\nRUN curl https://mise.run | MISE_VERSION=v2026.9.12 sh\n' >"$d/Dockerfile"
     printf '#!/bin/sh\nmise install chezmoi\n' >"$d/scripts/setup.sh"
     printf '{ "allow": ["Bash(chezmoi diff *)"] }\n' >"$d/tools.json"
+    # The customManagers entry that reads the `# renovate:` comments above.
+    cat >"$d/renovate.json5" <<'EOF'
+{
+  customManagers: [
+    {
+      customType: 'regex',
+      matchStrings: [
+        '#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s+[A-Z0-9_]+_VERSION:\\s*(?<currentValue>\\S+)',
+      ],
+    },
+  ],
+}
+EOF
 }
 
 # selftest_case <name> <expect: pass|fail> <needle> <mutation shell snippet>
@@ -778,6 +863,32 @@ self_test() {
         "grep -v 'datasource=npm' $wf >x && mv x $wf"
     selftest_case "E: Claude Code CLI pinned inline passes" pass "" \
         "sed -i.bak 's|run: npm install .*|run: npm install -g @anthropic-ai/claude-code@2.1.302|' $wf"
+
+    # A setup step with no version input floats to the runner's Python or the
+    # latest Bun. The mutation drops the `with:` block, as a careless edit would.
+    selftest_case "E: setup-python without python-version fails" fail "actions/setup-python step has no python-version: input" \
+        "awk '/uses: actions\\/setup-python/ { print; getline; getline; next } { print }' $wf >x && mv x $wf"
+    selftest_case "E: setup-bun without bun-version fails" fail "oven-sh/setup-bun step has no bun-version: input" \
+        "awk '/uses: oven-sh\\/setup-bun/ { print; getline; getline; next } { print }' $wf >x && mv x $wf"
+    selftest_case "E: setup-python reading only python-version-file fails" fail "python-version-file: is not an exact pin" \
+        "sed -i.bak 's|python-version: .3.14.8.|python-version-file: .python-version|' $wf"
+    selftest_case "E: setup-bun reading only bun-version-file fails" fail "bun-version-file: is not an exact pin" \
+        "sed -i.bak 's|bun-version: 1.4.3|bun-version-file: .bun-version|' $wf"
+    selftest_case "E: a second setup-python step without a version fails despite the first" fail "y.yml:7: actions/setup-python step has no python-version: input" \
+        "printf 'on: push\njobs:\n  y:\n    runs-on: x\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v6\n      - run: true\n' >.github/workflows/y.yml"
+    selftest_case "E: a setup-python step whose with: key comes first and has no version fails" fail "y.yml:8: actions/setup-python step has no python-version: input" \
+        "printf 'on: push\njobs:\n  y:\n    runs-on: x\n    steps:\n      - with:\n          cache: pip\n        uses: actions/setup-python@v6\n      - run: true\n' >.github/workflows/y.yml"
+    selftest_case "E: setup-python with its version after other keys, in any order, passes" pass "" \
+        "printf 'on: push\njobs:\n  y:\n    runs-on: x\n    steps:\n      - with:\n          cache: pip\n          python-version: 3.14.8\n        id: py\n        uses: actions/setup-python@v6\n      - run: true\n' >.github/workflows/y.yml"
+    selftest_case "E: an exact python-version next to a version-file passes" pass "" \
+        "awk '{ print } /python-version: / { print \"          python-version-file: .python-version\" }' $wf >x && mv x $wf"
+    selftest_case "E: a setup step in a composite action without a version fails" fail "action.yml:5: oven-sh/setup-bun step has no bun-version: input" \
+        "mkdir -p .github/actions/js && printf 'name: js\nruns:\n  using: composite\n  steps:\n    - uses: oven-sh/setup-bun@v2\n' >.github/actions/js/action.yml"
+    selftest_case "E: renovate.json5 without the customManagers entry fails" fail "renovate.json5 has no customManagers entry" \
+        "printf '{ extends: [\"config:base\"] }\n' >renovate.json5"
+    selftest_case "E: a missing renovate.json5 fails" fail "renovate.json5 is missing" "rm renovate.json5"
+    selftest_case "E: a repo with no renovate comments needs no renovate.json5" pass "" \
+        "printf 'on: push\njobs:\n  y:\n    runs-on: x\n    steps:\n      - uses: actions/checkout@v4\n' >.github/workflows/ci.yml && rm renovate.json5"
 
     selftest_assert "runtime: chezmoi at the pin passes" pass 1.2.3 "" -
     selftest_assert "runtime: chezmoi at another version fails" fail 9.9.9 "" -
