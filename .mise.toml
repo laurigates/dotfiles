@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-root-meta", "test:organize-stars", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -86,7 +86,7 @@ description = "Regression test: interactive-shell lookup order (PATH mise > brew
 run = "tests/test-shell-precedence.sh"
 
 [tasks."test:ci-pins"]
-description = "Regression test: CI toolchain pins (no branch-ref actions, chezmoi only from .mise.toml, mise-action version pinned)"
+description = "Regression test: CI toolchain pins (no branch-ref actions, chezmoi only from .mise.toml, mise-action version pinned, Python/bun/pre-commit/Claude Code CLI exact)"
 run = "tests/test-ci-pins.sh --self-test && tests/test-ci-pins.sh"
 
 [tasks."test:pi-settings"]
