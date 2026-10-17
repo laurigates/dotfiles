@@ -49,12 +49,20 @@ jobs:
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
 
-          # --ignore-failure: chezmoi apply --dry-run may exit non-zero in CI due
-          # to missing external dependencies; we still want to measure timing.
-          # --show-output: surface errors for debugging.
-          hyperfine --warmup 1 --runs 3 --ignore-failure --show-output \
+          # --source: chezmoi's default source dir (~/.local/share/chezmoi) does
+          # not exist on a fresh runner, so a bare `chezmoi apply --dry-run`
+          # exits 1 in ~8 ms; the old --ignore-failure hid that and the job
+          # recorded the error exit as the apply time (#441). Point it at the
+          # checkout, as smoke.yml does.
+          # --destination: a scratch dir, so the timing does not depend on what
+          # the runner image already has in $HOME.
+          # No --ignore-failure: a non-zero apply must fail the job, not be
+          # timed. --show-output surfaces chezmoi's error for debugging.
+          DEST="$(mktemp -d)"
+          trap 'rm -rf "$DEST"' EXIT
+          hyperfine --warmup 1 --runs 3 --show-output \
             --export-json chezmoi-bench.json \
-            'chezmoi apply --dry-run'
+            "chezmoi --source \"$GITHUB_WORKSPACE\" --destination \"$DEST\" apply --dry-run"
 
           # Extract results
           MEAN=$(jq -r '.results[0].mean' chezmoi-bench.json)
