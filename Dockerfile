@@ -1,10 +1,12 @@
 # Smoke test container matching CI environment
 # Reproduces .github/workflows/smoke.yml locally for faster iteration
 #
-# Usage:
-#   make smoke-build   # Build and run full smoke test
-#   make smoke-lint    # Run linting only
-#   make smoke-shell   # Interactive shell for debugging
+# Usage (justfile recipes, which wrap docker-compose.yml):
+#   just smoke         # Build and run full smoke test
+#   just smoke-lint    # Run lint stage only
+#   just smoke-build   # Run build stage only
+#   just smoke-shell   # Interactive shell for debugging
+#   just smoke-clean   # Remove the containers and image
 #
 FROM ubuntu:24.04
 
@@ -13,12 +15,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm-256color
 
 # Install base dependencies
+# jq: exact_dot_claude/modify_settings.json shells out to it, so chezmoi apply
+# exits 127 ("jq: command not found") without it (#441). CI runners ship jq.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
     curl \
     file \
     git \
+    jq \
     locales \
     procps \
     sudo \
