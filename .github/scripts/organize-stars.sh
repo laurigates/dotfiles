@@ -8,7 +8,7 @@ set -euo pipefail
 
 # Configuration
 STATE_FILE=".github/star-organizer-state.json"
-LOG_FILE="/tmp/star-organizer.log"
+LOG_FILE="${LOG_FILE:-/tmp/star-organizer.log}"
 PROCESS_ALL="${PROCESS_ALL:-false}"
 
 # Initialize log
@@ -186,11 +186,12 @@ mutation {
 main() {
   info "Starting GitHub star organization"
 
-  # Load state
+  # Load state. load_state supplies the default when the file does not exist
+  # yet; a file that exists but does not parse stops the run (#443).
   local state
   state=$(load_state)
-  # shellcheck disable=SC2155 # split, a state file jq cannot parse would abort under set -e; combined, it processes all stars
-  local last_starred_at=$(echo "$state" | jq -r '.last_starred_at // empty')
+  local last_starred_at
+  last_starred_at=$(echo "$state" | jq -r '.last_starred_at // empty')
 
   if [[ "$PROCESS_ALL" == "true" ]]; then
     info "Processing ALL starred repos (ignoring state)"
@@ -201,10 +202,11 @@ main() {
     info "No previous state - processing all stars"
   fi
 
-  # Fetch starred repos with metadata
+  # Fetch starred repos with metadata. Declared apart from the assignment:
+  # `local x=$(gh ...)` would hide a failed call and continue with no repos (#443).
   info "Fetching starred repositories..."
-  # shellcheck disable=SC2155 # split, a failed gh api call would abort under set -e; combined, the run continues with no repos
-  local repos_json=$(gh api user/starred --paginate --jq '.[] | {
+  local repos_json
+  repos_json=$(gh api user/starred --paginate --jq '.[] | {
     name: .full_name,
     id: .node_id,
     starred_at: .starred_at,
@@ -228,12 +230,12 @@ main() {
     return 0
   fi
 
-  # Cache list IDs
+  # Cache list IDs. Captured before the loop, not in a process substitution: that
+  # discards a failed gh api, and every repo would then be counted as not found (#443).
   info "Fetching list IDs..."
   declare -A list_cache
-  while IFS='|' read -r name id; do
-    list_cache["$name"]="$id"
-  done < <(gh api graphql -f query='
+  local lists_json
+  lists_json=$(gh api graphql -f query='
 {
   viewer {
     lists(first: 100) {
@@ -244,8 +246,12 @@ main() {
     }
   }
 }' | jq -r '.data.viewer.lists.nodes[] | "\(.name)|\(.id)"')
+  while IFS='|' read -r name id; do
+    list_cache["$name"]="$id"
+  done <<<"$lists_json"
 
-  # Process repos
+  # Process repos. Counters are x=$((x + 1)): ((x++)) returns 1 while x is 0,
+  # and set -e turns that into an abort on the first counted repo (#443).
   local success=0
   local failed=0
   local latest_starred_at=""
@@ -268,16 +274,16 @@ main() {
 
     if [[ -z "$list_id" ]]; then
       warn "List '$category' not found for $name"
-      ((failed++))
+      failed=$((failed + 1))
       continue
     fi
 
     if add_to_list "$id" "$list_id" "$name"; then
       info "Added $name to '$category'"
-      ((success++))
+      success=$((success + 1))
     else
       error "Failed to add $name to '$category'"
-      ((failed++))
+      failed=$((failed + 1))
     fi
 
     latest_starred_at="$starred_at"
