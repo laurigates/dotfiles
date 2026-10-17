@@ -25,6 +25,8 @@
 #   Lists    the list-ID fetch fails: non-zero exit, and no repo is checked
 #            against a list cache that never loaded.
 #   State    a state file jq cannot parse: non-zero exit, no star is re-added.
+#            With PROCESS_ALL=true ("ignore state") the same file is not read:
+#            exit 0, the star is added, and the file is rewritten.
 #   Count    one star whose list exists: exit 0, "Success: 1", state saved.
 #            No state file yet: load_state's default applies, so every star is
 #            processed (the tolerance that is meant to exist).
@@ -167,12 +169,14 @@ new_case() {
     : >"$CASE_DIR/gh-calls.log"
 }
 
-# run_organizer <stub mode> <fixture>: run the script in $CASE_DIR; RC is its exit status.
+# run_organizer <stub mode> <fixture> [process_all]: run the script in $CASE_DIR;
+# RC is its exit status. process_all defaults to false, as in the workflow.
 run_organizer() {
     (
         cd "$CASE_DIR" || exit 1
         PATH="$WORK/bin:$PATH" \
         LOG_FILE="$CASE_DIR/star-organizer.log" \
+        PROCESS_ALL="${3:-false}" \
         STUB_MODE="$1" \
         STUB_STARRED="$WORK/fixtures/$2" \
         STUB_LOG="$CASE_DIR/gh-calls.log" \
@@ -207,6 +211,31 @@ run_organizer ok mcp.jsonl
 check "unparseable state file: the run must exit non-zero (got $RC)" test "$RC" -ne 0
 check_not "unparseable state file: no star is re-added from scratch" \
     grep -qF -- 'updateUserListsForItem' "$CASE_DIR/gh-calls.log"
+
+# State + PROCESS_ALL: "ignore state" must not depend on the state parsing, or
+# the manual escape hatch for a corrupt file is gone.
+new_case state-corrupt-all
+printf '{not json\n' >"$(state_file)"
+run_organizer ok mcp.jsonl true
+check "PROCESS_ALL with an unparseable state file: the run must exit 0 (got $RC)" test "$RC" -eq 0
+check "PROCESS_ALL with an unparseable state file: logs 'ignoring state'" \
+    grep -qF -- 'Processing ALL starred repos (ignoring state)' "$(out_file)"
+check "PROCESS_ALL with an unparseable state file: the star is added" \
+    grep -qF -- "Added octo/mcp-server to 'MCP'" "$(out_file)"
+check "PROCESS_ALL with an unparseable state file: the file is rewritten" \
+    grep -qF -- '"last_starred_at": "2026-10-01T00:00:00Z"' "$(state_file)"
+
+# State + PROCESS_ALL with a valid state newer than the star: still processed.
+new_case state-ignored
+printf '{"last_run": null, "last_starred_at": "2026-12-31T00:00:00Z"}\n' >"$(state_file)"
+run_organizer ok mcp.jsonl true
+check "PROCESS_ALL with a newer state: the star is still added" \
+    grep -qF -- "Added octo/mcp-server to 'MCP'" "$(out_file)"
+new_case state-honoured
+printf '{"last_run": null, "last_starred_at": "2026-12-31T00:00:00Z"}\n' >"$(state_file)"
+run_organizer ok mcp.jsonl
+check "newer state without PROCESS_ALL: the star is skipped" \
+    grep -qF -- 'No new starred repos to process' "$(out_file)"
 
 # Count: no state file yet, one star whose list exists.
 new_case count

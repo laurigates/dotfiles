@@ -187,19 +187,21 @@ main() {
   info "Starting GitHub star organization"
 
   # Load state. load_state supplies the default when the file does not exist
-  # yet; a file that exists but does not parse stops the run (#443).
-  local state
-  state=$(load_state)
-  local last_starred_at
-  last_starred_at=$(echo "$state" | jq -r '.last_starred_at // empty')
-
+  # yet; a file that exists but does not parse stops the run (#443). PROCESS_ALL
+  # never reads the state, so it stays the way out of a corrupt file: the run
+  # rewrites the file at the end.
+  local last_starred_at=""
   if [[ "$PROCESS_ALL" == "true" ]]; then
     info "Processing ALL starred repos (ignoring state)"
-    last_starred_at=""
-  elif [[ -n "$last_starred_at" ]]; then
-    info "Processing stars since: $last_starred_at"
   else
-    info "No previous state - processing all stars"
+    local state
+    state=$(load_state)
+    last_starred_at=$(echo "$state" | jq -r '.last_starred_at // empty')
+    if [[ -n "$last_starred_at" ]]; then
+      info "Processing stars since: $last_starred_at"
+    else
+      info "No previous state - processing all stars"
+    fi
   fi
 
   # Fetch starred repos with metadata. Declared apart from the assignment:
