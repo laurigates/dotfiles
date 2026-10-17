@@ -162,6 +162,15 @@ def say(kind, msg):
     print(f"{kind} {msg}")
 
 
+def aliases(tasks):
+    out = {}
+    for n, t in tasks.items():
+        a = t.get("alias", [])
+        for x in [a] if isinstance(a, str) else a:
+            out[x] = n
+    return out
+
+
 def runs(t):
     r = t.get("run", [])
     return [r] if isinstance(r, str) else [x for x in r if isinstance(x, str)]
@@ -195,13 +204,15 @@ for where, tasks in (("global", g), (".mise.toml", l)):
 if not bad:
     say("PASS", f"no over-escaped string or exit-masking find -exec in {len(g) + len(l)} task run strings")
 
-# 3a: the repo tasks live in .mise.toml, not in the global config.
+# 3a: the repo tasks live in .mise.toml, not in the global config. An alias
+# counts as defining its name.
+l_alias = aliases(l)
 bad = 0
 for name in required:
     if name in g:
         say("FAIL", f"{name} is a global task, so it runs in $HOME; move it to .mise.toml")
         bad += 1
-    if name not in l:
+    if name not in l and name not in l_alias:
         say("FAIL", f"{name} is not defined in .mise.toml")
         bad += 1
 for name in sorted(set(g) & set(l) - set(required)):
@@ -209,6 +220,22 @@ for name in sorted(set(g) & set(l) - set(required)):
     bad += 1
 if not bad:
     say("PASS", f"all {len(required)} repo tasks are in .mise.toml and none is global")
+
+# 3c: a task that runs nothing passes without checking anything (#439:
+# `[tasks.check] alias = "status"` was one, so `mise run check` and qa's
+# dependency on it were inert). Every task needs a run or a dependency, and an
+# alias must not reuse the name of a task.
+bad = 0
+for name, t in sorted(l.items()):
+    if not t.get("run") and not t.get("depends"):
+        say("FAIL", f".mise.toml task {name} has neither run nor depends, so it does nothing")
+        bad += 1
+for alias, owner in sorted(l_alias.items()):
+    if alias in l:
+        say("FAIL", f".mise.toml task {owner} has alias {alias}, which is also a task of its own")
+        bad += 1
+if not bad:
+    say("PASS", f"every one of the {len(l)} .mise.toml tasks runs something, and no alias shadows a task")
 
 # 3b: no global task reads the repo. A global task runs in $HOME, so a
 # relative path is a $HOME path: flag one that names a tracked top-level
@@ -389,7 +416,10 @@ PY
     done <"$WORK/dir.out"
 done
 
-# --- apply/diff/status/verify act on this checkout (#397) ----------------------
+# --- apply/diff/status/verify/check act on this checkout (#397) -----------------
+# check is an alias of status. It used to be a task of its own with no run, so
+# `mise run check` and qa's dependency on it ran nothing (#439): it must reach
+# `chezmoi status`, and qa must run status.
 echo "Source: chezmoi tasks pass --source <this checkout>"
 STUB_CZ="$WORK/stub-chezmoi"; mkdir -p "$STUB_CZ"
 # shellcheck disable=SC2016 # $(pwd -P) and $* expand when the stub runs
@@ -401,7 +431,8 @@ else
     # status first: its sentinel proves the stub shadows the real chezmoi
     # before apply runs at all. The empty data dir keeps the pinned chezmoi
     # off PATH; apply also gets --dry-run in case the stub is ever bypassed.
-    for t in status diff verify apply; do
+    for t in status check diff verify apply; do
+        want=$t; [ "$t" = check ] && want=status
         extra=(); [ "$t" = apply ] && extra=(--dry-run)
         out=$(run_mise "$REPO/tests" "$WORK/mise/state" "$EMPTY_DATA" "$STUB_CZ:$PATH" run "$t" ${extra[@]+"${extra[@]}"}); rc=$?
         line=$(grep 'MISE-TASKS-STUB chezmoi' <<<"$out" | head -1)
@@ -411,12 +442,21 @@ else
             continue
         fi
         src=$(sed -nE 's/.*--source ([^ ]+).*/\1/p' <<<"$line")
-        if [ -n "$src" ] && [ "$(cd "$src" 2>/dev/null && pwd -P)" = "$REPO" ]; then
-            log_pass "$t: chezmoi --source is this checkout (invoked from tests/)"
-        else
+        if [ -z "$src" ] || [ "$(cd "$src" 2>/dev/null && pwd -P)" != "$REPO" ]; then
             log_fail "$t: chezmoi ran without --source <this checkout>: ${line#*args=}"
+        elif ! grep -qE -- "--source [^ ]+ $want( |\$)" <<<"$line"; then
+            log_fail "$t: expected \`chezmoi --source <this checkout> $want\`, ran: ${line#*args=}"
+        else
+            log_pass "$t: runs \`chezmoi $want\` with --source set to this checkout (invoked from tests/)"
         fi
     done
+    # qa depends on check; a dry run lists what would run without running it.
+    out=$(run_mise "$REPO/tests" "$WORK/mise/state" "$EMPTY_DATA" "$STUB_CZ:$PATH" run --dry-run qa); rc=$?
+    if [ $rc -eq 0 ] && grep -q '^\[status\] ' <<<"$out" && grep -q '^\[lint\] ' <<<"$out"; then
+        log_pass "qa: its check dependency resolves to status, and lint runs too"
+    else
+        log_fail "qa: rc=$rc and the dry run lists no status and lint: $(head -3 <<<"$out" | tr '\n' ' ')"
+    fi
 fi
 
 # --- clean deletes only inside this checkout -----------------------------------

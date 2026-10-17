@@ -37,17 +37,17 @@ run = 'chezmoi --source "$PWD" apply -v'
 description = "Show differences between this checkout and the system"
 run = 'chezmoi --source "$PWD" diff'
 
+# `check` is an alias here, not a task of its own: a [tasks.check] with only
+# `alias = "status"` defines an empty task named check that runs nothing, so
+# `mise run check` and qa's dependency on it both passed without checking (#439).
 [tasks.status]
+alias = "check"
 description = "Show status of this checkout vs current system state"
 run = 'chezmoi --source "$PWD" status'
 
 [tasks.verify]
 description = "Verify the system matches this checkout"
 run = 'chezmoi --source "$PWD" verify'
-
-[tasks.check]
-alias = "status"
-description = "Check what changes would be made (alias for status)"
 
 [tasks.edit]
 description = "Edit dotfiles configuration"
