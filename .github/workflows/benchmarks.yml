@@ -64,9 +64,13 @@ jobs:
             --export-json chezmoi-bench.json \
             "chezmoi --source \"$GITHUB_WORKSPACE\" --destination \"$DEST\" apply --dry-run"
 
-          # Extract results
-          MEAN=$(jq -r '.results[0].mean' chezmoi-bench.json)
-          STDDEV=$(jq -r '.results[0].stddev' chezmoi-bench.json)
+          # Extract results. hyperfine 1.x keeps the stats at .results[N].mean;
+          # 2.x (what brew installs now) nests them under .summary.time_wall_clock
+          # and has no top-level .mean, so the old path gave null for every
+          # series and gh-pages recorded 0 (#441). Take whichever exists; -e
+          # fails the step on an unknown schema instead of recording null.
+          MEAN=$(jq -er '.results[0] | (.summary.time_wall_clock // .) | .mean' chezmoi-bench.json)
+          STDDEV=$(jq -er '.results[0] | (.summary.time_wall_clock // .) | .stddev' chezmoi-bench.json)
 
           {
             echo "- **Mean time**: ${MEAN}s"
@@ -98,9 +102,10 @@ jobs:
             'zsh -c "exit"' \
             'bash -c "exit"'
 
-          # Extract results
-          ZSH_MEAN=$(jq -r '.results[0].mean' shell-bench.json)
-          BASH_MEAN=$(jq -r '.results[1].mean' shell-bench.json)
+          # Extract results (hyperfine 1.x/2.x schema fallback, see the chezmoi
+          # step above)
+          ZSH_MEAN=$(jq -er '.results[0] | (.summary.time_wall_clock // .) | .mean' shell-bench.json)
+          BASH_MEAN=$(jq -er '.results[1] | (.summary.time_wall_clock // .) | .mean' shell-bench.json)
 
           {
             echo "| Shell | Startup Time |"
@@ -127,7 +132,8 @@ jobs:
           hyperfine --warmup 2 --runs 5 --export-json nvim-bench.json \
             'nvim --headless +quit'
 
-          NVIM_MEAN=$(jq -r '.results[0].mean' nvim-bench.json)
+          # hyperfine 1.x/2.x schema fallback, see the chezmoi step above
+          NVIM_MEAN=$(jq -er '.results[0] | (.summary.time_wall_clock // .) | .mean' nvim-bench.json)
 
           echo "- **Mean startup time**: ${NVIM_MEAN}s" >> "$GITHUB_STEP_SUMMARY"
 
@@ -135,11 +141,22 @@ jobs:
 
       - name: Aggregate benchmark results for github-action-benchmark
         run: |
+          # hyperfine 1.x/2.x schema fallback, see the chezmoi step above.
+          # Assign first: a failing $(...) inside --argjson would not stop the
+          # step, and null would be published as a value.
+          mean() {
+            jq -e --argjson n "$2" '.results[$n] | (.summary.time_wall_clock // .) | .mean' "$1"
+          }
+          chezmoi_mean=$(mean chezmoi-bench.json 0)
+          zsh_mean=$(mean shell-bench.json 0)
+          bash_mean=$(mean shell-bench.json 1)
+          nvim_mean=$(mean nvim-bench.json 0)
+
           jq -n \
-            --argjson chezmoi "$(jq '.results[0].mean' chezmoi-bench.json)" \
-            --argjson zsh "$(jq '.results[0].mean' shell-bench.json)" \
-            --argjson bash "$(jq '.results[1].mean' shell-bench.json)" \
-            --argjson nvim "$(jq '.results[0].mean' nvim-bench.json)" \
+            --argjson chezmoi "$chezmoi_mean" \
+            --argjson zsh "$zsh_mean" \
+            --argjson bash "$bash_mean" \
+            --argjson nvim "$nvim_mean" \
             '[
               {name: "chezmoi apply --dry-run", unit: "s", value: $chezmoi},
               {name: "zsh startup",              unit: "s", value: $zsh},
