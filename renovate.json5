@@ -46,6 +46,27 @@
       groupSlug: 'github-actions',
     },
     {
+      description: 'Homebrew/actions pin: owned by the custom.regex manager below, not github-actions, which reads the pin comment "2026.09.21.1" as 2026.09.21 and can neither look it up nor rewrite it (#446)',
+      matchManagers: [
+        'github-actions',
+      ],
+      matchDepNames: [
+        'Homebrew/actions',
+      ],
+      enabled: false,
+    },
+    {
+      description: 'Keep the custom.regex Homebrew/actions pin in the GitHub Actions group (#446)',
+      matchManagers: [
+        'custom.regex',
+      ],
+      matchDepNames: [
+        'Homebrew/actions',
+      ],
+      groupName: 'GitHub Actions',
+      groupSlug: 'github-actions',
+    },
+    {
       description: 'Group pre-commit hooks updates',
       matchManagers: [
         'pre-commit',
@@ -124,6 +145,19 @@
       depNameTemplate: '{{{depName}}}',
       currentValueTemplate: 'main',
       versioningTemplate: 'loose',
+    },
+    {
+      customType: 'regex',
+      description: 'Update the Homebrew/actions SHA pin in workflows. Its tags are YYYY.MM.DD.N and the github-actions manager keeps only three numeric components of the pin comment, so the comment must stay the bare tag (#446)',
+      managerFilePatterns: [
+        '/^\\.github/workflows/[^/]+\\.ya?ml$/',
+      ],
+      matchStrings: [
+        'uses:[ \\t]*["\']?Homebrew/actions(?:/[\\w./-]+)?@(?<currentDigest>[a-f0-9]{40})["\']?[ \\t]+#[ \\t]*(?<currentValue>\\d+\\.\\d+\\.\\d+(?:\\.\\d+)?)',
+      ],
+      depNameTemplate: 'Homebrew/actions',
+      datasourceTemplate: 'github-tags',
+      versioningTemplate: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:\\.(?<build>\\d+))?$',
     },
   ],
   commitMessagePrefix: 'chore(deps):',
