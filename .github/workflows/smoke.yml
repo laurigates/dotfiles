@@ -25,7 +25,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: '3.x'
+          # Exact, so a new Python release cannot change this gate with no
+          # commit here (#440). Renovate bumps it (github-actions manager).
+          python-version: '3.14.8'
 
       - name: Setup mise
         # Installs chezmoi at the version pinned in .mise.toml (#418).
@@ -44,8 +46,14 @@ jobs:
       - name: Assert chezmoi matches the .mise.toml pin
         run: tests/test-ci-pins.sh --assert-installed
 
-      - name: Install Dependencies
-        run: pip install pre-commit
+      - name: Install pre-commit
+        # Exact, so a pre-commit release cannot turn this gate red with no
+        # commit here (#440). Renovate bumps it through the customManagers entry
+        # in renovate.json5. Its own dependencies still resolve at install time.
+        env:
+          # renovate: datasource=pypi depName=pre-commit
+          PRE_COMMIT_VERSION: 4.7.0
+        run: pip install "pre-commit==$PRE_COMMIT_VERSION"
 
       - name: Run pre-commit
         run: pre-commit run --all-files

@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Regression test: CI must not take its toolchain from upstream at run time
-# (issues #416 and #418).
+# (issues #416, #418 and #440).
 #
-# Both issues are the same failure class: a version or ref that no string in
+# All three are the same failure class: a version or ref that no string in
 # this repo chooses, so an upstream release or branch deletion turns main red
 # with no commit here. An unversioned `brew install chezmoi` picked up
 # chezmoi 2.72.0, a minor release that rejected this repo's .chezmoiignore;
 # the deletion of the Homebrew/actions `master` branch broke every job that
-# referenced `setup-homebrew@master`.
+# referenced `setup-homebrew@master`; `python-version: '3.x'` and an unpinned
+# `pip install pre-commit` let a Python or pre-commit release change the
+# Linters job, which gates both Build jobs.
 #
 # Static checks (default mode, offline; run by the `ci-pins` pre-commit hook):
 #   A. `uses:` refs in workflows and composite actions (.github/actions/*). A
@@ -28,6 +30,15 @@
 #      job with mise-action does not also restore ~/.local/share/mise with
 #      actions/cache (that can put an older mise binary back); a mise.run
 #      install sets MISE_VERSION to the same release.
+#   E. Tools CI installs outside mise. `python-version:` and `bun-version:` are
+#      an exact X.Y.Z, not `3.x` or `latest`. pre-commit and
+#      @anthropic-ai/claude-code are installed at an exact version, written
+#      inline (`pre-commit==4.7.0`) or read from PRE_COMMIT_VERSION /
+#      CLAUDE_CODE_VERSION. Such a variable is an exact X.Y.Z, defined in the
+#      file that reads it, equal in every workflow, and has the line
+#      `# renovate: datasource=<ds> depName=<name>` directly above it: that is
+#      what the customManagers entry in renovate.json5 matches to bump it.
+#      node-version is not covered; it stays a major-only pin.
 #
 # Out of scope by design: the Homebrew `chezmoi` entry in
 # .chezmoidata/packages.toml. It bootstraps a machine before any mise config
@@ -267,20 +278,26 @@ tag_sha() {
     fi
 }
 
-check_workflows() {
-    local repo="$1" online="$2" wfs=() f
+# workflow_files <repo>: tracked workflows and composite actions, repo-relative.
+workflow_files() {
+    local f
     while IFS= read -r f; do
-        # Composite actions are parsed for their `uses:` refs (check A) only.
         case "$f" in
             .github/workflows/*.yml | .github/workflows/*.yaml | \
                 .github/actions/*/action.yml | .github/actions/*/action.yaml)
-                [ -f "$repo/$f" ] && wfs+=("$f")
+                [ -f "$1/$f" ] && printf '%s\n' "$f"
                 ;;
         esac
-    done < <(list_files "$repo")
+    done < <(list_files "$1")
+}
+
+check_workflows() {
+    local repo="$1" online="$2" wfs=() f
+    # Composite actions are parsed for their `uses:` refs (check A) only.
+    while IFS= read -r f; do wfs+=("$f"); done < <(workflow_files "$repo")
     if [ "${#wfs[@]}" -eq 0 ]; then
         # The Docker smoke build context excludes .github/ (see .dockerignore).
-        echo "SKIP: no .github/workflows files; workflow checks A, C and D not run"
+        echo "SKIP: no .github/workflows files; workflow checks A, C, D and E not run"
         return
     fi
 
@@ -383,12 +400,117 @@ check_mise_installers() {
     done < <(cd "$repo" && grep -nIHE 'mise\.run' -- "${files[@]}" | drop_comments)
 }
 
+# --- E. Tools CI installs outside mise ---------------------------------------
+# drop_names: drop `file:line:text` grep hits on a step `name:` line.
+drop_names() { grep -vE '^[^:]+:[0-9]+:[[:space:]]*(-[[:space:]]+)?name:' || true; }
+
+# tool_var_defs <VAR> <file>...: one tab-separated record per `VAR: value` line:
+# file, line, the value without quotes or comment, and the line above it.
+tool_var_defs() {
+    local var="$1"
+    shift
+    awk -v var="$var" -v q="'" '
+        FNR == 1 { prev = "" }
+        {
+            if (match($0, "^[[:space:]]*" var ":[[:space:]]*")) {
+                v = substr($0, RLENGTH + 1)
+                sub(/[[:space:]]*#.*$/, "", v)
+                gsub("[\"" q "]", "", v)
+                if (v == "") v = "<empty>"
+                printf "%s\t%d\t%s\t%s\n", FILENAME, FNR, v, prev
+            }
+            prev = $0
+        }' "$@"
+}
+
+# check_version_inputs <repo> <file>...: the python-version and bun-version
+# inputs of setup-python and setup-bun.
+check_version_inputs() {
+    local repo="$1" hit loc key v
+    shift
+    while IFS= read -r hit; do
+        [ -n "$hit" ] || continue
+        loc=$(printf '%s' "$hit" | cut -d: -f1,2)
+        key=$(printf '%s' "${hit#*:*:}" | sed -E 's/^[[:space:]]*([a-z]+-version):.*/\1/')
+        v=$(printf '%s' "${hit#*:*:}" | sed -E 's/^[[:space:]]*[a-z]+-version:[[:space:]]*//; s/[[:space:]]*#.*$//; s/^["'"'"']//; s/["'"'"']$//')
+        grep -Eq "$SEMVER_RE" <<<"$v" ||
+            fail "$loc: $key '$v' is not an exact X.Y.Z; a floating tool changes CI with no commit here (#440)"
+    done < <(cd "$repo" && grep -nIHE '^[[:space:]]*(python|bun)-version:' -- "$@" | drop_comments)
+}
+
+# check_tool_install <repo> <label> <install regex> <pin prefix> <VAR> <datasource> <depName> <file>...
+# Every line matching <install regex> carries <pin prefix><exact X.Y.Z or $VAR>.
+# <VAR> is defined in each file that reads it, as an exact X.Y.Z under a
+# `# renovate: datasource=<datasource> depName=<depName>` line, and every
+# pinned version of the tool is the same.
+check_tool_install() {
+    local repo="$1" label="$2" install_re="$3" prefix="$4" var="$5" ds="$6" dep="$7"
+    shift 7
+    local hit loc file text val refs="" versions="" defs
+    while IFS= read -r hit; do
+        [ -n "$hit" ] || continue
+        loc=$(printf '%s' "$hit" | cut -d: -f1,2)
+        file="${hit%%:*}"
+        text="${hit#*:*:}"
+        text="${text#"${text%%[![:space:]]*}"}"
+        val=$(printf '%s' "$text" | sed -nE "s~.*${prefix}([^[:space:]\"';&|)]+).*~\1~p")
+        case "$val" in
+            "") fail "$loc: $label is installed without ${prefix}<exact X.Y.Z or \$$var>: $text" ;;
+            "\$$var" | "\${$var}") refs="$refs$file"$'\n' ;;
+            *)
+                if grep -Eq "$SEMVER_RE" <<<"$val"; then
+                    versions="$versions$val"$'\n'
+                else
+                    fail "$loc: $label is pinned to '$val', not an exact X.Y.Z or \$$var"
+                fi
+                ;;
+        esac
+    done < <(cd "$repo" && grep -nIHE "$install_re" -- "$@" | drop_comments | drop_names)
+
+    defs=$(cd "$repo" && tool_var_defs "$var" "$@")
+    while IFS= read -r file; do
+        [ -n "$file" ] || continue
+        printf '%s\n' "$defs" | awk -F'\t' -v f="$file" '$1 == f { found = 1 } END { exit !found }' ||
+            fail "$file: reads \$$var for $label but does not define $var"
+    done < <(printf '%s' "$refs" | sort -u)
+
+    local d_file d_line d_val d_prev
+    while IFS="$(printf '\t')" read -r d_file d_line d_val d_prev; do
+        [ -n "$d_file" ] || continue
+        if grep -Eq "$SEMVER_RE" <<<"$d_val"; then
+            versions="$versions$d_val"$'\n'
+        else
+            fail "$d_file:$d_line: $var '$d_val' is not an exact X.Y.Z"
+        fi
+        grep -Eq "^[[:space:]]*#[[:space:]]*renovate:[[:space:]]+datasource=${ds}[[:space:]]+depName=${dep}([[:space:]]|\$)" <<<"$d_prev" ||
+            fail "$d_file:$d_line: $var needs '# renovate: datasource=$ds depName=$dep' on the line above, or Renovate cannot bump it"
+    done <<<"$defs"
+
+    if [ "$(printf '%s' "$versions" | sort -u | grep -c . || true)" -gt 1 ]; then
+        fail "$label is pinned to different versions: $(printf '%s' "$versions" | sort -u | tr '\n' ' ')"
+    fi
+}
+
+check_tool_pins() {
+    local repo="$1" files=() f
+    # check_workflows already printed the SKIP when there are no workflows.
+    while IFS= read -r f; do files+=("$f"); done < <(workflow_files "$repo")
+    [ "${#files[@]}" -gt 0 ] || return 0
+    check_version_inputs "$repo" "${files[@]}"
+    local pip_re='(^|[^[:alnum:]_-])(pip3?|pipx|uv)[[:space:]]+((tool|pip)[[:space:]]+)?install[[:space:]]+([^#]*[[:space:]])?["'"'"']?pre-commit(["'"'"'[:space:];&|=<>~!]|$)'
+    check_tool_install "$repo" pre-commit "$pip_re" 'pre-commit==' \
+        PRE_COMMIT_VERSION pypi pre-commit "${files[@]}"
+    check_tool_install "$repo" "Claude Code CLI" '@anthropic-ai/claude-code' '@anthropic-ai/claude-code@' \
+        CLAUDE_CODE_VERSION npm @anthropic-ai/claude-code "${files[@]}"
+}
+
 run_static() {
     local repo="$1" online="${2:-0}"
     MISE_ACTION_VERSION=""
     check_workflows "$repo" "$online"
     check_chezmoi_pin "$repo"
     check_mise_installers "$repo"
+    check_tool_pins "$repo"
 }
 
 # --- Runtime assertion --------------------------------------------------------
@@ -458,6 +580,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: echo "no chezmoi in this job"
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14.8'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - name: Install pre-commit
+        env:
+          # renovate: datasource=pypi depName=pre-commit
+          PRE_COMMIT_VERSION: 4.7.0
+        run: pip install "pre-commit==$PRE_COMMIT_VERSION"
+      - name: Install Claude CLI
+        env:
+          # renovate: datasource=npm depName=@anthropic-ai/claude-code
+          CLAUDE_CODE_VERSION: 2.1.302
+        run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
   reusable:
     uses: laurigates/.github/.github/workflows/reusable-renovate.yml@main
     with:
@@ -585,6 +726,59 @@ self_test() {
     selftest_case "guard: workflows with no parseable uses: fail" fail "parsed 0 uses:" \
         "printf 'name: x\non: push\njobs:\n  a:\n    runs-on: x\n    steps:\n      - run: true\n' >$wf"
 
+    # E. Tools CI installs outside mise (#440). The 'run: pip install' and
+    # 'run: npm install' patterns each match exactly one fixture line.
+    selftest_case "E: python-version 3.x fails" fail "python-version '3.x' is not an exact" \
+        "sed -i.bak 's|3.14.8|3.x|' $wf"
+    selftest_case "E: python-version without a patch fails" fail "python-version '3.14' is not an exact" \
+        "sed -i.bak 's|3.14.8|3.14|' $wf"
+    selftest_case "E: bun-version latest fails" fail "bun-version 'latest' is not an exact" \
+        "sed -i.bak 's|bun-version: 1.4.3|bun-version: latest|' $wf"
+    selftest_case "E: a quoted python-version with a comment passes" pass "" \
+        "sed -i.bak 's|python-version: .3.14.8.|python-version: \"3.14.8\" # why|' $wf"
+    selftest_case "E: unpinned pip install pre-commit fails" fail "pre-commit is installed without" \
+        "sed -i.bak 's|run: pip install .*|run: pip install pre-commit|' $wf"
+    selftest_case "E: pre-commit with a version range fails" fail "pre-commit is installed without" \
+        "sed -i.bak 's|run: pip install .*|run: pip install pre-commit>=4|' $wf"
+    selftest_case "E: pre-commit==latest fails" fail "pre-commit is pinned to 'latest'" \
+        "sed -i.bak 's|run: pip install .*|run: pip install pre-commit==latest|' $wf"
+    selftest_case "E: uv tool install pre-commit fails" fail "pre-commit is installed without" \
+        "sed -i.bak 's|run: pip install .*|run: uv tool install pre-commit|' $wf"
+    selftest_case "E: python -m pip install pre-commit among other packages fails" fail "pre-commit is installed without" \
+        "sed -i.bak 's|run: pip install .*|run: python -m pip install --upgrade pip pre-commit|' $wf"
+    selftest_case "E: pre-commit pinned inline to the variable's version passes" pass "" \
+        "sed -i.bak 's|run: pip install .*|run: pip install pre-commit==4.7.0|' $wf"
+    selftest_case "E: inline pre-commit pin differing from the variable fails" fail "pre-commit is pinned to different versions" \
+        "sed -i.bak 's|run: pip install .*|run: pip install pre-commit==4.6.0|' $wf"
+    selftest_case "E: pre-commit pinned differently in a second workflow fails" fail "pre-commit is pinned to different versions" \
+        "printf 'on: push\njobs:\n  y:\n    runs-on: x\n    steps:\n      - uses: actions/checkout@v4\n      - run: pip install pre-commit==4.6.0\n' >.github/workflows/y.yml"
+    selftest_case "E: PRE_COMMIT_VERSION that is not exact fails" fail "PRE_COMMIT_VERSION 'latest' is not an exact" \
+        "sed -i.bak 's|PRE_COMMIT_VERSION: 4.7.0|PRE_COMMIT_VERSION: latest|' $wf"
+    selftest_case "E: PRE_COMMIT_VERSION without a renovate comment fails" fail "needs '# renovate: datasource=pypi depName=pre-commit'" \
+        "grep -v 'datasource=pypi' $wf >x && mv x $wf"
+    selftest_case "E: renovate comment naming another package fails" fail "needs '# renovate: datasource=pypi depName=pre-commit'" \
+        "sed -i.bak 's|depName=pre-commit|depName=precommit|' $wf"
+    selftest_case "E: PRE_COMMIT_VERSION read but never defined fails" fail "reads \$PRE_COMMIT_VERSION" \
+        "grep -v 'PRE_COMMIT_VERSION: 4.7.0' $wf >x && mv x $wf"
+    selftest_case "E: a commented-out unpinned install is not an install" pass "" \
+        "printf '      # - run: pip install pre-commit\n' >>$wf"
+    selftest_case "E: a step named like an install is not an install" pass "" \
+        "sed -i.bak 's|name: Install pre-commit|name: pip install pre-commit|' $wf"
+    selftest_case "E: pre-commit install and pre-commit-hooks are not installs of pre-commit" pass "" \
+        "printf '  hooks:\n    runs-on: x\n    steps:\n      - run: pre-commit install --install-hooks\n      - run: pip install pre-commit-hooks\n' >>$wf"
+    selftest_case "E: unpinned npm install of the Claude Code CLI fails" fail "Claude Code CLI is installed without" \
+        "sed -i.bak 's|run: npm install .*|run: npm install -g @anthropic-ai/claude-code|' $wf"
+    selftest_case "E: Claude Code CLI @latest fails" fail "Claude Code CLI is pinned to 'latest'" \
+        "sed -i.bak 's|run: npm install .*|run: npm install -g @anthropic-ai/claude-code@latest|' $wf"
+    selftest_case "E: npx of the Claude Code CLI without a version fails" fail "Claude Code CLI is installed without" \
+        "printf '  y:\n    runs-on: x\n    steps:\n      - run: npx @anthropic-ai/claude-code --version\n' >>$wf"
+    selftest_case "E: CLAUDE_CODE_VERSION that is not exact fails" fail "CLAUDE_CODE_VERSION '^2.1.302' is not an exact" \
+        "sed -i.bak 's|CLAUDE_CODE_VERSION: 2.1.302|CLAUDE_CODE_VERSION: ^2.1.302|' $wf"
+    selftest_case "E: CLAUDE_CODE_VERSION without a renovate comment fails" fail "needs '# renovate: datasource=npm depName=@anthropic-ai/claude-code'" \
+        "grep -v 'datasource=npm' $wf >x && mv x $wf"
+    selftest_case "E: Claude Code CLI pinned inline passes" pass "" \
+        "sed -i.bak 's|run: npm install .*|run: npm install -g @anthropic-ai/claude-code@2.1.302|' $wf"
+
     selftest_assert "runtime: chezmoi at the pin passes" pass 1.2.3 "" -
     selftest_assert "runtime: chezmoi at another version fails" fail 9.9.9 "" -
     selftest_assert "runtime: rendered config at the pin passes" pass 1.2.3 --rendered 'chezmoi = "1.2.3"'
@@ -630,7 +824,7 @@ case "$mode" in
 esac
 
 if [ "$fails" -ne 0 ]; then
-    echo "$fails failure(s). See tests/test-ci-pins.sh for what each check guards (#416, #418)."
+    echo "$fails failure(s). See tests/test-ci-pins.sh for what each check guards (#416, #418, #440)."
     exit 1
 fi
 exit 0
