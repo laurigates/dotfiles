@@ -7,13 +7,16 @@ Accepted (Migration In Progress; lockfile not adopted)
 > **Note (2026-10):** The lockfile (`mise.lock`, item 3 under "Mise
 > Capabilities" and the first "Positive" consequence below) was never adopted.
 > No `mise.lock` has ever been committed, and a lockfile for the global config
-> would live in `~/.config/mise/`, not in this repo. Reproducibility comes from
-> exact pins instead: the repo-root `.mise.toml` pins chezmoi and shellcheck and
-> CI installs them from it (#418); the CI tools mise does not install (Python,
-> bun, pre-commit, the Claude Code CLI) are exact versions in the workflows. All
-> are bumped by Renovate, and `tests/test-ci-pins.sh` fails on a floating one
-> (#440). The global config still uses `latest` and minor-line entries. The text
-> below is the 2024-12 decision, kept as written.
+> would live in `~/.config/mise/`, not in this repo. Instead the CI linting
+> toolchain is pinned to exact versions: the repo-root `.mise.toml` pins chezmoi
+> and shellcheck and CI installs them from it (#418); mise, Python, bun,
+> pre-commit and the Claude Code CLI are exact versions in the workflows.
+> Renovate bumps all of these, and `tests/test-ci-pins.sh` fails on a floating
+> chezmoi, mise, Python, bun, pre-commit or Claude Code CLI (#440). Still
+> floating: node (pinned to a major only), the `brew install` packages in the
+> workflows and the bunx/npx MCP servers in `.github/claude-mcp-ci.json`, which
+> resolve at run time. The global config still uses `latest` and minor-line
+> entries. The text below is the 2024-12 decision, kept as written.
 
 ## Date
 
