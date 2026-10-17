@@ -36,6 +36,14 @@ DOCKER.md
 # .chezmoiremove cannot clean up the stray: chezmoi never removes ignored targets,
 # so delete ~/renovate.json5 by hand on each machine.
 renovate.json5
+# Run from the checkout (`./docker-test.sh`, it cd's to its own dir for the
+# compose file), so the ~/docker-test.sh copy is useless (#442).
+docker-test.sh
+# Source-side only: run_onchange_macos-settings.sh.tmpl `include`s it for the
+# change hash, and `include` reads the source dir, so ignoring is safe (#442).
+macos-settings.toml
+# NixOS flake used from the checkout (`cd dotfiles/nixos`); nothing reads ~/nixos (#442).
+nixos/
 docs/
 tests/
 # ~/tmp is a scratch dir, not dotfiles state — chezmoi shouldn't manage it or the
