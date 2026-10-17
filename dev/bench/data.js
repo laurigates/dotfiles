@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792214448759,
+  "lastUpdate": 1792244805706,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1563,6 +1563,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/eb4d38f5087987c1d79ed116d9ac00ec21741157"
         },
         "date": 1792214448456,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7dee23bbbaab8743a92d935510b965f8861c0f93",
+          "message": "docs(claude): record a Sonnet implement-and-verify run in model-selection evidence (#479)\n\nAdds one evidence entry to\n`exact_dot_claude/rules/agent-and-tool-selection.md` (Model Selection →\nEvidence).\n\nThe existing Sonnet evidence ends on a task that held on every claim. In\nlaurigates/claude-plugins#3088–#3090, three Sonnet 5.5 implementers at\n`high` effort were each followed by a fresh Sonnet verifier. A verifier\ncaught a new helper that reported an unrunnable gate (exit 127) as a\ncaught mutation. One implementer follow-up put a hook's timeout headroom\nat about 1 s, when the worst case overran the 5 s budget by about 3 s;\nthe main loop found it while checking before filing\n(laurigates/claude-plugins#3093). The run had no Opus arm and was not\ngraded.\n\nThe always-loaded total is 50,986 bytes against a 78,400-byte budget\n(`tests/test-claude-context-budget.sh`).\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01CmJH662ikgdowBiW8126A4\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-17T16:45:55+03:00",
+          "tree_id": "2034603bb7cddf89ca192d766394f1d6125495f0",
+          "url": "https://github.com/laurigates/dotfiles/commit/7dee23bbbaab8743a92d935510b965f8861c0f93"
+        },
+        "date": 1792244805200,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
