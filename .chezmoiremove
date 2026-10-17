@@ -16,3 +16,8 @@
 # the destination dir ($HOME); an absolute /tmp path is outside it. Do not
 # "fix" it to `tmp/claude_status_hub.log` — that resolves to ~/tmp, a scratch
 # dir chezmoi deliberately ignores, and would delete an unrelated file.
+
+# docker-test.sh was a source-root helper that never had an .chezmoiignore entry,
+# so every apply copied it to ~/docker-test.sh; it was removed from the source
+# along with DOCKER.md (#441). The just smoke* recipes replace it.
+docker-test.sh
