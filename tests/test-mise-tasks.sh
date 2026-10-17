@@ -93,7 +93,7 @@ REPO="$(cd "${MISE_TASKS_REPO:-$SCRIPT_DIR/..}" && pwd -P)"
 # Tasks that read the repo and must live in .mise.toml, not the global config.
 REPO_TASKS="apply diff status verify check
     test test:setup test:plugin-refs test:context-budget test:shell-precedence
-    test:ci-pins test:gh-completion test:mise-tasks
+    test:ci-pins test:gh-completion test:chezmoi-exact-guard test:mise-tasks
     lint lint:shell lint:lua lint:actions lint:docs
     docker qa ci clean security:audit security:scan edit"
 

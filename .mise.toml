@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -96,6 +96,10 @@ run = "tests/test-pi-settings-modify.sh"
 [tasks."test:gh-completion"]
 description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"
 run = "tests/test-gh-completion.sh"
+
+[tasks."test:chezmoi-exact-guard"]
+description = "Regression test: the chezmoi-exact-guard hook blocks a deleting apply wrapped in bash -c / sh -c and lets prose through"
+run = "tests/test-chezmoi-exact-guard.sh"
 
 [tasks."test:mise-tasks"]
 description = "Regression test: repo tasks run in the checkout, and lint tasks fail on findings and on a broken linter (#398)"
