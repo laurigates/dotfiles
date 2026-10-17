@@ -1,12 +1,12 @@
 # mise configuration for unified tool version management
 # Documentation: https://mise.jdx.dev/configuration.html
 #
-# IMPORTANT: After applying this configuration with `chezmoi apply`, run:
+# After applying this configuration with `chezmoi apply`, run:
 #   mise install       # Install all tools
-#   mise lock          # Generate mise.lock for reproducible builds
-#   git add mise.lock  # Commit the lockfile to version control
 #
-# The mise.lock file ensures consistent tool versions across machines and CI.
+# There is no mise.lock. Most entries here float ("latest", a minor line); only
+# chezmoi is pinned, read from the repo's .mise.toml below. CI takes its
+# versions from that file and the workflows, not from this one (#440).
 
 # ============================================================================
 # Runtime Versions

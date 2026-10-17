@@ -16,7 +16,7 @@ The dotfiles repository has evolved into a sophisticated cross-platform configur
 
 The repository already manages:
 - **Dotfiles**: Via chezmoi with templates and cross-platform support
-- **Tool versions**: Via mise with lockfile for reproducibility
+- **Tool versions**: Via mise (no lockfile is committed; see the 2026-10 note in ADR-0002)
 - **Shell configuration**: Zsh/Fish with comprehensive aliases
 - **Editor setup**: Neovim with lazy.nvim and 75+ plugins
 - **Development tools**: Language runtimes, formatters, linters

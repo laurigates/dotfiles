@@ -69,7 +69,7 @@ checkout or worktree you invoke them from.
 - `private_dot_config/nvim/` — Neovim setup (see `nvim/CLAUDE.md`)
 - `private_dot_config/private_fish/` — Fish shell (experimental)
 - `justfile` — Task runner recipes (`just --list`); shared modules in `private_dot_config/just/*.just` (see `docs/justfile-architecture.md`)
-- `mise.lock` — Reproducible tool versions
+- No `mise.lock` is committed (none ever was). CI versions are exact pins: `.mise.toml` for mise tools, the workflows for the rest, both bumped by Renovate and guarded by `tests/test-ci-pins.sh` (see the 2026-10 note in [ADR-0002](docs/adrs/0002-unified-tool-version-management-mise.md))
 
 ## CI Pipeline
 
