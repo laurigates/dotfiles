@@ -86,6 +86,10 @@ jobs:
         # confirm templates parse by rendering a trivial one against this repo.
         run: chezmoi execute-template --source=. '{{ .chezmoi.os }}'
 
+      - name: Check no repo-meta file is applied to $HOME (#442)
+        # A plain-named source-root file not in .chezmoiignore lands in $HOME.
+        run: tests/test-chezmoi-root-meta.sh
+
       - name: Check mise tasks (#398)
         # Runs the .mise.toml tasks against planted findings and this tree.
         # Setup mise installed shellcheck from the .mise.toml pin; --require

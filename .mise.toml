@@ -93,6 +93,10 @@ run = "tests/test-ci-pins.sh --self-test && tests/test-ci-pins.sh"
 description = "Regression test: ~/.pi/agent/settings.json modify_ script keeps pi-owned keys and unions packages by identity"
 run = "tests/test-pi-settings-modify.sh"
 
+[tasks."test:chezmoi-root-meta"]
+description = "Regression test: no repo-meta file at the source root is applied to $HOME (#442)"
+run = "tests/test-chezmoi-root-meta.sh"
+
 [tasks."test:gh-completion"]
 description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"
 run = "tests/test-gh-completion.sh"

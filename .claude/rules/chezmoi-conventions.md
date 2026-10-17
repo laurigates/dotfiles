@@ -156,6 +156,12 @@ Verify it's no longer a target, then remove the already-leaked copy:
 chezmoi ignored | grep -x justfile && rm -f ~/justfile
 ```
 
+A `.chezmoiremove` line cannot do that `rm` for you: chezmoi never removes a
+target that `.chezmoiignore` lists. `tests/test-chezmoi-root-meta.sh` (`mise run
+test:chezmoi-root-meta`) fails when a new plain-named source-root file reaches
+`chezmoi managed`; add it to `.chezmoiignore`, or to the test's allowlist if it
+really belongs in `$HOME` (#442).
+
 (Discovered 2026-06: the dotfiles repo's own `justfile` had been applying
 to `~/justfile`, which then shadowed the intended global justfile — see
 below.)
