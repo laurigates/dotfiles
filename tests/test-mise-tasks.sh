@@ -40,6 +40,11 @@
 #            early); pass this repo. The aggregate `lint` fails the bad fixture
 #            with every available linter's finding in its output, and passes
 #            this repo when every linter is available.
+#   Just     The justfile lint* recipes (#439). Statically, each recipe's whole
+#            body is one `mise run lint[:x]` of an existing task, so there is a
+#            single implementation. With `just` installed, each recipe also
+#            reaches mise (a stub records the call), fails and names the tool
+#            when that tool is not on PATH, and fails the planted-bad fixture.
 #
 # mise runs with `env -i`, HOME set to an empty directory, isolated config,
 # state and cache dirs, the global config replaced by the tasks extracted from
@@ -51,7 +56,8 @@
 # smoke Linters job does this). luacheck 1.2.0 cannot run on Lua 5.5
 # (lunarmodules/luacheck#147); lint:lua prints the fix.
 #
-# Usage: tests/test-mise-tasks.sh [--require tool[,tool...]]
+# Usage: tests/test-mise-tasks.sh [--require tool[,tool...]]   (tools: shellcheck,
+#   luacheck, actionlint, python3, just)
 #   MISE_TASKS_REPO=<git checkout>  test another copy of the repo (controls)
 
 set -uo pipefail
@@ -96,6 +102,7 @@ for tool in git python3 chezmoi mise; do
 done
 python3 -c 'import tomllib' 2>/dev/null || { echo "${RED}✗${NC} python3 >= 3.11 (tomllib) is required" >&2; exit 1; }
 MISE_BIN="$(command -v mise)"
+JUST_BIN="$(command -v just || true)"
 REAL_MISE_DATA="${MISE_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/mise}"
 
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/test-mise-tasks.XXXXXX")"
@@ -245,14 +252,70 @@ while IFS= read -r l; do
     esac
 done <"$WORK/static.out"
 
+# report <file>: PASS/FAIL lines from a checker become results.
+report() {
+    local l
+    while IFS= read -r l; do
+        case "$l" in
+            PASS\ *) log_pass "${l#PASS }" ;;
+            FAIL\ *) log_fail "${l#FAIL }" ;;
+        esac
+    done <"$1"
+}
+
+# --- justfile lint recipes delegate to mise (#439) ------------------------------
+# The justfile once carried its own lint recipes: they printed a warning and
+# exited 0 when the tool was missing, walked .claude/worktrees/ with find, and
+# lint-brew checked a Brewfile the repo does not have. Each lint* recipe is now
+# one `mise run lint[:x]`, so one implementation (the mise task, tested below)
+# serves both entry points.
+echo "Just: lint* recipes are one mise call each"
+python3 - "$REPO/justfile" "$REPO/.mise.toml" >"$WORK/just-static.out" <<'PY'
+import re, sys, tomllib
+
+jpath, lpath = sys.argv[1:3]
+tasks = tomllib.load(open(lpath, "rb")).get("tasks", {})
+recipes, cur = {}, None
+for line in open(jpath, encoding="utf-8").read().splitlines():
+    m = re.match(r"^([A-Za-z_][\w-]*)\b[^:=#]*:(?!=)\s*(.*)$", line)
+    if m and not line[0].isspace():
+        cur = m.group(1)
+        recipes[cur] = {"deps": m.group(2).strip(), "body": []}
+    elif line[:1].isspace() and cur and line.strip():
+        recipes[cur]["body"].append(line.strip())
+    elif line.strip() and not line.startswith("#") and not line[0].isspace():
+        cur = None
+
+lint = {n: r for n, r in recipes.items() if n == "lint" or n.startswith("lint-")}
+if not lint:
+    print("FAIL the justfile has no lint recipe")
+bad = 0
+for name, r in sorted(lint.items()):
+    want = name.replace("-", ":", 1)
+    work = [b for b in r["body"] if not re.match(r"@?(echo|printf)\b", b)]
+    got = [re.sub(r"^@", "", b) for b in work]
+    if r["deps"]:
+        print(f"FAIL just {name} depends on `{r['deps']}`; a dependency chain stops at the first failure, delegate with one `mise run {want}`")
+        bad += 1
+    elif got != [f"mise run {want}"]:
+        print(f"FAIL just {name} must be exactly `mise run {want}`, found: {got or 'no command'}")
+        bad += 1
+    elif want not in tasks:
+        print(f"FAIL just {name} runs `mise run {want}`, but .mise.toml has no task {want}")
+        bad += 1
+if lint and not bad:
+    print(f"PASS all {len(lint)} lint recipes ({', '.join(sorted(lint))}) are one `mise run` of an existing task")
+PY
+report "$WORK/just-static.out"
+
 # --- mise harness -------------------------------------------------------------
-# run_mise <cwd> <state-dir> <data-dir> <path> <mise args...>: output + rc.
+# run_env <cwd> <state-dir> <data-dir> <path> <command...>: output + rc.
 # Two ceilings. The parent of the git checkout holding <cwd>: mise reads that
 # checkout's .mise.toml and nothing above it (a worktree sits inside the main
 # checkout). $WORK: a task that runs in the empty $HOME does not pick up
 # configs above it, such as the real ~/.config/mise/config.toml when $TMPDIR
 # is under the real home.
-run_mise() {
+run_env() {
     local cwd="$1" state="$2" data="$3" path="$4" top
     shift 4
     top="$(git -C "$cwd" rev-parse --show-toplevel)" || return 1
@@ -261,7 +324,31 @@ run_mise() {
         MISE_GLOBAL_CONFIG_FILE="$WORK/global-tasks.toml" MISE_CONFIG_DIR="$WORK/mise/cfg" \
         MISE_STATE_DIR="$state" MISE_CACHE_DIR="$WORK/mise/cache" MISE_DATA_DIR="$data" \
         MISE_CEILING_PATHS="$(dirname "$top"):$WORK" MISE_TASK_RUN_AUTO_INSTALL=0 \
-        "$MISE_BIN" "$@" </dev/null 2>&1)
+        "$@" </dev/null 2>&1)
+}
+run_mise() {  # run_mise <cwd> <state-dir> <data-dir> <path> <mise args...>
+    local cwd="$1" state="$2" data="$3" path="$4"
+    shift 4
+    run_env "$cwd" "$state" "$data" "$path" "$MISE_BIN" "$@"
+}
+run_just() {  # run_just <cwd> <state-dir> <data-dir> <path> <just args...>
+    local cwd="$1" state="$2" data="$3" path="$4"
+    shift 4
+    run_env "$cwd" "$state" "$data" "$path" "$JUST_BIN" "$@"
+}
+# path_without <tool>: a directory of symlinks to everything on $PATH except
+# <tool>, for PATH= when the tool must be missing rather than broken.
+path_without() {
+    local tool="$1" d="$WORK/nopath-$1" dirs i
+    if [ ! -d "$d" ]; then
+        mkdir -p "$d"
+        IFS=: read -ra dirs <<<"$PATH"
+        for ((i = ${#dirs[@]} - 1; i >= 0; i--)); do  # earlier PATH entries win
+            [ -d "${dirs[i]}" ] && ln -sf "${dirs[i]}"/* "$d"/ 2>/dev/null
+        done
+        rm -f "$d/$tool"
+    fi
+    echo "$d"
 }
 # run_task <root> <task> [extra args]: run with the real tool installs.
 run_task() {
@@ -373,6 +460,9 @@ mkfix() {  # <dir> bad|clean
     mkdir -p "$d/private_dot_config/nvim/lua" "$d/.github/workflows" "$d/scripts" "$d/docs"
     cp "$REPO/.mise.toml" "$d/.mise.toml"
     cp "$REPO/scripts/check-doc-references.py" "$d/scripts/"
+    cp "$REPO/justfile" "$d/justfile"
+    mkdir -p "$d/private_dot_config/just"
+    cp "$REPO"/private_dot_config/just/*.just "$d/private_dot_config/just/"
     printf '#!/bin/sh\necho "ok"\n' >"$d/ok.sh"
     printf 'local M = {}\nreturn M\n' >"$d/private_dot_config/nvim/lua/ok.lua"
     printf 'on: push\njobs:\n  j:\n    runs-on: ubuntu-latest\n    steps:\n      - run: "true"\n' \
@@ -460,6 +550,54 @@ else
     out=$(run_task "$REPO" lint); rc=$?
     if [ $rc -eq 0 ]; then log_pass "lint: this repo passes"
     else log_fail "lint: this repo fails (rc=$rc)"; fi
+fi
+
+# --- just lint* recipes run the mise tasks (#439) -------------------------------
+echo "Just: each lint* recipe reaches mise and fails when its tool is gone"
+if [ -z "$JUST_BIN" ]; then
+    skip_or_fail just "just is not installed; recipe behaviour not run (the delegation is checked statically above)"
+else
+    STUB_MISE="$WORK/stub-mise"; mkdir -p "$STUB_MISE"
+    printf '#!/bin/sh\necho "MISE-TASKS-STUB mise $*"\n' >"$STUB_MISE/mise"
+    chmod +x "$STUB_MISE/mise"
+    # recipe : mise task : tool the task needs : name the bad fixture plants
+    for row in "lint-shell lint:shell shellcheck zz-fixture.sh" \
+        "lint-lua lint:lua luacheck zz_fixture.lua" \
+        "lint-actions lint:actions actionlint zz-fixture.yml" \
+        "lint-docs lint:docs python3 zz-fixture-missing.md" \
+        "lint lint shellcheck zz-fixture.sh"; do
+        read -r recipe task tool marker <<<"$row"
+
+        # Delegation: with mise stubbed, the recipe's whole effect is this call.
+        out=$(run_just "$WORK/clean/docs" "$WORK/mise/state" "$EMPTY_DATA" "$STUB_MISE:$PATH" "$recipe"); rc=$?
+        if [ $rc -eq 0 ] && grep -qx "MISE-TASKS-STUB mise run $task" <<<"$out"; then
+            log_pass "just $recipe: runs \`mise run $task\`"
+        else
+            log_fail "just $recipe: rc=$rc and no \`mise run $task\` call: $(grep -v '^\[' <<<"$out" | head -2 | tr '\n' ' ')"
+        fi
+
+        # Missing tool: absent from PATH (and from mise's installs), not just
+        # broken. The old recipes printed "not installed" and exited 0 here.
+        out=$(run_just "$WORK/clean" "$WORK/mise/state" "$EMPTY_DATA" "$(path_without "$tool")" "$recipe"); rc=$?
+        if [ $rc -ne 0 ] && grep -q "$tool is missing or cannot run" <<<"$out"; then
+            log_pass "just $recipe: without $tool it fails (rc=$rc) and names it"
+        else
+            log_fail "just $recipe: without $tool, rc=$rc and no '$tool is missing or cannot run': $(grep -v '^\[' <<<"$out" | head -2 | tr '\n' ' ')"
+        fi
+
+        # Planted finding, when the linter exists here.
+        case " $available " in
+            *" $tool "*)
+                out=$(run_just "$WORK/bad" "$WORK/mise/state" "$REAL_MISE_DATA" "$PATH" "$recipe"); rc=$?
+                if [ $rc -ne 0 ] && grep -q "$marker" <<<"$out"; then
+                    log_pass "just $recipe: planted finding fails (rc=$rc) and is named ($marker)"
+                else
+                    log_fail "just $recipe: rc=$rc on the bad fixture, $marker not named: $(grep -v '^\[' <<<"$out" | head -2 | tr '\n' ' ')"
+                fi
+                ;;
+            *) log_skip "just $recipe: $tool is not usable here; planted-finding check not run" ;;
+        esac
+    done
 fi
 
 echo
