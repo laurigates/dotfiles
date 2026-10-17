@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regression test for this repo's mise tasks (#398, #397).
+# Regression test for this repo's mise tasks and the entry points that call them
+# (#398, #397, #439).
 #
 # A lint task that cannot fail looks exactly like a clean tree. #398 found
 # three ways that happened, each silent or misattributed:
@@ -24,13 +25,21 @@
 #            repo tasks are defined in .mise.toml and not globally; no global
 #            task reads the repo (the source tree, a path that names a tracked
 #            top-level entry, `.` as an input, or a repo linter) or depends on
-#            a task that is not global.
+#            a task that is not global. Every .mise.toml task has a run or a
+#            dependency (an alias-only `check` once ran nothing) and no alias
+#            reuses a task name.
+#   Wiring   Every tests/test-* is run by a mise task (or is a listed
+#            pre-commit-hook test), every test:* task is in [tasks.test].depends
+#            unless NOT_IN_TEST exempts it with a reason, and the checker is
+#            run on a planted fixture to prove it fails (#439).
 #   Dir      `mise tasks ls` from the repo root and from a subdirectory: every
 #            .mise.toml task runs in the repo root. This runs first, with fresh
 #            mise state and no trust, so it also fails if .mise.toml stops
 #            being a config mise reads without `mise trust`.
-#   Source   apply/diff/status/verify pass --source <this checkout> (a stub
-#            chezmoi records its arguments; apply also gets --dry-run).
+#   Source   apply/diff/status/verify/check pass --source <this checkout> and run
+#            the chezmoi subcommand of their name, check running status (a stub
+#            chezmoi records its arguments; apply also gets --dry-run). qa's
+#            dry run lists status and lint.
 #   Clean    `clean` deletes *.tmp/.DS_Store in a fixture checkout, and not in
 #            its .git, another worktree, or $HOME (brew and mise are stubs).
 #   Lint     lint:shell, lint:lua, lint:actions and lint:docs each: fail and
@@ -40,9 +49,12 @@
 #            early); pass this repo. The aggregate `lint` fails the bad fixture
 #            with every available linter's finding in its output, and passes
 #            this repo when every linter is available.
-#   Just     The justfile lint* recipes (#439). Statically, each recipe's whole
-#            body is one `mise run lint[:x]` of an existing task, so there is a
-#            single implementation. With `just` installed, each recipe also
+#   Security security:scan and security:audit: fail and name gitleaks when it is
+#            broken or off PATH; pass a clean fixture; fail a planted token and
+#            name its file; pass this repo.
+#   Just     The justfile lint* and secrets recipes (#439). Statically, each
+#            recipe's whole body is one `mise run` of an existing task, so there
+#            is a single implementation. With `just` installed, each recipe also
 #            reaches mise (a stub records the call), fails and names the tool
 #            when that tool is not on PATH, and fails the planted-bad fixture.
 #
@@ -56,8 +68,9 @@
 # smoke Linters job does this). luacheck 1.2.0 cannot run on Lua 5.5
 # (lunarmodules/luacheck#147); lint:lua prints the fix.
 #
-# Usage: tests/test-mise-tasks.sh [--require tool[,tool...]]   (tools: shellcheck,
-#   luacheck, actionlint, python3, just)
+# Usage: tests/test-mise-tasks.sh [--require tool[,tool...]]
+#   tools that can be required: shellcheck, luacheck, actionlint, python3,
+#   gitleaks, just
 #   MISE_TASKS_REPO=<git checkout>  test another copy of the repo (controls)
 
 set -uo pipefail
@@ -289,6 +302,163 @@ report() {
         esac
     done <"$1"
 }
+
+# --- every test is run, and `mise run test` runs every test task (#439) ---------
+# A test nothing runs looks like a passing suite. test:gh-completion was a task
+# that `test` did not depend on, tests/test-chezmoi-exact-guard.sh had no task,
+# CI step or hook, and tests/test-configure-makefile.sh tested a command file
+# deleted months earlier. So:
+#   - each tests/test-* is named in a mise task's run string, or is listed in
+#     HOOK_ONLY_TESTS and named in .pre-commit-config.yaml (CI runs pre-commit);
+#   - each test:* task is in [tasks.test].depends, or is listed in NOT_IN_TEST
+#     with the reason it is left out;
+#   - a task never runs a tests/ file that does not exist, `test` never depends
+#     on a task that does not exist, and no list entry is stale.
+# A new test task has to be added to `depends` in the same change, or this fails.
+# "name|reason" per line; a reason is required.
+HOOK_ONLY_TESTS="test-claude-runtime-ignored.sh|pre-commit hook claude-runtime-ignored
+test-git-identity.sh|pre-commit hook git-identity
+test-renovate-single-owner.sh|pre-commit hook renovate-single-owner
+test-ci-github-api-auth.py|pre-commit hook ci-github-api-auth"
+NOT_IN_TEST=""
+
+cat >"$WORK/wiring.py" <<'PY'
+import os, re, subprocess, sys, tomllib
+
+repo, hook_only_raw, not_in_test_raw = sys.argv[1:4]
+
+
+def say(kind, msg):
+    print(f"{kind} {msg}")
+
+
+def table(raw):
+    out = {}
+    for line in raw.splitlines():
+        if line.strip():
+            name, _, reason = line.partition("|")
+            out[name.strip()] = reason.strip()
+    return out
+
+
+hook_only, not_in_test = table(hook_only_raw), table(not_in_test_raw)
+for what, tab in (("HOOK_ONLY_TESTS", hook_only), ("NOT_IN_TEST", not_in_test)):
+    for name, reason in tab.items():
+        if not reason:
+            say("FAIL", f"{what} entry {name} has no reason")
+
+tasks = tomllib.load(open(os.path.join(repo, ".mise.toml"), "rb")).get("tasks", {})
+tracked = set(subprocess.run(["git", "-C", repo, "ls-files"], capture_output=True, text=True, check=True).stdout.split("\n"))
+precommit = ""
+if os.path.exists(os.path.join(repo, ".pre-commit-config.yaml")):
+    precommit = open(os.path.join(repo, ".pre-commit-config.yaml"), encoding="utf-8").read()
+
+
+def runs(t):
+    r = t.get("run", [])
+    return "\n".join([r] if isinstance(r, str) else [x for x in r if isinstance(x, str)])
+
+
+def depends(t):
+    d = t.get("depends", [])
+    return [x.split()[0] if isinstance(x, str) else str(x[0]) for x in ([d] if isinstance(d, str) else d) if x]
+
+
+# 1: every tests/test-* is run.
+tests = sorted(f[len("tests/"):] for f in tracked if re.fullmatch(r"tests/test-[^/]+", f))
+bad = 0
+for f in tests:
+    pat = re.compile(r"(?<![\w./-])tests/" + re.escape(f) + r"(?![\w.-])")
+    runners = [n for n, t in tasks.items() if pat.search(runs(t))]
+    if runners:
+        if f in hook_only:
+            say("FAIL", f"HOOK_ONLY_TESTS lists {f}, which mise task {runners[0]} runs; drop the entry")
+            bad += 1
+    elif f in hook_only:
+        if f"tests/{f}" not in precommit:
+            say("FAIL", f"tests/{f} is listed as hook-only, but .pre-commit-config.yaml never names it")
+            bad += 1
+    else:
+        say("FAIL", f"tests/{f} is run by no mise task and no pre-commit hook; add a [tasks.\"test:...\"] for it")
+        bad += 1
+for f in hook_only:
+    if f not in tests:
+        say("FAIL", f"HOOK_ONLY_TESTS lists {f}, which is not a tracked tests/ file")
+        bad += 1
+if not bad:
+    say("PASS", f"all {len(tests)} tests/test-* scripts are run by a mise task or an exempt pre-commit hook")
+
+# 2: every test:* task is in test's depends; no dangling reference either way.
+test_deps = depends(tasks.get("test", {}))
+bad = 0
+if "test" not in tasks:
+    say("FAIL", "no `test` task")
+    bad += 1
+test_tasks = sorted(n for n in tasks if n.startswith("test:"))
+for n in test_tasks:
+    if n in not_in_test:
+        if n in test_deps:
+            say("FAIL", f"NOT_IN_TEST lists {n}, which `test` depends on; drop the entry")
+            bad += 1
+    elif n not in test_deps:
+        say("FAIL", f"{n} is not in [tasks.test].depends, so `mise run test` never runs it")
+        bad += 1
+for n in not_in_test:
+    if n not in tasks:
+        say("FAIL", f"NOT_IN_TEST lists {n}, which is not a task")
+        bad += 1
+for d in test_deps:
+    if d not in tasks:
+        say("FAIL", f"[tasks.test].depends names {d}, which is not a task")
+        bad += 1
+for n in test_tasks:
+    for ref in sorted(set(re.findall(r"(?<![\w./-])tests/[\w.-]+", runs(tasks[n])))):
+        if ref not in tracked:
+            say("FAIL", f"{n} runs {ref}, which is not a tracked file")
+            bad += 1
+if not bad:
+    say("PASS", f"all {len(test_tasks)} test:* tasks are in [tasks.test].depends and run files that exist ({len(not_in_test)} exempt)")
+say("DONE", "")
+PY
+
+echo "Wiring: every test is run and every test task is in \`test\`"
+python3 "$WORK/wiring.py" "$REPO" "$HOOK_ONLY_TESTS" "$NOT_IN_TEST" >"$WORK/wiring.out"
+grep -q '^DONE' "$WORK/wiring.out" || { log_fail "wiring checker crashed"; cat "$WORK/wiring.out"; }
+report "$WORK/wiring.out"
+
+# The checker must fail on planted wiring faults, or a pass above proves nothing.
+WF="$WORK/wiring-bad"; mkdir -p "$WF/tests"
+cat >"$WF/.mise.toml" <<'EOF'
+[tasks.test]
+depends = ["test:wired", "test:ghost"]
+[tasks."test:wired"]
+run = "tests/test-wired.sh"
+[tasks."test:left-out"]
+run = "tests/test-left-out.sh"
+[tasks."test:dead"]
+run = "tests/test-deleted.sh"
+EOF
+printf 'tests/test-hooked.sh\n' >"$WF/.pre-commit-config.yaml"
+for f in wired left-out orphan hooked unhooked stale; do : >"$WF/tests/test-$f.sh"; done
+git -C "$WF" init -q && git -C "$WF" add -A
+python3 "$WORK/wiring.py" "$WF" "test-hooked.sh|hook
+test-unhooked.sh|hook
+test-wired.sh|hook
+test-nowhere.sh|hook
+test-stale.sh" "test:wired|reason
+test:nothing|reason" >"$WF/out" 2>&1
+want_fail=("tests/test-orphan.sh is run by no" "test:left-out is not in" "test:dead is not in"
+    "test:dead runs tests/test-deleted.sh" "names test:ghost" "test-unhooked.sh is listed as hook-only"
+    "lists test-wired.sh, which mise task" "lists test-nowhere.sh, which is not" "test-stale.sh has no reason"
+    "NOT_IN_TEST lists test:wired, which \`test\` depends on" "NOT_IN_TEST lists test:nothing")
+missed=""
+for w in "${want_fail[@]}"; do grep -q "FAIL .*$w" "$WF/out" || missed="$missed [$w]"; done
+if [ -z "$missed" ] && ! grep -q 'tests/test-hooked.sh' "$WF/out"; then
+    log_pass "wiring checker: all ${#want_fail[@]} planted faults are reported, and a verified hook-only test is accepted"
+else
+    log_fail "wiring checker missed planted faults:$missed"
+    sed 's/^/      /' "$WF/out"
+fi
 
 # --- justfile lint recipes delegate to mise (#439) ------------------------------
 # The justfile once carried its own lint recipes: they printed a warning and
