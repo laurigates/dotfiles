@@ -67,7 +67,7 @@ the imported modules:
 | Group | Source | Representative recipes |
 |-------|--------|------------------------|
 | `chezmoi` | root | `apply`, `diff`, `status`, `verify`, `capture-drift[-apply]` |
-| `test` | root | `test`, `lint`, `lint-shell/lua/actions/brew`, `smoke*`, `ci` |
+| `test` | root | `test`, `lint`, `lint-shell/lua/actions/docs`, `smoke*`, `ci` |
 | `setup` | root | `setup`, `setup-brew`, `setup-mise`, `setup-nvim` |
 | `maintain` | root | `update`, `bump`, `clean`, `secrets`, `update-claude-completion` |
 | `info` | root | `docs`, `dev`, `edit`, `info`, `doctor` |
@@ -86,6 +86,12 @@ the imported modules:
 - **`update`** no longer duplicates the Neovim sync block byte-for-byte; it
   depends on `setup-nvim` (the same `Lazy! sync` + `MasonUpdate` invocation),
   making `setup-nvim` the single source of truth for the nvim step.
+- **`lint*` recipes (2026-10)** no longer carry their own checks. Each
+  delegates to the `mise run lint*` task of the same name, so there is one
+  implementation, and `tests/test-mise-tasks.sh` covers it (#439). The old
+  recipes printed a warning and exited 0 when their linter was missing, walked
+  other worktrees and the scratch `tmp` directory with `find`, and `lint-brew`
+  checked a `Brewfile` this repo does not have, so it was removed.
 - **Native `[group: …]` attributes** replaced comment-only section banners for
   the root recipes, so `just --list` groups them the way the imported modules
   were already grouped.

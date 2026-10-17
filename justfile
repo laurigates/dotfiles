@@ -128,49 +128,41 @@ capture-drift-apply *targets:
 [group: "test"]
 test: lint smoke
 
+# The lint recipes delegate to the mise tasks of the same name, which are the
+# one implementation: they fail when a linter is missing or finds something,
+# lint only tracked files, and are covered by tests/test-mise-tasks.sh (#439).
+# Do not re-implement a check here: a recipe that warns and exits 0 when its
+# tool is missing is indistinguishable from a clean tree.
+
 # Run all linters as used in CI
 [group: "test"]
-lint: lint-shell lint-lua lint-actions lint-brew
+lint:
+    @echo "{{BLUE}}Running all linters via mise...{{NORMAL}}"
+    @mise run lint
 
 # Lint shell scripts with shellcheck
 [group: "test"]
 lint-shell:
-    @echo "{{BLUE}}Running shellcheck...{{NORMAL}}"
-    @if command -v shellcheck >/dev/null 2>&1; then \
-        find . -name "*.sh" -not -path "./node_modules/*" -exec shellcheck {} +; \
-    else \
-        echo "{{YELLOW}}Warning: shellcheck not installed{{NORMAL}}"; \
-    fi
+    @echo "{{BLUE}}Running shellcheck via mise...{{NORMAL}}"
+    @mise run lint:shell
 
 # Lint Neovim Lua configuration
 [group: "test"]
 lint-lua:
-    @echo "{{BLUE}}Running luacheck...{{NORMAL}}"
-    @if command -v luacheck >/dev/null 2>&1; then \
-        luacheck private_dot_config/nvim/lua; \
-    else \
-        echo "{{YELLOW}}Warning: luacheck not installed{{NORMAL}}"; \
-    fi
+    @echo "{{BLUE}}Running luacheck via mise...{{NORMAL}}"
+    @mise run lint:lua
 
 # Lint GitHub Actions workflows
 [group: "test"]
 lint-actions:
-    @echo "{{BLUE}}Running actionlint...{{NORMAL}}"
-    @if command -v actionlint >/dev/null 2>&1; then \
-        actionlint; \
-    else \
-        echo "{{YELLOW}}Warning: actionlint not installed{{NORMAL}}"; \
-    fi
+    @echo "{{BLUE}}Running actionlint via mise...{{NORMAL}}"
+    @mise run lint:actions
 
-# Check Brewfile integrity
+# Check docs for dangling repo-relative references
 [group: "test"]
-lint-brew:
-    @echo "{{BLUE}}Checking Brewfile integrity...{{NORMAL}}"
-    @if [ -f Brewfile ]; then \
-        brew bundle check --file=Brewfile; \
-    else \
-        echo "{{YELLOW}}Warning: Brewfile not found{{NORMAL}}"; \
-    fi
+lint-docs:
+    @echo "{{BLUE}}Checking doc references via mise...{{NORMAL}}"
+    @mise run lint:docs
 
 # Run pre-commit hooks on all files
 [group: "test"]
