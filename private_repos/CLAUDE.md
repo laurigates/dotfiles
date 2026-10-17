@@ -36,9 +36,9 @@ Run `/repo-activity` (user-global skill) to scan all repos and see recent activi
 
 ### Scheduled Routines
 
-Scheduled work runs on two substrates: **macOS LaunchAgents** defined in `.routines/`, and **Claude scheduled tasks** defined user-globally in `~/.claude/scheduled-tasks/`. `.routines/README.md` inventories both, and documents how to choose a substrate (LaunchAgent vs cloud routine vs Desktop task).
+Scheduled work runs on two substrates: **macOS LaunchAgents** defined in `.routines/`, and **Claude scheduled tasks** (Desktop local tasks, with prompts in `~/.claude/scheduled-tasks/`). `.routines/README.md` inventories both, and documents how to choose a substrate (LaunchAgent vs cloud routine vs Desktop task).
 
-`just routines` lists the LaunchAgents with live status — schedule, load state, run count, last exit, last run, log path. It does not cover the Claude scheduled tasks; their schedule and run history live at claude.ai/code/routines. These are experimental/stop-gap; promote useful ones to a cloud routine or CI.
+`just routines` lists the LaunchAgents with live status — schedule, load state, run count, last exit, last run, log path. It does not cover the Claude scheduled tasks. Cloud routines keep their schedule and run history at claude.ai/code/routines. Desktop local tasks keep their schedule, folder, model and enabled state in the Desktop app's registry, shown with their run history under Code tab > Routines (only the prompt is in `~/.claude/scheduled-tasks/<name>/SKILL.md`). These are experimental/stop-gap; promote useful ones to a cloud routine or CI.
 
 ### Podio Ticket Management
 
