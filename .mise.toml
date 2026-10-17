@@ -133,8 +133,12 @@ run = """
 set -euo pipefail
 if ! luacheck --version >/dev/null; then
     echo "lint:lua: luacheck is missing or cannot run" >&2
-    echo "  luacheck 1.2.0 crashes on Lua 5.5 (lunarmodules/luacheck#147, fixed on master, not released)." >&2
-    echo "  Install the fixed build with: luarocks install --dev luacheck" >&2
+    echo "  Homebrew's luacheck 1.2.0 crashes on Lua 5.5 (lunarmodules/luacheck#147, fixed on master, not released)." >&2
+    echo "  Use a luacheck that runs on Lua 5.4 instead:" >&2
+    echo "    any OS: luarocks install --dev luacheck" >&2
+    echo "    Linux:  mise install github:lunarmodules/luacheck@1.2.0, then put it on PATH:" >&2
+    echo '            ln -s "$(mise where github:lunarmodules/luacheck@1.2.0)/luacheck" ~/.local/bin/luacheck' >&2
+    echo "            (a one-off run: mise x github:lunarmodules/luacheck@1.2.0 -- luacheck private_dot_config/nvim/lua)" >&2
     exit 1
 fi
 luacheck private_dot_config/nvim/lua
