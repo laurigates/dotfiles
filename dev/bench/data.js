@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791898130053,
+  "lastUpdate": 1792214448759,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1519,6 +1519,50 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/laurigates/dotfiles/commit/f4a9976fdf4dcdac6955e124718ad85b64e1d2dd"
         },
         "date": 1791898129381,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "eb4d38f5087987c1d79ed116d9ac00ec21741157",
+          "message": "feat(zsh): update and re-test PRs mid-batch in ghsq/ghrb/ghrp (#480)\n\n## What\n\nThe shared batch-merge engine behind `ghsq`, `ghrb` and `ghrp` does two\nnew things:\n\n- **Update and re-test.** If the batch has already merged into a PR's\nbase this run, the engine runs `gh pr update-branch` on the PR\n(`--rebase` for `ghrb`) and waits for CI on the new head with `gh pr\nchecks --watch --fail-fast`. It then merges with `--match-head-commit`\nset to the head that passed. If CI fails, the PR is left open.\n- **Hand conflicts to Claude.** CONFLICTING PRs are collected and left\nopen. After the batch ends, the engine asks about each one in turn and,\non `y`, starts `claude --worktree` with a prompt to resolve it, run lint\nand tests, and push without merging. The handoff only runs once every\nmerge is done, so Claude resolves against the final base. PRs from a\nrepo other than the current checkout get a note instead of a handoff.\n\n## Why\n\nBefore a batch, each PR's green CI ran against the base as it was then.\nOnce an earlier PR in the batch merges, a later PR can still merge\ncleanly and break the base. Updating the branch and re-running CI\ncatches that. Each PR updated this way costs one CI wait.\n\n`gh pr update-branch` can't resolve a real conflict: gh refuses when\nGitHub reports CONFLICTING (`update_branch.go`). Those PRs need someone\nto resolve them, so they go to Claude instead of being skipped.\n\n## Notes\n\n- Only PRs whose base took a merge **in this run** are updated. A PR\nthat was already behind its base before the run merges as before.\n- `gh pr checks --watch` exits at once if no check is registered yet\n(`checks.go`: \"no checks reported\"). The engine therefore waits up to\n60s for the first check to appear. If none does, it merges without\nwaiting.\n- Tested against a stubbed `gh` in a pty: squash and rebase paths, the\nCI-failure path, and the conflict handoff with both `y` and `n`. It has\nnot yet been run against real PRs.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_014VQuCxyigibinKgmfkBfv2\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-17T08:19:52+03:00",
+          "tree_id": "48ae91ba71ee99697116cb109b856bb1638dafaf",
+          "url": "https://github.com/laurigates/dotfiles/commit/eb4d38f5087987c1d79ed116d9ac00ec21741157"
+        },
+        "date": 1792214448456,
         "tool": "customSmallerIsBetter",
         "benches": [
           {
