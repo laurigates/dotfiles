@@ -65,7 +65,8 @@ jobs:
       - name: Setup Bun for MCP servers
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: latest
+          # Exact, not latest: Renovate bumps it through its github-actions manager (#440).
+          bun-version: 1.4.3
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
@@ -80,7 +81,11 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Install pre-commit
-        run: pip install pre-commit
+        # Same pin as smoke.yml (#440); tests/test-ci-pins.sh keeps them equal.
+        env:
+          # renovate: datasource=pypi depName=pre-commit
+          PRE_COMMIT_VERSION: 4.7.0
+        run: pip install "pre-commit==$PRE_COMMIT_VERSION"
 
       - name: Setup mise
         # Installs chezmoi at the version pinned in .mise.toml (#418).
@@ -92,8 +97,14 @@ jobs:
         run: tests/test-ci-pins.sh --assert-installed
 
       - name: Install Claude CLI
+        # Exact, so a Claude Code release cannot change the plugin setup below
+        # with no commit here (#440). Renovate bumps it through the
+        # customManagers entry in renovate.json5.
+        env:
+          # renovate: datasource=npm depName=@anthropic-ai/claude-code
+          CLAUDE_CODE_VERSION: 2.1.302
         run: |
-          npm install -g @anthropic-ai/claude-code
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
           echo "Claude CLI version: $(claude --version)"
 
       - name: Cache Claude Plugins
