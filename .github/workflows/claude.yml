@@ -69,7 +69,7 @@ jobs:
           bun-version: 1.4.3
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
+        uses: Homebrew/actions/setup-homebrew@eb02c69dbabdb66ff183c614f4ce7ab3c077592c # 2026.10.12.1
 
       - name: Authenticate GitHub API for pre-commit hook installs
         # Same fix as smoke.yml (#434): the agent runs pre-commit, and
@@ -170,7 +170,7 @@ jobs:
 
       - name: Run Claude Code with MCP Integration
         id: claude
-        uses: anthropics/claude-code-action@34968b5981d5d170904281aa3df6f3c0d4a28855 # v1.0.249
+        uses: anthropics/claude-code-action@a26b07d8c778b0c43f64618e5fd29fd0f8af72e8 # v1.0.250
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
