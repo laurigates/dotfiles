@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792257885804,
+  "lastUpdate": 1792344132442,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1715,6 +1715,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0113076956,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b85ea3802eaae26c3bbdaf9850447d492352fdac",
+          "message": "chore(deps): update pre-commit hook JohnnyMorganz/StyLua to v2.6.0 (#484)\n\nThis PR contains the following updates:\n\n| Package | Type | Update | Change |\n|---|---|---|---|\n|\n[JohnnyMorganz/StyLua](https://redirect.github.com/JohnnyMorganz/StyLua)\n| repository | minor | `v2.5.2` → `v2.6.0` |\n\nNote: The `pre-commit` manager in Renovate is not supported by the\n`pre-commit` maintainers or community. Please do not report any problems\nthere, instead [create a Discussion in the Renovate\nrepository](https://redirect.github.com/renovatebot/renovate/discussions/new)\nif you have any questions.\n\n---\n\n### Release Notes\n\n<details>\n<summary>JohnnyMorganz/StyLua (JohnnyMorganz/StyLua)</summary>\n\n###\n[`v2.6.0`](https://redirect.github.com/JohnnyMorganz/StyLua/releases/tag/v2.6.0)\n\n[Compare\nSource](https://redirect.github.com/JohnnyMorganz/StyLua/compare/v2.5.2-input.2...v2.6.0)\n\n#### \\[2.6.0] - 2026-10-10\n\n##### Added\n\n- Luau: Added support for `if local` / `if const` condition bindings in\nboth `if` statements and `if` expressions (e.g. `if local x = getValue()\nthen ... end`)\n- Added `Input` mode for `collapse_simple_statement`, preserving whether\nsimple statements are single-line or multi-line in the input while still\nformatting their contents\n([#&#8203;1112](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1112))\n\n##### Fixed\n\n- Fixed range formatting indenting statements one level too shallow when\nnested inside a function expression within a table constructor\n([#&#8203;1145](https://redirect.github.com/JohnnyMorganz/StyLua/issues/1145))\n- Fixed `-- stylua: ignore start`/`end` ranges inside multiline tables\nreformatting the ignored fields\n([#&#8203;1134](https://redirect.github.com/JohnnyMorganz/StyLua/issues/1134))\n- When using range formatting, semicolons outside of the provided range\nare no longer incorrectly formatted\n([#&#8203;1147](https://redirect.github.com/JohnnyMorganz/StyLua/issues/1147))\n- Luau: Fixed sort requires not recognizing imports declared with\n`const`, e.g. `const Foo = require(path)`\n- Luau: Fixed the `read`/`write` access modifier merging into the\nelement type in array type shorthand, changing the meaning of the code\n(`{ read Foo }` was formatted as `{ readFoo }`)\n([#&#8203;1126](https://redirect.github.com/JohnnyMorganz/StyLua/issues/1126))\n- Fixed single-line comments in CRLF files gaining an extra carriage\nreturn (`\\r\\r\\n`) on every format when `line_endings = \"Windows\"`, and\nkeeping their original `\\r\\n` when formatting to Unix line endings\n([#&#8203;1167](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1167))\n\n***\n\n#### External Contributions\n\n- Mention conform.nvim as a Neovim formatter plugin that supports stylua\nby [@&#8203;alerque](https://redirect.github.com/alerque) in\n[#&#8203;1124](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1124)\n- Clarify the syntax for command-line formatting configuration by\n[@&#8203;kormide](https://redirect.github.com/kormide) in\n[#&#8203;1132](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1132)\n- Fix sort\\_requires not recognizing `const` imports in luau by\n[@&#8203;ddashdev](https://redirect.github.com/ddashdev) in\n[#&#8203;1123](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1123)\n- Fix Luau array access modifier formatting by\n[@&#8203;Companion](https://redirect.github.com/Companion) in\n[#&#8203;1148](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1148)\n- Keep out-of-range semicolons when formatting a range by\n[@&#8203;GhostCoder6969](https://redirect.github.com/GhostCoder6969) in\n[#&#8203;1158](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1158)\n- support if-local and if-const by\n[@&#8203;annieetang](https://redirect.github.com/annieetang) in\n[#&#8203;1160](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1160)\n- Add Input mode for collapse\\_simple\\_statement by\n[@&#8203;ddashdev](https://redirect.github.com/ddashdev) in\n[#&#8203;1112](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1112)\n\n#### New Contributors\n\n- [@&#8203;kormide](https://redirect.github.com/kormide) made their\nfirst contribution in\n[#&#8203;1132](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1132)\n- [@&#8203;ddashdev](https://redirect.github.com/ddashdev) made their\nfirst contribution in\n[#&#8203;1123](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1123)\n- [@&#8203;Companion](https://redirect.github.com/Companion) made their\nfirst contribution in\n[#&#8203;1148](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1148)\n- [@&#8203;GhostCoder6969](https://redirect.github.com/GhostCoder6969)\nmade their first contribution in\n[#&#8203;1158](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1158)\n- [@&#8203;annieetang](https://redirect.github.com/annieetang) made\ntheir first contribution in\n[#&#8203;1160](https://redirect.github.com/JohnnyMorganz/StyLua/pull/1160)\n\n**Full Changelog**:\n<https://github.com/JohnnyMorganz/StyLua/compare/v2.5.2...v2.6.0>\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend\nRenovate](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0My4yODguMCIsInVwZGF0ZWRJblZlciI6IjQzLjI4OC4wIiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-18T17:21:17Z",
+          "tree_id": "8465edd0c7038c37055e4bf92dbc53a91c9f44f7",
+          "url": "https://github.com/laurigates/dotfiles/commit/b85ea3802eaae26c3bbdaf9850447d492352fdac"
+        },
+        "date": 1792344132112,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11300049066666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015482812,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012897768000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0129148814,
             "unit": "s"
           }
         ]
