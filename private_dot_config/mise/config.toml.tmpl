@@ -129,7 +129,7 @@ rust = { version = "latest", components = "rust-analyzer" }
 glab = "latest"                               # GitLab CLI (upstream interactions on code.europa.eu)
 neovim = "nightly"
 just = "latest"
-opentofu = "1.13.0"
+opentofu = "1.13.1"
 d2 = "latest"
 vale = "latest"                               # prose/style linter
 harper-ls = "latest"                          # Harper language server (in-editor grammar linting)
@@ -138,7 +138,7 @@ harper-ls = "latest"                          # Harper language server (in-edito
 "aqua:tree-sitter/tree-sitter" = "latest"     # tree-sitter CLI (required by nvim-treesitter main branch)
 # ketch — stateless web search/scrape CLI for agents (https://github.com/1broseidon/ketch).
 # Pinned like the agent CLIs below; backend is set to the local SearXNG in [env].
-"github:1broseidon/ketch" = "0.18.1"
+"github:1broseidon/ketch" = "0.19.0"
 {{- if eq .chezmoi.os "darwin" }}
 "npm:pyright" = "latest"
 "npm:typescript-language-server" = "latest"
@@ -162,15 +162,15 @@ uv = "latest"
 # "global profile takeover" on first run, rewriting ~/.claude/settings.json with
 # an apiKeyHelper + ANTHROPIC_BASE_URL proxy wrapper (and ~/.codex/config.toml
 # with its own provider), which breaks Claude Code. Do not re-add.
-"npm:@dotenvx/dotenvx" = "2.32.3"                # .env encryption/loading
-"npm:@earendil-works/pi-coding-agent" = "0.99.2" # pi
-"npm:@google/gemini-cli" = "0.62.0"              # gemini
+"npm:@dotenvx/dotenvx" = "2.38.0"                # .env encryption/loading
+"npm:@earendil-works/pi-coding-agent" = "1.3.0" # pi
+"npm:@google/gemini-cli" = "0.64.0"              # gemini
 "npm:@mermaid-js/mermaid-cli" = "12.0.0"         # mmdc (see tools-plugin:mermaid-diagrams)
-"npm:@playwright/test" = "1.63.0"                # playwright (browsers need `playwright install`)
+"npm:@playwright/test" = "1.64.1"                # playwright (browsers need `playwright install`)
 "npm:jsonlint" = "1.6.3"
 "npm:ocx" = { version = "2.0.15", allow_low_downloads = true }  # <1000 weekly downloads; approved 2026-09
-"npm:opencode-ai" = "1.18.34"                    # opencode — pinned exact upstream of this migration
-"npm:vitest" = "5.0.3"
+"npm:opencode-ai" = "1.19.3"                    # opencode — pinned exact upstream of this migration
+"npm:vitest" = "5.0.5"
 
 # ============================================================================
 # Environment Variables
