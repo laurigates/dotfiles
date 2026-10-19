@@ -11,7 +11,7 @@ _claude() {
 
     commands=(
         'agents:Manage background agents'
-        'attach:Open a background session in this terminal. <id> is the short id that `claude --bg` prints and `claude agents` lists'
+        'attach:Open a background session in this terminal. <id> is the short id that `claude --bg` prints and `claude agents` lists. Part of the session name works too'
         'auth:Manage authentication'
         'auto-mode:Inspect or reset auto mode classifier configuration'
         'doctor:Check the health of your Claude Code installation. Reads settings files in the current directory without a trust prompt. For a full checkup that can also fix issues, run /doctor in a session.'
@@ -22,7 +22,7 @@ _claude() {
         'mcp:Configure and manage MCP servers'
         'plugin:Manage Claude Code plugins'
         'plugins:Manage Claude Code plugins'
-        'project:Manage Claude Code project state'
+        'purge:Delete all Claude Code state for a project (transcripts, tasks, file history, config entry)'
         'respawn:Restart a background session, or all of them with --all, so it runs the current Claude Code version'
         'rm:Delete a background session, and its worktree when that is safe. Works on sessions that have already exited'
         'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
