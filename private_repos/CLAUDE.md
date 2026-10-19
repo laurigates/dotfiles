@@ -13,9 +13,13 @@ This directory contains project repositories organized by owner/origin. Running 
 
 ## Work in a Worktree
 
-Make changes to **this** repo (its `CLAUDE.md`, `.claude/` rules, scripts and
-skills) in a Claude Code worktree, not in the main checkout — enter one before
-the first edit of a change task. Reading and answering questions do not need one.
+Make changes to **this** repo (its `.claude/` rules, scripts and skills) in a
+Claude Code worktree, not in the main checkout — enter one before the first edit
+of a change task. Reading and answering questions do not need one.
+
+This `CLAUDE.md` is not tracked here: chezmoi renders it from
+`private_repos/CLAUDE.md` in the dotfiles source (`~/.local/share/chezmoi`), so
+edit it there and run `chezmoi apply ~/repos/CLAUDE.md`.
 
 The reason is mechanical, not stylistic: `.claude/scripts/repos-sync-nudge.sh`
 auto-fast-forwards this checkout only when `git status --porcelain` is empty, so
