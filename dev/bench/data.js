@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792394938951,
+  "lastUpdate": 1792402888870,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1891,6 +1891,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0072320272,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7b597bbdf882ca88c1eb9cce31bf2edb0f8331f1",
+          "message": "chore(claude): stop tracking ~/repos rules that repos-claude-config owns (#492)\n\n## What\nRemoves `private_repos/private_dot_claude/rules/` (four files) from the\nchezmoi source.\n\n## Why\n`ci-cd-multirepo.md`, `github-metadata-hygiene.md`, `justfile.md` and\n`tool-migration-cutover.md` were tracked byte-identically here and in\nlaurigates/repos-claude-config, which already owns the other 24 files in\n`~/repos/.claude/rules/`. With two owners, every edit had to land twice.\nSame split as #444/#490, where dotfiles kept `~/repos/CLAUDE.md`.\n\n## How\n`private_repos/` and `private_dot_claude/` are not `exact_` dirs, so\ndropping the source stops chezmoi from managing the files without\ndeleting the targets. `chezmoi status --source <worktree> ~/repos`\nreports nothing, and `chezmoi managed` now lists only `repos/CLAUDE.md`\nunder `~/repos`. No other file in this repo references the removed path\n(`git grep`). The rules are no longer published in this public repo.\n\nNo post-merge step: the targets stay on disk, owned by the\nrepos-claude-config checkout.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_018btNDJn8QVSHUwDLLkaaGK\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-19T12:40:39+03:00",
+          "tree_id": "b115d4e22b32a89475736f92f166ac0b7eb968b8",
+          "url": "https://github.com/laurigates/dotfiles/commit/7b597bbdf882ca88c1eb9cce31bf2edb0f8331f1"
+        },
+        "date": 1792402888384,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07268001733333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012412752,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009977506,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0081966716,
             "unit": "s"
           }
         ]
