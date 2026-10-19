@@ -21,3 +21,14 @@ abbr gpls='gh pr ls'
 # `just -g` runs recipes from the global ~/.user.justfile (see dot_user.justfile.tmpl)
 # from any directory — e.g. `jg plugins-list`, `jg plugins-audit`.
 abbr jg='just -g'
+# Frequent commands with no alias at all, from atuin history (#255). Each
+# name was checked against aliases, functions and commands on PATH.
+# `prc` takes no argument: `gh pr checks` selects the current branch's PR.
+abbr bd='bun dev'
+abbr cr='cargo run'
+abbr dbd='docker build .'
+abbr dcu='docker compose up'
+abbr gsta='git stash'
+abbr gstp='git stash pop'
+abbr nrd='npm run dev'
+abbr prc='gh pr checks'
