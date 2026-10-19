@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792394889380,
+  "lastUpdate": 1792394938951,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1847,6 +1847,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009513590800000003,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "68ccc36f40531d3dd08f96b22b47bc13a4d9122c",
+          "message": "chore(zsh): regenerate claude CLI completion (#491)\n\n## What\nRegenerated `dot_zfunc/_claude` from the installed claude CLI.\n\n## Why\nThe CLI replaced the `project` subcommand with `purge` and extended the\n`attach` help text, so the shipped completion offered a subcommand that\nno longer exists.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_018btNDJn8QVSHUwDLLkaaGK\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-19T10:27:47+03:00",
+          "tree_id": "1b16658ac1936c67689c1a523cebfe05920fcac1",
+          "url": "https://github.com/laurigates/dotfiles/commit/68ccc36f40531d3dd08f96b22b47bc13a4d9122c"
+        },
+        "date": 1792394938315,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.077699019,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009488798000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008544310000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0072320272,
             "unit": "s"
           }
         ]
