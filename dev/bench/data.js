@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792403598147,
+  "lastUpdate": 1792413135198,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1979,6 +1979,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0110896278,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0e648e3a97a66cf04be719a062c18ceeb01c1bbb",
+          "message": "fix(mise): track latest stable python for pipx tools (#494)\n\n`python = [\"3.11\", \"3.13\"]` made 3.11 the interpreter for every `pipx:`\ntool. mise runs `uv tool install --python\n~/.local/share/mise/installs/python/3.11/bin/python` (seen with\n`MISE_VERBOSE=1 mise install pipx:ansible@14.5.0`). ansible 14 requires\nPython >= 3.12, so `mise upgrade --global --bump` failed on\n`pipx:ansible@14.5.0`.\n\nThis replaces the list with `python = \"latest\"` (currently 3.15.0 per\n`mise latest python`). Nothing in the repo depends on 3.11.\n\nVerified: all 17 `pipx:` tools in the config install into throwaway\nPython 3.15.0 venvs. Ten resolve from wheels alone; ansible, pre-commit,\nesptool, ranger-fm, mlx-lm, jinjanator and yamllint need at least one\nsdist, which builds.\n\nAfter merge: `chezmoi apply ~/.config/mise/config.toml && mise install`.\nmise then rebuilds the pipx tools on 3.15.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01MTzgWGbUpTi14YdCkV6kas\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-19T15:31:27+03:00",
+          "tree_id": "4a77891c80ac69cf81b5e48d2e76c6a39c70506c",
+          "url": "https://github.com/laurigates/dotfiles/commit/0e648e3a97a66cf04be719a062c18ceeb01c1bbb"
+        },
+        "date": 1792413134628,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.084882332,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012282626000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010106212,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0082371048,
             "unit": "s"
           }
         ]
