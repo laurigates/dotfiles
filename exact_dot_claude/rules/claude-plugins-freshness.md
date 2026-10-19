@@ -24,21 +24,27 @@ there, and `install_pkgs.sh` is the only way to get *binary tools*. Both are
 needed for full web parity. There is no imperative substitute for plugin
 enablement — committed settings stay canonical for that.
 
-## `enabledPlugins` merge semantics: whole-map replacement
+## `enabledPlugins` resolution: per plugin, not per map
 
-Verified against `code.claude.com/docs/en/settings.md` (the docs call out
-per-key merging **only** for permission rules; everything else overrides):
+Each `plugin@marketplace` key resolves on its own, highest scope first; a
+plugin with no entry at any scope falls back to its manifest `defaultEnabled`.
+A project map therefore does **not** replace the global one: a plugin enabled
+globally and absent from the project map stays enabled locally. To turn off a
+project-enabled plugin on one machine, set it to `false` in
+`.claude/settings.local.json` — a user-level `false` loses to the project's
+`true`. Source: the `enabledPlugins` entry in
+`code.claude.com/docs/en/settings-reference.md` (checked 2026-10-19).
 
-> When `enabledPlugins` appears in both user-global and project settings, the
-> **highest-precedence scope wins entirely** — the project map REPLACES the
-> global map. A plugin enabled globally but absent from the project map is
-> **disabled** in that project.
+> An earlier version of this rule said the project map replaces the global map
+> wholesale. The settings reference contradicts that, and an audit acting on it
+> would pad project maps with every globally enabled plugin for no effect.
 
-Consequence: a committed project pin that is meant to be exhaustive **must list
-the full set**. An exhaustive pin that omits a newly-added marketplace plugin
-silently disables it in web/remote. Deliberate *narrow* subsets are fine — a
-new plugin defaulting off is the intended behavior for an intentionally narrow
-repo. (Hooks, by contrast, are **unioned** across sources — see
+Consequence: what a committed pin decides is the **web/remote** set, where no
+user scope exists and only the project map applies. There, a plugin the map
+omits falls back to `defaultEnabled`, so an exhaustive pin that misses a
+newly-added marketplace plugin leaves it at its default in web/remote.
+Deliberate *narrow* subsets are fine — a new plugin defaulting off is the
+intended behavior for an intentionally narrow repo. (Hooks, by contrast, are **unioned** across sources — see
 `code.claude.com/docs/en/hooks.md`.)
 
 ## Freshness automation (global)
