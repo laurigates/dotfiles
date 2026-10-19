@@ -27,7 +27,24 @@ one.
   whenever Lauri asks for it.
 - **Keep Opus for open-ended review and audit**, where the value is finding what
   the brief did not list. That is where the two models differed (evidence below).
-- **Haiku** only for the cold-read exception below.
+- **Haiku 5.5** (the `haiku` alias since Claude Code 2.1.293) only for
+  mechanical work that something stronger checks, in the shapes claude-plugins
+  sanctions (`.claude/rules/agent-development.md` § Model Selection for Agents):
+  - the cold-read reader (exception below);
+  - a lean read-only agent file: `omitClaudeMd: true`, `tools:` limited to
+    Read, Grep and Glob, an explicit `effort:` (`agents-plugin:lean-reader`;
+    `scripts/check-agent-model.sh` enforces the shape);
+  - a mechanical workflow `agent()` stage (verbatim extraction, closed-enum
+    classification) with an explicit `effort`, whose output a stronger stage or
+    a script checks (`scripts/check-workflow-js-model.sh`). The check covers
+    omission too: a stage whose dropped items never reach a later stage stays
+    on a stronger model;
+  - a `.github/workflows` invocation, decided per workflow after a replay
+    against its Opus output passes.
+
+  A Haiku reader never emits judgments, verdicts or findings the main loop
+  builds on unchecked. In the 2026-10 audit, 46% of its judgment calls held
+  (evidence below).
 - **`inherit`** is not used for plugin agents: it passes on whatever the session
   runs. When a teammate or workflow agent would otherwise inherit an unsuitable
   session model, set `model:` explicitly.
@@ -43,8 +60,9 @@ one.
     subagents more often, which led to timeouts and out-of-scope edits.
   - Send security review to Opus. Sonnet 5.5 falls back to Sonnet 5 on
     higher-risk cyber tasks.
-- **When Haiku 5.5 ships**, re-run the comparison below for the cold-read
-  exception and for any Haiku delegate before changing either.
+- **Next re-run**: claude-plugins #3116, the Tier 2 opus/sonnet/haiku matrix
+  at matched effort, calibrates these tier boundaries. Re-check the Sonnet and
+  Haiku bullets against its result.
 - `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` overrides every per-agent `model:` choice,
   including plugin frontmatter. Don't hard-code a cheaper model into an agent
   definition, workflow or skill as a blanket cost default; choose per task under
@@ -81,6 +99,18 @@ one.
 > worst case overran the 5 s budget by about 3 s; the main loop found that while
 > checking the follow-up before filing it (claude-plugins #3093). The run had no
 > Opus arm and was not graded.
+>
+> 2026-10-10 (claude-plugins `docs/audits/haiku-5.5-reevaluation-2026-10-10.md`):
+> 16 Haiku 5.5 classifiers at `medium` effort sorted claude-plugins skills, agents,
+> workflow harnesses and GitHub workflows into `haiku`, `haiku-stage`,
+> `needs-test` or `keep`. 6 Opus 5.5 verifiers at `high` re-read the files
+> behind all 204 non-`keep` verdicts and a control sample of 49 `keep` verdicts.
+> Opus confirmed 93 of the 204 (46%), adjusted 38 and rejected 73; all 49
+> control `keep` verdicts held. The verifiers found the files had been read,
+> with concrete details checking out line by line. Most rejections came from one
+> misreading (a skill's `model:` override lasts for the rest of the turn), and
+> the classifier often listed a risk and assigned `haiku` anyway. No agent or
+> GitHub workflow reached `haiku`.
 
 ### Sanctioned exception: cold-read gates run on Haiku
 
