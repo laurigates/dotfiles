@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792344194097,
+  "lastUpdate": 1792394889380,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1803,6 +1803,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0109039432,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4312b06efa8215d45b2458089e7f1d16545cea9a",
+          "message": "docs(claude): align Haiku guidance with Haiku 5.5 and claude-plugins tiers (#487)\n\n## What\n\nUpdates `exact_dot_claude/rules/agent-and-tool-selection.md` § Model\nSelection:\n\n- The Haiku bullet now lists the shapes claude-plugins sanctions: the\ncold-read reader, a lean read-only agent file (`omitClaudeMd: true`,\nRead/Grep/Glob only, explicit `effort:`), a mechanical workflow\n`agent()` stage with explicit effort whose output a stronger stage or\nscript checks (omission included), and `.github/workflows` use per\nworkflow after a replay. The rule that a Haiku reader's judgments are\nnever built on unchecked stays.\n- The \"When Haiku 5.5 ships\" bullet is replaced by a pointer to\nlaurigates/claude-plugins#3116 as the next re-run.\n- § Evidence gains the 2026-10-10 Haiku 5.5 audit result.\n\nThe Sonnet bullets and the cold-read exception section are unchanged.\n\n## Why\n\nHaiku 5.5 shipped on 2026-10-07 and is the `haiku` alias since Claude\nCode 2.1.293. The rule still waited for it and was narrower than\nlaurigates/claude-plugins#3117 (merged 2026-10-18), which states the\ntiers in `.claude/rules/agent-development.md` § Model Selection for\nAgents and enforces them in `scripts/check-agent-model.sh` and\n`scripts/check-workflow-js-model.sh`.\n\n## How the claims were checked\n\nEach claim in #486 was read against its source with `gh api` / `gh`:\n\n- `docs/audits/haiku-5.5-reevaluation-2026-10-10.md`: 16 Haiku 5.5\nclassifiers at `medium`; Opus confirmed 93 of 204 non-`keep` verdicts\n(46%), adjusted 38, rejected 73; all 49 control `keep` verdicts held.\nMatches.\n- One correction: #486 says the 16 classifiers were \"each checked by an\nOpus verifier\". The audit used 6 Opus 5.5 verifiers at `high`, one per\ngroup of batches. The Evidence entry follows the audit.\n- `agent-development.md` § Model Selection for Agents, the lean-reader\nshape in `check-agent-model.sh` (`lean_haiku_problems`), the haiku-stage\nrule in `check-workflow-js-model.sh`,\n`agents-plugin/agents/lean-reader.md`, and #3116 (open, Tier 2\nopus/sonnet/haiku matrix) all match the issue.\n\nFixes #486\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_018btNDJn8QVSHUwDLLkaaGK\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-19T10:27:19+03:00",
+          "tree_id": "2e6749e35f7eb26f8fd8554b14ac423b8b9db7b6",
+          "url": "https://github.com/laurigates/dotfiles/commit/4312b06efa8215d45b2458089e7f1d16545cea9a"
+        },
+        "date": 1792394888877,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07988838433333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013270472,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010518883999999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009513590800000003,
             "unit": "s"
           }
         ]
