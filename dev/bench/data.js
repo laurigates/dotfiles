@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792402888870,
+  "lastUpdate": 1792403598147,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -1935,6 +1935,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0081966716,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "19516e83c7182c42b9757d7245004f90196543b4",
+          "message": "chore(mise): capture pin bumps made on the target with mise upgrade --bump (#493)\n\n## What\nBumps eight exact pins in `private_dot_config/mise/config.toml.tmpl` to\nthe versions installed on one machine: opentofu 1.13.1, ketch 0.19.0,\ndotenvx 2.38.0, pi-coding-agent 1.3.0, gemini-cli 0.64.0,\n@playwright/test 1.64.1, opencode-ai 1.19.3, vitest 5.0.5.\n\n## Why\nThe bumps were made in `~/.config/mise/config.toml` with `mise upgrade\n--bump` and never reached the source. A forced `chezmoi apply` for #448\nreverted them. `mise where` confirms each of the eight versions is\ninstalled.\n\n## How\nLeft out on purpose:\n- chezmoi: rendered from `.mise.toml` (#418), so the target-side 2.73.2\nwould not hold.\n- `pi`, `ollama`, `opencode = \"latest\"`: these install second copies of\ntools the source already provides\n(`npm:@earendil-works/pi-coding-agent`, Homebrew `ollama`,\n`npm:opencode-ai`).\n\nThe rendered config parses as TOML (`tomllib`).\n\nRefs #448\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_018btNDJn8QVSHUwDLLkaaGK\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-19T12:52:21+03:00",
+          "tree_id": "d488b62ff0d1dc9f75322aefa3ec03ac70b9b171",
+          "url": "https://github.com/laurigates/dotfiles/commit/19516e83c7182c42b9757d7245004f90196543b4"
+        },
+        "date": 1792403597877,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.115671076,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015385226000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013126944000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0110896278,
             "unit": "s"
           }
         ]
