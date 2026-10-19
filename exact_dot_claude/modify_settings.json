@@ -34,6 +34,13 @@
 # but plugin hooks are untouched. (Do not re-add a "//" comment key inside the
 # JSON hooks object — Claude Code's settings schema has no comment support and
 # /doctor flags it as an unknown hook event.)
+#
+# pluginConfigs."cc-plugin-agents-md@builtin" sets Project instructions to
+# claude-md-and-agents-md. The default (claude-md-or-agents-md) skips every
+# AGENTS.md when a CLAUDE.md exists in the working directory or above it, and
+# ~/repos/CLAUDE.md sits above every repo. Claude Code honours this key only in
+# user or managed settings, not in project settings
+# (code.claude.com/docs/en/memory#choose-which-instruction-files-load).
 set -euo pipefail
 
 current="$(cat)"
@@ -319,6 +326,11 @@ read -r -d '' overlay <<'OVERLAY' || true
         "repo": "laurigates/claude-plugins"
       },
       "autoUpdate": true
+    }
+  },
+  "pluginConfigs": {
+    "cc-plugin-agents-md@builtin": {
+      "options": { "instructionFiles": "claude-md-and-agents-md" }
     }
   },
   "alwaysThinkingEnabled": true,
