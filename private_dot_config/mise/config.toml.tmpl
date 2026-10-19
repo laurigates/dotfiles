@@ -13,8 +13,11 @@
 # Runtime Versions
 # ============================================================================
 [tools]
-# Python versions (multi-version support)
-python = ["3.11", "3.13"]
+# Python version: latest stable. Single entry on purpose: mise passes the first
+# listed python to `uv tool install --python`, so every pipx: tool below builds
+# on it (ansible 14 needs >= 3.12). Projects needing another version pin it in
+# their own mise.toml.
+python = "latest"
 
 # Node.js ecosystem
 {{- /* node 26+ binaries link against libatomic.so.1, which is absent on
