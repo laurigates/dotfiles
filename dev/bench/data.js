@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792576589170,
+  "lastUpdate": 1792576731791,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2155,6 +2155,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0106630068,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3984bbcae93dbb6652c5a345379a1f205b36c350",
+          "message": "docs(claude): require a source command for numbers in PRs and summaries (#498)\n\n## What\n\nAdds one sentence to the \"Status Claims Point at Evidence\" section of\n`exact_dot_claude/rules/communication.md`: a number in a PR, issue,\ncommit, or summary names the command that produced it, or is labelled as\nan estimate.\n\n## Why\n\nThe usage report of 2026-10-14 found a PR table carrying an uncomputed\nhole count (397; the computed value was 422) and a time estimate given\nwithout a measurement. The section already covered ran/passed/pushed\nclaims but not numbers. Unverified negatives (\"no other instances\") stay\nwith `tool-use-patterns.md` § \"Control-test negatives\".\n\n## Checks\n\n- `mise run lint:shell`, `lint:actions`, `lint:docs`: exit 0. `mise run\nlint` exits 1 only on `lint:lua`, because Homebrew luacheck 1.2.0\ncrashes on Lua 5.5 on this machine. That is a local environment problem,\nand this PR touches no Lua.\n- `gitleaks dir . --config .gitleaks.toml`: exit 0, no leaks.\n- Pre-commit hooks passed on commit.\n\nAfter merge, run `chezmoi apply ~/.claude` to sync the rule.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01GhhDWA39zgDrq12SM1Nenv\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T12:57:50+03:00",
+          "tree_id": "abd01b47361ca54268edbe76c346a5bdc0e7daa6",
+          "url": "https://github.com/laurigates/dotfiles/commit/3984bbcae93dbb6652c5a345379a1f205b36c350"
+        },
+        "date": 1792576731311,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13054931400000003,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017654418000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0014857334,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.012253960400000003,
             "unit": "s"
           }
         ]
