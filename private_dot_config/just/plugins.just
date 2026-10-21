@@ -308,9 +308,9 @@ plugins-reconcile-keys repo:
     # The safe half of plugins-sync-repo, for unattended use (the weekly routine).
     # Membership only:
     #   +  add canonical @laurigates-claude-plugins keys the repo is MISSING, using
-    #      canonical's value. This is the real functional bug: enabledPlugins is a
-    #      WHOLE-MAP replacement, so a plugin omitted from an exhaustive pin is
-    #      silently DISABLED in web/remote sessions.
+    #      canonical's value. This is the real functional bug: web/remote sessions
+    #      have no user scope, so a plugin omitted from an exhaustive pin falls back
+    #      to its manifest defaultEnabled there instead of canonical's value.
     #   -  drop keys pinned here that no longer exist in the live marketplace
     #      (renamed/removed upstream) — dead pins that can never resolve.
     #
@@ -532,8 +532,8 @@ _plugins-audit-roots +roots:
     # — an ABSOLUTE floor of laurigates keys separates them (>= 41 in practice)
     # from deliberate narrow subsets (<= 21); the floor is canonical-growth-proof,
     # unlike a %-of-canonical threshold which reclassifies drifted-behind pins as
-    # subsets. enabledPlugins uses whole-map replacement, so an exhaustive pin
-    # omitting a new plugin silently disables it in web/remote — exactly this drift.
+    # subsets. Web/remote sessions have no user scope, so an exhaustive pin omitting
+    # a new plugin leaves it at its manifest default there — exactly this drift.
     set -uo pipefail
     canonical="$HOME/.claude/settings.json"
     mp="laurigates-claude-plugins"
