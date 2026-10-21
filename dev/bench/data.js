@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792413135198,
+  "lastUpdate": 1792576346648,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2023,6 +2023,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0082371048,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "666ddb8bd153284b21e25ef830e15a695d67e4c7",
+          "message": "docs(mise): note how pipx tools pick their python and survive a prune (#495)\n\nAdds a short section to `docs/mise-quick-reference.md`. mise passes the\nfirst global `python` to `uv tool install --python` for every `pipx:`\ntool, and pruning an interpreter breaks the venvs built on it. Includes\nthe check-and-rebuild commands used before `mise prune python` in #494's\nfollow-up.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01MTzgWGbUpTi14YdCkV6kas\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T12:51:26+03:00",
+          "tree_id": "ca27061466cf17e453b1f7f1fc93741d74164439",
+          "url": "https://github.com/laurigates/dotfiles/commit/666ddb8bd153284b21e25ef830e15a695d67e4c7"
+        },
+        "date": 1792576346051,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12048102500000002,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015835122,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013402794000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0113766284,
             "unit": "s"
           }
         ]
