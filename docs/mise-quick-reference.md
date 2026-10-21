@@ -65,6 +65,24 @@ mise uninstall python@3.11            # Uninstall specific version
 mise prune                            # Remove unused versions
 ```
 
+### Python Versions and `pipx:` Tools
+
+mise's pipx backend runs `uv tool install <pkg> --python <first global python>`,
+so the first entry of the global `python` setting is the interpreter every
+`pipx:` tool is built on (`MISE_VERBOSE=1 mise install pipx:<tool>` shows the
+command). A tool that needs a newer Python fails to install when an older
+version is listed first. The global config uses `python = "latest"` for this
+reason. `mise upgrade --bump` also skips multi-version lists.
+
+A tool's venv keeps pointing at the interpreter it was built on, so pruning
+that Python breaks the tool. Before `mise prune python`, find venvs on the
+outgoing version and rebuild them:
+
+```bash
+grep -l 'python/3.11/' ~/.local/share/mise/installs/pipx-*/*/*/pyvenv.cfg
+mise install -f pipx:<tool>@<version>  # Rebuild on the current python
+```
+
 ## 🎯 Tasks
 
 ### Common Tasks
