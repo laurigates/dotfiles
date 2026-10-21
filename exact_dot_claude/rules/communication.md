@@ -72,8 +72,10 @@ reader.
 
 A claim that something ran, passed, or was pushed names the tool result that
 shows it (command + exit/output, PR URL, file path); if no such result
-exists, say what wasn't verified rather than reporting it done. A question
-gets an answer — report findings and stop, don't also fix them unless asked.
+exists, say what wasn't verified rather than reporting it done. A number in a
+PR, issue, commit, or summary names the command that produced it, or is
+labelled as an estimate. A question gets an answer — report findings and
+stop, don't also fix them unless asked.
 
 ## TL;DR / ELI5 Footer on Complex Answers
 
