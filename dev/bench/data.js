@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792576346648,
+  "lastUpdate": 1792576465799,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2067,6 +2067,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0113766284,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "715d700935aca11d22cf1bbb62fb5b78791766d8",
+          "message": "feat(claude): read AGENTS.md alongside CLAUDE.md (#496)\n\n## What\n\nSets Claude Code's **Project instructions** to `claude-md-and-agents-md`\nvia `pluginConfigs.\"cc-plugin-agents-md@builtin\"` in the\n`~/.claude/settings.json` overlay.\n\n## Why\n\nThe default mode (`claude-md-or-agents-md`) reads `AGENTS.md` only when\nno `CLAUDE.md` exists in the working directory or above it\n([docs](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load)).\n`~/repos/CLAUDE.md` sits above every repo, so no `AGENTS.md` under\n`~/repos` loaded. 10 such files were being skipped, including skullcaps,\nComfyUI, ComfyUI_frontend and surface. Claude Code ignores this key in\nproject and local settings, so it has to be set user-wide.\n\nSide effect: 6 repos with both files that are not linked (FVH\ninfrastructure, pal-mcp-server, ollama, local-ai-testing, …) now load\n`AGENTS.md` after `CLAUDE.md`. Repos whose `CLAUDE.md` imports or\nsymlinks `AGENTS.md` are not double-loaded.\n\n## Verification\n\n- `chezmoi apply ~/.claude/settings.json`: the diff adds only\n`pluginConfigs`.\n- A fresh `claude -p` in `skullcaps-workbench` reported both the repo\nand workspace `AGENTS.md` as loaded, quoting the first lines correctly.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01TeZMmjPozaeAwz99UpohiH\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T12:53:33+03:00",
+          "tree_id": "9960884c27b38d22baf913b90e71afbbcdfe4b3f",
+          "url": "https://github.com/laurigates/dotfiles/commit/715d700935aca11d22cf1bbb62fb5b78791766d8"
+        },
+        "date": 1792576465501,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12308686366666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015972512000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013484112000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0112019324,
             "unit": "s"
           }
         ]
