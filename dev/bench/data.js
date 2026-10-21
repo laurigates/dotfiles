@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792576465799,
+  "lastUpdate": 1792576589170,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2111,6 +2111,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0112019324,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "599c0075384366a4cc4e755ba044eecb3d656037",
+          "message": "docs(claude): correct enabledPlugins resolution to per-plugin (#497)\n\n## What\n\n`claude-plugins-freshness.md` said a project's `enabledPlugins` map\nreplaces the global one wholesale, so any globally enabled plugin the\nproject map omits would be disabled. The [`enabledPlugins` settings\nreference](https://code.claude.com/docs/en/settings-reference#enabledplugins)\nsays each `plugin@marketplace` key resolves on its own, highest scope\nfirst, and falls back to the manifest `defaultEnabled` when no scope\nsets it. Its example is a project `true` overriding a user `false`, with\n`.claude/settings.local.json` as the per-machine opt-out.\n\n## Changes\n\n- The rule section now states per-plugin resolution, plus a note\nrecording the earlier claim so an audit doesn't reintroduce it.\n- The consequence for exhaustive pins is kept, with the reason it\nactually holds: web and remote sessions have no user scope, so only the\nproject map applies there.\n- Two comments in `private_dot_config/just/plugins.just`\n(`plugins-reconcile-keys`, `plugins-audit`) repeated the claim and are\nreworded. Recipe code is unchanged.\n\n## How it surfaced\n\nWhile enabling 13 plugins in ForumViriumHelsinki/fvh-data-pipe#78, the\nrule implied that commit would switch off 31 other globally enabled\nplugins in that repo. The settings reference contradicts it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01WDfr3HpmhC7t7hK32XNH5M\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T12:55:30+03:00",
+          "tree_id": "79fce8b79f17df41c91df634d2927b6900cc6ada",
+          "url": "https://github.com/laurigates/dotfiles/commit/599c0075384366a4cc4e755ba044eecb3d656037"
+        },
+        "date": 1792576588625,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11914731299999999,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001553947,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013081770000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0106630068,
             "unit": "s"
           }
         ]
