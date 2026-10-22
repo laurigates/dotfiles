@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792599268865,
+  "lastUpdate": 1792655052308,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2243,6 +2243,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009381918600000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ff72db2ab291d45562c39a9101f558ecded9d0cf",
+          "message": "feat(macos): add noTunes to stop media keys launching Apple Music (#500)\n\nHeadphone play/pause launches Apple Music when no other app holds Now\nPlaying. This adds the \\`notunes\\` cask to the \\`gui\\` profile and a\n\\`com.lgates.notunes\\` RunAtLoad LaunchAgent so it starts at login.\n\nVerified locally: \\`launchctl print\\` shows last exit code 0, \\`pgrep -x\nnoTunes\\` finds it running, and Music started with \\`open -a Music\\` is\nno longer running 3 s later.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01SG98vnBanHD77dEZ8p8CNt\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T10:43:22+03:00",
+          "tree_id": "2df0395afdd42263f9545afec9e2c6b70257f7aa",
+          "url": "https://github.com/laurigates/dotfiles/commit/ff72db2ab291d45562c39a9101f558ecded9d0cf"
+        },
+        "date": 1792655051790,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07045232133333335,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011881912000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009682315999999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0080149508,
             "unit": "s"
           }
         ]
