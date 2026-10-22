@@ -164,6 +164,7 @@
     { name = "Krita",                  pkg = "krita",                 desc = "Digital painting" },
     { name = "Mac Mouse Fix",          pkg = "mac-mouse-fix",         desc = "Mouse enhancement" },
     { name = "mitmproxy",              pkg = "mitmproxy",             desc = "HTTPS proxy" },
+    { name = "noTunes",                pkg = "notunes",               desc = "Stop media keys launching Music" },
     { name = "Obsidian",               pkg = "obsidian",              desc = "Knowledge base" },
     { name = "OpenLens",               pkg = "openlens",              desc = "Kubernetes IDE" },
     { name = "OrbStack",               pkg = "orbstack",              desc = "Docker/Linux on macOS" },
