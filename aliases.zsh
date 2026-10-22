@@ -15,6 +15,15 @@ alias ccd='cd "$(chezmoi source-path)"'
 # use nvim if it exists
 type nvim >/dev/null 2>&1 && alias vim="nvim"
 
+# Copy stdin to the clipboard of the machine kitty runs on. Compared with:
+#   pbcopy  — macOS only; writes the local pasteboard directly. Works in any
+#             terminal, script, or cron job, but over SSH it hits the remote host.
+#   xsel -ib — X11 only; needs $DISPLAY (no Wayland, no plain SSH without -X)
+#             and forks to keep serving the selection; X keeps no copy itself.
+#   cb      — sends the text as an escape sequence through the TTY to kitty, so
+#             it lands on the local clipboard even from inside SSH. Fails
+#             outside kitty; under tmux needs `allow-passthrough on`. Reading
+#             back is `kitten clipboard -g` (prompts per `clipboard_control`).
 alias cb='kitty +kitten clipboard /dev/stdin'
 
 alias reload="exec zsh"
