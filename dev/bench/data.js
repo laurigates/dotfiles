@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792655052308,
+  "lastUpdate": 1792677022699,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2287,6 +2287,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0080149508,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "fca6429ca55c6063bb4ead10d2e5786f1c67f90e",
+          "message": "docs(zsh): explain cb alias vs pbcopy and xsel (#501)\n\nAdds a comment above the `cb` alias in `aliases.zsh` comparing it with\n`pbcopy` and `xsel -ib`. `pbcopy` and `xsel` write the clipboard of the\nhost they run on. `cb` (`kitty +kitten clipboard`) sends the text to\nkitty through the TTY, so it reaches the local clipboard from inside\nSSH, but it only works under kitty.\n\nComment only, no behaviour change. `zsh -n aliases.zsh` passes.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01VvQAs2GdfoPMhDrC9ChpvD\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T16:49:22+03:00",
+          "tree_id": "56e1a2167643b94e58d708ad721f96a10fab9a93",
+          "url": "https://github.com/laurigates/dotfiles/commit/fca6429ca55c6063bb4ead10d2e5786f1c67f90e"
+        },
+        "date": 1792677021995,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12789155966666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0016373952000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013835342000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0125084064,
             "unit": "s"
           }
         ]
