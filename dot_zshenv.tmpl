@@ -30,4 +30,11 @@ export OLLAMA_KEEP_ALIVE=30m
 export TMPDIR="$HOME/tmp"
 [ -d "$TMPDIR" ] || mkdir -p "$TMPDIR"
 {{- end }}
+
+{{- if eq .chezmoi.hostname "pop-os" }}
+# popos: / has ~6 GB free. Apptainer defaults its layer cache to ~/.apptainer/cache
+# and SIF assembly to /tmp, so keep both on the data disk.
+export APPTAINER_CACHEDIR=/mnt/sabrent/apptainer/cache APPTAINER_TMPDIR=/mnt/sabrent/apptainer/tmp
+[ -d "$APPTAINER_TMPDIR" ] || mkdir -p "$APPTAINER_CACHEDIR" "$APPTAINER_TMPDIR"
+{{- end }}
 # vim:ft=sh
