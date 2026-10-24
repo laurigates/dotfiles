@@ -7,26 +7,41 @@
 # control instead. One key press closes the tab and kitty returns focus to
 # the previous tab.
 #
+# --note FILE prints FILE's text below the images, just above the key
+# prompt, so a question about the images stays on screen next to them.
+#
 # Never pass --hold to `kitty @ launch`: it leaves a shell prompt behind,
 # which looks exactly like Claude Code exited.
 #
-# Usage: show-image.sh FILE [FILE...]
+# Usage: show-image.sh [--note FILE] IMAGE [IMAGE...]
 # Exit codes: 0 launched, 1 bad arguments / missing file, 2 not usable here
 # (not inside kitty, or remote control unavailable).
 set -euo pipefail
 
-if [ "$#" -eq 0 ]; then
-    echo "usage: show-image.sh FILE [FILE...]" >&2
+usage() {
+    echo "usage: show-image.sh [--note FILE] IMAGE [IMAGE...]" >&2
     exit 1
+}
+
+abspath() {
+    if [ ! -f "$1" ]; then
+        echo "show-image: no such file: $1" >&2
+        exit 1
+    fi
+    printf '%s/%s\n' "$(cd "$(dirname "$1")" && pwd)" "$(basename "$1")"
+}
+
+note=""
+if [ "${1:-}" = "--note" ]; then
+    [ "$#" -ge 2 ] || usage
+    note=$(abspath "$2")
+    shift 2
 fi
+[ "$#" -ge 1 ] || usage
 
 files=()
 for f in "$@"; do
-    if [ ! -f "$f" ]; then
-        echo "show-image: no such file: $f" >&2
-        exit 1
-    fi
-    files+=("$(cd "$(dirname "$f")" && pwd)/$(basename "$f")")
+    files+=("$(abspath "$f")")
 done
 
 if [ -z "${KITTY_WINDOW_ID:-}" ] || [ -z "${KITTY_LISTEN_ON:-}" ]; then
@@ -39,7 +54,15 @@ if ! kitty @ ls >/dev/null 2>&1; then
 fi
 
 banner='\n  \033[1;7m Claude Code image viewer \033[0m  press any key to close this tab and return\n\n'
-# The inner sh expands $0 (banner) and $@ (files), so the quotes are single.
+# The inner bash expands $0 (banner), $1 (note) and $@ (images), so the
+# quotes are single.
 # shellcheck disable=SC2016
 kitty @ launch --type=tab --tab-title "Claude: image viewer" \
-    sh -c 'printf "%b" "$0"; kitty +kitten icat --hold "$@"' "$banner" "${files[@]}"
+    bash -c '
+        printf "%b" "$0"
+        note=$1; shift
+        kitty +kitten icat "$@"
+        if [ -n "$note" ]; then printf "\n"; cat "$note"; fi
+        printf "\n  \033[1;7m press any key to close \033[0m"
+        read -rsn1
+    ' "$banner" "$note" "${files[@]}"

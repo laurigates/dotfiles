@@ -22,8 +22,16 @@ user's `!` commands run without `/dev/tty`. A plain
 ## show-image.sh
 
 ```
-~/.claude/skills/kitty-show-image/show-image.sh FILE [FILE...]
+~/.claude/skills/kitty-show-image/show-image.sh [--note FILE] IMAGE [IMAGE...]
 ```
+
+**When the image is for a decision, write a note and pass `--note`.** The
+note's text appears below the images, just above the key prompt: what to look
+at (a table of figures and what each should show works well), what is expected
+to look wrong for now, and the exact answer to type back in Claude Code. The
+user should not have to switch back to the chat to find out what they are
+judging. Send one image per question: only the last images stay on screen
+above the note, and earlier ones scroll off the top.
 
 Opens a tab titled **Claude: image viewer** with a banner saying it is
 Claude Code's image viewer. It shows the images with `icat --hold`, and one
