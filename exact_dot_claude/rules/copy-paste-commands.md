@@ -12,9 +12,10 @@ copy-paste:
 - **No indentation inside the code fence** beyond what the command requires.
 - **Genuinely multi-line content** (heredoc body, long script, nested
   `jq`/`awk`): write it to a file with one command, run the file with another.
-- **Commands the user must run in their own TTY** (interactive auth,
-  `kitty +kitten icat`): hand them over single-line with the `!` prefix, e.g.
-  `! gcloud auth login`.
+- **Commands the user must run themselves** (interactive auth): hand them over
+  single-line with the `!` prefix, e.g. `! gcloud auth login`. The `!` shell
+  has no `/dev/tty`, so anything that opens the TTY directly (`kitty +kitten
+  icat`) fails there too; show images through the `kitty-show-image` skill.
 
 ```
 # Don't — the continuation line arrives with leading spaces inside the command
