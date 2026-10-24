@@ -251,3 +251,128 @@ pr-todo:
     printf '%s\n' "$rows" | while IFS=$'\t' read -r repo num reason title url; do
       printf '%-40s %-7s %-24s %s\n' "$repo" "$num" "$reason" "$title"
     done
+
+# Classify open Renovate PRs into SAFE vs HOLD buckets and print merge lines. Read-only.
+#
+# Every PR is fetched with `gh pr view` (the search index lags, so search is only
+# used to enumerate). SAFE means all of: mergeable and not BLOCKED, no failing or
+# pending checks, `renovate/stability-days` passed, at least one real CI check
+# passed, and every row of the Renovate update table is patch/minor/digest/pin/
+# lockfile. A minor bump on a 0.x version counts as major (semver), and language
+# runtime bumps (`python to 3.15`, ...) are held however small. "Configure Renovate"
+# onboarding PRs are SAFE with no checks: no build reads renovate.json.
+#
+# The update table's columns differ between Renovate configs, so it is parsed by
+# header (`Update`, `Change`), never by position.
+#
+# SAFE output is a list of literal `gh pr merge` lines; nothing is merged. The
+# external-PR merge guard refuses `$var` selectors, so run them as written. SAFE is
+# mechanical: a minor chart bump on a platform component (ArgoCD, Envoy Gateway,
+# cert-manager, external-dns) still needs a human read before it ships.
+[group: "git"]
+renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovate-bot app/laurigates-renovate" jobs="8":
+    #!/usr/bin/env -S python3 -I
+    import collections, json, re, subprocess, sys
+    from concurrent.futures import ThreadPoolExecutor
+
+    OWNERS = "{{owners}}".split()
+    AUTHORS = "{{authors}}".split()
+    BAD = {"FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE"}
+    WAIT = {"PENDING", "IN_PROGRESS", "QUEUED", "EXPECTED", ""}
+    RUNTIME = re.compile(r"update (dependency )?(python|node|nodejs|golang|go|ruby|java)( docker tag)? to", re.I)
+    FIELDS = "number,title,isDraft,mergeStateStatus,mergeable,body,statusCheckRollup"
+
+    def gh(*args):
+        return json.loads(subprocess.run(["gh", *args], check=True, capture_output=True, text=True).stdout)
+
+    def change_type(change):
+        sides = re.split(r"→|->", change)
+        if len(sides) < 2:
+            return "unknown"
+        a, b = (re.findall(r"(\d+)(?:\.(\d+))?", s) for s in sides[:2])
+        if not a or not b:
+            return "digest" if re.search(r"\b[0-9a-f]{7,}\b", change) else "unknown"
+        (amaj, amin), (bmaj, bmin) = a[0], b[0]
+        if amaj != bmaj or (amaj == "0" and (amin or "0") != (bmin or "0")):
+            return "major"
+        return "minor" if (amin or "0") != (bmin or "0") else "patch"
+
+    def update_types(body):
+        lines = (body or "").splitlines()
+        cells = lambda l: [c.strip() for c in l.strip().strip("|").split("|")]
+        for i, line in enumerate(lines[:-1]):
+            if line.startswith("|") and re.fullmatch(r"\|[\s\-:|]+\|", lines[i + 1].strip()):
+                hdr = [h.lower() for h in cells(line)]
+                ui = hdr.index("update") if "update" in hdr else None
+                ci = hdr.index("change") if "change" in hdr else None
+                types = []
+                for row in lines[i + 2:]:
+                    if not row.startswith("|"):
+                        break
+                    c = cells(row)
+                    t = change_type(c[ci]) if ci is not None and ci < len(c) else "unknown"
+                    declared = c[ui].lower() if ui is not None and ui < len(c) else ""
+                    # Computed 0.x "major" wins over a declared "minor"; a declared
+                    # value fills in when the Change cell cannot be parsed.
+                    if declared == "major" or (t == "unknown" and declared):
+                        t = declared
+                    types.append(t)
+                return types
+        return []
+
+    def verdict(d):
+        title = d["title"]
+        types = set(update_types(d["body"]))
+        checks = [(c.get("name") or c.get("context") or "", (c.get("conclusion") or c.get("state") or "").upper())
+                  for c in d["statusCheckRollup"] or []]
+        real = [(n, s) for n, s in checks if n != "renovate/stability-days" and not n.startswith("conventional-commits")]
+        stability = [s for n, s in checks if n == "renovate/stability-days"]
+        if d["isDraft"]: return "HOLD-draft"
+        if d["mergeable"] == "CONFLICTING" or d["mergeStateStatus"] == "DIRTY": return "HOLD-conflict"
+        if d["mergeStateStatus"] == "BLOCKED": return "HOLD-blocked"
+        if any(s in BAD for _, s in real): return "HOLD-failing"
+        if any(s in WAIT for _, s in real): return "HOLD-pending"
+        if stability and stability[0] != "SUCCESS": return "HOLD-stability"
+        if not types and re.search(r"configure renovate", title, re.I): return "SAFE"
+        if RUNTIME.search(title): return "HOLD-runtime"
+        if not types or types & {"major", "unknown"}: return "HOLD-major"
+        if not any(s == "SUCCESS" for _, s in real): return "HOLD-nochecks"
+        return "SAFE"
+
+    prs = sorted({(p["repository"]["nameWithOwner"], p["number"])
+                  for o in OWNERS for a in AUTHORS
+                  for p in gh("search", "prs", "--owner", o, "--author", a, "--state", "open",
+                              "--limit", "1000", "--json", "repository,number")})
+    if not prs:
+        print("No open Renovate PRs for", " ".join(AUTHORS), "under", " ".join(OWNERS))
+        sys.exit(0)
+
+    def fetch(pr):
+        repo, n = pr
+        try:
+            return repo, gh("pr", "view", str(n), "-R", repo, "--json", FIELDS)
+        except subprocess.CalledProcessError as e:
+            print(f"warn: {repo}#{n}: {e.stderr.strip()}", file=sys.stderr)
+            return repo, None
+
+    with ThreadPoolExecutor(max_workers=int("{{jobs}}")) as pool:
+        rows = [(repo, d, verdict(d)) for repo, d in pool.map(fetch, prs) if d]
+
+    counts = collections.Counter(v for _, _, v in rows)
+    print(f"{len(rows)} open Renovate PRs across {len({r for r, _, _ in rows})} repos\n")
+    for v, n in counts.most_common():
+        print(f"{n:5}  {v}")
+    for v in [v for v, _ in counts.most_common() if v != "SAFE"]:
+        per_repo = collections.Counter(r for r, _, vv in rows if vv == v)
+        print(f"\n== {v}: " + ", ".join(f"{r}({n})" for r, n in per_repo.most_common()))
+    safe = [(r, d) for r, d, v in rows if v == "SAFE"]
+    if safe:
+        print("\n== SAFE (review titles, then run each line as written)")
+        print("#   SAFE is mechanical: a chart bump on a platform component (ArgoCD, gateway,")
+        print("#   cert-manager, external-dns, ingress) deploys to production on merge. Read it first.")
+        for r, d in safe:
+            print(f"#   {r}#{d['number']}  {d['title']}")
+        for r, d in safe:
+            print(f"gh pr merge {d['number']} -R {r} --squash --delete-branch")
+        print("\n# Sibling PRs that touch one lockfile can conflict after the first merges;")
+        print("# confirm with `gh pr view <n> -R <repo> --json state`, not search (index lags).")
