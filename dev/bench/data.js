@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792862820354,
+  "lastUpdate": 1792871194834,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2375,6 +2375,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0109565388,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a9be74d27dbef9279d658e1354cce4eb4daa1ff5",
+          "message": "feat(zshenv): keep Apptainer cache and temp on popos's data disk (#502)\n\nAdds a block to `dot_zshenv.tmpl` that, on hostname `pop-os` only, sets\n`APPTAINER_CACHEDIR` and `APPTAINER_TMPDIR` under\n`/mnt/sabrent/apptainer/` and creates the directories.\n\npopos's `/` has about 6 GB free. Apptainer's defaults\n(`~/.apptainer/cache` for image layers, `/tmp` for SIF assembly) would\nput a 3.4 GB CUDA image pull plus its 3.2 GB SIF on root. The background\nis in laurigates/claude-plugins#3182 (the new `tools-plugin:apptainer`\nskill).\n\nRendered with `chezmoi execute-template`: the block is present on popos\nand absent on the Mac (0 matching lines).\n\nPost-merge step tracked in laurigates/dotfiles#503.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01MSZ9jyVNVN8Xt7jjpUS8aB\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T22:45:28+03:00",
+          "tree_id": "fdd116c239456694d8bf11eb11208650ca2a9150",
+          "url": "https://github.com/laurigates/dotfiles/commit/a9be74d27dbef9279d658e1354cce4eb4daa1ff5"
+        },
+        "date": 1792871194034,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11508377033333335,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015581984000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012939516000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011622439600000003,
             "unit": "s"
           }
         ]
