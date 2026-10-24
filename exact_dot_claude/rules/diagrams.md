@@ -12,6 +12,6 @@ skill — invoke it before authoring.
 
 Delivery: Bash can't render images inline. Write the `.d2` source (in
 `/tmp/`, or `docs/diagrams/` if it belongs in the repo), render with
-`d2 <src> <out>.svg`, and tell the user the path — on kitty, suggest
-`! kitty +kitten icat <out>.png`. Commit `.d2` + rendered output together
-when repo-resident.
+`d2 <src> <out>.svg`, and show it with the `kitty-show-image` skill
+(`SendUserFile`, or a kitty tab on request). Commit `.d2` + rendered output
+together when repo-resident.
