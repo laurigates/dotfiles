@@ -62,6 +62,9 @@ kitty @ launch --type=tab --tab-title "Claude: image viewer" \
         printf "%b" "$0"
         note=$1; shift
         kitty +kitten icat "$@"
+        printf "\n  \033[2mimages:"
+        for f in "$@"; do printf " %s" "${f##*/}"; done
+        printf "\033[0m\n"
         if [ -n "$note" ]; then printf "\n"; cat "$note"; fi
         printf "\n  \033[1;7m press any key to close \033[0m"
         read -rsn1
