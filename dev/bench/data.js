@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792871258777,
+  "lastUpdate": 1792949990809,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2463,6 +2463,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0117313316,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f20ecf35fb0fa67494464e05b7c5dddeb65bec72",
+          "message": "chore(deps): update @anthropic-ai/claude-code to v2.1.308 (#515)\n\nThis PR contains the following updates:\n\n| Package | Change |\n[Age](https://docs.renovatebot.com/merge-confidence/) |\n[Confidence](https://docs.renovatebot.com/merge-confidence/) |\n|---|---|---|---|\n|\n[@anthropic-ai/claude-code](https://redirect.github.com/anthropics/claude-code)\n| `2.1.306` → `2.1.308` |\n![age](https://developer.mend.io/api/mc/badges/age/npm/@anthropic-ai%2fclaude-code/2.1.308?slim=true)\n|\n![confidence](https://developer.mend.io/api/mc/badges/confidence/npm/@anthropic-ai%2fclaude-code/2.1.306/2.1.308?slim=true)\n|\n\n---\n\n### Release Notes\n\n<details>\n<summary>anthropics/claude-code\n(@&#8203;anthropic-ai/claude-code)</summary>\n\n###\n[`v2.1.308`](https://redirect.github.com/anthropics/claude-code/blob/HEAD/CHANGELOG.md#21308)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code/compare/v2.1.307...v2.1.308)\n\n- Bug fixes and reliability improvements\n\n###\n[`v2.1.307`](https://redirect.github.com/anthropics/claude-code/blob/HEAD/CHANGELOG.md#21307)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code/compare/v2.1.306...v2.1.307)\n\n- Added `/claude-api api-version` to move Claude API code to API version\n`2026-10-21`\n- Added the `claude_code.safety_event` OpenTelemetry event for each tool\ncall a permission rule, auto mode, a safety check, a hook or the sandbox\nstopped, prompted or sent back\n- Fixed requests failing with a model-not-found error when\n`CLAUDE_CODE_DISABLE_1M_CONTEXT` is set and the model is an alias with\nthe `[1m]` suffix, such as `opus[1m]`\n- Fixed the `prompt-caching-scope` beta header being sent behind custom\n`ANTHROPIC_BASE_URL` gateways and on Foundry, where it has no effect\n- Fixed MCP servers showing \"needs authentication\" in `claude -p` on\nmacOS while the login keychain was locked; they now say why, and the\nnext run after an unlock connects without a new sign-in\n- Fixed MCP servers being reported as timed out, and staying failed in\nheadless runs, when a macOS or Linux computer went to sleep while they\nwere connecting\n- Fixed HTTP MCP tool calls being sent twice when the connection closed\nmid-call; only read-only or idempotent tools are now retried\n- Fixed a turn sometimes starting without an SDK MCP server's latest\ntools when a background task was running\n- Fixed some \"Autocompact is thrashing\" errors in turns that read many\nPDF pages, images or other large tool results\n- Fixed `/autocompact` in cloud sessions going back to the default\nwindow after the session restarted\n- Fixed a conversation cleared with `/clear` sometimes coming back when\na cloud or self-hosted runner session restarted\n- Fixed `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` being ignored in Claude\napps gateway sessions\n- Fixed telemetry from Claude Desktop sessions behind a Claude apps\ngateway being rejected when `OTEL_EXPORTER_OTLP_HEADERS` is set\n- Fixed `/permissions` > Recently denied not showing the denied shell\ncommand, and auto mode's local classifier ignoring an approval from\nthere when it checks a retried command; approving a row now names the\ncommand, not its description\n- Fixed `/help` and the `/` command menu showing long model-facing\ndescriptions for bundled skills such as `/claude-api` instead of their\nshort descriptions\n- Fixed subagent transcripts recording placeholder token usage and an\nempty stop reason for streamed responses\n- Fixed model switches through the Agent SDK's `setModel()`, and apps\nbuilt on it, being refused when the API took more than 5 seconds to\nconfirm the model; Claude Code now waits up to 15 seconds\n- Fixed a background command stopped through a connected app (such as\nthe desktop app archiving an idle session) being reported to Claude as\nstopped by the user; the notice now names its output file\n- Fixed WebFetch in Cowork cloud sessions reporting a tool error when a\nsite answered with a 4xx status or a robots.txt refusal; it is now a\nnormal result, as in local sessions\n- Fixed write tools on a directly configured GitHub MCP server showing a\nform that closed without creating anything in the desktop app's Code tab\n- Fixed Artifact tool reads failing with a connection reset when the\nserver had closed a reused connection\n- Self-hosted runner: Fixed sessions with `--use-anthropic-git-proxy`\ncommitting a `.claude/settings.local.json` left in the clone by an\nearlier session\n- Self-hosted runner: Fixed archiving or requeueing a session, or\nstopping the runner, during its checkout hook leaving the hook's\nprocesses running and the runner's slot held\n- Improved recovery from unparseable tool calls: Claude Code now retries\nthe call up to twice before ending the turn with an error\n- Improved fork subagents launched together: each is now told which\nlaunch is its own, so forks are much less likely to try to start each\nother's work\n- Improved browser sign-in: the success page now appears as soon as\nsign-in completes, without waiting for your account profile to load\n- Improved web search errors in cloud and self-hosted runner sessions: a\nsearch refused with a 403 that gives a reason now shows that reason\ninstead of a generic \"Authentication error\"\n- Improved the time to the first reply in cloud sessions when one of the\ndesktop app's MCP servers can't connect\n- Improved Remote Control connect time for sessions whose transcript\ncontains large pasted images or PDF reads\n- Changed the notice Claude gets when the WebSearch budget is used up to\nalso tell it not to query search engines in a browser or through\ncomputer use\n- Changed the `axScreenReader` setting and `CLAUDE_AX_SCREEN_READER` in\na settings `env` block to apply only from user, managed or `--settings`\nsettings (since 2.1.305)\n- Self-hosted runner: Changed checkout hooks to be stopped after 30\nminutes by default, failing the session's setup; if yours needs longer,\nraise `--checkout-hook-timeout-min` or set it to `0`\n- Self-hosted runner: Changed the certificate file built for\nAnthropic-managed git to filter its trusted certificates as the CLI\ndoes; a `[runner:warn]` line gives the number left out\n- \\[VSCode] Added a notice on the microphone button when voice dictation\nstops by itself (15 seconds without recognized speech, or the 2-minute\nlimit), saying why and that the text so far is kept\n- \\[VSCode] Fixed a long prompt expanded with Show more covering the\nwhole chat panel: a pinned prompt is now capped at 40% of the panel and\nscrolls\n- \\[VSCode] Fixed part of a list item or table cell with LaTeX math\npasting as a new list or table in rich text editors\n- \\[VSCode] Fixed dictation failing behind a TLS-inspecting proxy when\n`NODE_EXTRA_CA_CERTS` is set only in `~/.claude/settings.json`; it now\nalso follows `CLAUDE_CODE_CERT_STORE`\n- \\[VSCode] Changed the \"still open somewhere else\" notice to also cover\na Claude process left over from an extension restart, which usually ends\non its own within about 10 minutes\n- \\[VSCode] Changed voice dictation to filter its trusted certificates\nas the CLI does\n- \\[VSCode] Changed the extension's own requests to filter their trusted\ncertificates as the CLI does, and to trust the `NODE_EXTRA_CA_CERTS`\nfile named in the environment or in user settings\n- \\[Cloud sessions] Fixed the repository picker saying \"No repositories\nmatch\" while a search was still running; it now shows \"Searching…\" until\nthe results arrive\n- \\[Cloud sessions] Fixed the \"Waiting for a runner\" status on\nself-hosted environments being cut off; with on-demand runners it now\ncounts up from your last message and shows failed attempts\n- \\[Code Review] Added `@claude review stop` (also `off` and `pause`) to\nCode Review, ending an `@claude review always` subscription on a pull\nrequest without starting a new review\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend\nRenovate](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0My4yODguMCIsInVwZGF0ZWRJblZlciI6IjQzLjI4OC4wIiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-25T17:38:56Z",
+          "tree_id": "cb894c9c7be594c765fa403f7ea528cf3a44d613",
+          "url": "https://github.com/laurigates/dotfiles/commit/f20ecf35fb0fa67494464e05b7c5dddeb65bec72"
+        },
+        "date": 1792949990160,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09391455066666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011463140000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009925712,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0082105066,
             "unit": "s"
           }
         ]
