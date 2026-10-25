@@ -66,7 +66,7 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           # Exact, not latest: Renovate bumps it through its github-actions manager (#440).
-          bun-version: 1.4.3
+          bun-version: 1.4.4
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@4790763c0a3ba4036f72634dc079c4a7dfcd4878 # 2026.10.19.1
@@ -170,7 +170,7 @@ jobs:
 
       - name: Run Claude Code with MCP Integration
         id: claude
-        uses: anthropics/claude-code-action@a5a423f75c251dcbff8a74e99f83b2cb03c72bfa # v1.0.256
+        uses: anthropics/claude-code-action@6b6870e649b5ff408753befeaee5fc7989d4e6a9 # v1.0.258
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
