@@ -1,0 +1,22 @@
+name: OpenCode review
+
+# Automatic PR review on a free OpenCode model. The gates (drafts, bots, forks,
+# docs/lockfile-only changes, oversized diffs, pushes with nothing new to
+# review), the model call and the review comment all live in the reusable
+# workflow; see its header in laurigates/.github. Concurrency (one run per PR,
+# a newer push cancels the older run) is declared there too.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  opencode-review:
+    uses: laurigates/.github/.github/workflows/reusable-opencode-review.yml@main
+    # The scopes the reusable workflow declares, granted explicitly so they do
+    # not depend on this repo's default workflow permissions.
+    permissions:
+      contents: read
+      pull-requests: write
+    secrets:
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
