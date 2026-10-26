@@ -759,6 +759,42 @@ ghpc() {
   fi
 }
 
+# ---- recommended merge method (ghm, and the ghsq / ghrb mismatch warning) ----
+# METHOD from claude-plugins' git-plugin/scripts/pr-merge-method.py: the rule
+# table behind the merge-method check run and the git-plugin `gh pr merge` hook
+# (git-plugin/skills/github-pr-title/merge-strategies.md). The newest installed
+# git-plugin's copy is used; without one, the PR's merge:rebase / merge:squash
+# label (set by the check, or by a human as an override) decides.
+#   _gh_merge_method <repo|""> <num> → prints rebase|squash, or nothing
+_gh_merge_method() {
+  local repo="$1" num="$2" m=
+  local -a repo_flag script
+  [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  script=($HOME/.claude/plugins/cache/*/git-plugin/*/scripts/pr-merge-method.py(Nn))
+  if (( ${#script} )) && (( $+commands[python3] )); then
+    m=$(python3 "${script[-1]}" "${repo_flag[@]}" --pr "$num" </dev/null 2>/dev/null | sed -n 's/^METHOD=//p')
+  fi
+  if [[ "$m" != rebase && "$m" != squash ]]; then
+    m=$(gh pr view "$num" "${repo_flag[@]}" --json labels \
+          --jq '[.labels[].name | select(. == "merge:rebase" or . == "merge:squash")][0] // "" | ltrimstr("merge:")' \
+          </dev/null 2>/dev/null)
+  fi
+  [[ "$m" == rebase || "$m" == squash ]] && print -r -- "$m"
+}
+
+# Warn when an explicit --squash / --rebase disagrees with the recommendation,
+# and ask before merging anyway. Returns 1 to skip the PR.
+#   _gh_method_check <repo|""> <num> <rebase|squash>
+_gh_method_check() {
+  local repo="$1" num="$2" want="$3" rec ans
+  local yellow='' cyan='' bold='' rst=''
+  [[ -t 1 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' bold=$'\033[1m' rst=$'\033[0m' }
+  rec=$(_gh_merge_method "$repo" "$num")
+  [[ -z "$rec" || "$rec" == "$want" ]] && return 0
+  read -k 1 "ans?  ${yellow}⚠${rst} ${cyan}#${num}${rst} is recommended for ${bold}--${rec}${rst}, not --${want} (ghm picks it per PR). Merge with --${want} anyway? [y/N] "; print
+  [[ "$ans" == [yY] ]]
+}
+
 # ---- shared multi-merge engine (ghsq / ghrb / ghrp) -----------------
 # GitHub recomputes a repo's other open PRs' mergeability after each merge and
 # refuses to merge a PR while its status is UNKNOWN. So merge sequentially and,
@@ -787,6 +823,22 @@ _gh_poll_merge() {
   # makes `a`=all in _gh_batch_merge safe — `a` skips the per-PR y/N prompt but
   # still lands here, and an external PR demands a typed word regardless.
   _gh_trust_gate "$repo" "$num" || { REPLY=; return 0 }
+  # ghm passes --auto-method: resolve this PR's own method here, so one batch
+  # can mix rebase and squash merges. An explicit --squash/--rebase (ghsq,
+  # ghrb, ghrp) is checked against the recommendation instead.
+  local am=${argv[(Ie)--auto-method]}
+  if (( am )); then
+    local m; m=$(_gh_merge_method "$repo" "$num")
+    if [[ -z "$m" ]]; then
+      print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: no merge method (no pr-merge-method.py, no merge:* label) — skipped"; return 1
+    fi
+    argv[am]="--$m"
+    print -r -- "  ${dim}${id}: --${m}${rst}"
+  elif (( ${argv[(Ie)--squash]} )); then
+    _gh_method_check "$repo" "$num" squash || { REPLY=; return 0 }
+  elif (( ${argv[(Ie)--rebase]} )); then
+    _gh_method_check "$repo" "$num" rebase || { REPLY=; return 0 }
+  fi
   local meta draft base
   meta=$(gh pr view "$num" "${repo_flag[@]}" --json isDraft,baseRefName \
            --jq '"\(.isDraft)\t\(.baseRefName)"' </dev/null 2>/dev/null)
@@ -1219,6 +1271,7 @@ ghsq() {
     _gh_trust_gate "" "$num" || return 1
     cur_pr=$(_gh_current_pr)
     acted="$num"
+    _gh_method_check "" "$num" squash || return 1
     gh pr merge "$num" --squash --delete-branch
   fi
   _gh_home_if_merged "$cur_pr" "$acted"
@@ -1239,7 +1292,33 @@ ghrb() {
     _gh_trust_gate "" "$num" || return 1
     cur_pr=$(_gh_current_pr)
     acted="$num"
+    _gh_method_check "" "$num" rebase || return 1
     gh pr merge "$num" --rebase --delete-branch
+  fi
+  _gh_home_if_merged "$cur_pr" "$acted"
+}
+
+# Interactive PR merge with each PR's recommended method (_gh_merge_method):
+# rebase for two or more independent conventional commits, squash otherwise.
+# Same picker, -x guard and arg form as ghsq; a batch can mix both methods.
+ghm() {
+  local cur_pr acted show_ext=
+  while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
+  if [[ $# -eq 0 ]]; then
+    local tsv; tsv=$(_gh_pr_multi_select rebase/squash "$show_ext" --layout=reverse)
+    [[ -z "$tsv" ]] && return
+    cur_pr=$(_gh_current_pr)
+    acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
+    _gh_batch_merge "$tsv" --auto-method --delete-branch
+  else
+    local num="${1%%\[*}" m
+    _gh_trust_gate "" "$num" || return 1
+    m=$(_gh_merge_method "" "$num")
+    [[ -n "$m" ]] || { print -r -- "ghm: no merge method for #${num} (no pr-merge-method.py, no merge:* label)" >&2; return 1 }
+    cur_pr=$(_gh_current_pr)
+    acted="$num"
+    print -r -- "#${num}: --${m}"
+    gh pr merge "$num" --"$m" --delete-branch
   fi
   _gh_home_if_merged "$cur_pr" "$acted"
 }
@@ -1756,7 +1835,7 @@ _gh_pr_numbers() {
 
 compdef _gh_pr_numbers gh
 
-# Custom completion for gh PR merge wrappers (ghsq, ghrb)
+# Custom completion for gh PR merge wrappers (ghm, ghsq, ghrb)
 # Lists open PRs with fzf-tab preview of PR details
 _gh_pr_merge_complete() {
   local -a prs
@@ -1766,7 +1845,7 @@ _gh_pr_merge_complete() {
   _describe -t prs 'pull request' prs
 }
 
-compdef _gh_pr_merge_complete ghsq ghrb ghv ghd ghco ghck ghub ghrr
+compdef _gh_pr_merge_complete ghm ghsq ghrb ghv ghd ghco ghck ghub ghrr
 
 # Custom completion for ghpc (PR feedback)
 _gh_pr_feedback_complete() {
