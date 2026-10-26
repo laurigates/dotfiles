@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793009481647,
+  "lastUpdate": 1793009767005,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2595,6 +2595,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.012395869200000003,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8cf9a8c819435219a6af71166fd5e2a8c767a5ae",
+          "message": "feat(zsh): add ghrr to tick Renovate rebase boxes from the terminal (#521)\n\n## What\n\n`ghrr` ticks Renovate's `<!-- rebase-check -->` box (\"If you want to\nrebase/retry this PR, check this box\") through `gh pr edit`, so mass\nrebase requests no longer need the browser.\n\n- `ghrr`: fzf multi-select of this repo's open PRs that still carry an\nunticked box (`^a` = all).\n- `ghrr 277 278`: those PRs directly; a PR without the box (not\nRenovate, or already ticked) is skipped with a note.\n- `ghrr -r`: also `gh workflow run renovate.yml` on\n`$GH_RENOVATE_RUNNER` (default `laurigates/gitops`). Without it, the box\nacts on the next scheduled run. That run covers every repo (~20 min,\nbilled), so it is opt-in.\n\nRegistered in the wrapper help tables, PR-number completion, and fzf-tab\npreview alongside the other `gh*` wrappers.\n\n## Verification\n\n- Live on laurigates/gitops: `ghrr 277` ticked the box (body now `- [x]\n<!-- rebase-check -->`); a rerun and a non-Renovate PR (#162) were\nskipped.\n- The picker's list query returned #278–#281 and excluded #277 (ticked)\nand #162. The fzf UI itself was not exercised (no TTY in the session).\n- `chezmoi execute-template | zsh -n` passes;\n`tests/test-gh-completion.sh` 18/18.\n\nIndependent of the ghsq fix PR; the two touch adjacent lines in the\nwrapper doc table, so the second to merge may need a trivial rebase.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01QTsvFFgo5mhLhLaQxW63Nn\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T10:15:06Z",
+          "tree_id": "b4242be16f220ea4d042c2a423ec4c161955a11c",
+          "url": "https://github.com/laurigates/dotfiles/commit/8cf9a8c819435219a6af71166fd5e2a8c767a5ae"
+        },
+        "date": 1793009766720,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11661961400000002,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015488960000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013090524,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0116757164,
             "unit": "s"
           }
         ]
