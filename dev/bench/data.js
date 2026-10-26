@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793013507570,
+  "lastUpdate": 1793020677808,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2859,6 +2859,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0123518036,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "31ad45501a6a07559e1fa4be6e45334932b80a8e",
+          "message": "feat(just): add merge-method-rollout to add the caller to active repos\n\nDry run by default: lists every non-archived source repo of the owner with a\nPR merged in the last 90 days that lacks .github/workflows/merge-method.yml.\napply=true commits the caller to a ci/merge-method branch through the\ncontents API and opens a PR, skipping repos where that branch exists so a\nre-run resumes. Repo merge settings and the merge:* labels are gitops state\nand are deliberately not touched.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_019HRyi88qtUmT7BH6rKwUSb",
+          "timestamp": "2026-10-26T15:16:53+02:00",
+          "tree_id": "e97be2182f1ff5976c1a2def1edb7521b65cb14d",
+          "url": "https://github.com/laurigates/dotfiles/commit/31ad45501a6a07559e1fa4be6e45334932b80a8e"
+        },
+        "date": 1793020677113,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11954031966666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015617806000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013214698,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011260122200000002,
             "unit": "s"
           }
         ]
