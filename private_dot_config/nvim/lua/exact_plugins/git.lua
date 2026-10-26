@@ -18,6 +18,10 @@ return {
       "nvim-lua/plenary.nvim",
     },
     opts = {
+      -- Fallback for a bare `:Octo pr merge` only. The right method is per PR:
+      -- the `merge-method` check and the merge:rebase / merge:squash label name
+      -- it, and the shell's `ghm` merges with it (see claude-plugins
+      -- git-plugin/skills/github-pr-title/merge-strategies.md).
       default_merge_method = "squash",
       default_to_projects_v2 = true,
       picker = "fzf-lua",
