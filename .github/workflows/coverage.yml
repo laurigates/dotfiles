@@ -35,8 +35,9 @@ jobs:
       - name: Analyze shell scripts
         id: shell-analysis
         run: |
-          # Find all shell scripts
-          SHELL_SCRIPTS=$(find . -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.zsh" \) ! -path "./.git/*" ! -path "./private_dot_config/*" || true)
+          # Find all shell scripts. *.zsh is left out: shellcheck does not
+          # support zsh.
+          SHELL_SCRIPTS=$(find . -type f \( -name "*.sh" -o -name "*.bash" \) ! -path "./.git/*" ! -path "./private_dot_config/*" || true)
 
           if [ -z "$SHELL_SCRIPTS" ]; then
             echo "No shell scripts found"
@@ -56,11 +57,14 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           while IFS= read -r script; do
-            if shellcheck -f gcc "$script" 2>&1 | tee shellcheck.log; then
+            # Redirect, not `| tee`: without pipefail the `if` would test tee's
+            # exit status, and every script would pass.
+            if shellcheck -f gcc "$script" > shellcheck.log 2>&1; then
               echo "| \`$script\` | ✅ Pass | 0 |" >> "$GITHUB_STEP_SUMMARY"
               PASSED=$((PASSED + 1))
             else
-              ISSUES=$(grep -c ": error:" shellcheck.log || echo "0")
+              cat shellcheck.log
+              ISSUES=$(grep -cE ': (error|warning|note):' shellcheck.log || true)
               echo "| \`$script\` | ❌ Fail | $ISSUES |" >> "$GITHUB_STEP_SUMMARY"
               FAILED=$((FAILED + 1))
             fi
@@ -79,6 +83,11 @@ jobs:
             echo "passed=$PASSED"
             echo "failed=$FAILED"
           } >> "$GITHUB_OUTPUT"
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::shellcheck failed on $FAILED of $TOTAL_SCRIPTS script(s)"
+            exit 1
+          fi
 
       - name: Generate coverage badge
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
