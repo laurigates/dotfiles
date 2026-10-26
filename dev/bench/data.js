@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792950051475,
+  "lastUpdate": 1793009481647,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2551,6 +2551,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011995565400000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9329946ddf5e31aed70712a342c2ef5f0f44c160",
+          "message": "fix(zsh): update BEHIND PRs in ghsq and stop the Claude handoff crash (#520)\n\n## What\n\nTwo `ghsq`/`ghrb` failures seen on laurigates/gitops#277–#281:\n\n1. **BEHIND PRs refused.** `_gh_poll_merge` ran `gh pr update-branch`\nonly when the PR's base took a merge earlier in the same run. gitops now\nrequires up-to-date branches (`strict_required_status_checks_policy =\ntrue`), so the four PRs that were already `BEHIND` went straight to `gh\npr merge` and were refused with \"the head branch is not up to date with\nthe base branch\". `mergeStateStatus == BEHIND` now also triggers the\nupdate-and-wait-for-CI path. GitHub reports `BEHIND` only under that\nrule, so unprotected bases behave as before.\n2. **Claude handoff crash.** `claude --worktree … </dev/tty` died with\n`EINVAL: invalid argument, kqueue` (Bun v1.4.4). macOS kqueue rejects\nthe `/dev/tty` alias. The handoff loop now reads its list from fd 3, so\nstdin stays the real terminal device for both `read -k` and `claude`.\n\n## Verification\n\n- Pty repro (python `pty.fork`, Bun stdin reader standing in for\n`claude`): `</dev/tty` crashes with the same stack, `<$TTY` and\ninherited stdin print `OK no crash`.\n- Old vs new `_gh_conflict_handoff` in the same pty harness with `y`\ntyped: old crashes, new prompts and runs the child cleanly.\n- `chezmoi execute-template | zsh -n` passes;\n`tests/test-gh-completion.sh` 18/18.\n- Not exercised end to end: the BEHIND branch of `_gh_poll_merge`\nagainst a live merge run. The `mergeStateStatus` field it reads returned\n`BEHIND` for gitops#278–#281 via `gh pr list`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01QTsvFFgo5mhLhLaQxW63Nn\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T12:10:19+02:00",
+          "tree_id": "4b9c30df101d27d197f6b396045c4dec8842d054",
+          "url": "https://github.com/laurigates/dotfiles/commit/9329946ddf5e31aed70712a342c2ef5f0f44c160"
+        },
+        "date": 1793009481296,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12374868300000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017152340000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013677750000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.012395869200000003,
             "unit": "s"
           }
         ]
