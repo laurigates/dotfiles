@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793013057028,
+  "lastUpdate": 1793013507570,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2815,6 +2815,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009287508000000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3528a682d2df134e275c0870029884fbf4dd7c0b",
+          "message": "fix(chezmoi): capture target-side drift from Claude Code and mise (#522)\n\nResolves the drift prompts from `chezmoi apply`:\n\n- `exact_dot_claude/.chezmoiignore`: ignore new Claude Code runtime\nstate `daemon-auth-cooldown`, `daemon-auth-status.json`, `dev-mods/`.\n- `private_dot_config/git/ignore`: add `**/.claude/.cc-writes/`, which\nwas present on the target only.\n- `private_dot_config/mise/config.toml.tmpl`: replace `npm:opencode-ai`\n1.19.3 with `npm:@opencode/cli` 2.1.4 (`opencode-ai` latest is 1.19.4;\nthe `opencode` registry entry resolves to `npm:@opencode/cli`).\n\nVerified with `chezmoi --source <worktree> status`: the three `.claude`\nentries and `.config/git/ignore` no longer appear.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01K89idRM2Bc7R3oiaz3Mf8a\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T11:17:16Z",
+          "tree_id": "e1af68f9f6739a433c1758fe8016b2844b1da666",
+          "url": "https://github.com/laurigates/dotfiles/commit/3528a682d2df134e275c0870029884fbf4dd7c0b"
+        },
+        "date": 1793013506894,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12857740666666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015971576,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013920294000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0123518036,
             "unit": "s"
           }
         ]
