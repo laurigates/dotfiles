@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793011780896,
+  "lastUpdate": 1793012853907,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2727,6 +2727,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010992083,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9520ed2c9a9bd0188f36e59d0cb825ef82b0ed80",
+          "message": "ci: review pull requests with the OpenCode reusable workflow (pilot) (#514)\n\n## What\n\nAdds `.github/workflows/opencode-review.yml`, a caller of\n`laurigates/.github`'s `reusable-opencode-review.yml@main`\n(laurigates/.github#99) on `pull_request` types `opened`, `synchronize`,\n`reopened` and `ready_for_review`. It passes `secrets: OPENCODE_API_KEY`\nand uses every input default, so the model is the reusable workflow's\ndefault free one.\n\nThis repo's default workflow permissions are `write`; the job grants\n`contents: read` and `pull-requests: write` explicitly anyway, so the\nscopes do not depend on that setting.\n\n## Why\n\nThis repo and loractl are the pilot for automatic PR review on a free\nOpenCode model. The rollout to the other repos waits for the first\nreview posted here or in loractl.\n\nIt replaces `claude-code-review.yml`, which is `disabled_manually` here\n(`gh api repos/laurigates/dotfiles/actions/workflows --paginate`), so\nthe two never review side by side. #511 deletes that file.\n\nWhat a PR here gets: a draft, a bot-authored PR, a bot push, a fork PR,\na PR whose every file is docs or a lockfile, and a diff over 2000\nchanged lines all skip with a notice. A missing or rejected\n`OPENCODE_API_KEY`, or a model OpenCode no longer lists, fails the check\nred. Otherwise one review is posted, with an inline comment per finding\non a diff line. Under this repo's default-branch ruleset\n(`required_review_thread_resolution: true`), each inline comment must be\nresolved before the PR can merge, auto-merge included.\n\n## Merge order\n\n1. laurigates/.github#99 merges first.\n2. laurigates/gitops#316 merges and is released, and the release's `tofu\napply` pushes `OPENCODE_API_KEY` to this repo.\n3. Then this PR.\n\nUntil step 1, this PR's `opencode-review.yml` run fails at startup\nbecause `reusable-opencode-review.yml` is not on `main` yet (run\n40171164536). A startup failure creates no check run, so the PR shows no\nred `opencode-review` check and its merge state is not blocked; the\nfailure is visible only in the Actions tab. Between steps 1 and 2 the\njob starts and fails red on the missing key.\n\n**Cutover signal:** the first OpenCode review (a `github-actions[bot]`\nreview whose body starts **OpenCode review** and ends with an\n`opencode-review:reviewed=` marker) posted on a human-authored PR that\nchanges more than workflow files, here or in loractl. That is the\ntrigger for laurigates/.github#100, the rollout to the other repos.\n\n## Verification\n\n- `actionlint` 1.7.12 on the new file: clean.\n- `git merge-tree` against every open PR in this repo: clean.\n- Startup run 40171164536: failure, as expected while the reusable is\nnot on `main`.\n- Not run: a review. It cannot run until the reusable is on `main` and\nthe key is applied.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T11:06:38Z",
+          "tree_id": "91c061ea27b8998a509bf3bd5f7ce3d6687dddbd",
+          "url": "https://github.com/laurigates/dotfiles/commit/9520ed2c9a9bd0188f36e59d0cb825ef82b0ed80"
+        },
+        "date": 1793012853456,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11616017533333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015503578,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013089199999999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0113331304,
             "unit": "s"
           }
         ]
