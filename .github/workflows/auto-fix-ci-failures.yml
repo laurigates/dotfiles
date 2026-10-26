@@ -22,7 +22,7 @@ jobs:
     if: >
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.pull_requests[0]
-    uses: laurigates/.github/.github/workflows/reusable-auto-fix.yml@bbb33382f63e21fd7ef903ebf85883b2a82cda01 # main
+    uses: laurigates/.github/.github/workflows/reusable-auto-fix.yml@1ecad76523a79f59001c3cb2aff584de262c8fde # main
     with:
       branch: ${{ github.event.workflow_run.head_branch }}
       run_id: "${{ github.event.workflow_run.id }}"
