@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793009767005,
+  "lastUpdate": 1793010812495,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2639,6 +2639,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0116757164,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e0ae003c1f73058e1f2912df25edaba7cd3736b3",
+          "message": "chore(renovate): drop group:allNonMajor from the repo extends (#509)\n\n## What\n\nRemoves `group:allNonMajor` from `extends` in `renovate.json5`.\n\n## Why\n\nThe account-wide Renovate config in laurigates/gitops already applies\n`group:allNonMajor`. laurigates/gitops#298 moves the global presets to\n`globalExtends` and adds a rule that takes 0.x minor bumps out of\n`renovate/all-minor-patch` into their own approval-gated branch. A\nrepo's own `extends` resolves after the global packageRules, so the\n`group:allNonMajor` listed here would put those 0.x minors back into\n`all-minor-patch`. In scansift the same grouping bundled a breaking\nsharp 0.33 to 0.35 bump into its non-major PR (laurigates/scansift#72).\n\n## How\n\nOne line removed, plus a comment in its place saying why it stays out.\nThe preset still applies through the global config, both before and\nafter laurigates/gitops#298. Under the current gitops main config,\nglobal `extends` presets are prepended to this repo's `extends`. Under\n#298 they resolve into the global config.\n\nRenovate's resolved package rules, applied to synthetic updates\n(Renovate 43.288.0, the production runner's version):\n\n| Update | gitops#298, before this PR | gitops#298, after this PR |\n|---|---|---|\n| `shellcheck` 0.11.0 to 0.12.0 (mise), minor | `all-minor-patch`,\napproval true | its own `<upstream>-0.x` group, approval true |\n| `shellcheck` 0.11.0 to 0.11.1, patch | `all-minor-patch` |\n`all-minor-patch` |\n| `@anthropic-ai/claude-code` 2.1.306 to 2.2.0, minor |\n`all-minor-patch` | `all-minor-patch` |\n\nUnder the current gitops main config, all three rows read\n`all-minor-patch` with no approval, both before and after this PR.\n\nThis repo's own \"Automerge patch and minor updates\" rule still sets\n`automerge: true` on a 0.x minor. Once Lauri ticks it on the Dependency\nDashboard, the PR automerges when its checks pass.\n\n## Gates\n\n- `renovate-config-validator --strict` in repo mode: \"Config validated\nsuccessfully\". Control: an unknown key (`packageRulez`) gives \"Invalid\nconfiguration option\" and exit 1.\n- `renovate --platform=local --dry-run=lookup` before and after this\nchange, under both the gitops main config and the #298 config: the\nupdate and branch lists are identical in all four runs, 13 updates each.\nNothing currently pending is a 0.x minor, so the dry run shows only that\nnothing else moves. The table above comes from `applyPackageRules` on\nthe merged config, not from a live run.\n- Not run: a dry run with dashboard approval or branch creation. A\n`--dry-run=lookup` does not exercise either.\n\n## Merge notes\n\nCan merge before or after laurigates/gitops#298. Before #298 it changes\nnothing, as the identical dry runs above show.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T10:32:41Z",
+          "tree_id": "0e5d4cb63aaa4f51713fad317fe44783ea3bf6bb",
+          "url": "https://github.com/laurigates/dotfiles/commit/e0ae003c1f73058e1f2912df25edaba7cd3736b3"
+        },
+        "date": 1793010812009,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07083623566666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011677712,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009820071999999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.008049283,
             "unit": "s"
           }
         ]
