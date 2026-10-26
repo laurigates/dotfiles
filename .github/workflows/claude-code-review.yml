@@ -15,7 +15,7 @@ on:
 
 jobs:
   claude-review:
-    uses: laurigates/.github/.github/workflows/reusable-claude-review.yml@bbb33382f63e21fd7ef903ebf85883b2a82cda01 # main
+    uses: laurigates/.github/.github/workflows/reusable-claude-review.yml@1ecad76523a79f59001c3cb2aff584de262c8fde # main
     with:
       claude_args: --model ${{ vars.CLAUDE_MODEL || 'opus' }} --max-turns 50
     secrets:
