@@ -376,3 +376,103 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
             print(f"gh pr merge {d['number']} -R {r} --squash --delete-branch")
         print("\n# Sibling PRs that touch one lockfile can conflict after the first merges;")
         print("# confirm with `gh pr view <n> -R <repo> --json state`, not search (index lags).")
+
+# Roll the merge-method caller workflow out to your active repos. Dry run unless apply=true.
+#
+# Targets every non-archived, non-fork repo of `owner` with at least one PR merged
+# in the last `days` days that lacks .github/workflows/merge-method.yml. With
+# apply=true it commits the caller to a `ci/merge-method` branch through the
+# contents API (no clone) and opens a PR; a repo that already has that branch is
+# skipped, so re-running resumes. Repo settings are NOT touched: rebase/squash
+# allowed, merge commits off and the merge:* labels are all laurigates/gitops
+# (OpenTofu) state, and a PATCH here would drift from it.
+[group: "git"]
+merge-method-rollout owner="laurigates" days="90" apply="false":
+    #!/usr/bin/env -S python3 -I
+    import base64, datetime, json, subprocess, sys
+    from concurrent.futures import ThreadPoolExecutor
+
+    OWNER, DAYS, APPLY = "{{owner}}", int("{{days}}"), "{{apply}}" == "true"
+    PATH, BRANCH = ".github/workflows/merge-method.yml", "ci/merge-method"
+    # << >> stand for GitHub's expression braces, which just would interpolate.
+    CALLER = """name: Merge Method
+
+    # Posts the advisory `merge-method` check ("→ Rebase and merge (…)" /
+    # "→ Squash and merge (…)") and the matching merge:rebase / merge:squash label.
+    # Never required: see laurigates/.github reusable-merge-method.yml. A human-
+    # applied merge:* label overrides; labeled/unlabeled re-run the check for it.
+
+    on:
+      pull_request:
+        types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+    concurrency:
+      group: $<< github.workflow >>-$<< github.ref >>
+      cancel-in-progress: true
+
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+
+    jobs:
+      merge-method:
+        uses: laurigates/.github/.github/workflows/reusable-merge-method.yml@main
+    """.replace("<<", "{" * 2).replace(">>", "}" * 2)
+
+    def gh(*args, ok404=False):
+        r = subprocess.run(["gh", *args], capture_output=True, text=True)
+        if r.returncode:
+            if ok404 and "404" in r.stderr:
+                return None
+            sys.exit(f"gh {' '.join(args[:3])}: {r.stderr.strip()[:200]}")
+        return json.loads(r.stdout) if r.stdout.strip() else {}
+
+    since = (datetime.date.today() - datetime.timedelta(days=DAYS)).isoformat()
+    repos = gh("repo", "list", OWNER, "--limit", "500", "--no-archived", "--source",
+               "--json", "nameWithOwner,defaultBranchRef")
+
+    def classify(r):
+        nwo = r["nameWithOwner"]
+        merged = gh("pr", "list", "-R", nwo, "--state", "merged", "--search", f"merged:>={since}",
+                    "--limit", "1", "--json", "number")
+        if not merged:
+            return nwo, "idle", r
+        if gh("api", f"repos/{nwo}/contents/{PATH}", ok404=True) is not None:
+            return nwo, "has-caller", r
+        if gh("api", f"repos/{nwo}/git/ref/heads/{BRANCH}", ok404=True) is not None:
+            return nwo, "branch-exists", r
+        return nwo, "target", r
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        rows = sorted(pool.map(classify, repos))
+    targets = [r for _, v, r in rows if v == "target"]
+    print("=== MERGE METHOD ROLLOUT ===")
+    print(f"OWNER={OWNER}\nSINCE={since}\nREPOS={len(rows)}\nMODE={'apply' if APPLY else 'dry-run'}")
+    for v in ("target", "has-caller", "branch-exists", "idle"):
+        names = [n for n, vv, _ in rows if vv == v]
+        print(f"{v.upper().replace('-', '_')}={len(names)}" + (f"  {' '.join(names)}" if v != "idle" else ""))
+    if not APPLY:
+        print("STATUS=OK\n=== END MERGE METHOD ROLLOUT ===")
+        print(f"# re-run with apply=true to open {len(targets)} PR(s)")
+        sys.exit(0)
+
+    body = ("Adds the merge-method caller: a non-required `merge-method` check run that names the merge "
+            "button to press (rebase or squash), plus a matching `merge:rebase` / `merge:squash` label. "
+            "The rule table is laurigates/claude-plugins `git-plugin/skills/github-pr-title/merge-strategies.md`; "
+            "a human-applied `merge:*` label overrides it.")
+    content = base64.b64encode(CALLER.encode()).decode()
+    failed = 0
+    for r in targets:
+        nwo, base = r["nameWithOwner"], r["defaultBranchRef"]["name"]
+        sha = gh("api", f"repos/{nwo}/git/ref/heads/{base}")["object"]["sha"]
+        gh("api", "-X", "POST", f"repos/{nwo}/git/refs", "-f", f"ref=refs/heads/{BRANCH}", "-f", f"sha={sha}")
+        gh("api", "-X", "PUT", f"repos/{nwo}/contents/{PATH}", "-f", "message=ci: post the merge-method check and label on every PR",
+           "-f", f"content={content}", "-f", f"branch={BRANCH}")
+        p = subprocess.run(["gh", "pr", "create", "-R", nwo, "--base", base, "--head", BRANCH,
+                            "--title", "ci: post the merge-method check and label on every PR", "--body", body],
+                           capture_output=True, text=True)
+        print(f"PR {nwo}: {p.stdout.strip() or p.stderr.strip()[:200]}")
+        failed += p.returncode != 0
+    print(f"FAILED={failed}\nSTATUS={'ERROR' if failed else 'OK'}\n=== END MERGE METHOD ROLLOUT ===")
+    sys.exit(1 if failed else 0)
