@@ -4,7 +4,9 @@
     'config:recommended',
     ':semanticCommits',
     ':semanticCommitTypeAll(chore)',
-    'group:allNonMajor',
+    // No group:allNonMajor here: the account-wide config in laurigates/gitops
+    // applies it. Listing it again resolves it after the global packageRules,
+    // which pulls breaking 0.x minors back into all-minor-patch.
     // The account-wide runner starts twice a day, hours after its cron time.
     // `schedule:weekly` (Monday 00:00-03:59) caught none of those starts;
     // a whole-day weekend window catches several each week.
