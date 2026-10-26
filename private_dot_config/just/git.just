@@ -11,9 +11,9 @@
 # Three "definitely merged" signals, checked in ORDER OF AUTHORITY — the order
 # matters, see ~/.claude/rules/pr-merge-hazards.md #1:
 #   1. a MERGED pull request for the branch's head ref. GitHub is authoritative;
-#      the squash landed the work even if the default branch drifted since.
+#      the merge (squash or rebase) landed the work even if the default branch drifted since.
 #   2. `git cherry` reports no '+' commits — every commit has a patch-equivalent
-#      already upstream. Survives squash-merge AND cherry-pick, and unlike
+#      already upstream. Survives squash-merge, rebase-merge (new SHAs) AND cherry-pick, and unlike
 #      merge-tree it does NOT care that the base drifted over the same files.
 #   3. merge-tree no-op — merging the branch changes nothing. Positive proof of
 #      containment only: a NON-match proves nothing, because once the base moves
@@ -98,7 +98,7 @@ branch-audit:
 #   MERGED — the branch-audit signals: a MERGED PR whose head (or one of its
 #            commits) is the worktree HEAD, else `git cherry` with no '+',
 #            else a merge-tree no-op. A merged PR with commits past its head is
-#            REVIEW: those commits did not ride the squash. A detached HEAD
+#            REVIEW: those commits did not ride the merge. A detached HEAD
 #            (workflow/agent worktrees) is matched by commit via
 #            `repos/{nwo}/commits/{sha}/pulls`, which finds the PR whatever its
 #            branch was called.

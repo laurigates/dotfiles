@@ -20,6 +20,16 @@ verbatim from the skill body — edit both copies together.
   → contained. **A match proves containment; a non-match proves nothing.**
 - A non-match is "review", **not** proof of unmerged — don't force the count to zero.
 
+## Rebase or squash — the PR decides, not the button
+
+The method comes from claude-plugins `git-plugin/scripts/pr-merge-method.py`,
+whose rule table is `git-plugin/skills/github-pr-title/merge-strategies.md`.
+Two or more independent conventional commits rebase; everything else squashes,
+including single commits, merge-synced branches, fixups and bot PRs. The git-plugin hook
+blocks a `gh pr merge` whose `--squash`/`--rebase` disagrees. On the PR, the
+`merge-method` check and the `merge:*` label show the method, and `ghm` merges
+with it. A `merge:*` label a human applies is the override.
+
 ## A red PR may still be mergeable — `UNSTABLE` is not `BLOCKED`
 
 `mergeStateStatus` separates **required** failing checks (`BLOCKED` — merge
