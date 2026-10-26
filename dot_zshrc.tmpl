@@ -767,7 +767,8 @@ ghpc() {
 # A PR whose base already took a merge earlier in the batch is brought up to
 # date (gh pr update-branch) and its CI re-run before it merges: its green CI
 # only ran against the old base, so a PR that merges cleanly could still break
-# it. update-branch cannot fix a real conflict, so a CONFLICTING PR is returned
+# it. So is one already BEHIND when the run starts, if the base's ruleset
+# requires up-to-date branches — gh pr merge refuses it otherwise. update-branch cannot fix a real conflict, so a CONFLICTING PR is returned
 # to the batch, which offers to hand it to Claude once the merges are done.
 #   _gh_poll_merge <repo|""> <num> <moved> <merge-flags...>   ("" repo = current repo)
 #   <moved> = space-separated "repo:base" keys that took a merge this run.
@@ -813,8 +814,13 @@ _gh_poll_merge() {
     print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — left open"
     REPLY="$key"; return 2
   fi
+  # BEHIND = the base ruleset requires up-to-date branches (strict status
+  # checks) and this head is stale. It shows up only under that rule, so an
+  # unprotected base keeps the moved-this-run-only behaviour.
   local -a pin
-  if [[ " $moved " == *" ${key} "* ]]; then
+  local mss
+  mss=$(gh pr view "$num" "${repo_flag[@]}" --json mergeStateStatus --jq .mergeStateStatus </dev/null 2>/dev/null)
+  if [[ " $moved " == *" ${key} "* || "$mss" == BEHIND ]]; then
     local -a upd; (( ${argv[(Ie)--rebase]} )) && upd=(--rebase)
     _gh_update_and_wait "$repo" "$num" "$id" "${upd[@]}"
     case $? in
@@ -917,22 +923,25 @@ _gh_conflict_handoff() {
   local r n b id ans how
   print
   print -r -- "${bold}Conflicting PRs${rst} — gh pr update-branch can't resolve these:"
-  while IFS=$'\t' read -r r n b; do
+  # The list is read from fd 3 so stdin stays the terminal for read -k and
+  # claude. Not </dev/tty: macOS kqueue rejects the /dev/tty alias with EINVAL,
+  # and claude (Bun) crashes watching it ("EINVAL: invalid argument, kqueue").
+  while IFS=$'\t' read -r -u 3 r n b; do
     [[ -n "$n" ]] || continue
     [[ -n "$r" ]] && id="${r}#${n}" || id="#${n}"
     if [[ -n "$r" && "$r" != "$here" ]]; then
       print -r -- "  ${yellow}!${rst} ${cyan}${id}${rst}: not this checkout's repo — resolve it from a checkout of ${r}"
       continue
     fi
-    read -k 1 "ans?  Hand ${cyan}${id}${rst} to Claude to resolve? [y/${bold}N${rst}] " </dev/tty; print
+    read -k 1 "ans?  Hand ${cyan}${id}${rst} to Claude to resolve? [y/${bold}N${rst}] "; print
     [[ "$ans" == [yY] ]] || { print -r -- "  ${dim}– left ${id} for later${rst}"; continue }
     if (( rebase )); then
       how="rebase it onto origin/${b}, resolve the conflicts, and push with --force-with-lease"
     else
       how="merge origin/${b} into it, resolve the conflicts, and push"
     fi
-    claude --worktree "PR #${n} conflicts with ${b} after other PRs merged into it. Check out its branch (gh pr checkout ${n}), ${how}. Keep the intent of both sides, run the project's lint and tests before pushing, and do not merge the PR." </dev/tty
-  done <<< "$blob"
+    claude --worktree "PR #${n} conflicts with ${b} after other PRs merged into it. Check out its branch (gh pr checkout ${n}), ${how}. Keep the intent of both sides, run the project's lint and tests before pushing, and do not merge the PR."
+  done 3<<< "$blob"
 }
 
 # Confirm a selected set, then merge sequentially in selection order.
@@ -1840,7 +1849,7 @@ _GH_WRAPPER_DOC=(
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
   ghrr 'Multi-select open Renovate PRs with an unticked rebase box (^a = all) and tick it, so the next Renovate run rebases them. -r also dispatches renovate.yml on $GH_RENOVATE_RUNNER (default laurigates/gitops; covers every repo, ~20 min).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. A PR whose base took a merge earlier in the run is updated (gh pr update-branch) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
+  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. A PR whose base took a merge earlier in the run, or that a strict ruleset reports BEHIND, is updated (gh pr update-branch) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
   ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same update-and-wait-for-CI and Claude conflict handoff as ghsq, but rebasing (update-branch --rebase). Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
