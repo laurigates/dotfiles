@@ -11,6 +11,8 @@ on:
     workflows: ["Smoke Test CI"]
     types:
       - completed
+    # A main push has no PR, so the job below would only be skipped.
+    branches-ignore: [main]
 
 # Concurrency is declared by the reusable workflow. The loop guard that used to
 # live in this file's `if:` (skip branches named claude-auto-fix-ci-*) is
@@ -19,9 +21,15 @@ on:
 
 jobs:
   auto-fix:
+    # claude-code-action refuses bot actors other than claude[bot]/claude (the
+    # reusable's allowed_bots), so a Renovate failure would start a run only to
+    # be refused. Same actor gate as the reusable's example caller.
     if: >
       github.event.workflow_run.conclusion == 'failure' &&
-      github.event.workflow_run.pull_requests[0]
+      github.event.workflow_run.pull_requests[0] &&
+      (github.event.workflow_run.actor.type != 'Bot' ||
+       github.event.workflow_run.actor.login == 'claude[bot]' ||
+       github.event.workflow_run.actor.login == 'claude')
     uses: laurigates/.github/.github/workflows/reusable-auto-fix.yml@1ecad76523a79f59001c3cb2aff584de262c8fde # main
     with:
       branch: ${{ github.event.workflow_run.head_branch }}
