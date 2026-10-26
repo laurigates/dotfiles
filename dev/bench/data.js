@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793010812495,
+  "lastUpdate": 1793011780896,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2683,6 +2683,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.008049283,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2610c09b72e9fa6eb1b7214b614bc795e6c0551d",
+          "message": "ci: skip organize-stars while GH_STAR_TOKEN is missing and stop masking shellcheck in coverage (#510)\n\n## What\n\n- `organize-stars.yml` starts with a step that checks `GH_STAR_TOKEN`.\nWhen the secret is empty, the step emits a `::warning::` naming it and\nevery later step is skipped. Provisioning is tracked in #512.\n- `coverage.yml`'s \"Analyze shell scripts\" step now fails when\nshellcheck fails on any script. It previously reported every script as\npassing.\n\n## Why\n\n**organize-stars**: `GH_STAR_TOKEN` has never been created, so `gh api\nuser/starred` exits 4 and the weekly run on main is red\n(https://github.com/laurigates/dotfiles/actions/runs/39282372383).\nBefore #483 the same run was green with \"Found 0 repos to process\".\n\n**coverage**: the step tested `if shellcheck -f gcc \"$script\" 2>&1 | tee\nshellcheck.log`. The step shell is `bash -e` without pipefail, so the\n`if` saw tee's exit status.\nhttps://github.com/laurigates/dotfiles/actions/runs/39790279959 printed\n`./aliases.zsh:106:7: error: ... [SC2142]` and `./aliases.zsh:194:19:\nerror: ... [SC2068]`, then `Coverage: 100% (Color: brightgreen)`. 115\nruns in the audit window, 0 failures.\n\n## How\n\n- organize-stars: the guard writes `present=true|false` to\n`$GITHUB_OUTPUT`, and checkout, the organizer, the state commit and the\nlog upload all check it. Once the secret exists, the workflow runs as\nbefore.\n- coverage, for the case this change turns the job red:\n- Redirect instead of `| tee`, so the `if` tests shellcheck's own exit\nstatus.\n- Drop `*.zsh` from the `find`. shellcheck does not support zsh, and\n`aliases.zsh` was the only `.zsh` file in the set and the only failing\nfile.\n- End the step with `exit 1` and an `::error::` when `FAILED > 0`, and\nprint each failing script's shellcheck output.\n- Count every diagnostic level (`error|warning|note`) and replace `||\necho \"0\"`, which printed a second `0` when grep found nothing. That\nbranch was unreachable before this change.\n- The 42 remaining scripts are all in `lint:shell`'s set (`git ls-files\n'*.sh'`, 48 files), which the smoke Linters job already gates. Deleting\n`coverage.yml` would also remove the duplicate. This PR keeps the\nworkflow and fixes it; deletion is Lauri's call.\n\n## Gates\n\n- `actionlint` on both files: exit 0. Pre-commit hooks on commit,\nincluding `check CI GitHub API consumers are authenticated` and `Lint\nGitHub Actions workflow files`: passed.\n- `tests/test-organize-stars.sh` (42 checks),\n`tests/test-ci-github-api-auth.py` and `tests/test-ci-pins.sh`: PASS.\n- Coverage step, extracted from the workflow and run from the repo root\nwith shellcheck 0.11.0:\n  - New step on this tree: exit 0. All 42 `.sh` files pass.\n- New step with a planted script carrying SC2086 and SC2035 findings:\nexit 1, `::error::shellcheck failed on 1 of 43 script(s)`.\n  - Old step with the same planted script: exit 0.\n- Guard step, extracted from the workflow: `shellcheck -s bash` exit 0.\nRun under `bash -e`, it writes `present=false` and the warning when the\nsecret is empty, and `present=true` when it is set.\n\nRefs #512\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T10:48:48Z",
+          "tree_id": "3a5a8f947ff3af490d3520a26ed83a85b0c3bcef",
+          "url": "https://github.com/laurigates/dotfiles/commit/2610c09b72e9fa6eb1b7214b614bc795e6c0551d"
+        },
+        "date": 1793011780579,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12120738866666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015911378000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012956252000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010992083,
             "unit": "s"
           }
         ]
