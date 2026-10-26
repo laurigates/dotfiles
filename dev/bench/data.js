@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793012853907,
+  "lastUpdate": 1793013057028,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2771,6 +2771,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0113331304,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ea995f92c6027f2c9f433a88985bdccd11648931",
+          "message": "ci(claude): gate auto-fix on human actors and delete the disabled review workflow (#511)\n\n## What\n\n- `auto-fix-ci-failures.yml` skips Smoke failures started by a bot other\nthan `claude[bot]`/`claude`, and stops triggering on `main` completions.\n- `claude-code-review.yml` is deleted (separate commit).\n\n## Why\n\n**auto-fix**: the caller's `if:` checked only the failure and a PR. When\nSmoke failed on a Renovate PR, the reusable ran, and claude-code-action\nrefused the actor: `Workflow initiated by non-human actor:\nlaurigates-renovate (type: Bot)`\n(https://github.com/laurigates/dotfiles/actions/runs/35833478228). At\nthe pinned SHA, the reusable sets `allowed_bots: \"claude[bot],claude\"`.\nOf the 115 skipped runs in the audit window, 46 came from main pushes,\nwhich `pull_requests[0]` always skips.\n\n**claude-code-review**: `disabled_manually` since its last run on\n2026-04-12. It was later migrated to a `reusable-claude-review.yml`\ncaller that Renovate keeps bumping (#451, #467, #474) but that has never\nrun. It declares `pull_request: [opened, synchronize]` with no bot gate,\nand no issue tracks it. `@claude` mentions keep working through\n`claude.yml`.\n\n## How\n\n- The job condition gains the actor clause from\n`reusable-auto-fix.yml`'s example caller: `actor.type != 'Bot' ||\nactor.login == 'claude[bot]' || actor.login == 'claude'`. The existing\n`conclusion` and `pull_requests[0]` checks stay.\n- `on.workflow_run.branches-ignore: [main]` filters on the triggering\nrun's head branch, so main completions no longer create a run.\n- `private_dot_config/just/plugins.just` still lists\n`claude-code-review.yml` among the filenames its recipes scan in other\nrepos. That is unaffected.\n\n## Gates\n\n- `actionlint .github/workflows/auto-fix-ci-failures.yml`: exit 0.\nPre-commit hooks on commit: passed.\n- The auto-fix caller runs only on `workflow_run`, so no check on this\nPR exercises it. The first Smoke failure on a human PR after merge will.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-26T11:09:58Z",
+          "tree_id": "66c36c872d86fc3964256fbeab11b36e72f1a1d5",
+          "url": "https://github.com/laurigates/dotfiles/commit/ea995f92c6027f2c9f433a88985bdccd11648931"
+        },
+        "date": 1793013056370,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10339471833333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011999146,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010428262,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009287508000000002,
             "unit": "s"
           }
         ]
