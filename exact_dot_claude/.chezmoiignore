@@ -47,6 +47,9 @@ daemon/
 daemon.lock
 daemon.log
 daemon.status.json
+daemon-auth-cooldown
+daemon-auth-status.json
+dev-mods/
 gh-pr-status-cache.json
 jobs/
 .last-update-result.json
