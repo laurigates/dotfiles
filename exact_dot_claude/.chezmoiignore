@@ -68,6 +68,15 @@ statsig
 todos
 mcp-needs-auth-cache.json
 
+# Empty runtime directories created by Claude Code 2.1.311 (bridge-spawn,
+# seed-admin and .cc-writes are strings in the CLI binary). ssh/ is not
+# distinctive enough to find there; it appeared alongside seed-admin/ when a
+# session started, so the writer is inferred.
+.cc-writes/
+bridge-spawn/
+seed-admin/
+ssh/
+
 # Claude Code runtime state: state/mcp-discover-verdicts.json (the filename
 # is a string in the Claude Code CLI binary).
 state/
