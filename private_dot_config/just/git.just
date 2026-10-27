@@ -377,6 +377,84 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
         print("\n# Sibling PRs that touch one lockfile can conflict after the first merges;")
         print("# confirm with `gh pr view <n> -R <repo> --json state`, not search (index lags).")
 
+# Write one dossier per open Renovate PR whose title matches `pattern` (default:
+# security advisories) into `out`, for extraction agents to read. Read-only.
+#
+# A dossier is one markdown file: whether the repo is archived or private, the last
+# commit on its default branch, merge state, changed files, every check with its
+# conclusion, and the Renovate PR body (update table, release notes, advisories).
+# GitHub truncates long bodies; the dossier keeps the truncation marker, so a
+# reader can say what it did not see. PRs in archived repos go to `out`/archived/:
+# they cannot be merged, so there is no risk to assess.
+#
+# This only gathers. Judge risk after extraction: a PR whose only checks are
+# conventional-commit title checks is untested however green it looks, and a red
+# check may already be red on main.
+[group: "git"]
+renovate-risk out="tmp/renovate-risk" pattern="(?i)security|vulnerab|cve" owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovate-bot app/laurigates-renovate" jobs="6":
+    #!/usr/bin/env -S python3 -I
+    import json, pathlib, re, subprocess
+    from concurrent.futures import ThreadPoolExecutor
+
+    OUT = pathlib.Path("{{out}}")
+    PATTERN = re.compile(r"""{{pattern}}""")
+    OWNERS = "{{owners}}".split()
+    AUTHORS = "{{authors}}".split()
+
+    def gh(*args):
+        r = subprocess.run(["gh", *args], capture_output=True, text=True, check=False)
+        if r.returncode != 0:
+            raise SystemExit(f"gh {' '.join(args)} failed: {r.stderr.strip()}")
+        return json.loads(r.stdout or "null")
+
+    targets = sorted({
+        (p["repository"]["nameWithOwner"], p["number"])
+        for o in OWNERS for a in AUTHORS
+        for p in gh("search", "prs", "--owner", o, "--author", a, "--state", "open",
+                    "--limit", "1000", "--json", "repository,number,title")
+        if PATTERN.search(p["title"])
+    })
+
+    repo_cache = {}
+    def repo_meta(repo):
+        if repo not in repo_cache:
+            meta = gh("repo", "view", repo, "--json", "isArchived,isPrivate,defaultBranchRef")
+            branch = (meta.get("defaultBranchRef") or {}).get("name") or "main"
+            commit = gh("api", f"repos/{repo}/commits/{branch}")
+            repo_cache[repo] = (meta["isArchived"], meta["isPrivate"], commit["commit"]["committer"]["date"][:10])
+        return repo_cache[repo]
+
+    def build(target):
+        repo, num = target
+        archived, private, last = repo_meta(repo)
+        pr = gh("pr", "view", str(num), "-R", repo, "--json",
+                "title,body,mergeStateStatus,mergeable,isDraft,files,statusCheckRollup,createdAt")
+        checks = " ".join(f"{c.get('name') or c.get('context')}={c.get('conclusion') or c.get('state')}"
+                          for c in pr.get("statusCheckRollup") or []) or "NONE"
+        doc = "\n".join([
+            f"# {repo}#{num}: {pr['title']}",
+            f"- archived: {archived}  private: {private}",
+            f"- last commit on default branch: {last}",
+            f"- mergeStateStatus: {pr['mergeStateStatus']}  mergeable: {pr['mergeable']}  draft: {pr['isDraft']}",
+            f"- created: {pr['createdAt']}",
+            f"- files: {', '.join(f['path'] for f in pr.get('files') or [])}",
+            f"- checks: {checks}",
+            "",
+            "## PR body (Renovate)",
+            pr.get("body") or "",
+        ])
+        dest = OUT / "archived" if archived else OUT
+        dest.mkdir(parents=True, exist_ok=True)
+        (dest / f"{repo.split('/')[1]}-{num}.md").write_text(doc)
+        return archived
+
+    with ThreadPoolExecutor({{jobs}}) as ex:
+        archived = list(ex.map(build, targets))
+    print(f"MATCHED={len(targets)}")
+    print(f"LIVE={archived.count(False)}")
+    print(f"ARCHIVED={archived.count(True)}")
+    print(f"OUT={OUT.resolve()}")
+
 # Roll the merge-method caller workflow out to your active repos. Dry run unless apply=true.
 #
 # Targets every non-archived, non-fork repo of `owner` with at least one PR merged
