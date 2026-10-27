@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793097310135,
+  "lastUpdate": 1793097447064,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2991,6 +2991,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.007945628400000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "66fc53d12077ab77557d565dbdbfcf17a084101f",
+          "message": "chore(nvim): update lazy-lock plugin pins\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD99DhhasECZzSq8UdGn",
+          "timestamp": "2026-10-27T12:36:43+02:00",
+          "tree_id": "3b8a59377fc731560d5b60e995c703eb9788573a",
+          "url": "https://github.com/laurigates/dotfiles/commit/66fc53d12077ab77557d565dbdbfcf17a084101f"
+        },
+        "date": 1793097446666,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09406817566666666,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001239611,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009856346000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011009608,
             "unit": "s"
           }
         ]
