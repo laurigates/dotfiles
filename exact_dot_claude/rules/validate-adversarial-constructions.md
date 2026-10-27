@@ -105,6 +105,16 @@ the bypass introduced a *different* failure which the test caught by accident.
   > cache assertion still passed, which read as a weak assertion. Re-targeted to
   > the real site it failed at once: `expected +0 to be 42`. The gate was fine;
   > the mutation had missed.
+- **Rebuild after the restore, not just after the mutation.** Restoring the
+  original with `cp` usually lands in the same second as the mutated build,
+  and make/CMake compare one-second mtimes, so the object built from the
+  mutant still counts as current. The next run reports the mutant's
+  failure against restored source, which reads as a broken fix. `touch` the
+  restored file (or `cmp` it and force the target) before rebuilding.
+
+  > Observed 2026-10-22 (skullcaps-native, three times): after restoring
+  > `objs_mesh.c`, `paint_list.c` and `renderer.c` from `cp` snapshots, the
+  > tests still showed the mutation's failure until the file was touched.
 
 ## A comparison harness pinned to a moving baseline stops discriminating
 
