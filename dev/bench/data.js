@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793020677808,
+  "lastUpdate": 1793088428765,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2903,6 +2903,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011260122200000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "fe01ae7e853246dc5626497c6e04ae0843ff6b84",
+          "message": "fix(zsh): enable bare glob qualifiers in _gh_merge_method\n\nClaude Code's shell, which also runs `!` commands, sets nobareglobqual, so\nthe (Nn) qualifier on the pr-merge-method.py glob was read as literal text.\nThe glob failed with \"no matches found\", and ghsq / ghrb / ghm fell back to\nthe merge:* label. Set bare_glob_qual function-locally.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9CRWh2L98RviTXbaVw",
+          "timestamp": "2026-10-27T10:06:04+02:00",
+          "tree_id": "1417b769bb72f168e5211b11c9d4f8489ed04c51",
+          "url": "https://github.com/laurigates/dotfiles/commit/fe01ae7e853246dc5626497c6e04ae0843ff6b84"
+        },
+        "date": 1793088428137,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11917704433333336,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015384542,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013026534,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010819605,
             "unit": "s"
           }
         ]
