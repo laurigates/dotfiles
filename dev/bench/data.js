@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793088428765,
+  "lastUpdate": 1793097310135,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -2947,6 +2947,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010819605,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "055f18eafddfb679a87681bb13fef2867320b78a",
+          "message": "docs(claude): rebuild after restoring a mutated file, not just after mutating it (#526)\n\nAdds a bullet to `validate-adversarial-constructions.md`. A `cp` restore\nusually lands in the same second as the mutant build, and make/CMake\ncompare one-second mtimes, so the object built from the mutant still\ncounts as current. The next run then reports the mutant's failure\nagainst restored source. The fix is to `touch` the restored file (or\nforce the target) before rebuilding.\n\nObserved three times in skullcaps-native on 2026-10-22. The edit was\nleft uncommitted in the main checkout by an earlier session and is moved\nhere unchanged.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99DhhasECZzSq8UdGn\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-27T12:34:26+02:00",
+          "tree_id": "28fa1198f6588ea5cf3fb366f9d74e42fb937ed9",
+          "url": "https://github.com/laurigates/dotfiles/commit/055f18eafddfb679a87681bb13fef2867320b78a"
+        },
+        "date": 1793097309671,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08287851133333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0010478146,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009108572,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.007945628400000002,
             "unit": "s"
           }
         ]
