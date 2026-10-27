@@ -767,6 +767,8 @@ ghpc() {
 # label (set by the check, or by a human as an override) decides.
 #   _gh_merge_method <repo|""> <num> → prints rebase|squash, or nothing
 _gh_merge_method() {
+  # (Nn) below is a glob qualifier; Claude Code's shell sets nobareglobqual.
+  setopt local_options bare_glob_qual
   local repo="$1" num="$2" m=
   local -a repo_flag script
   [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
