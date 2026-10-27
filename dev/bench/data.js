@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793097447064,
+  "lastUpdate": 1793097595032,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3035,6 +3035,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011009608,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7f11ca9d1023cc2b3963081a827622a0aaf486f3",
+          "message": "fix(chezmoi): ignore four new Claude Code runtime dirs under ~/.claude (#528)\n\n`chezmoi status` listed `.cc-writes/`, `bridge-spawn/`, `seed-admin/`\nand `ssh/` as pending deletions. `~/.claude` is an `exact_` dir and none\nof them were in `exact_dot_claude/.chezmoiignore`. #522 added\n`.cc-writes` to the git ignore only. All four are empty directories\ncreated this morning.\n\n`bridge-spawn`, `seed-admin` and `.cc-writes` appear as strings in the\nClaude Code 2.1.311 binary. `ssh` is too generic a string to find there;\nthe comment marks its writer as inferred from its creation alongside\n`seed-admin/`.\n\nVerified with `chezmoi --source <worktree> status`: none of the four\nentries remain.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99DhhasECZzSq8UdGn\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-27T12:39:07+02:00",
+          "tree_id": "f84b4385e0e44262e267d986926ba700557ce053",
+          "url": "https://github.com/laurigates/dotfiles/commit/7f11ca9d1023cc2b3963081a827622a0aaf486f3"
+        },
+        "date": 1793097594522,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07259661866666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012915214,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010043898000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0102660952,
             "unit": "s"
           }
         ]
