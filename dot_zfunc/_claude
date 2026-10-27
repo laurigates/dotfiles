@@ -29,8 +29,8 @@ _claude() {
         'stop:Stop a background session. Its conversation is kept: `claude attach <id>` opens it again, `claude --resume` works once it is stopped'
         'kill:Stop a background session. Its conversation is kept: `claude attach <id>` opens it again, `claude --resume` works once it is stopped'
         'ultrareview:Run a cloud-hosted multi-agent code review of the current branch (or a PR number / base branch) and print the findings'
-        'update:Check for updates and install if available'
-        'upgrade:Check for updates and install if available'
+        'update:Check for updates and install if available; package-manager installs update through the package manager'
+        'upgrade:Check for updates and install if available; package-manager installs update through the package manager'
     )
 
     _arguments -C \
