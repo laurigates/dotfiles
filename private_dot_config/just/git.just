@@ -377,11 +377,13 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
         print("\n# Sibling PRs that touch one lockfile can conflict after the first merges;")
         print("# confirm with `gh pr view <n> -R <repo> --json state`, not search (index lags).")
 
-# Roll the merge-method caller workflow out to your active repos. Dry run unless apply=true.
+# Roll the merge-method caller workflow out to your active repos. Dry run unless
+# the third argument is `true`. just passes recipe arguments by position, so
+# `apply=true` lands in `owner`; write `just -g merge-method-rollout laurigates 90 true`.
 #
 # Targets every non-archived, non-fork repo of `owner` with at least one PR merged
 # in the last `days` days that lacks .github/workflows/merge-method.yml. With
-# apply=true it commits the caller to a `ci/merge-method` branch through the
+# apply `true` it commits the caller to a `ci/merge-method` branch through the
 # contents API (no clone) and opens a PR; a repo that already has that branch is
 # skipped, so re-running resumes. Repo settings are NOT touched: rebase/squash
 # allowed, merge commits off and the merge:* labels are all laurigates/gitops
@@ -393,6 +395,8 @@ merge-method-rollout owner="laurigates" days="90" apply="false":
     from concurrent.futures import ThreadPoolExecutor
 
     OWNER, DAYS, APPLY = "{{owner}}", int("{{days}}"), "{{apply}}" == "true"
+    if "{{apply}}" not in ("true", "false"):
+        sys.exit("apply must be true or false, got '{{apply}}'")
     PATH, BRANCH = ".github/workflows/merge-method.yml", "ci/merge-method"
     # << >> stand for GitHub's expression braces, which just would interpolate.
     CALLER = """name: Merge Method
@@ -431,6 +435,8 @@ merge-method-rollout owner="laurigates" days="90" apply="false":
     since = (datetime.date.today() - datetime.timedelta(days=DAYS)).isoformat()
     repos = gh("repo", "list", OWNER, "--limit", "500", "--no-archived", "--source",
                "--json", "nameWithOwner,defaultBranchRef")
+    if not repos:
+        sys.exit(f"no source repos for owner '{OWNER}' (arguments are positional: owner days apply)")
 
     def classify(r):
         nwo = r["nameWithOwner"]
@@ -454,7 +460,7 @@ merge-method-rollout owner="laurigates" days="90" apply="false":
         print(f"{v.upper().replace('-', '_')}={len(names)}" + (f"  {' '.join(names)}" if v != "idle" else ""))
     if not APPLY:
         print("STATUS=OK\n=== END MERGE METHOD ROLLOUT ===")
-        print(f"# re-run with apply=true to open {len(targets)} PR(s)")
+        print(f"# re-run as `just -g merge-method-rollout {OWNER} {DAYS} true` to open {len(targets)} PR(s)")
         sys.exit(0)
 
     body = ("Adds the merge-method caller: a non-required `merge-method` check run that names the merge "
