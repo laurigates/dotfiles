@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793274472621,
+  "lastUpdate": 1793274634031,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3123,6 +3123,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011397827199999998,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bac1b870ebb5913c77e8772d4c816b8660888d94",
+          "message": "docs(claude): a time-series level names its aligner and resolution (#533)\n\nAdds one sentence to `communication.md` § Status Claims Point at\nEvidence: a level read off a time series names its aligner and\nresolution, because the max over a coarse bucket is a peak, not a level.\n\nThe case: in an fvh-data-pipe incident session, DB CPU from 3 h\n`ALIGN_MAX` buckets was reported as \"staying at ~65%\" after a deploy.\n15-minute `ALIGN_MEAN` showed it flat at 20–21% throughout, and the\nclaim was retracted before any issue was filed on it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BHmbLzDhJ7J2WivHW\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-29T13:49:42+02:00",
+          "tree_id": "9331185084925fb293f63ac7eb1198e046f52def",
+          "url": "https://github.com/laurigates/dotfiles/commit/bac1b870ebb5913c77e8772d4c816b8660888d94"
+        },
+        "date": 1793274633557,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07141294066666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011646084,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009806344000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0083569378,
             "unit": "s"
           }
         ]
