@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793274634031,
+  "lastUpdate": 1793274794204,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3167,6 +3167,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0083569378,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7124bd2f596cfd5dbf4c13f3b730977944863882",
+          "message": "fix(just): fail merge-method-rollout on misplaced named arguments (#530)\n\n`just` passes recipe arguments by position, so the documented `just -g\nmerge-method-rollout apply=true` set `owner` to `apply=true`. `gh repo\nlist` returned no repos, and the recipe printed `REPOS=0` and\n`STATUS=OK` without opening anything.\n\n- Exit 1 when the owner has no source repos, or when `apply` is neither\n`true` nor `false`.\n- The usage comment and the dry-run hint now show the positional form,\n`just -g merge-method-rollout laurigates 90 true`.\n\nChecked against this branch's `git.just`:\n\n| Invocation | Result |\n|---|---|\n| `merge-method-rollout apply=true` | rc=1, `no source repos for owner\n'apply=true' (arguments are positional: owner days apply)` |\n| `merge-method-rollout laurigates 90 yes` | rc=1, `apply must be true\nor false, got 'yes'` |\n| `merge-method-rollout` (dry run) | rc=0, `REPOS=49` |\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99DhhasECZzSq8UdGn\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-29T13:52:13+02:00",
+          "tree_id": "bb1f6dc52589c4875d45706b3b56de022e376a2c",
+          "url": "https://github.com/laurigates/dotfiles/commit/7124bd2f596cfd5dbf4c13f3b730977944863882"
+        },
+        "date": 1793274793907,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12503181300000002,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015834584,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013304940000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0114629546,
             "unit": "s"
           }
         ]
