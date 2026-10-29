@@ -1456,8 +1456,9 @@ ghwr() {
 # Renovate run rebases the branch. No arg → fzf multi-select over this repo's
 # open PRs that carry an unticked box (^a = all); args → those PR numbers.
 # The box acts only when Renovate next runs. -r also dispatches the self-hosted
-# runner ($GH_RENOVATE_RUNNER, default laurigates/gitops renovate.yml); that
-# run covers every repo (~20 min, billed), hence opt-in.
+# runner's renovate.yml — $GH_RENOVATE_RUNNER, else picked by this repo's owner
+# (laurigates → laurigates/gitops, ForumViriumHelsinki → .../infrastructure);
+# that run covers every repo of the owner (20–45 min, billed), hence opt-in.
 ghrr() {
   local run=
   while [[ "$1" == -r || "$1" == --run ]]; do run=1; shift; done
@@ -1492,7 +1493,18 @@ ghrr() {
       print -r -- "  ${red}✗${rst} ${cyan}#${n}${rst}: body edit failed"
     fi
   done
-  local runner="${GH_RENOVATE_RUNNER:-laurigates/gitops}"
+  # Each owner has its own self-hosted runner and bot; dispatching the wrong
+  # one bills a full run that never touches this repo.
+  local owner runner="$GH_RENOVATE_RUNNER"
+  if [[ -z "$runner" ]]; then
+    owner=$(gh repo view --json owner --jq .owner.login 2>/dev/null)
+    case "$owner" in
+      laurigates)          runner=laurigates/gitops ;;
+      ForumViriumHelsinki) runner=ForumViriumHelsinki/infrastructure ;;
+      *) print -r -- "  ${dim}no known Renovate runner for '${owner}' — set GH_RENOVATE_RUNNER${rst}"
+         return 0 ;;
+    esac
+  fi
   if [[ -n "$run" ]]; then
     gh workflow run renovate.yml -R "$runner" && \
       print -r -- "  ${green}⟳${rst} dispatched renovate.yml on ${runner}"
@@ -1929,7 +1941,7 @@ _GH_WRAPPER_DOC=(
   ghr  'fzf-pick a workflow run, then view it.'
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
-  ghrr 'Multi-select open Renovate PRs with an unticked rebase box (^a = all) and tick it, so the next Renovate run rebases them. -r also dispatches renovate.yml on $GH_RENOVATE_RUNNER (default laurigates/gitops; covers every repo, ~20 min).'
+  ghrr 'Multi-select open Renovate PRs with an unticked rebase box (^a = all) and tick it, so the next Renovate run rebases them. -r also dispatches renovate.yml on the repo owner'\''s runner (laurigates/gitops or ForumViriumHelsinki/infrastructure; $GH_RENOVATE_RUNNER overrides; covers every repo of that owner, 20–45 min).'
   ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. A PR whose base took a merge earlier in the run, or that a strict ruleset reports BEHIND, is updated (gh pr update-branch) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
   ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same update-and-wait-for-CI and Claude conflict handoff as ghsq, but rebasing (update-branch --rebase). Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
