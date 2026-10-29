@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793097595032,
+  "lastUpdate": 1793274472621,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3079,6 +3079,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0102660952,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "713a6c78c9074a83a20f88aacb26d0de391d3b4c",
+          "message": "fix(zsh): dispatch ghrr -r to the repo owner's Renovate runner (#534)\n\n`ghrr -r` always dispatched `laurigates/gitops` `renovate.yml`. Run in a\n`ForumViriumHelsinki` repo, it ticked the rebase box there and then\nstarted a full gitops run, which never scans FVH repos. Those PRs come\nfrom `fvh-renovate-bot`, run by `ForumViriumHelsinki/infrastructure`\n`renovate.yml`.\n\nThe runner is now picked from the current repo's owner:\n\n| Owner | Runner |\n|---|---|\n| `laurigates` | `laurigates/gitops` |\n| `ForumViriumHelsinki` | `ForumViriumHelsinki/infrastructure` |\n| anything else | no dispatch, message to set `GH_RENOVATE_RUNNER` |\n\n`GH_RENOVATE_RUNNER` still overrides the mapping.\n\nVerified by sourcing the rendered `ghrr` with a stubbed `gh` for all\nfour cases: each mapped owner dispatched to its runner, the unknown\nowner dispatched nothing, and the override won. `zsh -n` passes on the\nrendered `~/.zshrc`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BXzMhX3oFG15DVshf\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-29T13:46:50+02:00",
+          "tree_id": "de6a0d9a224c129711ffa26d36c8bc3840321290",
+          "url": "https://github.com/laurigates/dotfiles/commit/713a6c78c9074a83a20f88aacb26d0de391d3b4c"
+        },
+        "date": 1793274472038,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12668014733333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015908604000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013363794,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011397827199999998,
             "unit": "s"
           }
         ]
