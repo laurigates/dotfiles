@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793274794204,
+  "lastUpdate": 1793274969785,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3211,6 +3211,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0114629546,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ebf840e1588543a2b941f03efe3c583f61acab1a",
+          "message": "feat(just): add renovate-risk to write per-PR dossiers for risk review (#531)\n\n## What\n\nAdds the global recipe `just -g renovate-risk [out] [pattern] [owners]\n[authors] [jobs]`. It writes one markdown dossier per open Renovate PR\nwhose title matches `pattern` (default `(?i)security|vulnerab|cve`) into\n`out` (default `tmp/renovate-risk`). The recipe header in `justfile` and\nthe recipe list in `exact_dot_claude/CLAUDE.md` now name it.\n\nEach dossier holds:\n- whether the repo is archived or private;\n- the last commit on the default branch;\n- merge state and changed files;\n- every check with its conclusion;\n- the Renovate PR body: update table, release notes and advisories, with\nGitHub's truncation marker kept.\n\nPRs in archived repos go to `out/archived/`, because they cannot be\nmerged.\n\n## Why\n\n`renovate-triage` sorts PRs into SAFE and HOLD. The HOLD side, security\nPRs especially, still needs each PR's release notes, advisories and\nchecks read before anything merges. The dossiers are the input to that\nread. In the session that produced this, five Haiku `lean-reader` agents\nextracted CVEs and breaking changes from them verbatim, and the risk\nrating was done afterwards. The recipe only gathers; it makes no risk\njudgement.\n\n## Verification\n\n- On 2026-10-27 the session's prototype built dossiers for 41\nForumViriumHelsinki security PRs (14 in archived repos); 10 were merged\nas low risk afterwards.\n- `just --justfile private_dot_config/just/justfile renovate-risk <dir>\n\"(?i)security|vulnerab|cve\" ForumViriumHelsinki app/fvh-renovate-bot`\nfrom this branch gave `MATCHED=33 LIVE=19 ARCHIVED=14`. Diffed against\nthe prototype's file set: the 10 merged PRs are gone, and two new ones\nare present (FVHIoT-python#73, Spotted-Cesium-Viewer#47), opened by\nRenovate after CI resumed. 41 − 10 + 2 = 33.\n- With default arguments (both owners) it gave `MATCHED=72 LIVE=58\nARCHIVED=14`.\n- `just --list` parses the file and lists the recipe; the pre-commit\nhooks passed on the commit.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01LDMi9sT6VJh47Vur7G7cQ8\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-29T13:55:12+02:00",
+          "tree_id": "fd180f7bade61abeb2174b04324a22e4036ff278",
+          "url": "https://github.com/laurigates/dotfiles/commit/ebf840e1588543a2b941f03efe3c583f61acab1a"
+        },
+        "date": 1793274969103,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09533170366666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013509096000000004,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011347732,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009482345800000002,
             "unit": "s"
           }
         ]
