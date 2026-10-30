@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793372087197,
+  "lastUpdate": 1793377673389,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3387,6 +3387,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0110595626,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "aaab52ef49b6b20c1b973da41b50270df8196a8e",
+          "message": "docs(claude): route disk-full-recovery to a per-platform skill (#541)\n\n`disk-full-recovery.md` sent every full-disk case to\n`macos-plugin:macos-disk-usage`, and `reclaim.sh` refuses to run on\nanything but Darwin, so on a Linux machine the rule had nowhere to point\nonce Bash worked again. It now routes by platform:\n\n- **macOS:** `macos-plugin:macos-disk-usage`, plus `just -g reclaim-dry`\n/ `reclaim`.\n- **Linux:** `linux-plugin:linux-disk-usage`, added in\nlaurigates/claude-plugins#3317.\n\nIt also corrects invariant 3. On a Linux workstation, `brew cleanup -s`\nleft 2.5 GB in `downloads/`, and `brew cleanup --prune=all -s` removed\nit.\n\nDepends on laurigates/claude-plugins#3317. Until that merges, the Linux\nskill name in this rule does not resolve.\n\n`just lint-docs`: `STATUS=OK`, `DANGLING_COUNT=0`. pre-commit passed.\n\nFollow-up, not done here: `reclaim.sh` has the same `brew cleanup -s`\nform (line 198) and refuses on Linux. A Linux path for it is a separate\nchange.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BHuXZpQfGpPZRXAp5\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-30T18:26:56+02:00",
+          "tree_id": "5724b269e71ceb0d29f252cf48671dfa1cc03319",
+          "url": "https://github.com/laurigates/dotfiles/commit/aaab52ef49b6b20c1b973da41b50270df8196a8e"
+        },
+        "date": 1793377673056,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12488457200000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017236612,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0014713748,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.012228665400000002,
             "unit": "s"
           }
         ]
