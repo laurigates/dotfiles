@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793378228122,
+  "lastUpdate": 1793378490145,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3519,6 +3519,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.008406242000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "026bc98e47d2c20c6ca0b50ae2be06d2eac83891",
+          "message": "docs(claude): say reclaim.sh runs on both platforms in disk-full-recovery (#548)\n\n#541 wrote that `reclaim.sh` refuses on anything but Darwin. #546 merged\nan hour later and made it run on Linux, so that sentence is now false.\n\nThe rule now lists `just -g reclaim-dry` / `reclaim` for both platforms.\nIt notes that only the weekly unattended run is macOS-only, because that\nrun is a launchd job.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BHuXZpQfGpPZRXAp5\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-30T18:40:13+02:00",
+          "tree_id": "6c2238382644485e518d89585db4f4d085135ad4",
+          "url": "https://github.com/laurigates/dotfiles/commit/026bc98e47d2c20c6ca0b50ae2be06d2eac83891"
+        },
+        "date": 1793378489489,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13977746366666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017238561999999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0014017616,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.012123167,
             "unit": "s"
           }
         ]
