@@ -153,6 +153,9 @@ export TMPDIR="$HOME/tmp/"
 WORDCHARS="${WORDCHARS//[\/]}"
 
 # Put homebrew on PATH. Handles the macos and linux homebrew prefixes.
+# .zshenv already adds it for non-interactive shells; this repeat is not
+# redundant on macOS, where /etc/zprofile's path_helper runs in between and
+# demotes brew behind /usr/bin in every login shell (kitty starts one).
 #
 # Deliberately NOT `eval "$(brew shellenv)"`. Brew's zsh site-functions dir IS
 # on fpath, but appended by hand further down -- never via shellenv, which emits
