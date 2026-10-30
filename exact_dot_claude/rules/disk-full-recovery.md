@@ -25,8 +25,11 @@ Bash call fails instantly with
 For the full space-hunt playbook once Bash works again, pick by platform:
 
 - **macOS** — the `macos-plugin:macos-disk-usage` skill (APFS snapshots,
-  OrbStack images, offender tables). `just -g reclaim-dry` / `reclaim` run
-  the scripted sweep; `reclaim.sh` refuses on anything but Darwin.
+  OrbStack images, offender tables).
 - **Linux** — the `linux-plugin:linux-disk-usage` skill (every mount, the
   suspects scan, runner workspaces, swapfile beside zram, model stores on a
   data drive, archive-verify-delete onto another disk).
+
+On either platform, `just -g reclaim-dry` / `reclaim` run the scripted sweep
+of build artifacts and package caches. The weekly unattended run is a
+launchd job, so it exists on macOS only.
