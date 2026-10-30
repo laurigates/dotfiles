@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-root-meta", "test:organize-stars", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-root-meta", "test:organize-stars", "test:cloud-env", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -88,6 +88,10 @@ run = "tests/test-shell-precedence.sh"
 [tasks."test:ci-pins"]
 description = "Regression test: CI toolchain pins (no branch-ref actions, chezmoi only from .mise.toml, mise-action version pinned, Python/bun/pre-commit/Claude Code CLI exact)"
 run = "tests/test-ci-pins.sh --self-test && tests/test-ci-pins.sh"
+
+[tasks."test:cloud-env"]
+description = "Regression test: cloud-env check/bootstrap exit non-zero on every gap (chezmoi source, settings, marketplace, plugins, commands) and bootstrap is idempotent"
+run = "tests/test-cloud-env.sh"
 
 [tasks."test:pi-settings"]
 description = "Regression test: ~/.pi/agent/settings.json modify_ script keeps pi-owned keys and unions packages by identity"
