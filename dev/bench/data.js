@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793378037739,
+  "lastUpdate": 1793378228122,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3475,6 +3475,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0115967428,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a9a0d675900ee6997ab437a55f1bd21aba4a5b1c",
+          "message": "chore(claude): enable linux-plugin in the settings overlay (#547)\n\nEnables `linux-plugin@laurigates-claude-plugins` in\n`exact_dot_claude/modify_settings.json`. The plugin was added in\nlaurigates/claude-plugins#3317, now merged. Its `linux-disk-usage` skill\nis where `disk-full-recovery.md` sends Linux machines (#541). Without an\noverlay decision the plugin-audit SessionStart hook lists it as\nundecided, and it defaults off.\n\nVerification:\n- `echo '{}' | bash exact_dot_claude/modify_settings.json | jq\n'.enabledPlugins[\"linux-plugin@laurigates-claude-plugins\"]'` returns\n`true`.\n- `tests/test-claude-plugin-references.sh` passes after `claude plugin\nmarketplace update laurigates-claude-plugins`. Before the refresh it\nfailed, because the installed marketplace copy predated #3317's merge.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BHuXZpQfGpPZRXAp5\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-30T18:36:21+02:00",
+          "tree_id": "e5b79d249fb5d96de31c1101e1c82f8f11cb23a4",
+          "url": "https://github.com/laurigates/dotfiles/commit/a9a0d675900ee6997ab437a55f1bd21aba4a5b1c"
+        },
+        "date": 1793378227686,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07665578966666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0020649732,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0025604601999999997,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.008406242000000001,
             "unit": "s"
           }
         ]
