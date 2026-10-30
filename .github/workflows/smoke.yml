@@ -90,6 +90,11 @@ jobs:
         # A plain-named source-root file not in .chezmoiignore lands in $HOME.
         run: tests/test-chezmoi-root-meta.sh
 
+      - name: Check cloud-env fails loudly
+        # The cloud setup script's bootstrap/check (dot_local/bin/executable_cloud-env)
+        # against stubbed claude/chezmoi; also shellchecks the extension-less script.
+        run: tests/test-cloud-env.sh
+
       - name: Check mise tasks (#398)
         # Runs the .mise.toml tasks against planted findings and this tree.
         # Setup mise installed shellcheck from the .mise.toml pin; --require
