@@ -26,6 +26,7 @@ scheduled-tasks/
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
 downloads/
+uploads/
 file-history/
 paste-cache/
 plans/
@@ -61,6 +62,7 @@ settings.json.backup.*
 policy-limits.json
 remote-settings.json
 .update.lock
+computer-use.lock
 debug
 history.jsonl
 stats-cache.json
