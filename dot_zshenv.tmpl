@@ -11,6 +11,16 @@ typeset -U PATH path
 path+="$HOME/.local/bin"
 path+="/Applications/Obsidian.app/Contents/MacOS"
 
+# Homebrew, for NON-interactive zsh (`ssh host cmd`, scripts), which reads only
+# this file. Interactive shells get it again from .zshrc: on macOS a login shell
+# runs /etc/zprofile after this file, and its path_helper moves everything set
+# here behind /usr/bin (the gist above), so .zshrc re-prepends brew afterwards.
+{{- if eq .chezmoi.os "darwin" }}
+[ -x /opt/homebrew/bin/brew ] && path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+{{- else if eq .chezmoi.os "linux" }}
+[ -x /home/linuxbrew/.linuxbrew/bin/brew ] && path=("/home/linuxbrew/.linuxbrew/bin" "/home/linuxbrew/.linuxbrew/sbin" $path)
+{{- end }}
+
 export PATH
 
 source ~/.api_tokens
