@@ -317,6 +317,7 @@ read -r -d '' overlay <<'OVERLAY' || true
     "prompt-engineering-plugin@laurigates-claude-plugins": false,
     "taskwarrior-plugin@laurigates-claude-plugins": true,
     "macos-plugin@laurigates-claude-plugins": true,
+    "linux-plugin@laurigates-claude-plugins": true,
     "session-plugin@laurigates-claude-plugins": true
   },
   "extraKnownMarketplaces": {
