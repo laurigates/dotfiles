@@ -26,6 +26,7 @@ scheduled-tasks/
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
 downloads/
+uploads/
 file-history/
 paste-cache/
 plans/

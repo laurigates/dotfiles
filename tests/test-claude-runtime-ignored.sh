@@ -49,6 +49,7 @@ RUNTIME_ENTRIES=(
     # .chezmoiignore "Runtime directories created by Claude Code"
     cache/fixture
     downloads/fixture
+    uploads/fixture
     file-history/fixture
     paste-cache/fixture
     plans/fixture.md
