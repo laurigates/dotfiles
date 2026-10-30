@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793367012676,
+  "lastUpdate": 1793372087197,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3343,6 +3343,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.013145255,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "00699de76e8a191f8d0603d16c6634aa0b534dc2",
+          "message": "feat(claude): cloud-env bootstrap/check that fails loudly (#545)\n\nCloud setup scripts cannot read environment variables, so\n`chezmoi init --apply $GITHUB_USERNAME` ran as a bare `chezmoi init`\nthat applied nothing and exited 0.\n\n- cloud-env bootstrap/check: install missing commands, the\n  laurigates-claude-plugins marketplace and every enabled plugin at user\n  scope; check exits 1 on any gap.\n- plugins-install exits 1 on a failed install; cloud-env-check /\n  cloud-env-bootstrap just recipes.\n- .chezmoiignore: eight cloud-container files in ~/.claude that apply\n  would otherwise delete, including the setup-failure hook.\n- tests/test-cloud-env.sh (15 cases, bash 5 and 3.2); MISE_VERSION pinned\n  to the mise-action release.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9DHqrfFhLLuY3VZFBv",
+          "timestamp": "2026-10-30T16:53:53+02:00",
+          "tree_id": "10c97c577cad8d228d672630960655a3c55b52cb",
+          "url": "https://github.com/laurigates/dotfiles/commit/00699de76e8a191f8d0603d16c6634aa0b534dc2"
+        },
+        "date": 1793372086885,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12672066933333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015896562,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013467882000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0110595626,
             "unit": "s"
           }
         ]
