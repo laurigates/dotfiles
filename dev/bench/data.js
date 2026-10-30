@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793364288090,
+  "lastUpdate": 1793367012676,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3299,6 +3299,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011547990000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0d01e65a9c877b09d29d5d345cabd7129dd97c77",
+          "message": "fix(claude): keep computer-use.lock and uploads/ through chezmoi apply (#540)\n\nClaude Code writes `~/.claude/computer-use.lock` (`{sessionId, pid,\nacquiredAt}`) while a session holds the computer-use lock. Because\n`~/.claude` is an `exact_` directory, `chezmoi status` listed it as `\nD`: the next `chezmoi update` would have deleted it while the owning\nsession (pid 40962) was still running.\n\nThis adds it to the runtime files in `exact_dot_claude/.chezmoiignore`\nbeside `.update.lock`, and to the fixtures in\n`tests/test-claude-runtime-ignored.sh` (46 runtime entries survive;\ncanary deletion detected).\n\nSecond commit: `~/.claude/uploads/` (session attachments). On popos\n`chezmoi status` listed it as `AD`, so the next apply would have deleted\nit. Test now covers 47 entries.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9Cri25aUbmSpY3MgPJ\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-30T15:29:15+02:00",
+          "tree_id": "6e179120408664748710443cfe574e1dec1c8a44",
+          "url": "https://github.com/laurigates/dotfiles/commit/0d01e65a9c877b09d29d5d345cabd7129dd97c77"
+        },
+        "date": 1793367012255,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.15230299133333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.004184680200000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0030897544,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.013145255,
             "unit": "s"
           }
         ]
