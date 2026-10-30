@@ -61,6 +61,7 @@ settings.json.backup.*
 policy-limits.json
 remote-settings.json
 .update.lock
+computer-use.lock
 debug
 history.jsonl
 stats-cache.json

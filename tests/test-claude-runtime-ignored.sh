@@ -80,6 +80,7 @@ RUNTIME_ENTRIES=(
     policy-limits.json
     remote-settings.json
     .update.lock
+    computer-use.lock
     debug/fixture
     history.jsonl
     stats-cache.json
