@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793274969785,
+  "lastUpdate": 1793364288090,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3255,6 +3255,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009482345800000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "45bf06eee6097d9eb1be79c2f354fc1ce2441927",
+          "message": "chore(mise): bump pi to 1.4.0\n\nA local `pi = \"latest\"` (aqua backend) had been added to this Mac's\nglobal mise config to get pi 1.4.0, but the pinned npm copy (1.3.0)\nstays ahead of it on PATH, so it never ran. Bump the existing pin\ninstead of adding a second backend; the next apply drops the local\nentry.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9Cri25aUbmSpY3MgPJ",
+          "timestamp": "2026-10-30T14:43:59+02:00",
+          "tree_id": "2680526a17bc38c05efcf9c01cdde168c7e5777b",
+          "url": "https://github.com/laurigates/dotfiles/commit/45bf06eee6097d9eb1be79c2f354fc1ce2441927"
+        },
+        "date": 1793364287518,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.085702543,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012965434000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011178262,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011547990000000001,
             "unit": "s"
           }
         ]
