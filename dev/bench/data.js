@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793377673389,
+  "lastUpdate": 1793378037739,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3431,6 +3431,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.012228665400000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b917dfa0a80ede784385029b78bba5fabc1f8d29",
+          "message": "fix(scripts): run reclaim.sh on Linux and prune all brew downloads (#546)\n\n`reclaim.sh` refused anything but Darwin, so `just -g reclaim` did\nnothing on a Linux workstation. This follows up laurigates/dotfiles#541.\n\n- **mtime lookup.** Lifting the guard alone would not have worked.\nDirectory mtimes were read with BSD `stat -f %m`, which GNU `stat` takes\nas \"filesystem status\". On Linux every artifact would have been skipped\nand the sweep would have reported nothing stale. A `dir_mtime` helper\nnow tries GNU `stat -c %Y` first and falls back to BSD.\n- **Homebrew.** The cache is measured at `$(brew --cache)/downloads` and\ncleaned with `brew cleanup --prune=all -s`. Plain `-s` left 2.5 GB of\ndownloads on the Linux machine. This changes macOS too: downloads for\ncurrent versions now go as well, and they re-download on the next\ninstall.\n- **npx.** `~/.npm/_npx` is purged; `npm cache clean --force` leaves it.\n\n## Verification\n\n- `tests/test-reclaim.sh` (new `test:reclaim` task, added to `test` and\nto `test-mise-tasks.sh`'s repo-task list) dry-runs against a scratch\nroot with a 2020 `target/` and a fresh one. It passes. Two mutations\neach fail their assertion:\n- mtime lookup restored to BSD-only: the 2020 dir disappears from the\nstale list.\n  - brew line reverted to plain `-s`: the brew check fails.\n- A dry run on the Linux workstation exited 0. It listed:\n  - a 592-day-old `.venv`;\n  - `~/.npm/_npx` at 448,052 KB;\n  - Homebrew at `~/.cache/Homebrew/downloads`.\n- shellcheck 0.11.0 is clean on the three changed scripts.\n- `tests/test-mise-tasks.sh`: 47 passed, 0 failed.\n- Not run on macOS by me; the BSD fallback is the code that ran there\nbefore.\n\nMerged `origin/main` into the branch to resolve a conflict with #545 in\n`.mise.toml`: the `test` task now depends on both `test:cloud-env` and\n`test:reclaim`. `test-reclaim.sh` and `test-mise-tasks.sh` (47 passed)\nre-run on the merge.\n\nWeekly unattended runs remain macOS-only (launchd plist); there is no\nsystemd timer.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BHuXZpQfGpPZRXAp5\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-30T18:33:07+02:00",
+          "tree_id": "c845139a7a554d1579632dfb5628dfb76d918c79",
+          "url": "https://github.com/laurigates/dotfiles/commit/b917dfa0a80ede784385029b78bba5fabc1f8d29"
+        },
+        "date": 1793378037239,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08535762033333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013098840000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010856098000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0115967428,
             "unit": "s"
           }
         ]
