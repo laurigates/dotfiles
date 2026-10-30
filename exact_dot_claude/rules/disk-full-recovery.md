@@ -14,12 +14,19 @@ Bash call fails instantly with
    in the conversation: start with `! df -h /` and
    `! du -shx ~/.cache/* 2>/dev/null | sort -h | tail -10`.
 3. Prefer tools' own cleanup commands over `rm -rf` (`uv cache clean`,
-   `pip cache purge`, `brew cleanup -s`, `go clean -cache`,
+   `pip cache purge`, `brew cleanup --prune=all -s` (plain `-s` left 2.5 GB
+   in `downloads/`), `go clean -cache`,
    `docker system prune -a`, `journalctl --vacuum-size=1G`). A typical
    uv/pip/HF session frees 30–50 GB.
 4. Fix the cause, not the symptom: redirect caches on small-root machines
    (`HF_HOME` — see the `tools-plugin:hf-downloads` skill; `UV_CACHE_DIR`,
    `PIP_CACHE_DIR`, `HOMEBREW_CACHE`), persisted in `.zshrc`/`~/.api_tokens`.
 
-For the full space-hunt playbook (APFS snapshots, OrbStack images, offender
-tables), use the `macos-plugin:macos-disk-usage` skill.
+For the full space-hunt playbook once Bash works again, pick by platform:
+
+- **macOS** — the `macos-plugin:macos-disk-usage` skill (APFS snapshots,
+  OrbStack images, offender tables). `just -g reclaim-dry` / `reclaim` run
+  the scripted sweep; `reclaim.sh` refuses on anything but Darwin.
+- **Linux** — the `linux-plugin:linux-disk-usage` skill (every mount, the
+  suspects scan, runner workspaces, swapfile beside zram, model stores on a
+  data drive, archive-verify-delete onto another disk).
