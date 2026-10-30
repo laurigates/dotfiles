@@ -64,7 +64,9 @@ install_command() {
     uv|uvx)     curl -LsSf https://astral.sh/uv/install.sh | sh ;;
     just)       uv tool install rust-just ;;
     pre-commit) uv tool install pre-commit ;;
-    mise)       curl -fsSL https://mise.run | sh ;;
+    # Same release as jdx/mise-action in the workflows; tests/test-ci-pins.sh
+    # (check D) fails when they diverge.
+    mise)       curl -fsSL https://mise.run | MISE_VERSION=v2026.9.12 sh ;;
     *)          echo "no installer for $1" >&2; return 1 ;;
   esac
 }
