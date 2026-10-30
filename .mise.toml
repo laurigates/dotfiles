@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-root-meta", "test:organize-stars", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-root-meta", "test:organize-stars", "test:reclaim", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -112,6 +112,10 @@ run = "tests/test-mise-tasks.sh"
 [tasks."test:organize-stars"]
 description = "Regression test: organize-stars.sh exits non-zero when gh fails, and its counters do not abort the run (#443)"
 run = "tests/test-organize-stars.sh"
+
+[tasks."test:reclaim"]
+description = "Regression test: reclaim.sh runs on Linux and macOS, reads dir mtimes on both, and prunes all brew downloads and the npx cache"
+run = "tests/test-reclaim.sh"
 
 # Every linter runs even after one fails; the task fails if any did.
 [tasks.lint]
