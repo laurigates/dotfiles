@@ -107,7 +107,7 @@ REPO="$(cd "${MISE_TASKS_REPO:-$SCRIPT_DIR/..}" && pwd -P)"
 REPO_TASKS="apply diff status verify check
     test test:setup test:plugin-refs test:context-budget test:shell-precedence
     test:ci-pins test:gh-completion test:chezmoi-exact-guard test:mise-tasks
-    test:chezmoi-root-meta test:organize-stars
+    test:chezmoi-root-meta test:organize-stars test:reclaim
     lint lint:shell lint:lua lint:actions lint:docs
     docker qa ci clean security:audit security:scan edit"
 
