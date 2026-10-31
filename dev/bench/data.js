@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793378490145,
+  "lastUpdate": 1793435632391,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3563,6 +3563,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.012123167,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a9a51503c5ef5f34bef4c19971854a250075194d",
+          "message": "chore(deps): update GitHub Actions (#550)\n\nThis PR contains the following updates:\n\n| Package | Type | Update | Change | Pending |\n|---|---|---|---|---|\n| [Homebrew/actions](https://redirect.github.com/Homebrew/actions) | |\npatch | `2026.10.19.1` → `2026.10.26.1` | |\n|\n[anthropics/claude-code-action](https://redirect.github.com/anthropics/claude-code-action)\n| action | patch | `v1.0.258` → `v1.0.264` | `v1.0.266` (+1) |\n| [laurigates/.github](https://redirect.github.com/laurigates/.github) |\naction | pinDigest | → `df99294` | |\n\n---\n\n### Release Notes\n\n<details>\n<summary>Homebrew/actions (Homebrew/actions)</summary>\n\n###\n[`v2026.10.26.1`](https://redirect.github.com/Homebrew/actions/releases/tag/2026.10.26.1)\n\n[Compare\nSource](https://redirect.github.com/Homebrew/actions/compare/2026.10.19.1...2026.10.26.1)\n\n##### What's Changed\n\n- Synchronize shared configuration by\n[@&#8203;BrewTestBot](https://redirect.github.com/BrewTestBot) in\n[#&#8203;954](https://redirect.github.com/Homebrew/actions/pull/954)\n- build(deps): bump the npm group with 4 updates by\n[@&#8203;dependabot](https://redirect.github.com/dependabot)\\[bot] in\n[#&#8203;955](https://redirect.github.com/Homebrew/actions/pull/955)\n- build(deps): bump the github-actions group across 1 directory with 2\nupdates by\n[@&#8203;dependabot](https://redirect.github.com/dependabot)\\[bot] in\n[#&#8203;956](https://redirect.github.com/Homebrew/actions/pull/956)\n\n**Full Changelog**:\n<https://github.com/Homebrew/actions/compare/2026.10.19.1...2026.10.26.1>\n\n</details>\n\n<details>\n<summary>anthropics/claude-code-action\n(anthropics/claude-code-action)</summary>\n\n###\n[`v1.0.264`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.264)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.263...v1.0.264)\n\n##### What's Changed\n\n- docs: use claude-plugins-official in plugin examples by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;1932](https://redirect.github.com/anthropics/claude-code-action/pull/1932)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.263...v1.0.264>\n\n###\n[`v1.0.263`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.263)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.262...v1.0.263)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.262...v1.0.263>\n\n###\n[`v1.0.262`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.262)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.261...v1.0.262)\n\n##### What's Changed\n\n- chore: bump Bun to 1.4.4 by\n[@&#8203;dylan-conway](https://redirect.github.com/dylan-conway) in\n[#&#8203;1916](https://redirect.github.com/anthropics/claude-code-action/pull/1916)\n\n##### New Contributors\n\n- [@&#8203;dylan-conway](https://redirect.github.com/dylan-conway) made\ntheir first contribution in\n[#&#8203;1916](https://redirect.github.com/anthropics/claude-code-action/pull/1916)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.261...v1.0.262>\n\n###\n[`v1.0.261`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.261)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.260...v1.0.261)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.260...v1.0.261>\n\n###\n[`v1.0.260`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.260)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.259...v1.0.260)\n\n##### What's Changed\n\n- Pin the PR version a run checks out by\n[@&#8203;OctavianGuzu](https://redirect.github.com/OctavianGuzu) in\n[#&#8203;1915](https://redirect.github.com/anthropics/claude-code-action/pull/1915)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.259...v1.0.260>\n\n###\n[`v1.0.259`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.259)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.258...v1.0.259)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.258...v1.0.259>\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend\nRenovate](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0My4yODguMCIsInVwZGF0ZWRJblZlciI6IjQzLjI4OC4wIiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-31T08:32:54Z",
+          "tree_id": "b9c22bf1d7b00f61ac46c7b2aa33eaa892720e3d",
+          "url": "https://github.com/laurigates/dotfiles/commit/a9a51503c5ef5f34bef4c19971854a250075194d"
+        },
+        "date": 1793435632073,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12473578366666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015999661999999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013357686000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011573083000000001,
             "unit": "s"
           }
         ]
