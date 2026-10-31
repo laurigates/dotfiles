@@ -102,7 +102,7 @@ jobs:
         # customManagers entry in renovate.json5.
         env:
           # renovate: datasource=npm depName=@anthropic-ai/claude-code
-          CLAUDE_CODE_VERSION: 2.1.308
+          CLAUDE_CODE_VERSION: 2.1.312
         run: |
           npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
           echo "Claude CLI version: $(claude --version)"
