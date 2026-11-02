@@ -722,6 +722,14 @@ _claude_pr_worktree() {
     done < <(git worktree list --porcelain; print)
     [[ "$line" == "branch refs/heads/$head" ]] || wt=""
   fi
+  # A worktree whose directory was deleted without `git worktree remove` is
+  # still listed and still holds the branch, so a new worktree would fail
+  # too. Prune such stale entries; git leaves live and locked ones alone.
+  if [[ -n "$wt" && ! -d "$wt" ]]; then
+    print -r -- "  ${head} is held by a deleted worktree at ${wt} — pruning stale worktree entries"
+    git worktree prune -v
+    wt=""
+  fi
   if [[ -n "$wt" ]]; then
     print -r -- "  ${head} is already checked out in ${wt} — starting Claude there"
     (cd "$wt" && claude "$prompt")
