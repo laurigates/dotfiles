@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793648941548,
+  "lastUpdate": 1793651787971,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3783,6 +3783,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0120441846,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "697eef74d8508cc1482781becf24b4399b569c44",
+          "message": "docs(repos): add the nested-cwd route to the worktree instruction (#557)\n\n`private_repos/CLAUDE.md` § \"Work in a Worktree\" tells agents to enter a\nworktree before editing `~/repos`. `EnterWorktree` acts on the session's\ncurrent repo, so from a nested checkout (cwd under\n`~/repos/<org>/<repo>`) it creates a worktree of the nested repo with no\nwarning; the issue records one such case from thelma on 2026-09-22.\n\nThis adds one paragraph giving the `git -C /Users/lgates/repos worktree\nadd -b <branch> /Users/lgates/repos/.claude/worktrees/<name>\norigin/main` route for that case, worked by absolute path, and states\nthat the requirement is a clean main checkout, which is what\n`repos-sync-nudge.sh` checks.\n\nAfter merge, `chezmoi apply ~/repos/CLAUDE.md` renders it.\n\nCloses laurigates/repos-claude-config#57\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AJRWMFZCtmxv4562z\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-02T22:35:38+02:00",
+          "tree_id": "4c6086ea25c5f240bb43d3dd5539c6d0a2c9ebca",
+          "url": "https://github.com/laurigates/dotfiles/commit/697eef74d8508cc1482781becf24b4399b569c44"
+        },
+        "date": 1793651787428,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08135572266666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009675922,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.000826783,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0065135722000000005,
             "unit": "s"
           }
         ]
