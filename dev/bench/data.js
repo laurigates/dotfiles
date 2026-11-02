@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793472102548,
+  "lastUpdate": 1793605700128,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3651,6 +3651,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0077674188,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ed5102d0126a2f9c1d952641c6b06505e255ca2c",
+          "message": "feat(zsh): make ghm the only PR merge command, drop ghsq and ghrb (#552)\n\n`ghm` picks squash or rebase per PR from `pr-merge-method.py`, falling\nback to the PR's `merge:*` label; a human-applied label overrides.\n`ghsq` and `ghrb` had become `ghm` with a forced method behind a\nmismatch prompt, and a forced method leaves nothing on the PR. They are\nremoved; to force a method, label the PR.\n\n## Changes\n\n- **Ask when the method is unknown.** With no script result and no\nlabel, `ghm` prompts `r=rebase / s=squash / k=skip` instead of skipping\nthe PR (batch) or erroring (single PR). `a`=all at the batch prompt does\nnot answer it.\n- **Method column in the picker**, read from the `merge:*` label\n(`rebase` / `squash` / `?`). One `gh pr list` call; running the script\nfor every listed PR would stall the picker.\n- **Conflict handoff follows each PR's method.** It keyed on a\nbatch-wide `--rebase` flag, which `ghm` never passed, so a conflicting\nrebase PR was handed to Claude with merge-the-base instructions.\n- `ghsq`/`ghrb` functions, completion, help text and fzf-tab previews\nremoved. `ghm` added to the help tables, where it was missing. `ghrp`\nkeeps its explicit `--squash` and the mismatch warning.\n\n## Verification\n\n- Rendered template passes `zsh -n`.\n- `_gh_ask_method`, extracted from the rendered file and driven through\na pty: `r` gives rebase, `R` rebase, `s` squash, `k` skip.\n- Label jq run against this repo's last 6 PRs: all `squash`, matching\ntheir labels.\n- Picker extraction with the new column recovers the number and a\nmulti-word title.\n- `mise run lint:shell`, `lint:actions`, `lint:docs` pass. `lint:lua`\nfails locally because Homebrew luacheck is broken under Lua 5.5; this PR\ntouches no Lua.\n- Not yet exercised: a live `ghm` batch merge.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9CWLAtSQtygFvWKotK\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-02T09:47:25+02:00",
+          "tree_id": "a1a853a2a8c76e97a9be2fd80cf8d546248ce245",
+          "url": "https://github.com/laurigates/dotfiles/commit/ed5102d0126a2f9c1d952641c6b06505e255ca2c"
+        },
+        "date": 1793605699573,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12497121966666669,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015825723999999999,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013439662,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0111638454,
             "unit": "s"
           }
         ]
