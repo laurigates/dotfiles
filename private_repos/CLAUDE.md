@@ -21,8 +21,8 @@ of a change task. Reading and answering questions do not need one.
 (cwd under `~/repos/<org>/<repo>`) it silently creates a worktree of that
 nested repo instead. There, run
 `git -C /Users/lgates/repos worktree add -b <branch> /Users/lgates/repos/.claude/worktrees/<name> origin/main`
-and work on it by absolute path; the requirement is a clean main checkout,
-not a relocated session.
+and work on it by absolute path. The session can stay where it is; only the
+main checkout has to stay clean.
 
 This `CLAUDE.md` is not tracked here: chezmoi renders it from
 `private_repos/CLAUDE.md` in the dotfiles source (`~/.local/share/chezmoi`), so
