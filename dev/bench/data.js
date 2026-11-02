@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793605700128,
+  "lastUpdate": 1793611474975,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3695,6 +3695,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0111638454,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d95597167f018bd115d2f1e939cfe5a4bf65b61c",
+          "message": "fix(zsh): name the worktree in ghm and ghpc Claude handoffs (#553)\n\n## What\n`ghm`'s conflict handoff and `ghpc -w` now pass a worktree name before\nthe prompt, and start Claude in the existing worktree when the PR's\nbranch is already checked out in one.\n\n## Why\n`claude --worktree` takes an optional name (`-w, --worktree [name]` in\n`claude --help`, 2.1.316), so `claude --worktree \"<prompt>\"` read the\nprompt as the name:\n\n```\nHand laurigates/shore-recon#111 to Claude to resolve? [y/N] y\nError creating worktree: Invalid worktree name: must be 64 characters or fewer (got 267)\n```\n\nWith a name the handoff would still have failed for that PR: its branch\nwas checked out in a leftover workflow worktree, and git refuses to\ncheck a branch out in a second worktree.\n\n## How\nA new `_claude_pr_worktree <n> <name> <prompt>` helper looks up the PR's\n`headRefName`, searches `git worktree list --porcelain` for it, and\neither runs `claude \"<prompt>\"` in that worktree or `claude --worktree\npr-<n>-<purpose> \"<prompt>\"`. The conflict prompt now says to run `gh pr\ncheckout` only when the checkout is not already on the branch.\n\nIf the matched worktree's directory was deleted without `git worktree\nremove`, the entry still reserves the branch (`fatal: 'feat' is already\nused by worktree at …`), so the helper runs `git worktree prune -v` and\nthen creates a new worktree. Prune removes only entries whose directory\nis gone; live and locked worktrees stay.\n\n## Testing\n- `chezmoi execute-template < dot_zshrc.tmpl | zsh -n` passes.\n- I extracted the helper with `sed` and ran it in shore-recon with stub\n`gh`/`claude` functions:\n- Branch already checked out in a worktree (`feat/splat-progress`):\nClaude runs in `.claude/worktrees/wf_7c45e7ce-a95-3` with the prompt as\nits only argument.\n- Branch not checked out: the stub receives `--worktree pr-999-conflicts\n<prompt>`.\n  - `gh` returns nothing: same as the previous case.\n- In a scratch repo, a worktree whose directory was deleted: the helper\nprunes it, and the stub receives `--worktree pr-5-conflicts <prompt>`.\n`git worktree list` no longer shows the entry.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AdYSYUwZUZNDAThF3\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-02T11:23:58+02:00",
+          "tree_id": "6b9fa91799a47b5367f1cac265a68ce0734cf4f3",
+          "url": "https://github.com/laurigates/dotfiles/commit/d95597167f018bd115d2f1e939cfe5a4bf65b61c"
+        },
+        "date": 1793611474674,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09809945666666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013150514000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011200496000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010278942000000001,
             "unit": "s"
           }
         ]
