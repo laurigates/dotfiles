@@ -702,6 +702,34 @@ ghi() {
   claude "/git-issue $issue_num"
 }
 
+# Start Claude on a PR's branch in a worktree.
+#   _claude_pr_worktree <pr-number> <worktree-name> <prompt>
+# If a worktree already has the PR's head branch checked out, Claude runs
+# there: a new worktree could not check that branch out ("already used by
+# worktree"). Otherwise a new worktree named <worktree-name> is created; the
+# name goes before the prompt because --worktree takes an optional name and
+# would otherwise consume the prompt as one.
+_claude_pr_worktree() {
+  local n="$1" name="$2" prompt="$3" head wt line
+  head=$(gh pr view "$n" --json headRefName -q .headRefName 2>/dev/null)
+  if [[ -n "$head" ]]; then
+    while IFS= read -r line; do
+      case "$line" in
+        "worktree "*) wt="${line#worktree }" ;;
+        "branch refs/heads/$head") break ;;
+        "") wt="" ;;
+      esac
+    done < <(git worktree list --porcelain; print)
+    [[ "$line" == "branch refs/heads/$head" ]] || wt=""
+  fi
+  if [[ -n "$wt" ]]; then
+    print -r -- "  ${head} is already checked out in ${wt} — starting Claude there"
+    (cd "$wt" && claude "$prompt")
+  else
+    claude --worktree "$name" "$prompt"
+  fi
+}
+
 # GitHub PRs → Claude: select PR and address workflow/review feedback
 # Flags: -w/--worktree (isolated worktree), -r/--resume (resume linked session via --from-pr)
 ghpc() {
@@ -755,7 +783,7 @@ ghpc() {
     claude --from-pr "$pr_num"
   elif $worktree; then
     echo "Addressing PR #$pr_num feedback with Claude in worktree..."
-    claude --worktree "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
+    _claude_pr_worktree "$pr_num" "pr-${pr_num}-feedback" "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
   else
     echo "Addressing PR #$pr_num feedback with Claude..."
     claude "Check the PR #$pr_num workflow results and read the PR comments and address substantive feedback and suggestions"
@@ -1017,7 +1045,7 @@ _gh_conflict_handoff() {
     else
       how="merge origin/${b} into it, resolve the conflicts, and push"
     fi
-    claude --worktree "PR #${n} conflicts with ${b} after other PRs merged into it. Check out its branch (gh pr checkout ${n}), ${how}. Keep the intent of both sides, run the project's lint and tests before pushing, and do not merge the PR."
+    _claude_pr_worktree "$n" "pr-${n}-conflicts" "PR #${n} conflicts with ${b} after other PRs merged into it. Work on its branch (gh pr checkout ${n}, unless this checkout is already on it), ${how}. Keep the intent of both sides, run the project's lint and tests before pushing, and do not merge the PR."
   done 3<<< "$blob"
 }
 
