@@ -94,7 +94,7 @@ short).
 ## When it bites
 
 - Any `gh`/`fzf` picker that builds a `--json`/`--jq` table and wants colour:
-  `ghi`, `ghpc`, `ghsq`/`ghrb`, `ghrp`, and the read-only `_gh_*_pick` helpers
+  `ghi`, `ghpc`, `ghm`, `ghrp`, and the read-only `_gh_*_pick` helpers
   in `dot_zshrc.tmpl` all share the `column -t | _gh_paint | fzf --ansi` shape.
 - Porting a coloured `column`-aligned table anywhere — logs, status dashboards,
   `task`/`kubectl` summaries piped through `fzf`.
