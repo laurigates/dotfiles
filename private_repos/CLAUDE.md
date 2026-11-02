@@ -17,6 +17,13 @@ Make changes to **this** repo (its `.claude/` rules, scripts and skills) in a
 Claude Code worktree, not in the main checkout — enter one before the first edit
 of a change task. Reading and answering questions do not need one.
 
+`EnterWorktree` acts on the session's current repo. From a nested checkout
+(cwd under `~/repos/<org>/<repo>`) it silently creates a worktree of that
+nested repo instead. There, run
+`git -C /Users/lgates/repos worktree add -b <branch> /Users/lgates/repos/.claude/worktrees/<name> origin/main`
+and work on it by absolute path; the requirement is a clean main checkout,
+not a relocated session.
+
 This `CLAUDE.md` is not tracked here: chezmoi renders it from
 `private_repos/CLAUDE.md` in the dotfiles source (`~/.local/share/chezmoi`), so
 edit it there and run `chezmoi apply ~/repos/CLAUDE.md`.
