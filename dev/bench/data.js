@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793611474975,
+  "lastUpdate": 1793648941548,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3739,6 +3739,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010278942000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c634db21616373636bed7f734b5759ac2c4d2713",
+          "message": "feat(git): configure git send-email through Gmail for personal repos (#556)\n\nAdds a `[sendemail]` block to `private_dot_config/git/personal.inc`, so\nrepos that include it (`~/repos`, `~/repos/laurigates/`, chezmoi,\nLakuVault) can run `git send-email` through `smtp.gmail.com` as\n`lauri.gates@gmail.com`. Work repos don't include `personal.inc`, so\nthey get no SMTP config.\n\nThe Gmail app password isn't in the repo: send-email prompts on the\nfirst send and the `osxkeychain` credential helper keeps it.\n\nAlready applied locally from this branch (`chezmoi --source <worktree>\napply ~/.config/git/personal.inc`). `git send-email --dry-run` on a test\nmessage returns `Result: OK` with `Server: smtp.gmail.com`. A real send\nis still to be tested.\n\nNeeded for sending a report to linux-xfs@vger.kernel.org, which rejects\nHTML mail.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99BFNrisDQHT1m7d9R\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-02T21:48:12+02:00",
+          "tree_id": "bdd415b3d1cb4aad6dc8c887432326b3bfd12163",
+          "url": "https://github.com/laurigates/dotfiles/commit/c634db21616373636bed7f734b5759ac2c4d2713"
+        },
+        "date": 1793648940131,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12579513433333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017370150000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0014580300000000004,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0120441846,
             "unit": "s"
           }
         ]
