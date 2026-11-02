@@ -522,9 +522,9 @@ _gh_paint() {
 
 # ---- contributor trust (external-PR merge guard) ---------------------
 # The gh* merge wrappers exist for bulk-merging your OWN and bots' PRs, and the
-# muscle memory is `ghsq` → ^a (select all) → a (all remaining). A drive-by PR
+# muscle memory is `ghm` → ^a (select all) → a (all remaining). A drive-by PR
 # from a stranger riding that reflex is the hazard these three helpers close:
-# external PRs are hidden from the picker by default (ghsq -x opts in) and can
+# external PRs are hidden from the picker by default (ghm -x opts in) and can
 # never be merged by a single keypress or swept up by `a`.
 
 # Your own login, resolved once per shell. A failure is cached too, so a
@@ -620,7 +620,7 @@ _gh_confirm_external() {
 # Resolve a PR's author and gate on it. Silent (and 0) for your own and bots'
 # PRs, so bulk-merging is unchanged; loud and typed-word-gated otherwise.
 # Called from _gh_poll_merge (covers the batch path, including `a`=all) AND from
-# the ghsq/ghrb single-arg form, which bypasses the picker entirely.
+# the ghm single-arg form, which bypasses the picker entirely.
 #   _gh_trust_gate <repo|""> <num>     → 0 proceed, 1 skip
 _gh_trust_gate() {
   local repo="$1" num="$2"
@@ -668,7 +668,7 @@ ghprls() {
 }
 
 # GitHub Issues → Claude: select issue and process with git:issue skill
-# Sorted oldest-first by creation date (like ghsq), with --layout=reverse so
+# Sorted oldest-first by creation date (like ghm), with --layout=reverse so
 # the cursor starts on the oldest issue at the top.
 ghi() {
   local issue_num
@@ -762,7 +762,7 @@ ghpc() {
   fi
 }
 
-# ---- recommended merge method (ghm, and the ghsq / ghrb mismatch warning) ----
+# ---- recommended merge method (ghm, and the ghrp mismatch warning) ----
 # METHOD from claude-plugins' git-plugin/scripts/pr-merge-method.py: the rule
 # table behind the merge-method check run and the git-plugin `gh pr merge` hook
 # (git-plugin/skills/github-pr-title/merge-strategies.md). The newest installed
@@ -787,6 +787,21 @@ _gh_merge_method() {
   [[ "$m" == rebase || "$m" == squash ]] && print -r -- "$m"
 }
 
+# Ask for the method when _gh_merge_method has none (no git-plugin, no merge:*
+# label, or the script failed). Prompt on stderr so callers can capture stdout.
+#   _gh_ask_method <id> → prints rebase|squash, or nothing (= skip)
+_gh_ask_method() {
+  local id="$1" ans
+  local yellow='' cyan='' green='' dim='' rst=''
+  [[ -t 2 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' green=$'\033[32m' dim=$'\033[2m' rst=$'\033[0m' }
+  read -k 1 "ans?  ${yellow}?${rst} ${cyan}${id}${rst}: no merge method (no pr-merge-method.py, no merge:* label) — [${green}r${rst}=rebase/${green}s${rst}=squash/${dim}k${rst}=skip] "
+  print -u2
+  case "$ans" in
+    r|R) print -r -- rebase ;;
+    s|S) print -r -- squash ;;
+  esac
+}
+
 # Warn when an explicit --squash / --rebase disagrees with the recommendation,
 # and ask before merging anyway. Returns 1 to skip the PR.
 #   _gh_method_check <repo|""> <num> <rebase|squash>
@@ -800,7 +815,7 @@ _gh_method_check() {
   [[ "$ans" == [yY] ]]
 }
 
-# ---- shared multi-merge engine (ghsq / ghrb / ghrp) -----------------
+# ---- shared multi-merge engine (ghm / ghrp) ------------------------
 # GitHub recomputes a repo's other open PRs' mergeability after each merge and
 # refuses to merge a PR while its status is UNKNOWN. So merge sequentially and,
 # per PR, poll until mergeability settles, then merge.
@@ -829,13 +844,17 @@ _gh_poll_merge() {
   # still lands here, and an external PR demands a typed word regardless.
   _gh_trust_gate "$repo" "$num" || { REPLY=; return 0 }
   # ghm passes --auto-method: resolve this PR's own method here, so one batch
-  # can mix rebase and squash merges. An explicit --squash/--rebase (ghsq,
-  # ghrb, ghrp) is checked against the recommendation instead.
+  # can mix rebase and squash merges; with no recommendation, ask. An explicit
+  # --squash/--rebase (ghrp) is checked against the recommendation instead.
+  # _GH_POLL_METHOD tells _gh_batch_merge which method a conflicting PR used,
+  # so the Claude handoff rebases or merges to match.
+  typeset -g _GH_POLL_METHOD=
   local am=${argv[(Ie)--auto-method]}
   if (( am )); then
     local m; m=$(_gh_merge_method "$repo" "$num")
+    [[ -n "$m" ]] || m=$(_gh_ask_method "$id")
     if [[ -z "$m" ]]; then
-      print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: no merge method (no pr-merge-method.py, no merge:* label) — skipped"; return 1
+      print -r -- "  ${dim}– skipped ${id} (no merge method)${rst}"; REPLY=; return 0
     fi
     argv[am]="--$m"
     print -r -- "  ${dim}${id}: --${m}${rst}"
@@ -844,6 +863,7 @@ _gh_poll_merge() {
   elif (( ${argv[(Ie)--rebase]} )); then
     _gh_method_check "$repo" "$num" rebase || { REPLY=; return 0 }
   fi
+  (( ${argv[(Ie)--rebase]} )) && _GH_POLL_METHOD=rebase || _GH_POLL_METHOD=squash
   local meta draft base
   meta=$(gh pr view "$num" "${repo_flag[@]}" --json isDraft,baseRefName \
            --jq '"\(.isDraft)\t\(.baseRefName)"' </dev/null 2>/dev/null)
@@ -918,7 +938,7 @@ _gh_wait_mergeable() {
 }
 
 # Bring a PR up to date with its base, then block until CI on the new head
-# finishes. --rebase (ghrb) rebases the branch; the default merges the base in.
+# finishes. --rebase rebases the branch; the default merges the base in.
 #   _gh_update_and_wait <repo|""> <num> <id> [--rebase]
 #   → 0 + REPLY=<new head SHA> (REPLY="" if already up to date)
 #     2 conflicting · 1 update failed or CI failed
@@ -970,20 +990,20 @@ _gh_update_and_wait() {
 # Offer to start Claude on each PR the batch left CONFLICTING. Runs after the
 # batch, so Claude resolves against the base as it ends up, not mid-run.
 # Claude runs in the foreground, one PR at a time, in a fresh worktree.
-#   _gh_conflict_handoff <rebase: 0 = no, else yes> <"repo\tnum\tbase" lines>
+#   _gh_conflict_handoff <"repo\tnum\tbase\tmethod" lines>   (method = rebase|squash)
 _gh_conflict_handoff() {
-  local rebase="$1" blob="$2"
+  local blob="$1"
   [[ -n "$blob" ]] || return 0
   local yellow='' cyan='' dim='' bold='' rst=''
   [[ -t 1 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
   local here; here=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  local r n b id ans how
+  local r n b m id ans how
   print
   print -r -- "${bold}Conflicting PRs${rst} — gh pr update-branch can't resolve these:"
   # The list is read from fd 3 so stdin stays the terminal for read -k and
   # claude. Not </dev/tty: macOS kqueue rejects the /dev/tty alias with EINVAL,
   # and claude (Bun) crashes watching it ("EINVAL: invalid argument, kqueue").
-  while IFS=$'\t' read -r -u 3 r n b; do
+  while IFS=$'\t' read -r -u 3 r n b m; do
     [[ -n "$n" ]] || continue
     [[ -n "$r" ]] && id="${r}#${n}" || id="#${n}"
     if [[ -n "$r" && "$r" != "$here" ]]; then
@@ -992,7 +1012,7 @@ _gh_conflict_handoff() {
     fi
     read -k 1 "ans?  Hand ${cyan}${id}${rst} to Claude to resolve? [y/${bold}N${rst}] "; print
     [[ "$ans" == [yY] ]] || { print -r -- "  ${dim}– left ${id} for later${rst}"; continue }
-    if (( rebase )); then
+    if [[ "$m" == rebase ]]; then
       how="rebase it onto origin/${b}, resolve the conflicts, and push with --force-with-lease"
     else
       how="merge origin/${b} into it, resolve the conflicts, and push"
@@ -1053,16 +1073,16 @@ _gh_batch_merge() {
     if (( rc == 0 )) && [[ -n "$REPLY" && " $moved " != *" $REPLY "* ]]; then
       moved+=" $REPLY"
     elif (( rc == 2 )); then
-      conflicts+="${repos[$i]}"$'\t'"${nums[$i]}"$'\t'"${REPLY#*:}"$'\n'
+      conflicts+="${repos[$i]}"$'\t'"${nums[$i]}"$'\t'"${REPLY#*:}"$'\t'"${_GH_POLL_METHOD}"$'\n'
     fi
   done
-  _gh_conflict_handoff "${flags[(Ie)--rebase]}" "$conflicts"
+  _gh_conflict_handoff "$conflicts"
 }
 
 # fzf multi-select over current-repo PRs → TSV "repo<tab>num<tab>title" lines
 # for the batch engine. List is sorted oldest→newest (safer bet for clean
 # rebase/squash order). $1 = header verb; $2 = "1" to include external
-# contributors' PRs (ghsq -x), empty to hide them; remaining args = extra fzf
+# contributors' PRs (ghm -x), empty to hide them; remaining args = extra fzf
 # flags (callers pass --layout=reverse so the cursor starts on the oldest PR, at
 # the top, matching the sort direction).
 #
@@ -1082,11 +1102,12 @@ _gh_pr_multi_select() {
   # deliberate: gh has no --arg, so $me cannot be passed into the jq program.
   local rows
   rows=$(gh pr list --limit 100 \
-      --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt,author \
+      --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt,author,labels \
       --jq 'sort_by(.createdAt) | .[] | [
         "#\(.number)",
         (.author.login // "?"),
         (if .author.is_bot then "bot" else "user" end),
+        ([.labels[].name | select(. == "merge:rebase" or . == "merge:squash")][0] // "merge:?" | ltrimstr("merge:")),
         (if .isDraft then "draft" else "ready" end),
         (if (.statusCheckRollup | length) == 0 then "⏳CI"
          elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
@@ -1101,7 +1122,10 @@ _gh_pr_multi_select() {
       ] | @tsv' 2>/dev/null)
   [[ -z "$rows" ]] && return 0
 
-  # → "#num  <me|bot|EXT>  login  state  CI  rev  branch  title"
+  # → "#num  <me|bot|EXT>  login  method  state  CI  rev  branch  title"
+  # method = the merge:* label (rebase|squash), "?" without one; ghm then asks
+  # unless pr-merge-method.py decides. The label alone keeps the list to one gh
+  # call; running the script per listed PR would stall the picker.
   local classed
   classed=$(print -r -- "$rows" | awk -F'\t' -v me="$me" '
     { login = $2
@@ -1124,9 +1148,9 @@ _gh_pr_multi_select() {
     shown="$vis_rows"
     if [[ -n "$ext_rows" ]]; then
       local n caller; n=$(print -r -- "$ext_rows" | grep -c .)
-      # funcstack[1] is this function, [2] its caller (ghsq / ghrb) — so the hint
-      # names the command the user actually typed.
-      caller="${funcstack[2]:-ghsq}"
+      # funcstack[1] is this function, [2] its caller — so the hint names the
+      # command the user actually typed.
+      caller="${funcstack[2]:-ghm}"
       print -r -- "  ${alarm} ⚠ ${n} external PR(s) hidden ${rst} ${dim}— ${rst}${bold}${caller} -x${rst}${dim} to include${rst}" >&2
       print -r -- "$ext_rows" | awk -F'\t' '{ printf "      %s  %s  %s\n", $1, $3, $NF }' >&2
       print >&2
@@ -1155,10 +1179,10 @@ _gh_pr_multi_select() {
         --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up' \
         --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "── Files ──" && gh pr diff {1} | git apply --stat 2>/dev/null' \
         --preview-window right:60%:wrap | \
-    awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=$6=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
+    awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=$6=$7=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
 }
 
-# ---- post-merge "go home" helper (ghsq / ghrb) ----------------------
+# ---- post-merge "go home" helper (ghm) -----------------------------
 # When you merge the PR of the branch you're standing on, land on the (now
 # updated) base branch. gh's --delete-branch already moves HEAD off the deleted
 # local branch, but it does NOT pull, so the base is left behind origin. The PR
@@ -1231,7 +1255,7 @@ _gh_home_if_merged() {
 
 # Fallback for _gh_home_if_merged when the branch you're on has no merged PR:
 # pull if it is the BASE of a PR this run merged. That is the usual case with
-# worktrees — the PR's branch lives in a worktree and ghsq runs from the main
+# worktrees — the PR's branch lives in a worktree and ghm runs from the main
 # checkout on `main`, where `gh pr view` finds no PR at all. $1 = the PR numbers
 # this invocation acted on; a selected PR that is now MERGED was merged by this
 # run (the picker only lists OPEN PRs), so skipped ones never trigger a pull.
@@ -1251,61 +1275,22 @@ _gh_pull_if_base_of_merged() {
   done
 }
 
-# Interactive PR merge (squash). No args → multi-select picker (Tab to mark
-# several) → sequential squash-merge in selection order. Arg form (ghsq 123,
-# via completion) merges that single PR directly. If the branch you're on has a
-# merged PR — merged by this run or already merged when you started — you're
-# left on an updated base branch, with the what/why printed first
-# (see _gh_home_if_merged). If you're on the base of a PR this run merged, it
-# pulls (see _gh_pull_if_base_of_merged).
+# Interactive PR merge with each PR's recommended method (_gh_merge_method):
+# rebase for two or more independent conventional commits, squash otherwise; a
+# human-applied merge:* label overrides. When neither the script nor a label
+# decides, ask (_gh_ask_method). A batch can mix both methods. To force a method,
+# put a merge:* label on the PR; the git-plugin hook and check honour it too.
+#
+# No args → multi-select picker (Tab to mark several) → sequential merge in
+# selection order. Arg form (ghm 123, via completion) merges that single PR
+# directly. If the branch you're on has a merged PR — merged by this run or
+# already merged when you started — you're left on an updated base branch, with
+# the what/why printed first (see _gh_home_if_merged). If you're on the base of
+# a PR this run merged, it pulls (see _gh_pull_if_base_of_merged).
 #
 # -x/--external includes external contributors' PRs in the picker (hidden by
 # default). Either way, merging one requires a typed confirmation — including on
 # the arg form, which skips the picker entirely and is therefore gated here.
-ghsq() {
-  local cur_pr acted show_ext=
-  while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
-  if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select squash "$show_ext" --layout=reverse)
-    [[ -z "$tsv" ]] && return
-    cur_pr=$(_gh_current_pr)
-    acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
-    _gh_batch_merge "$tsv" --squash --delete-branch
-  else
-    local num="${1%%\[*}"
-    _gh_trust_gate "" "$num" || return 1
-    cur_pr=$(_gh_current_pr)
-    acted="$num"
-    _gh_method_check "" "$num" squash || return 1
-    gh pr merge "$num" --squash --delete-branch
-  fi
-  _gh_home_if_merged "$cur_pr" "$acted"
-}
-
-# Interactive PR merge (rebase) — multi-select twin of ghsq (same -x guard).
-ghrb() {
-  local cur_pr acted show_ext=
-  while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
-  if [[ $# -eq 0 ]]; then
-    local tsv; tsv=$(_gh_pr_multi_select rebase "$show_ext" --layout=reverse)
-    [[ -z "$tsv" ]] && return
-    cur_pr=$(_gh_current_pr)
-    acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
-    _gh_batch_merge "$tsv" --rebase --delete-branch
-  else
-    local num="${1%%\[*}"
-    _gh_trust_gate "" "$num" || return 1
-    cur_pr=$(_gh_current_pr)
-    acted="$num"
-    _gh_method_check "" "$num" rebase || return 1
-    gh pr merge "$num" --rebase --delete-branch
-  fi
-  _gh_home_if_merged "$cur_pr" "$acted"
-}
-
-# Interactive PR merge with each PR's recommended method (_gh_merge_method):
-# rebase for two or more independent conventional commits, squash otherwise.
-# Same picker, -x guard and arg form as ghsq; a batch can mix both methods.
 ghm() {
   local cur_pr acted show_ext=
   while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
@@ -1319,7 +1304,8 @@ ghm() {
     local num="${1%%\[*}" m
     _gh_trust_gate "" "$num" || return 1
     m=$(_gh_merge_method "" "$num")
-    [[ -n "$m" ]] || { print -r -- "ghm: no merge method for #${num} (no pr-merge-method.py, no merge:* label)" >&2; return 1 }
+    [[ -n "$m" ]] || m=$(_gh_ask_method "#${num}")
+    [[ -n "$m" ]] || return 1
     cur_pr=$(_gh_current_pr)
     acted="$num"
     print -r -- "#${num}: --${m}"
@@ -1852,7 +1838,7 @@ _gh_pr_numbers() {
 
 compdef _gh_pr_numbers gh
 
-# Custom completion for gh PR merge wrappers (ghm, ghsq, ghrb)
+# Custom completion for gh PR wrappers (ghm, ghv, ...)
 # Lists open PRs with fzf-tab preview of PR details
 _gh_pr_merge_complete() {
   local -a prs
@@ -1862,7 +1848,7 @@ _gh_pr_merge_complete() {
   _describe -t prs 'pull request' prs
 }
 
-compdef _gh_pr_merge_complete ghm ghsq ghrb ghv ghd ghco ghck ghub ghrr
+compdef _gh_pr_merge_complete ghm ghv ghd ghco ghck ghub ghrr
 
 # Custom completion for ghpc (PR feedback)
 _gh_pr_feedback_complete() {
@@ -1928,8 +1914,7 @@ _GH_WRAPPER_DESC=(
   ghw  'gh run watch'
   ghwr 'gh workflow run'
   ghrr 'tick Renovate rebase box (multi; -r = run Renovate now)'
-  ghsq 'gh pr merge --squash --delete-branch (multi; -x = incl. external)'
-  ghrb 'gh pr merge --rebase --delete-branch (multi; -x = incl. external)'
+  ghm  'gh pr merge --squash|--rebase per PR, --delete-branch (multi; -x = incl. external)'
   ghrp 'release-please merge across repos/orgs'
   ghpc 'gh pr → Claude feedback'
   ghi  'gh issue → Claude'
@@ -1945,8 +1930,7 @@ _GH_WRAPPER_DOC=(
   ghw  'fzf-pick a workflow run, then watch it live.'
   ghwr 'fzf-pick a workflow, then trigger its workflow_dispatch (pass --ref, -f k=v).'
   ghrr 'Multi-select open Renovate PRs with an unticked rebase box (^a = all) and tick it, so the next Renovate run rebases them. -r also dispatches renovate.yml on the repo owner'\''s runner (laurigates/gitops or ForumViriumHelsinki/infrastructure; $GH_RENOVATE_RUNNER overrides; covers every repo of that owner, 20–45 min).'
-  ghsq 'Multi-select open PRs; squash-merge sequentially, delete branches. A PR whose base took a merge earlier in the run, or that a strict ruleset reports BEHIND, is updated (gh pr update-branch) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
-  ghrb 'Multi-select open PRs; rebase-merge sequentially, delete branches. Same update-and-wait-for-CI and Claude conflict handoff as ghsq, but rebasing (update-branch --rebase). Same narrated go-home behaviour as ghsq. Same external-contributor guard as ghsq (-x to include).'
+  ghm  'Multi-select open PRs; merge each sequentially with its recommended method (pr-merge-method.py, or the PR'\''s merge:* label, which the picker shows; a human-applied label overrides; with neither, ghm asks r/s/skip), delete branches. A PR whose base took a merge earlier in the run, or that a strict ruleset reports BEHIND, is updated (gh pr update-branch, --rebase for rebase merges) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
   ghi  'Pick a GitHub issue and hand it to Claude.'
@@ -1969,7 +1953,7 @@ zstyle ':completion:*' completer _gh_wrapper_names_complete _complete
 # Belt-and-suspenders: also hide the bare wrapper names from the default
 # `functions` group in command position, in case de-dup ever doesn't apply.
 zstyle ':completion:*:-command-:*:functions' ignored-patterns \
-  '(ghv|ghd|ghco|ghck|ghub|ghiv|ghr|ghw|ghwr|ghrr|ghsq|ghrb|ghrp|ghpc|ghi)'
+  '(ghv|ghd|ghco|ghck|ghub|ghiv|ghr|ghw|ghwr|ghrr|ghm|ghrp|ghpc|ghi)'
 
 # Preview pane (fzf-tab) for `gh<TAB>`: fzf runs the preview in a child shell
 # that never sourced this file, so it can't call a function defined here — it
@@ -1992,9 +1976,7 @@ zstyle ':completion:*:-command-:*:functions' ignored-patterns \
 }
 
 # fzf-tab previews for gh wrapper functions
-zstyle ':fzf-tab:complete:ghsq:*' fzf-preview \
-  'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
-zstyle ':fzf-tab:complete:ghrb:*' fzf-preview \
+zstyle ':fzf-tab:complete:ghm:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null'
 zstyle ':fzf-tab:complete:ghpc:*' fzf-preview \
   'GH_FORCE_TTY=1 gh pr view ${word%%\[*} 2>/dev/null && echo && echo "--- Checks ---" && GH_FORCE_TTY=1 gh pr checks ${word%%\[*} 2>/dev/null'
