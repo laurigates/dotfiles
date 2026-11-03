@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793651787971,
+  "lastUpdate": 1793693250580,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3827,6 +3827,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0065135722000000005,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b2c6642e1d76be2789660d04af49a8d8e69a4086",
+          "message": "chore(claude): allow the pr-sweep Workflow without a prompt (#559)\n\nAdds `Workflow(pr-sweep)` to `permissions.allow` in the managed\n`~/.claude/settings.json` overlay.\n\nOn 2026-11-03 the `pr-sweep-laurigates` scheduled task stopped at its\nagent step. The Workflow tool asked for approval, and an unattended run\nhas nobody to give it ([sweep\nlog](https://github.com/laurigates/repos-claude-config/issues/99#issuecomment-6595258742)).\nThe Claude Code docs list a `permissions.allow` entry as the supported\npre-approval ([workflows: approve the plan before it\nruns](https://code.claude.com/docs/en/workflows.md#approve-the-plan-before-it-runs)),\nand desktop scheduled tasks read their allow rules from\n`~/.claude/settings.json`. The rule names the one saved workflow instead\nof allowing every workflow.\n\nThis complements #555, which adds `autoMode` classifier guidance for the\nsame routine but no `permissions.allow` rule.\n\n## Verification\n\n- `chezmoi --source <worktree> diff ~/.claude/settings.json` showed only\nthe added line.\n- The rule is already applied locally (`chezmoi --source <worktree>\napply ~/.claude/settings.json`). After it merges, run `chezmoi apply`\nfrom `main` so the live file stays in sync.\n- Pending: the docs don't say whether an allow rule skips auto mode's\nfirst-launch prompt. The next scheduled run, or **Run now** on the task,\nwill show it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T10:06:53+02:00",
+          "tree_id": "88482ad5057934fb0605f7e522d5d69552443003",
+          "url": "https://github.com/laurigates/dotfiles/commit/b2c6642e1d76be2789660d04af49a8d8e69a4086"
+        },
+        "date": 1793693250142,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07166903033333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001351203,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009605368000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0076551242,
             "unit": "s"
           }
         ]
