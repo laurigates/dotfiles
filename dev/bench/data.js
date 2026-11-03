@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793703091978,
+  "lastUpdate": 1793703264227,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4003,6 +4003,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010207726,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "290a898e6060fe6f59d55e5e2c239ce2283fe343",
+          "message": "docs(claude): a full apply from a worktree repoints chezmoi's sourceDir (#544)\n\nThe \"Work in a Worktree\" section recommends `just apply` from a\nworktree. Without a target, that applies\n`private_dot_config/chezmoi/chezmoi.toml.tmpl`, which renders `sourceDir\n= {{ .chezmoi.sourceDir | quote }}`, and `--source` sets that value. The\nresult rewrites `~/.config/chezmoi/chezmoi.toml` to point at the\nworktree, so every later bare `chezmoi` command reads a directory that\nis about to be removed.\n\nReproduced from this branch's worktree:\n\n```\n$ chezmoi --source \"$PWD\" diff ~/.config/chezmoi/chezmoi.toml | grep sourceDir\n-sourceDir = \"/Users/lgates/.local/share/chezmoi\"\n+sourceDir = \"/Users/lgates/.local/share/chezmoi/.claude/worktrees/sourcedir-doc\"\n```\n\nThe added paragraph says to apply named targets from a worktree and to\nrun the full apply from the main checkout after the merge, and gives\nthat `diff` as the check. A code fix (rendering the canonical path\ninstead of `.chezmoi.sourceDir`) would remove the hazard instead; this\nPR only documents it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9Cri25aUbmSpY3MgPJ\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T10:53:29Z",
+          "tree_id": "c96b3d2c959554208171efa44178248d33c15769",
+          "url": "https://github.com/laurigates/dotfiles/commit/290a898e6060fe6f59d55e5e2c239ce2283fe343"
+        },
+        "date": 1793703262623,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12451844500000002,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015835416000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013199770000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0110876596,
             "unit": "s"
           }
         ]
