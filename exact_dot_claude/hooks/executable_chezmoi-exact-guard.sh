@@ -2,10 +2,11 @@
 # PreToolUse(Bash) — block `chezmoi apply` when it would DELETE target files.
 #
 # exact_ source dirs (exact_dot_claude/ → ~/.claude/) remove every target
-# entry that is in neither the source nor a .chezmoiignore, and --force makes
-# the removal silent. Path-scoped `chezmoi diff <target>` does NOT surface
-# pending deletions; only `chezmoi status` D-lines do. This guard runs that
-# status check so an apply can never silently delete unmanaged files.
+# entry that is in neither the source nor a .chezmoiignore, silently unless
+# chezmoi wrote that path before and the target changed since. `chezmoi diff
+# <dir>` does not recurse, so it hides them (`chezmoi diff -r <dir>` shows
+# them); `chezmoi status` D-lines show them too. This guard runs that status
+# check so an apply never silently deletes a stray or an edited target.
 # Incident reference: ~/.local/share/chezmoi/.claude/rules/chezmoi-conventions.md
 # ("exact_ Dirs DELETE Unmanaged Files").
 #
@@ -47,9 +48,23 @@ esac
 
 command -v chezmoi >/dev/null 2>&1 || exit 0
 
-# Pending deletions: `chezmoi status` lines whose second column is D.
-# Paths are reported relative to ~. Keep paths bare here; indent at print time.
-deletions=$(chezmoi status 2>/dev/null | awk '$1 == "D" || substr($0,2,1) == "D" { print "~/" $NF }' || true)
+# Pending deletions: `chezmoi status` lines with a D in either column, minus
+# the retired-clean ones (a file chezmoi wrote, whose source was deleted, and
+# that nobody has edited since; see chezmoi-deletion-check.sh). Paths are
+# reported relative to ~. Keep paths bare here; indent at print time.
+#
+# The helper sits next to this hook: chezmoi-deletion-check.sh in ~/.claude/hooks
+# and in the source tree alike (no executable_ prefix, so the name matches).
+# Missing helper fails closed: every D line blocks, as before.
+lib="$(dirname "${BASH_SOURCE[0]}")/chezmoi-deletion-check.sh"
+status=$(chezmoi status 2>/dev/null || true)
+if [ -f "$lib" ]; then
+    # shellcheck source=chezmoi-deletion-check.sh
+    . "$lib"
+    deletions=$(printf '%s\n' "$status" | chezmoi_blocking_deletions "$HOME" | awk '{ print "~/" substr($0, 4) }')
+else
+    deletions=$(printf '%s\n' "$status" | awk 'substr($0,1,2) ~ /D/ { print "~/" substr($0, 4) }')
+fi
 [ -z "$deletions" ] && exit 0
 
 # If the apply is path-scoped, only block when a pending deletion falls
@@ -85,9 +100,12 @@ indented="  ${deletions//$'\n'/$'\n'  }"
 cat >&2 <<EOF
 BLOCKED: this 'chezmoi apply' would DELETE the following target file(s)
 (unmanaged entries inside an exact_-managed tree are removed on apply,
-silently under --force):
+silently, with or without --force):
 
 $indented
+
+These are strays (never written by chezmoi) or targets edited since chezmoi
+wrote them. A file chezmoi wrote and nobody edited since is let through.
 
 Before re-running, register or resolve each one:
   - keep + manage:     chezmoi add <target>

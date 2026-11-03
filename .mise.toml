@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-root-meta", "test:organize-stars", "test:cloud-env", "test:reclaim", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:organize-stars", "test:cloud-env", "test:reclaim", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -106,8 +106,16 @@ description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and sti
 run = "tests/test-gh-completion.sh"
 
 [tasks."test:chezmoi-exact-guard"]
-description = "Regression test: the chezmoi-exact-guard hook blocks a deleting apply wrapped in bash -c / sh -c and lets prose through"
+description = "Regression test: the chezmoi-exact-guard hook blocks a deleting apply wrapped in bash -c / sh -c, lets prose through, and lets only retired-clean deletions through"
 run = "tests/test-chezmoi-exact-guard.sh"
+
+[tasks."test:chezmoi-target-guard"]
+description = "Regression test: the chezmoi-target-guard hook blocks file-tool and shell writes into ~/.claude rules, skills and CLAUDE.md and lets reads and ignored paths through"
+run = "tests/test-chezmoi-target-guard.sh"
+
+[tasks."test:post-sync"]
+description = "Regression test: post-sync.sh applies a retired-clean deletion and reports strays, MD lines and state-read failures"
+run = "tests/test-post-sync.sh"
 
 [tasks."test:mise-tasks"]
 description = "Regression test: repo tasks run in the checkout, and lint tasks fail on findings and on a broken linter (#398)"

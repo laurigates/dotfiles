@@ -31,6 +31,16 @@ empty result to notice. Use `just apply` / `just diff` / `just status` (or
 you; `exact_dot_claude/hooks/executable_chezmoi-worktree-source-guard.sh` warns
 when a bare one slips through.
 
+**From a worktree, apply named targets, never the whole tree.**
+`private_dot_config/chezmoi/chezmoi.toml.tmpl` renders
+`sourceDir = {{ .chezmoi.sourceDir | quote }}`, and `--source` sets that value,
+so a full `just apply` (no target) from a worktree rewrites
+`~/.config/chezmoi/chezmoi.toml` to point at the worktree. Every later bare
+`chezmoi` command then reads a worktree that is about to be removed. Test with
+`just apply ~/.zshrc` (named targets), and run the full apply from the main
+checkout after the merge. A `sourceDir` line in
+`chezmoi --source "$PWD" diff ~/.config/chezmoi/chezmoi.toml` is the tell.
+
 ## Chezmoi Quick Reference
 
 - **Source directory**: `~/.local/share/chezmoi/` (always edit here)
@@ -90,4 +100,4 @@ PRD in `docs/prds/`, ADRs in `docs/adrs/` ([index](docs/adrs/README.md)), PRPs i
 
 ## Security & Release
 
-See `exact_dot_claude/rules/security.md` and `exact_dot_claude/rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.
+See `exact_dot_claude/exact_rules/security.md` and `exact_dot_claude/exact_rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.

@@ -18,5 +18,10 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    # OPENCODE_API_KEY is provisioned by laurigates/gitops (OpenTofu), not set
+    # by hand: a value set with `gh secret set` is replaced whenever gitops next
+    # writes the secret. A 401 in the key check means rotate it there — `just
+    # secret-set opencode-api-key`, then re-run the latest tofu-apply (it runs
+    # only on a release).
     secrets:
       OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
