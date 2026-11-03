@@ -47,7 +47,7 @@ Derived from git history patterns (1404 commits, 2018–2026).
 
 - **Always edit** source files at `~/.local/share/chezmoi/`
 - **Never edit** target files directly (e.g., `~/.zshrc`)
-- After modifying `exact_dot_claude/exact_rules/`, run `chezmoi apply --force ~/.claude`
+- After modifying `exact_dot_claude/exact_rules/`, run `chezmoi apply ~/.claude` (`--force` skips the overwrite prompt for targets edited outside chezmoi)
 - Use `chezmoi diff` to preview changes before applying
 
 > **Apply-time hazards live in a separate, unscoped rule.** `exact_` deletion,

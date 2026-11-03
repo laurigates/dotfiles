@@ -141,6 +141,10 @@ check_bash "write outside the guarded trees (~/.claude/plans) is ALLOWED" \
 
 check_bash "rm of an unmanaged stray rule is ALLOWED" \
     'rm ~/.claude/rules/stray.md' 0
+check_bash "mv of a managed rule out of rules/ is BLOCKED like rm" \
+    'mv ~/.claude/rules/managed.md /tmp/' 2 "git rm $S/exact_rules/managed.md"
+check_bash "mv of an unmanaged stray out of rules/ is ALLOWED" \
+    'mv ~/.claude/rules/stray.md /tmp/' 0
 
 check_bash "a target path inside quoted prose is ALLOWED" \
     'gh pr create --body "never run echo x > ~/.claude/rules/foo.md"' 0

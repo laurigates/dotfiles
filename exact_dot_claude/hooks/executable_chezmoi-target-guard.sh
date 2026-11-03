@@ -234,6 +234,11 @@ bash_destinations() {
                 } else if (verb == "cp" || verb == "mv" || verb == "install" || verb == "ln") {
                     if (tdir != "") emit(verb, tdir)
                     else if (cnt >= 2) emit(verb, last)
+                    # mv also removes its sources: check each one as an rm.
+                    if (verb == "mv") {
+                        nsrc = (tdir != "") ? cnt : cnt - 1
+                        for (j = 1; j <= nsrc; j++) emit("rm", args[j])
+                    }
                 }
             }
             {
