@@ -31,6 +31,16 @@ empty result to notice. Use `just apply` / `just diff` / `just status` (or
 you; `exact_dot_claude/hooks/executable_chezmoi-worktree-source-guard.sh` warns
 when a bare one slips through.
 
+**From a worktree, apply named targets, never the whole tree.**
+`private_dot_config/chezmoi/chezmoi.toml.tmpl` renders
+`sourceDir = {{ .chezmoi.sourceDir | quote }}`, and `--source` sets that value,
+so a full `just apply` (no target) from a worktree rewrites
+`~/.config/chezmoi/chezmoi.toml` to point at the worktree. Every later bare
+`chezmoi` command then reads a worktree that is about to be removed. Test with
+`just apply ~/.zshrc` (named targets), and run the full apply from the main
+checkout after the merge. A `sourceDir` line in
+`chezmoi --source "$PWD" diff ~/.config/chezmoi/chezmoi.toml` is the tell.
+
 ## Chezmoi Quick Reference
 
 - **Source directory**: `~/.local/share/chezmoi/` (always edit here)
