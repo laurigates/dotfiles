@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793703264227,
+  "lastUpdate": 1793703417610,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4047,6 +4047,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0110876596,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "94f5cec43186806aa2cffe5b3919aba9013f086d",
+          "message": "chore(claude): allow podio-mcp tools, keep deletes and execute_code on ask (#560)\n\n## What\n\nAdds `mcp__podio-mcp` to `permissions.allow` in the\n`~/.claude/settings.json` overlay. Adds the server's four delete tools\nand `execute_code` to `permissions.ask`.\n\n## Why\n\nAuto mode's classifier refused a Podio comment the user had approved,\nciting External System Writes. With the allow rule, reads and ordinary\nwrites (comments, item updates) run without the classifier. An ask rule\nbeats an allow rule, so deletes and arbitrary code execution still\nprompt.\n\n## Verification\n\n- `chezmoi diff ~/.claude/settings.json` shows only these lines.\n- After `chezmoi apply`, `jq` confirms the rules in the live file.\n- A `create_item_comment` call on Podio #1047 then succeeded (comment\n2093960075).\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9DKAUtv14PkBCeupaS\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T12:56:13+02:00",
+          "tree_id": "81cc41bfe49589e52ebde1e52c195b0c22fc9a28",
+          "url": "https://github.com/laurigates/dotfiles/commit/94f5cec43186806aa2cffe5b3919aba9013f086d"
+        },
+        "date": 1793703417227,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13469197033333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0016255272000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013174768000000004,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011511571799999998,
             "unit": "s"
           }
         ]
