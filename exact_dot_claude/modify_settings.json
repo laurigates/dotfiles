@@ -138,6 +138,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "PushNotification",
       "RemoteTrigger",
       "ScheduleWakeup",
+      "Workflow(pr-sweep)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:argo-cd.readthedocs.io)",
       "WebFetch(domain:argocd-image-updater.readthedocs.io)",
@@ -254,6 +255,11 @@ read -r -d '' overlay <<'OVERLAY' || true
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/chezmoi-worktree-source-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/chezmoi-target-guard.sh",
+            "timeout": 10
           }
         ]
       },

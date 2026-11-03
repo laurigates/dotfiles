@@ -27,8 +27,8 @@ Expert knowledge for managing dotfiles with chezmoi, including templates, cross-
 
 `chezmoi apply` renders source over target, so it overwrites target-side edits and, inside an `exact_` directory, deletes unmanaged entries. Preview before applying:
 
-1. `chezmoi status <tree>` — which files are out of sync (`M`) or would be deleted (`D`); a path-scoped diff does not show the `D` lines
-2. `chezmoi diff <tree>` — what would be overwritten
+1. `chezmoi status <tree>` — which files are out of sync (`M`) or would be deleted (`D`)
+2. `chezmoi diff -r <tree>` — what would be overwritten or deleted; without `-r`, diff does not recurse into `<tree>`
 3. `chezmoi apply -v <path>` — apply the reviewed path, then let the user review before a full `chezmoi apply`
 
 Hazards, `--force` semantics, and recovery: `.claude/rules/chezmoi-apply-hazards.md`.

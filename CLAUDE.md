@@ -90,4 +90,4 @@ PRD in `docs/prds/`, ADRs in `docs/adrs/` ([index](docs/adrs/README.md)), PRPs i
 
 ## Security & Release
 
-See `exact_dot_claude/rules/security.md` and `exact_dot_claude/rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.
+See `exact_dot_claude/exact_rules/security.md` and `exact_dot_claude/exact_rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.
