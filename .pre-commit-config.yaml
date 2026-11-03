@@ -51,7 +51,7 @@ repos:
         name: check Claude global context budget
         entry: tests/test-claude-context-budget.sh
         language: script
-        files: '^(exact_dot_claude/(rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
+        files: '^(exact_dot_claude/(exact_rules/.*\.md|CLAUDE\.md)|tests/test-claude-context-budget\.sh)$'
         pass_filenames: false
       # Renovate for this repo runs from the account-wide App. A workflow that
       # also runs Renovate adds a second identity that contends for the same
