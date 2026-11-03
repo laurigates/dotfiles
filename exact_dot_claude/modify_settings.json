@@ -138,6 +138,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "PushNotification",
       "RemoteTrigger",
       "ScheduleWakeup",
+      "Workflow(pr-sweep)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:argo-cd.readthedocs.io)",
       "WebFetch(domain:argocd-image-updater.readthedocs.io)",
