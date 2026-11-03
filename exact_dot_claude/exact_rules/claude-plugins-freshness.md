@@ -75,4 +75,4 @@ intended behavior for an intentionally narrow repo. (Hooks, by contrast, are **u
   `enabledPlugins` from canonical, showing the diff first. Reversible via git.
 
 After editing the overlay, sync with `chezmoi apply -v ~/.claude` and confirm
-`chezmoi diff ~/.claude` is empty (the overlay is idempotent).
+`chezmoi diff -r ~/.claude` is empty (the overlay is idempotent).

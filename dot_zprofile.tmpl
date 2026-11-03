@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "darwin" }}
+# Login shells only, and after /etc/zprofile, whose path_helper has just moved
+# everything .zshenv put on PATH behind /usr/bin. Restoring brew here covers
+# non-interactive login shells (`zsh -l -c`, which IDEs and GUI tools start);
+# interactive ones get the same again from .zshrc. Linux needs nothing: its
+# /etc/zsh/zprofile does not touch PATH.
+[ -x /opt/homebrew/bin/brew ] && path=("/opt/homebrew/bin" "/opt/homebrew/sbin" $path)
+{{- end }}
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :

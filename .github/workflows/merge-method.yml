@@ -20,4 +20,4 @@ permissions:
 
 jobs:
   merge-method:
-    uses: laurigates/.github/.github/workflows/reusable-merge-method.yml@main
+    uses: laurigates/.github/.github/workflows/reusable-merge-method.yml@df99294a8638532ea848320d106ff17210beccb9 # main

@@ -26,6 +26,7 @@ scheduled-tasks/
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
 downloads/
+uploads/
 file-history/
 paste-cache/
 plans/
@@ -61,6 +62,7 @@ settings.json.backup.*
 policy-limits.json
 remote-settings.json
 .update.lock
+computer-use.lock
 debug
 history.jsonl
 stats-cache.json
@@ -88,3 +90,17 @@ settings.json.bak
 
 # Local settings override - not managed by chezmoi
 settings.local.json
+
+# Claude Code cloud containers (claude.ai/code): files the cloud environment
+# writes into ~/.claude before or alongside the setup script, observed under
+# Claude Code 2.1.314. Without these entries the cloud setup script's
+# `chezmoi init --apply` deletes them - including the setup-failure SessionStart
+# hook that reports a failed `cloud-env bootstrap`, i.e. the alarm itself.
+environment-manager/
+launcher-settings.json
+policy-limits.json.signature.json
+policy-limits.json.stamp.json
+remote-settings.json.synced-at
+session-start-setup-script-failure.sh
+stop-hook-git-check.sh
+user-prompt-submit-reply-reminder.py

@@ -29,7 +29,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHEZMOI_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$CHEZMOI_DIR" || exit 1
 
-RULES_DIR="exact_dot_claude/rules"
+RULES_DIR="exact_dot_claude/exact_rules"
 GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 
 # --- Budgets --------------------------------------------------------------
@@ -44,7 +44,7 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 # and become a hard stop on *any* new rule content. The additions that hit it
 # were compressed ~50% first and both host files brought back under
 # PER_FILE_CAP_BYTES. The cleanup pass is deferred, not skipped — the standing
-# candidate is exact_dot_claude/rules/multi-model-delegation.md (~6.6 kB),
+# candidate is exact_dot_claude/exact_rules/multi-model-delegation.md (~6.6 kB),
 # which largely duplicates the agent-patterns-plugin:multi-model-delegation
 # skill and is a CONSOLIDATE per meta-context-diet; it was being edited by a
 # concurrent session at the time. Ratchet back toward 110,000 once it lands.

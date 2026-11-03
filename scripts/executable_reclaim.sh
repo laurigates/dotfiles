@@ -23,8 +23,9 @@
 # `KEY=VALUE` / `RECLAIM …` rollup convention so a caller (or the weekly
 # launchd job) reads a verdict instead of re-deriving the computation.
 #
-# On sizing: `du` sums st_blocks, and APFS reports a copy-on-write clone at FULL
-# size even though its blocks are shared and cost nothing. uv and bun both clone
+# On sizing: `du` sums st_blocks, and APFS (or a reflink filesystem such as XFS
+# or btrfs on Linux) reports a copy-on-write clone at FULL size even though its
+# blocks are shared and cost nothing. uv and bun both clone
 # from a global cache into .venv/node_modules, so du over-reports those; cargo
 # gives each project its own compiled copy, so du is exact for target/. The
 # rollup keeps the two apart rather than summing them into one wrong number, and
@@ -50,7 +51,14 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-test "$(uname -s)" = "Darwin" || { echo "reclaim.sh: not Darwin, refusing" >&2; exit 1; }
+case "$(uname -s)" in
+    Darwin|Linux) ;;
+    *) echo "reclaim.sh: not Darwin or Linux, refusing" >&2; exit 1 ;;
+esac
+
+# BSD stat takes -f %m; GNU stat reads -f as "filesystem status" and needs
+# -c %Y. Try GNU first: BSD stat rejects -c, so the fallback only runs there.
+dir_mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null; }
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 printf 'RUN_AT=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -79,7 +87,7 @@ echo "=== BUILD ARTIFACTS (root=$root days=$days) ==="
 # node_modules/ is already accounted for by its parent.
 while IFS= read -r dir; do
     [ -d "$dir" ] || continue
-    mtime=$(stat -f %m "$dir" 2>/dev/null) || continue
+    mtime=$(dir_mtime "$dir") || continue
     size_kb=$(du -sxk "$dir" 2>/dev/null | cut -f1) || continue
     [ "${size_kb:-0}" -lt 10240 ] && continue   # ignore <10 MB, not worth the noise
     if [ "$mtime" -lt "$cutoff" ]; then
@@ -92,7 +100,7 @@ done < <(find "$root" -maxdepth 5 -type d \
 
 echo "--- stale (whole-dir removal) ---"
 while IFS=$'\t' read -r size_kb dir; do
-    age_days=$(( (now - $(stat -f %m "$dir")) / 86400 ))
+    age_days=$(( (now - $(dir_mtime "$dir")) / 86400 ))
     if [ "$(basename "$dir")" = "target" ]; then
         accuracy=exact
         exact_kb=$(( exact_kb + size_kb ))
@@ -194,8 +202,13 @@ uv_reclaim() {
 command -v uv          >/dev/null 2>&1 && uv_reclaim
 command -v bun         >/dev/null 2>&1 && purge bun        "$HOME/.bun/install/cache"         bun_cache_rm
 command -v npm         >/dev/null 2>&1 && purge npm        "$HOME/.npm/_cacache"              npm cache clean --force
+# `npm cache clean` leaves npx's install cache alone (437 MB measured on Linux).
+command -v npm         >/dev/null 2>&1 && purge npx        "$HOME/.npm/_npx"                  rm -rf "$HOME/.npm/_npx"
 command -v go          >/dev/null 2>&1 && purge go-modcache "$HOME/go/pkg/mod"                go clean -modcache
-command -v brew        >/dev/null 2>&1 && purge homebrew   "$HOME/Library/Caches/Homebrew/downloads" brew cleanup -s
+# `brew --cache` is ~/Library/Caches/Homebrew on macOS, ~/.cache/Homebrew on
+# Linux. Plain `cleanup -s` kept the downloads for current versions (2.5 GB
+# left behind); `--prune=all` removes them too.
+command -v brew        >/dev/null 2>&1 && purge homebrew   "$(brew --cache)/downloads"        brew cleanup --prune=all -s
 command -v pre-commit  >/dev/null 2>&1 && purge pre-commit "$HOME/.cache/pre-commit"          pre-commit gc
 command -v docker      >/dev/null 2>&1 && purge docker-build "" docker builder prune -af
 
