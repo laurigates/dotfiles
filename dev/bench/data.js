@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793693862982,
+  "lastUpdate": 1793701787185,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3915,6 +3915,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011019752800000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "88c2d653ec44c23555e73884e8e54f87ab471c37",
+          "message": "feat(claude): pre-authorize the pr-sweep routine's GitHub writes in auto mode (#555)\n\n## What\n\nAdds an `autoMode.allow` entry to the managed `~/.claude/settings.json`\noverlay that pre-authorizes the GitHub writes\n`.routines/pr-sweep/PROMPT.md` prescribes, and nothing else, when a\n`pr-sweep-*` scheduled task is running.\n\n## Why\n\nThe 2026-11-02 `pr-sweep-fvh` run stopped at its first write. The\nauto-mode classifier refused `python3 $SWEEP undraft` as an \"External\nSystem Writes\" action, so the run fell back to a read-only report: no\nagents ran, nothing merged, no log comment and no Telegram.\n\n`Bash(gh pr *)` and `Bash(gh issue *)` are already allowed. The\nroutine's writes go through `pr_sweep.py`, `merge-chain.sh` and the\n`pr-sweep.workflow.js` Workflow, called via `$SWEEP`/`$PLUGINS` paths\nunder a per-run temp dir and worktree. Bash allow rules can't match\nthose, so the classifier is the place to grant this.\n\n## Scope of the grant\n\n- Repos under `laurigates` and `ForumViriumHelsinki` only.\n- Covers only the writes the prompt names: the listed `pr_sweep.py`\nsubcommands, the sweep Workflow and its pushes to PR head branches,\n`merge-chain.sh` with literal PR numbers, release-please merges pinned\nwith `--match-head-commit`, the release-failure issue, the \"PR sweep\nlog\" comment, and `telegram-notify`.\n- Explicitly excludes `--admin`, force-push, pushes to a default branch,\nmerging PRs not authored by Lauri or a release-please bot, and any write\nthe prompt does not name.\n\n## Verification\n\nRendered the overlay against the live settings (`bash\nexact_dot_claude/modify_settings.json < ~/.claude/settings.json`). `jq`\nparses the output, and with `autoMode.allow` removed it is identical to\nthe live file.\n\nNot applied yet: Claude's `chezmoi apply` of `~/.claude/settings.json`\nwas refused as self-modification. After merging, run `chezmoi apply\n~/.claude/settings.json`. The next scheduled sweep is the end-to-end\ncheck.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T10:29:07Z",
+          "tree_id": "6f677d6b274e53953af3a361dbe2063ad738b3b2",
+          "url": "https://github.com/laurigates/dotfiles/commit/88c2d653ec44c23555e73884e8e54f87ab471c37"
+        },
+        "date": 1793701786787,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09717335766666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013562170000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011386634,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009455364,
             "unit": "s"
           }
         ]
