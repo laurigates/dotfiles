@@ -12,7 +12,7 @@ on:
 
 jobs:
   opencode-review:
-    uses: laurigates/.github/.github/workflows/reusable-opencode-review.yml@main
+    uses: laurigates/.github/.github/workflows/reusable-opencode-review.yml@df99294a8638532ea848320d106ff17210beccb9 # main
     # The scopes the reusable workflow declares, granted explicitly so they do
     # not depend on this repo's default workflow permissions.
     permissions:

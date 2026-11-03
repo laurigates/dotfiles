@@ -138,6 +138,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "PushNotification",
       "RemoteTrigger",
       "ScheduleWakeup",
+      "Workflow(pr-sweep)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:argo-cd.readthedocs.io)",
       "WebFetch(domain:argocd-image-updater.readthedocs.io)",
@@ -197,6 +198,10 @@ read -r -d '' overlay <<'OVERLAY' || true
     ]
   },
   "autoMode": {
+    "allow": [
+      "$defaults",
+      "PR sweep routine: when the session is running the `pr-sweep-laurigates` or `pr-sweep-fvh` scheduled task, which follows `.routines/pr-sweep/PROMPT.md` in the ~/repos checkout, the GitHub writes that prompt prescribes are pre-authorized by the user: the `pr_sweep.py` subcommands (`undraft`, `mark-attempts`, `post-review`, `release-prs`, `external`, `check`), the `pr-sweep.workflow.js` Workflow and the reviews, fixes and pushes to the PR's own head branch that its agents make, `merge-chain.sh` with literal PR numbers, `gh pr checks`/`gh pr merge --squash --match-head-commit` on release-please PRs, `gh issue create` for a failed release, `gh issue comment` on the 'PR sweep log' issue in laurigates/repos-claude-config, and `telegram-notify`. Scope: repos under github.com/laurigates and github.com/ForumViriumHelsinki only. This does NOT authorize `--admin`, force-push, pushing to a default branch, merging a PR whose author is not Lauri or a release-please bot, or any write the prompt does not name."
+    ],
     "environment": [
       "$defaults",
       "The entries below EXTEND AND OVERRIDE the default 'None configured' / 'no additional orgs' lines above: they add trusted infrastructure. They widen which destinations are in-boundary; they do NOT relax the default Data Exfiltration, Create Public Surface, Credential Leakage, or Irreversible Local Destruction rules, which still apply in full.",
@@ -250,6 +255,11 @@ read -r -d '' overlay <<'OVERLAY' || true
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/chezmoi-worktree-source-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/chezmoi-target-guard.sh",
+            "timeout": 10
           }
         ]
       },
@@ -317,6 +327,7 @@ read -r -d '' overlay <<'OVERLAY' || true
     "prompt-engineering-plugin@laurigates-claude-plugins": false,
     "taskwarrior-plugin@laurigates-claude-plugins": true,
     "macos-plugin@laurigates-claude-plugins": true,
+    "linux-plugin@laurigates-claude-plugins": true,
     "session-plugin@laurigates-claude-plugins": true
   },
   "extraKnownMarketplaces": {
