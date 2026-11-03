@@ -13,19 +13,20 @@ that destroys data may touch no source file at all.
 
 An `exact_` source dir (notably `exact_dot_claude/` → `~/.claude/`) makes
 apply **remove every target entry** that is in neither the source nor a
-`.chezmoiignore`. With `--force` (required in headless sessions) the removal
-is **silent** — no prompt, no warning. This deleted a freshly created
+`.chezmoiignore`. The removal is **silent** — no prompt, no warning — with or
+without a TTY or `--force`. Apply prompts only when chezmoi wrote that path
+before and the target changed since (chezmoi v2.73.3). This deleted a freshly created
 `~/.claude/friction-reports/` (10 files, ~150 KB) on 2026-06-10; it was
 recovered only because the contents happened to survive in session
 transcripts and context.
 
 Two traps stack here:
 
-1. **Path-scoped `chezmoi diff <target>` does NOT show pending deletions of
-   unmanaged files** (verified: a canary file in `~/.claude` produced empty
-   `chezmoi diff ~/.claude` output). The "diff before apply" habit alone
-   cannot catch this. Only `chezmoi status` (` D <path>` lines) or the
-   *unrestricted* `chezmoi diff` (`deleted file mode` hunks) reveal them.
+1. **`chezmoi diff <dir>` does not recurse by default**, so it shows nothing
+   below `<dir>`, pending deletions included (a canary file in `~/.claude`
+   produced empty `chezmoi diff ~/.claude` output). `chezmoi diff -r <dir>`
+   shows them as `deleted file mode` hunks; `chezmoi status` shows them as
+   ` D <path>` lines.
 2. **`--force` only suppresses the prompt; it adds no safety.** The check
    has to happen before the apply, not be delegated to the prompt.
 
@@ -44,17 +45,18 @@ Two traps stack here:
   (`exact_dot_claude/.chezmoiignore`) with patterns relative to that
   target (`friction-reports/`, `skills/notebooklm/`).
 - exact_ semantics apply **per directory level**: only the dir carrying the
-  `exact_` prefix purges unmanaged entries; its non-`exact_` subdirs (e.g.
-  `rules/`, `skills/` under `exact_dot_claude/`) tolerate unmanaged files.
-  That asymmetry is why damage can look partial — and why "it survived last
+  `exact_` prefix purges unmanaged entries; a non-`exact_` subdir (e.g.
+  `skills/` under `exact_dot_claude/`) tolerates unmanaged files. That
+  asymmetry is why damage can look partial — and why "it survived last
   time" proves nothing about a sibling path.
-- **The flip side: non-`exact_` subdirs never PURGE either.** Deleting or
-  moving a source file out of `exact_dot_claude/rules/` leaves the old
-  target **orphaned in `~/.claude/rules/`** — still loading into every
-  session — with no `D` line in `chezmoi status` to flag it (bit twice in
-  the 2026-07 context diet). After removing a rule from source, delete the
-  target yourself and verify it's truly unmanaged first:
-  `chezmoi source-path ~/.claude/rules/<f> || rm ~/.claude/rules/<f>`.
+- **Non-`exact_` subdirs never purge a retired source file either.** Rules
+  used to live in a plain `rules/` subdir, and two rules deleted from source
+  kept loading from `~/.claude/rules/` for about five weeks after
+  dotfiles#459. The dir is now `exact_dot_claude/exact_rules/`: a rule
+  deleted from source shows as ` D` and the next apply removes it.
+  `chezmoi-exact-guard.sh` and `post-sync.sh` let that deletion through when
+  the entryState record shows chezmoi wrote the file and its sha256 still
+  matches; strays and edited targets (`MD`) stay blocked.
   The inverse leak also happens — a rule created directly in the target is
   never captured to source and silently loads forever; sweep with
   `for f in ~/.claude/rules/*.md; do chezmoi source-path "$f" >/dev/null 2>&1 || echo "UNMANAGED: $f"; done`.
@@ -165,7 +167,8 @@ was chezmoi *protecting* those edits; forcing past it discards them.
 `chezmoi status <tree>` tells you **which** files are out of sync (the `M`/`D`
 flags). It does **not** tell you what would be lost. Before any `--force`:
 
-1. **`chezmoi diff <tree>`** — see *what* the apply would overwrite. The `-`
+1. **`chezmoi diff -r <tree>`** — see *what* the apply would overwrite
+   (without `-r`, diff does not recurse into `<tree>`). The `-`
    lines are the target-side edits that `--force` would destroy.
 2. **Judge the drift.** If those edits are unwanted (stale runtime state you
    don't care about), `--force` is safe. If they're wanted, **capture them
@@ -173,13 +176,13 @@ flags). It does **not** tell you what would be lost. Before any `--force`:
    capture-drift-apply`, or `chezmoi re-add` / hand-port per the Runtime Drift
    workflow above (templates need `chezmoi merge`, not `re-add`).
 3. **Only then** `chezmoi apply --force <tree>`, and re-check `chezmoi status
-   <tree>` is clean (and `chezmoi diff <tree>` empty) to confirm the whole
+   <tree>` is clean (and `chezmoi diff -r <tree>` empty) to confirm the whole
    tree actually synced.
 
 | Signal | Tells you | Use it to |
 |---|---|---|
 | `chezmoi status <tree>` after apply | *which* files didn't sync (`M`/`D`) | detect the silent under-apply |
-| `chezmoi diff <tree>` | *what* `--force` would overwrite | decide whether the drift is disposable before forcing |
+| `chezmoi diff -r <tree>` | *what* `--force` would overwrite | decide whether the drift is disposable before forcing |
 
 Prefer `chezmoi diff` over a reflexive `--force` precisely so that direct
 edits to target files aren't clobbered. `--force` is the last step after the
