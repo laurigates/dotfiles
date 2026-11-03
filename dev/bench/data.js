@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793703544973,
+  "lastUpdate": 1793703730269,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4135,6 +4135,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0122090402,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f6d10e0696bd5cadf6f373a7eb0ea2e89c7eace9",
+          "message": "docs(rules): require one action per Bash call and scripts for multi-step work (#535)\n\nExtends `exact_dot_claude/rules/copy-paste-commands.md` from commands\nClaude shows the user to the Bash tool calls Claude runs:\n\n- One action per call, with a plain `description`.\n- A one-liner stays a single pipeline; multi-step, looping or remote\n(`ssh`) work goes in a commented `#!/usr/bin/env bash` script written\nwith the Write tool and run by one command.\n- Links `tools-plugin:zsh-gotchas` for the zsh expansions instead of\nrestating them.\n\nThe H1 becomes \"Readable, Copy-Paste-Safe Shell Commands\" to cover both\nhalves. The evidence note records the 2026-10-28 session: a rejected\ncompound call (\"that command was too complex to understand or even\nread\"), four zsh hits from later compound one-liners, `rg -rn` reading\n`-r` as `--replace`, and a trailing `&` backgrounding an `&&` chain over\nssh.\n\nChecks: `mise run lint:docs` (DANGLING_COUNT=0) and the pre-commit hooks\non the changed file and commit, all passing, including the Claude global\ncontext budget check.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AcGnt1yFN53gxksru\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T11:01:30Z",
+          "tree_id": "99b1aa1ab0889a76d6f3eeda6ddef1050a550cbb",
+          "url": "https://github.com/laurigates/dotfiles/commit/f6d10e0696bd5cadf6f373a7eb0ea2e89c7eace9"
+        },
+        "date": 1793703729431,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09207930800000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0010687703999999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009261676,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009298954600000001,
             "unit": "s"
           }
         ]
