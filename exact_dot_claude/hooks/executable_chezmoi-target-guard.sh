@@ -65,8 +65,19 @@ normalize() {
         /*) ;;
         *) p="${cwd:-$PWD}/$p" ;;
     esac
-    [ "$p" = "/" ] || p="${p%/}"
-    printf '%s\n' "$p"
+    # Collapse ".", ".." and repeated "/" lexically, so a path such as
+    # ~/.claude/rules/../rules/x.md is matched by where it lands.
+    printf '%s\n' "$p" | awk -F/ '{
+        n = 0
+        for (i = 2; i <= NF; i++) {
+            if ($i == "" || $i == ".") continue
+            if ($i == "..") { if (n > 0) n--; continue }
+            s[++n] = $i
+        }
+        out = ""
+        for (i = 1; i <= n; i++) out = out "/" s[i]
+        print (out == "" ? "/" : out)
+    }'
 }
 
 # is_ignored <abs-path> — exit 0 when .chezmoiignore covers the path.

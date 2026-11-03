@@ -138,6 +138,10 @@ check_bash "write into an ignored skill (skills/notebooklm) is ALLOWED" \
 
 check_bash "write outside the guarded trees (~/.claude/plans) is ALLOWED" \
     'echo x > ~/.claude/plans/p.md' 0
+check_bash "a .. path that lands on a managed rule is BLOCKED" \
+    'echo x > ~/.claude/plans/../rules/./managed.md' 2 "$S/exact_rules/managed.md"
+check_bash "a .. path that leaves the guarded trees is ALLOWED" \
+    'echo x > ~/.claude/rules/../plans/p.md' 0
 
 check_bash "rm of an unmanaged stray rule is ALLOWED" \
     'rm ~/.claude/rules/stray.md' 0
