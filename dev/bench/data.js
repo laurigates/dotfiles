@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793701787185,
+  "lastUpdate": 1793703091978,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3959,6 +3959,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009455364,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ae0e07404378973e6bca9cd358135c0a3b637ccb",
+          "message": "docs(ci): name gitops as the source of OPENCODE_API_KEY (#537)\n\n## What\nA comment above the `secrets:` block in\n`.github/workflows/opencode-review.yml` says `OPENCODE_API_KEY` is\nprovisioned by laurigates/gitops, and gives the rotation path: `just\nsecret-set opencode-api-key`, then re-run the latest `tofu-apply`.\n\n## Why\nFrom 2026-10-27 every OpenCode review failed with HTTP 401 on the key\ncheck. The first fix that came to mind was `gh secret set` on this repo,\nwhich gitops replaces the next time it writes the secret. The working\nfix was a new Secret Manager version pushed by re-running gitops\ntofu-apply run 40670980893. The comment records that path where the next\n401 will be read.\n\nComment-only change; `actionlint` passes.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD994hUoXKRfLx38NDoX\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T10:50:49Z",
+          "tree_id": "8d607ee31bfb3e7d4480a587b2733f72cc6ee9c9",
+          "url": "https://github.com/laurigates/dotfiles/commit/ae0e07404378973e6bca9cd358135c0a3b637ccb"
+        },
+        "date": 1793703091513,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10968864600000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012574780000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010659730000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010207726,
             "unit": "s"
           }
         ]
