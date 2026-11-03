@@ -4,7 +4,7 @@
 # Run by .claude/scripts/repos-sync-nudge.sh (and by ~/repos/.routines/spine-sync.sh)
 # after a SUCCESSFUL fast-forward, never on its own schedule. A pulled rule that
 # is never applied is not in effect: `~/.claude/rules/*` is rendered from
-# `exact_dot_claude/rules/*`, so a `git pull` here changes nothing a session
+# `exact_dot_claude/exact_rules/*`, so a `git pull` here changes nothing a session
 # reads until `chezmoi apply` runs.
 #
 # Scope is deliberately `~/.claude` only — the Claude Code config spine this
@@ -21,9 +21,13 @@
 #     pending SOURCE edit, which is the normal case this script exists to apply.
 #   * A `D` in either column  →  a deletion is in play (an `exact_` directory
 #     purging an unmanaged target, or a target already removed). Never resolve
-#     that unattended.
+#     that unattended, with one exception: a RETIRED-CLEAN ` D` (chezmoi wrote
+#     the file, its source was deleted, nobody edited it since) is applied like
+#     any other source change. The decision lives in
+#     exact_dot_claude/hooks/chezmoi-deletion-check.sh, shared with
+#     chezmoi-exact-guard.sh.
 #
-# Either case: REPORT ONLY, exit 0, and let a human look. `--force` must never
+# Either blocking case: REPORT ONLY, exit 0, and let a human look. `--force` must never
 # appear in this file — it only suppresses the prompt that is protecting
 # target-side edits, and adds no safety. `chezmoi update` must never be used
 # either: it defaults to `git pull --autostash --rebase`, which would autostash a
@@ -45,8 +49,24 @@ status="$(chezmoi status "$TARGET" 2>/dev/null)" || {
 
 # Column 1 is the target-vs-last-written state, column 2 the source-vs-target
 # delta. Both are single characters; the path starts at column 4.
-blockers="$(printf '%s\n' "$status" | awk '
+#
+# Lines with a D go through the shared helper, which drops the retired-clean
+# ones. Without the helper every D line blocks (fail closed).
+lib="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/exact_dot_claude/hooks/chezmoi-deletion-check.sh"
+if [ -f "$lib" ]; then
+    # shellcheck source=../../exact_dot_claude/hooks/chezmoi-deletion-check.sh
+    . "$lib"
+    deletions="$(printf '%s\n' "$status" | chezmoi_blocking_deletions "$HOME")"
+else
+    deletions="$(printf '%s\n' "$status" | awk 'substr($0,1,2) ~ /D/')"
+fi
+blockers="$({
+    printf '%s\n' "$status" | awk 'substr($0,1,2) !~ /D/'
+    printf '%s\n' "$deletions"
+} | awk '
     { c1 = substr($0,1,1); c2 = substr($0,2,1); p = substr($0,4) }
+    c2 == "D" && c1 == "M" { printf "  %s  (apply would DELETE this target, edited since chezmoi wrote it)\n", p; next }
+    c2 == "D" && c1 == " " { printf "  %s  (apply would DELETE this target, which chezmoi never wrote)\n", p; next }
     c1 == "M" { printf "  %s  (target edited since chezmoi last wrote it)\n", p; next }
     c1 == "D" { printf "  %s  (target deleted since chezmoi last wrote it)\n", p; next }
     c2 == "D" { printf "  %s  (apply would DELETE this target)\n", p; next }
@@ -55,7 +75,7 @@ blockers="$(printf '%s\n' "$status" | awk '
 if [ -n "$blockers" ]; then
     echo "post-sync: NOT applying — ~/.claude has local drift or a pending deletion:"
     printf '%s\n' "$blockers"
-    echo "  Review with: chezmoi diff ~/.claude   Capture edits with: just capture-drift"
+    echo "  Review with: chezmoi diff -r ~/.claude   Capture edits with: just capture-drift"
     exit 0
 fi
 

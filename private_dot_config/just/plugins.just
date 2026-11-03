@@ -38,13 +38,45 @@ plugins-json:
 
 # Install all plugins from marketplace (ALWAYS at user scope — see below)
 [group: "plugins"]
+[no-exit-message]
 plugins-install:
-    @echo "{{BLUE}}Installing all plugins from {{marketplace}} (scope: user)...{{NORMAL}}"
-    @for p in $(curl -s "{{marketplace_url}}" | jq -r '.plugins[].name'); do \
-        echo "  Installing $p..."; \
-        CLAUDECODE= claude plugin install "${p}@{{marketplace}}" --scope user 2>&1 | tail -1; \
+    #!/usr/bin/env bash
+    set -uo pipefail
+    # Exits 1 when any install fails. The previous `| tail -1` loop printed
+    # "Done" whatever happened, so an unreachable marketplace or a renamed
+    # plugin passed silently - including from a cloud setup script.
+    names="$(curl -fsS "{{marketplace_url}}" | jq -r '.plugins[].name')" || {
+      echo "{{RED}}Could not fetch the {{marketplace}} plugin list.{{NORMAL}}"; exit 1; }
+    echo "{{BLUE}}Installing all plugins from {{marketplace}} (scope: user)...{{NORMAL}}"
+    failed=""
+    for p in $names; do
+      echo "  Installing $p..."
+      if ! out="$(CLAUDECODE= claude plugin install "${p}@{{marketplace}}" --scope user 2>&1)"; then
+        echo "{{RED}}    failed: $(tail -1 <<<"$out"){{NORMAL}}"
+        failed="$failed $p"
+      fi
     done
-    @echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+    if [ -n "$failed" ]; then
+      echo "{{RED}}Failed to install:$failed{{NORMAL}}"
+      exit 1
+    fi
+    echo "{{GREEN}}Done. Restart Claude Code to apply changes.{{NORMAL}}"
+
+# Read-only; exits 1 on any gap. Script: dot_local/bin/executable_cloud-env.
+# Checks chezmoi source, settings, marketplace, enabled plugins at user scope,
+# and required commands.
+
+# Check this machine/container against the dotfiles (fails loudly on any gap)
+[group: "plugins"]
+[no-exit-message]
+cloud-env-check:
+    @"$HOME/.local/bin/cloud-env" check
+
+# Install what cloud-env-check would flag, then run it (the cloud setup script's step).
+[group: "plugins"]
+[no-exit-message]
+cloud-env-bootstrap:
+    @"$HOME/.local/bin/cloud-env" bootstrap
 
 # `--scope user` above is load-bearing, not cosmetic. A plugin installed at
 # `project` scope is recorded in ~/.claude/plugins/installed_plugins.json with a

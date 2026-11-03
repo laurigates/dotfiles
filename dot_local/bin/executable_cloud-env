@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+# cloud-env — make a Claude Code cloud container match these dotfiles, and fail
+# loudly when it does not.
+#
+#   cloud-env bootstrap   install what is missing, then run `check`
+#   cloud-env check       read-only; prints OK/FAIL per item, exit 1 on any FAIL
+#
+# Called from the claude.ai cloud environment's setup script, after
+# `chezmoi init --apply --exclude=scripts laurigates`. A non-zero exit there does
+# not block the session: Claude Code's built-in setup-failure SessionStart hook
+# tells the model at session start, which is the loud channel. A setup script
+# that exits 0 having done nothing is the failure this exists to prevent — the
+# setup script once ran `chezmoi init --apply $GITHUB_USERNAME`, setup scripts
+# cannot read environment variables, so it ran as a bare `chezmoi init` that
+# applied nothing and exited 0.
+#
+# The plugin set is not listed here: it is every `<plugin>@laurigates-claude-plugins`
+# set true in the rendered ~/.claude/settings.json (pinned by
+# exact_dot_claude/modify_settings.json), so the check follows the overlay.
+#
+# Also runs on the Mac (`just -g cloud-env-check`). Stays bash-3.2 portable.
+set -uo pipefail
+
+MARKETPLACE="laurigates-claude-plugins"
+MARKETPLACE_REPO="laurigates/claude-plugins"
+DOTFILES_REPO="laurigates/dotfiles"
+SETTINGS="${HOME}/.claude/settings.json"
+# Space-separated; overridable so the test suite can avoid network installers.
+REQUIRED_COMMANDS="${CLOUD_ENV_REQUIRED_COMMANDS:-jq gh uv uvx just mise pre-commit}"
+
+export PATH="${HOME}/.local/bin:${HOME}/.local/share/mise/shims:${PATH}"
+
+fails=0
+ok()   { printf 'OK    %s\n' "$*"; }
+fail() { printf 'FAIL  %s\n' "$*"; fails=$((fails + 1)); }
+
+# `claude` refuses some subcommands when it believes it is nested in a session.
+claude_cli() { CLAUDECODE='' claude "$@"; }
+
+enabled_plugins() {
+  jq -r --arg m "$MARKETPLACE" '
+    (.enabledPlugins // {}) | to_entries[]
+    | select(.value == true and (.key | endswith("@" + $m)))
+    | .key | sub("@" + $m + "$"; "")
+  ' "$SETTINGS" | sort -u
+}
+
+user_scope_plugins() {
+  claude_cli plugin list --json 2>/dev/null | jq -r --arg m "$MARKETPLACE" '
+    .[] | select(.scope == "user" and (.id | endswith("@" + $m)))
+    | .id | sub("@" + $m + "$"; "")
+  ' | sort -u
+}
+
+marketplace_present() {
+  claude_cli plugin marketplace list --json 2>/dev/null \
+    | jq -e --arg m "$MARKETPLACE" 'any(.[]; .name == $m)' >/dev/null
+}
+
+# Installer for each command bootstrap may add. jq and gh have none: they are
+# expected in the base image, and their absence is a check failure.
+install_command() {
+  case "$1" in
+    uv|uvx)     curl -LsSf https://astral.sh/uv/install.sh | sh ;;
+    just)       uv tool install rust-just ;;
+    pre-commit) uv tool install pre-commit ;;
+    # Same release as jdx/mise-action in the workflows; tests/test-ci-pins.sh
+    # (check D) fails when they diverge.
+    mise)       curl -fsSL https://mise.run | MISE_VERSION=v2026.9.12 sh ;;
+    *)          echo "no installer for $1" >&2; return 1 ;;
+  esac
+}
+
+check() {
+  local c src remote missing p
+
+  for c in $REQUIRED_COMMANDS; do
+    if command -v "$c" >/dev/null 2>&1; then ok "command $c"; else fail "command $c: not on PATH"; fi
+  done
+  # Everything below reads JSON; without jq it cannot judge anything.
+  command -v jq >/dev/null 2>&1 || { summary; return; }
+
+  if ! command -v chezmoi >/dev/null 2>&1; then
+    fail "chezmoi: not on PATH"
+  else
+    src="$(chezmoi source-path 2>/dev/null)"
+    remote="$(git -C "$src" remote get-url origin 2>/dev/null)"
+    if [ -z "$src" ] || ! git -C "$src" rev-parse --verify --quiet HEAD >/dev/null; then
+      fail "chezmoi source: no commits at '${src:-?}' (init ran without a repo?)"
+    elif [[ "$remote" != *"$DOTFILES_REPO"* ]]; then
+      fail "chezmoi source: origin is '${remote:-none}', expected $DOTFILES_REPO"
+    else
+      ok "chezmoi source $DOTFILES_REPO @ $(git -C "$src" rev-parse --short HEAD)"
+    fi
+  fi
+
+  if [ ! -f "$SETTINGS" ]; then
+    fail "$SETTINGS: missing (chezmoi apply did not run?)"
+    summary; return
+  fi
+  if ! jq -e . "$SETTINGS" >/dev/null 2>&1; then
+    fail "$SETTINGS: invalid JSON"
+    summary; return
+  fi
+  if jq -e --arg m "$MARKETPLACE" '.extraKnownMarketplaces[$m]' "$SETTINGS" >/dev/null; then
+    ok "settings: extraKnownMarketplaces.$MARKETPLACE"
+  else
+    fail "settings: extraKnownMarketplaces.$MARKETPLACE missing"
+  fi
+
+  if ! command -v claude >/dev/null 2>&1; then
+    fail "claude CLI: not on PATH"
+    summary; return
+  fi
+  if marketplace_present; then ok "marketplace $MARKETPLACE"; else fail "marketplace $MARKETPLACE: not added"; fi
+
+  # Enabled in settings but without a user-scope install: invisible outside the
+  # project it was installed from (see plugins-install-audit in plugins.just).
+  missing="$(comm -23 <(enabled_plugins) <(user_scope_plugins))"
+  if [ -z "$missing" ]; then
+    ok "plugins: all $(enabled_plugins | grep -c .) enabled $MARKETPLACE plugins installed at user scope"
+  else
+    for p in $missing; do fail "plugin $p@$MARKETPLACE: enabled but not installed at user scope"; done
+  fi
+
+  summary
+}
+
+summary() {
+  if [ "$fails" -eq 0 ]; then
+    echo "cloud-env: all checks passed"
+  else
+    echo "cloud-env: $fails check(s) failed"
+  fi
+}
+
+bootstrap() {
+  local c p failed=""
+
+  for c in $REQUIRED_COMMANDS; do
+    command -v "$c" >/dev/null 2>&1 && continue
+    echo "installing command $c"
+    install_command "$c" || failed="$failed command:$c"
+  done
+
+  if command -v claude >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && [ -f "$SETTINGS" ]; then
+    if marketplace_present; then
+      claude_cli plugin marketplace update "$MARKETPLACE" || failed="$failed marketplace-update"
+    else
+      claude_cli plugin marketplace add "$MARKETPLACE_REPO" || failed="$failed marketplace-add"
+    fi
+    for p in $(comm -23 <(enabled_plugins) <(user_scope_plugins)); do
+      echo "installing plugin $p@$MARKETPLACE"
+      claude_cli plugin install "$p@$MARKETPLACE" --scope user || failed="$failed plugin:$p"
+    done
+  fi
+
+  [ -z "$failed" ] || echo "bootstrap step(s) failed:$failed"
+  echo
+  check
+}
+
+case "${1:-}" in
+  check)     check ;;
+  bootstrap) bootstrap ;;
+  *) echo "usage: cloud-env {check|bootstrap}" >&2; exit 2 ;;
+esac
+[ "$fails" -eq 0 ]
