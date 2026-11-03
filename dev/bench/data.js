@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793693250580,
+  "lastUpdate": 1793693862982,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -3871,6 +3871,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0076551242,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9b9da1d96833efce95824b56162b8b964e4746f8",
+          "message": "fix(claude): retire rules on apply and guard shell writes into ~/.claude (#558)\n\n## What\n\n- Renames `exact_dot_claude/rules` to `exact_dot_claude/exact_rules`.\nWhen a rule's source is deleted, the next apply now removes it from\n`~/.claude/rules`. All references to the old source path are updated,\nincluding the `claude-context-budget` pre-commit `files:` pattern.\n- Adds `exact_dot_claude/hooks/chezmoi-deletion-check.sh`, a sourced\nhelper used by `chezmoi-exact-guard.sh` and\n`.claude/scripts/post-sync.sh`. It lets a ` D` line through only when\nchezmoi wrote the file and nobody has edited it since. That holds when\n`chezmoi state get --bucket=entryState --key=<target>` returns a `file`\nrecord whose `contentsSHA256` equals the sha256 of the current target.\nEverything else still blocks: strays (no record), `MD`, a hash mismatch,\na failing state read, or a missing helper.\n- `chezmoi-target-guard.sh` now also runs on `Bash`, wired in\n`modify_settings.json` next to the other Bash guards with `timeout: 10`.\nIt finds where `>`, `>>`, `tee`, `cp`, `mv`, `install`, `ln`, `sed -i`\nand `rm` write, and runs the existing decision table when the\ndestination is in `~/.claude/rules`, `~/.claude/skills` or\n`~/.claude/CLAUDE.md`. It recognises the `~`, `$HOME`, `${HOME}` and\nabsolute spellings of those paths. Read-only commands and\n`.chezmoiignore`d paths pass. `rm` of a managed rule is blocked with\n\"git rm the source, then `chezmoi apply ~/.claude`\". `rm` of an\nunmanaged stray passes, because the exact guard's block message tells\nthe reader to remove a stray by hand. The source path suggested for a\nnew file is now derived from the nearest managed ancestor, so it reads\n`exact_rules/`. Opt-out: `CLAUDE_HOOKS_DISABLE_CHEZMOI_TARGET_GUARD=1`.\n- Docs: a plain apply deletes unmanaged entries in an `exact_` dir\nsilently, with or without a TTY or `--force`. It prompts only when\nchezmoi wrote that path before and the target changed since. `chezmoi\ndiff <dir>` hid deletions because diff does not recurse by default, so\nthe pre-flight steps now say `chezmoi diff -r <tree>`.\n\n## Why\n\nTwo rules retired in #459 (`mise-stale-tool-copies.md` and\n`orbstack-gui-quit-orphans-helper.md`, per `git show --stat\n--diff-filter=DR e3879db -- exact_dot_claude/rules`) kept loading from\n`~/.claude/rules` for about five weeks: `rules/` was not `exact_`, so\napply never removed them. The file tools have been blocked from writing\ninto the target since `chezmoi-target-guard.sh` landed, which left shell\nwrites as the remaining way to change it directly.\n\n## How verified\n\n- Rename: against this tree, `chezmoi --source=<worktree> status\n~/.claude` printed nothing and `chezmoi unmanaged ~/.claude/rules` was\nempty. The managed rule set is identical before and after (53 files,\n`diff` of both `chezmoi managed ~/.claude/rules` outputs is empty). The\nrename deletes nothing today.\n- `chezmoi diff` recursion: against a scratch destination holding a\nstray rule, `chezmoi diff <dir>` printed 0 diffs and `chezmoi diff -r\n<dir>` printed 53, including the stray's `deleted file mode` hunk.\n- New tests stub `chezmoi` and `HOME`:\n- `tests/test-chezmoi-exact-guard.sh`: 10/10 pass. Against origin/main's\nhook: 9/10. The retired-clean case fails there with exit 2.\n- `tests/test-chezmoi-target-guard.sh`: 18/18 pass. Against\norigin/main's hook: 9/18. All Bash write cases fail there with exit 0,\nand the `exact_rules/` suggestion case fails too.\n- `tests/test-post-sync.sh`: 5/5 pass. Against origin/main's script:\n3/5. Both retired-clean apply cases fail there.\n- All three also pass under `/bin/bash` 3.2 and in a Debian container\nwith mawk.\n- Every `test:*` task that `mise run test` depends on exits 0, including\nthe new `test:chezmoi-target-guard` and `test:post-sync`. `pre-commit\nrun --files <changed>` passes, and the three test scripts are registered\nas pre-commit hooks.\n- `mise run lint`: `lint:shell`, `lint:actions` and `lint:docs` pass.\n`lint:lua` fails locally because luacheck is not installed (the mise\none-off reports \"cannot execute binary file\"). No Lua is touched.\n- `mise run docker` (smoke) exits 1 on `renovate-single-owner` and\n`ci-github-api-auth`, both reporting no `.github/workflows`.\n`.dockerignore` has excluded `.github/` since 2025-11-16; the same two\nhooks fail with the same messages when `mise run docker` runs on\norigin/main (control, exit 1). The three new guard hooks pass inside the\ncontainer.\n\nAfter merge: run `chezmoi apply ~/.claude`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AJRWMFZCtmxv4562z\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-03T10:16:58+02:00",
+          "tree_id": "0a1ff5567d329c256a5679407a4428b49d866a47",
+          "url": "https://github.com/laurigates/dotfiles/commit/9b9da1d96833efce95824b56162b8b964e4746f8"
+        },
+        "date": 1793693862669,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12160748166666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001538415,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013175688000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011019752800000001,
             "unit": "s"
           }
         ]
