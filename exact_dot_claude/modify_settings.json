@@ -178,6 +178,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "mcp__argocd-mcp__list_applications",
       "mcp__context7",
       "mcp__github",
+      "mcp__podio-mcp",
       "mcp__sequential-thinking"
     ],
     "deny": [
@@ -189,7 +190,12 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(kubectl config use-context *)"
     ],
     "ask": [
-      "Edit(**/CHANGELOG.md)"
+      "Edit(**/CHANGELOG.md)",
+      "mcp__podio-mcp__delete_comment",
+      "mcp__podio-mcp__delete_item",
+      "mcp__podio-mcp__delete_item_by_app_item_id",
+      "mcp__podio-mcp__delete_task",
+      "mcp__podio-mcp__execute_code"
     ],
     "defaultMode": "auto",
     "additionalDirectories": [
