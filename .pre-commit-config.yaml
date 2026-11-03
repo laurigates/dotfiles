@@ -80,6 +80,26 @@ repos:
         language: script
         files: '^(exact_dot_claude/\.chezmoiignore|tests/test-claude-runtime-ignored\.sh)$'
         pass_filenames: false
+      # The chezmoi deletion and target-write guards, run against a stub
+      # chezmoi and a temp HOME. Needs jq.
+      - id: chezmoi-exact-guard
+        name: test chezmoi-exact-guard hook
+        entry: tests/test-chezmoi-exact-guard.sh
+        language: script
+        files: '^(exact_dot_claude/hooks/(executable_chezmoi-exact-guard|chezmoi-deletion-check)\.sh|tests/test-chezmoi-exact-guard\.sh)$'
+        pass_filenames: false
+      - id: chezmoi-target-guard
+        name: test chezmoi-target-guard hook
+        entry: tests/test-chezmoi-target-guard.sh
+        language: script
+        files: '^(exact_dot_claude/hooks/executable_chezmoi-target-guard\.sh|tests/test-chezmoi-target-guard\.sh)$'
+        pass_filenames: false
+      - id: post-sync
+        name: test post-sync deletion handling
+        entry: tests/test-post-sync.sh
+        language: script
+        files: '^(\.claude/scripts/post-sync\.sh|exact_dot_claude/hooks/chezmoi-deletion-check\.sh|tests/test-post-sync\.sh)$'
+        pass_filenames: false
       # CI jobs that call api.github.com must carry a credential the calling
       # tool reads: NETRC for pre-commit (release-gitter), a token for mise,
       # explicit auth for curl/wget (#434). Self-tests before scanning.

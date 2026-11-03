@@ -250,6 +250,11 @@ read -r -d '' overlay <<'OVERLAY' || true
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/chezmoi-worktree-source-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/chezmoi-target-guard.sh",
+            "timeout": 10
           }
         ]
       },
