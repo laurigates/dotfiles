@@ -16,6 +16,18 @@ copy-paste:
   single-line with the `!` prefix, e.g. `! gcloud auth login`. The `!` shell
   has no `/dev/tty`, so anything that opens the TTY directly (`kitty +kitten
   icat`) fails there too; show images through the `kitty-show-image` skill.
+- **A prompt for hidden input gets nothing under `!`.** With no TTY, a command
+  that would prompt for a value reads an empty stdin instead. It may succeed
+  silently with an empty value: `! gh secret set NAME -R <repo>` with no
+  `--body` stored an **empty** secret, and nothing failed until the workflow
+  that read it did (2026-11-04). Hand such a command over for Lauri's own
+  terminal, or give it the value explicitly: `--body-file <path>`, or stdin
+  from a command that reads the secret store.
+- **Several commands Lauri must run in sequence go in one `!` line**, chained
+  with ` && `, never as separate `!` commands. Each `!` result reaches Claude
+  on its own, and Claude starts answering the first before the rest have run.
+  Keep the chain on one line. A `&& \` continuation hits the margin problem
+  above.
 
 ```
 # Don't — the continuation line arrives with leading spaces inside the command
