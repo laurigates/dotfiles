@@ -139,6 +139,11 @@ jobs:
       - name: Assert chezmoi matches the .mise.toml pin
         run: tests/test-ci-pins.sh --assert-installed
 
+      - name: Check Claude completion is generated outside the source (#542)
+        # Runs the generator against a stub claude and a scratch HOME; needs the
+        # brew zsh (for its `zsh -n` validation) and the mise chezmoi above.
+        run: tests/test-claude-completion-target.sh
+
       - name: Run environment health checks
         run: |
           {

@@ -31,17 +31,14 @@ fi
 
 log "Updating Claude CLI zsh completion..."
 
-if "$COMPLETION_GENERATOR"; then
-    success "Claude CLI completion updated successfully"
+# The generator writes ~/.zfunc/_claude directly; nothing is written to the
+# source checkout, so an apply leaves `git status` there clean (#542).
+COMPLETION_FILE="${HOME}/.zfunc/_claude"
+
+if CLAUDE_COMPLETION_FILE="$COMPLETION_FILE" "$COMPLETION_GENERATOR"; then
+    success "Claude CLI completion updated: $COMPLETION_FILE"
 else
     warn "Failed to update Claude CLI completion"
     exit 1
-fi
-
-if [[ -n "${CHEZMOI_SOURCE_DIR:-}" ]]; then
-    COMPLETION_FILE="${CHEZMOI_SOURCE_DIR}/dot_zfunc/_claude"
-    if [[ -f "$COMPLETION_FILE" ]]; then
-        log "Claude completion available at: ${COMPLETION_FILE#${CHEZMOI_SOURCE_DIR}/}"
-    fi
 fi
 {{ end -}}

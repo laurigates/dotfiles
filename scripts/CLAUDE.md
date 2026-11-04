@@ -6,8 +6,8 @@ Utility scripts for Claude Code infrastructure automation.
 
 | Script | Purpose |
 |--------|---------|
-| `generate-claude-completion-simple.sh` | **The one in use.** Generates zsh completions for Claude CLI from `--help` output → `dot_zfunc/_claude`; run by `run_onchange_update-claude-completion.sh.tmpl` on every `chezmoi apply` |
-| `generate-claude-completion.sh` | Older, unwired alternative writing the same `dot_zfunc/_claude`. Nothing invokes it; running it by hand would overwrite the maintained file |
+| `generate-claude-completion-simple.sh` | **The one in use.** Generates zsh completions for Claude CLI from `--help` output → `~/.zfunc/_claude` (not the source tree, #542); run by `run_onchange_update-claude-completion.sh.tmpl` on every `chezmoi apply` |
+| `generate-claude-completion.sh` | Older, unwired alternative that still writes `_claude` into the source tree's `dot_zfunc/`, where it is no longer tracked. Nothing invokes it; running it by hand leaves an untracked file in the checkout |
 | `migrate-command-namespaces.sh` | Migrate commands from flat structure to namespace hierarchy (supports `--dry-run`) |
 | `update-command-references.sh` | Update markdown references after namespace migration (supports `--dry-run`) |
 | `smoke-test-docker.sh` | Docker-based smoke tests for dotfiles |

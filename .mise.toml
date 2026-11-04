@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:organize-stars", "test:cloud-env", "test:reclaim", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -100,6 +100,10 @@ run = "tests/test-pi-settings-modify.sh"
 [tasks."test:chezmoi-root-meta"]
 description = "Regression test: no repo-meta file at the source root is applied to $HOME (#442)"
 run = "tests/test-chezmoi-root-meta.sh"
+
+[tasks."test:claude-completion"]
+description = "Regression test: the Claude completion generator writes ~/.zfunc/_claude and leaves the source checkout clean (#542)"
+run = "tests/test-claude-completion-target.sh"
 
 [tasks."test:gh-completion"]
 description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"

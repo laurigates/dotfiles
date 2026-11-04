@@ -52,3 +52,8 @@ tmp/
 {{ if ne .chezmoi.os "darwin" }}
 Library/
 {{ end }}
+# Generated on the target by run_onchange_update-claude-completion.sh.tmpl,
+# never kept in the source: a source copy left the checkout dirty after every
+# apply that saw a new Claude CLI (#542). dot_zfunc is not exact_, so the
+# ignored target survives.
+.zfunc/_claude

@@ -4,6 +4,13 @@
 **Status**: Accepted
 **Confidence**: Medium (inferred from scripts and commit patterns)
 
+> **Note (2026-11):** The Claude completion is no longer committed. Regenerating
+> it into the source as `dot_zfunc/_claude` left the checkout dirty after every
+> apply that saw a new Claude CLI, which switched off the auto-pull that needs a
+> clean `git status` (#542). `scripts/generate-claude-completion-simple.sh` now
+> writes `~/.zfunc/_claude` on each machine, like the registry-driven
+> completions, and `.chezmoiignore` lists `.zfunc/_claude`.
+
 ## Context
 
 Shell completions for CLI tools (Claude Code, uv, pip, docker, kubectl, etc.) need to stay in sync with the installed tool versions. Manually maintaining completion scripts is error-prone — completions become stale after tool upgrades, leading to missing or broken tab completion.

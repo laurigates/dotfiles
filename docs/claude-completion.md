@@ -19,7 +19,7 @@ The completion system automatically generates zsh completion functions for the C
   - Emits one candidate per alias, so `plugin|plugins` completes as both
   - Quotes every extracted description, so an apostrophe in the help text
     cannot break the generated zsh syntax
-  - Validates with `zsh -n` before replacing the committed completion
+  - Validates with `zsh -n` before replacing the installed completion
 
 ### 2. Chezmoi Integration
 - **Location**: `run_onchange_update-claude-completion.sh.tmpl`
@@ -32,9 +32,12 @@ The completion system automatically generates zsh completion functions for the C
 - **Integration**: Included in the main `just update` recipe
 
 ### 4. Generated Completion File
-- **Location**: `dot_zfunc/_claude`
-- **Purpose**: The actual zsh completion function applied to the system
-- **Auto-generated**: This file is created and maintained automatically
+- **Location**: `~/.zfunc/_claude` (override with `CLAUDE_COMPLETION_FILE`)
+- **Purpose**: The actual zsh completion function, on the zsh `fpath`
+- **Auto-generated**: Written straight to the target, like every other
+  completion in `~/.zfunc`. It is not kept in the chezmoi source, and
+  `.chezmoiignore` lists `.zfunc/_claude`, so an apply never leaves the source
+  checkout dirty (#542). `tests/test-claude-completion-target.sh` checks this.
 
 ## Usage
 
@@ -113,8 +116,8 @@ If completion doesn't work:
 
 If `chezmoi apply` fails with `Generated completion has syntax errors`, the
 generator refused to publish and named a temp file holding the rejected output;
-`zsh -n <that file>` prints the offending line. The committed
-`dot_zfunc/_claude` is left at its last good version.
+`zsh -n <that file>` prints the offending line. The installed
+`~/.zfunc/_claude` is left at its last good version.
 
 ### Customization
 To customize the completion:
@@ -126,7 +129,7 @@ To customize the completion:
 ## Integration with Dotfiles
 
 The completion system is fully integrated into the chezmoi dotfiles workflow:
-- Completion file is managed by chezmoi as `dot_zfunc/_claude`
+- Completion file is generated on each machine at `~/.zfunc/_claude`; chezmoi ignores it
 - Generator script is version-controlled and portable
 - Works across different systems with the dotfiles
 - Automatically sets up completion on new installations
@@ -149,8 +152,8 @@ The completion system:
 ## Files Created/Modified
 
 When you run the completion system:
-- `dot_zfunc/_claude` - Generated completion file (managed by chezmoi)
-- May update git tracking for the completion file
+- `~/.zfunc/_claude` - Generated completion file (not managed by chezmoi)
+- Nothing in the dotfiles source checkout
 
 ## Performance
 
