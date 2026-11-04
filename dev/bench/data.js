@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793800188134,
+  "lastUpdate": 1793805319713,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4223,6 +4223,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0089647854,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a7e0366d7d815928f81d7a2f993cbca6fb131898",
+          "message": "docs(rules): `!` commands cannot answer prompts, and chain sequential ones (#562)\n\nTwo additions to `copy-paste-commands.md`, both from 2026-11-04:\n\n- A `!` command has no TTY, so a prompt for hidden input reads empty\nstdin. `! gh secret set NAME -R <repo>` with no `--body` stored an empty\nsecret and nothing failed until a workflow read it. Hand such commands\nover for the user's own terminal, or pass the value with `--body-file`\nor piped stdin.\n- Several commands the user must run in sequence go in one `!` line\nchained with ` && `. Separate `!` lines reach Claude one result at a\ntime, and Claude answers the first before the rest have run. The chain\nstays on one line, per the rule's existing guidance on backslash\ncontinuations.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9CkB6vrtDwkbbPp27V\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-04T17:14:23+02:00",
+          "tree_id": "e9bc429e359a24493a0ebaf38256c301e9307ca9",
+          "url": "https://github.com/laurigates/dotfiles/commit/a7e0366d7d815928f81d7a2f993cbca6fb131898"
+        },
+        "date": 1793805319031,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12586227133333336,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0016081054,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013663636,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0111594558,
             "unit": "s"
           }
         ]
