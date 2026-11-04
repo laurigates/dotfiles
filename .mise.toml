@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -136,6 +136,10 @@ run = "tests/test-organize-stars.sh"
 [tasks."test:reclaim"]
 description = "Regression test: reclaim.sh runs on Linux and macOS, reads dir mtimes on both, and prunes all brew downloads and the npx cache"
 run = "tests/test-reclaim.sh"
+
+[tasks."test:renovate-triage"]
+description = "Regression test: `just renovate-triage` leaves archived repos out of its PR search (#538)"
+run = "tests/test-renovate-triage-archived.sh"
 
 # Every linter runs even after one fails; the task fails if any did.
 [tasks.lint]
