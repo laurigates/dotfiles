@@ -75,7 +75,7 @@ MCP (Model Context Protocol) servers are managed **per-project** via each projec
 
 The `[mcp_servers]` registry in `.chezmoidata.toml` records each server's metadata:
 
-- **Enable/disable servers**: Set `enabled = true/false` in the `[mcp_servers]` section
+- **Mark servers for cleanup**: `enabled = true` selects which servers `cleanup-mcp-servers.sh` removes; it does not turn a server on
 - **Add new servers**: Create a new `[mcp_servers.name]` section with required fields
 - **Configure options**: `scope`, `command`, `args`, and optional `transport`
 

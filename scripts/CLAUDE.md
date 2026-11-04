@@ -8,8 +8,8 @@ Utility scripts for Claude Code infrastructure automation.
 |--------|---------|
 | `generate-claude-completion-simple.sh` | **The one in use.** Generates zsh completions for Claude CLI from `--help` output → `~/.zfunc/_claude` (not the source tree, #542); run by `run_onchange_update-claude-completion.sh.tmpl` on every `chezmoi apply` |
 | `generate-claude-completion.sh` | Older, unwired alternative that still writes `_claude` into the source tree's `dot_zfunc/`, where it is no longer tracked. Nothing invokes it; running it by hand leaves an untracked file in the checkout |
-| `migrate-command-namespaces.sh` | Migrate commands from flat structure to namespace hierarchy (supports `--dry-run`) |
-| `update-command-references.sh` | Update markdown references after namespace migration (supports `--dry-run`) |
+| `migrate-command-namespaces.sh` | **Historical.** One-shot migration of the repo's slash commands from a flat structure to namespaces ([ADR-0005](../docs/adrs/0005-namespace-based-command-organization.md)). No current target: commands now come from the plugin marketplace and the repo no longer has a commands directory |
+| `update-command-references.sh` | **Historical.** Companion to the migration above, rewriting markdown references to the namespaced command paths. No current target, for the same reason |
 | `smoke-test-docker.sh` | Docker-based smoke tests for dotfiles |
 | `check-doc-references.py` | Flag docs that reference scripts/paths/links no longer in the repo (advisory pre-commit hook; strict via `mise run lint:docs`). See `.doc-reference-allow` for scoping and `scripts/tests/test-check-doc-references.sh` for the contract. |
 | `claude-perms-sweep.py` | Ensure permission allow-rules exist in every repo's **committed** `.claude/settings.json` — the only place rules reach Claude Code web/remote. Discovers repos from GitHub (not local clones) and patches via the API, so dirty trees and feature-branch checkouts are untouched. Dry-run by default; driven by `just -g claude-perms-sweep <scope> <rules>`. |
