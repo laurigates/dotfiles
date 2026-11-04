@@ -73,7 +73,8 @@ fail=0
 FLAG_ARG='"--archived=false", '
 cp -R "$JUST_DIR" "$WORK/control"
 before=$(grep -cF -- "$FLAG_ARG" "$WORK/control/git.just")
-sed -i 's/"--archived=false", //' "$WORK/control/git.just"
+# -i.bak, not bare -i: BSD sed (macOS) reads the expression as the backup suffix.
+sed -i.bak 's/"--archived=false", //' "$WORK/control/git.just"
 after=$(grep -cF -- "$FLAG_ARG" "$WORK/control/git.just")
 if [ "$before" -ne 1 ] || [ "$after" -ne 0 ]; then
     echo "FAIL: control expected one $FLAG_ARG in git.just to strip, found $before before and $after after"
