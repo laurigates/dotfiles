@@ -15,17 +15,36 @@ For the *when-to-use* policy (and when not to), see
 
 ## Tools
 
-Three scripts in `~/.local/bin`:
+Four scripts in `~/.local/bin`:
 
 | Script | Purpose | Blocks? |
 |---|---|---|
 | `telegram-notify` | Fire-and-forget message | No |
 | `telegram-ask` | Send a question, wait for reply, print reply to stdout | Yes |
 | `telegram-poll` | Send a multiple-choice poll, wait for the vote, print selected option(s) | Yes |
+| `telegram-check` | Diagnose the config: variables set, which bot, which chat | No |
 
-All three read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
+All four read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
 environment. They're sourced from `~/.api_tokens` by mise — if you
 hit `... not set`, the user needs to add them there.
+
+## telegram-check
+
+```
+telegram-check            # TELEGRAM_*=set|unset, BOT_USERNAME, CHAT_TITLE/TYPE
+telegram-check --updates  # also list each chat seen in pending updates
+```
+
+Calls `getMe` and `getChat` and prints `KEY=VALUE` lines ending in
+`STATUS=OK|FAIL`. Exit 0 when bot and chat resolve, 1 on an API
+failure, 2 when a variable is unset. The token is only reported as
+set/unset and is redacted from curl errors.
+
+Diagnose through this script, never with a hand-written command: a
+Bash command that prints the token variable (even `${...:+set}`) is
+blocked by hooks-plugin's `secret-protection.sh`, and a raw `curl`
+puts the token in the URL. `--updates` reads `getUpdates` without an
+offset, so it consumes nothing a running `telegram-ask` is waiting for.
 
 ## telegram-notify
 
@@ -202,13 +221,13 @@ In practice, plain text is almost always the right default.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `TELEGRAM_BOT_TOKEN not set` | mise env not loaded, or token absent in `~/.api_tokens` | Add `export TELEGRAM_BOT_TOKEN=...` and `export TELEGRAM_CHAT_ID=...` there |
-| `curl: (22) ... 401` | Token revoked or wrong | Re-issue via @BotFather |
-| `curl: (22) ... 400` on send | Bad chat id, or bot has not been started by the user | User must `/start` the bot once |
+| `TELEGRAM_BOT_TOKEN not set` | mise env not loaded, or token absent in `~/.api_tokens` | `telegram-check` shows which is `unset`; add `export TELEGRAM_BOT_TOKEN=...` and `export TELEGRAM_CHAT_ID=...` there |
+| `curl: (22) ... 401` | Token revoked or wrong | `telegram-check` reports `GETME_ERROR=401`; re-issue via @BotFather |
+| `curl: (22) ... 400` on send | Bad chat id, or bot has not been started by the user | `telegram-check` reports `CHAT_ERROR=400 Bad Request: chat not found`; user must `/start` the bot once |
 | `telegram-ask` returns immediately with stale text | Another process drained updates between drain and poll | Rare; re-run |
-| Reply never arrives despite user typing | User typed in a different chat than `TELEGRAM_CHAT_ID` | Verify chat id with `curl .../getUpdates` after a fresh message |
+| Reply never arrives despite user typing | User typed in a different chat than `TELEGRAM_CHAT_ID` | Have the user send the bot a fresh message, then run `telegram-check --updates` and compare `CHAT_ID` with the `UPDATE_CHAT` lines |
 | Bot in a group never sees replies | Bot **privacy mode** is on — bot only sees commands and direct mentions | In @BotFather: `/mybots` → bot → Bot Settings → Group Privacy → **Turn off**. Trade-off: bot now reads every message in the group |
-| Group chat id stops working with `400 chat not found` | Group was upgraded to a supergroup; chat id gained a `-100` prefix | Re-run `getUpdates` and update `TELEGRAM_CHAT_ID` in `~/.api_tokens` |
+| Group chat id stops working with `400 chat not found` | Group was upgraded to a supergroup; chat id gained a `-100` prefix | Run `telegram-check --updates` after a fresh message in the group; the user updates `TELEGRAM_CHAT_ID` in `~/.api_tokens` to the listed `-100…` id |
 | `telegram-poll` never returns despite a vote | `poll_answer` wasn't in `allowed_updates`, or the vote landed on a different, older poll | Rare — the script always scopes `allowed_updates` and filters by `poll_id`; re-run if it happens |
 | `telegram-poll: send failed` with a 400 | Question >300 chars, an option >100 chars, or fewer than 2 / more than 10 options | Shorten the text or the option count |
 
@@ -216,7 +235,7 @@ In practice, plain text is almost always the right default.
 
 `telegram-send` (the well-known Python tool) is **send-only**. It has
 no receive mode, no polling, no way to wait for a reply. The
-interactive flow needs `getUpdates` long-polling, which these three
+interactive flow needs `getUpdates` long-polling, which these
 thin curl+jq wrappers provide with no extra runtime dependencies
 beyond `curl` and `jq` (both already on the system).
 

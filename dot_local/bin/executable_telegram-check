@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# telegram-check — diagnose the Telegram bot configuration without the token
+# ever appearing in a command or in the output.
+#
+# Usage:
+#   telegram-check               # variables set? which bot? which chat?
+#   telegram-check -u            # also list chats seen in pending updates
+#   telegram-check --updates     # (same; use it to find a chat id)
+#
+# Output is KEY=VALUE lines ending in STATUS=OK or STATUS=FAIL. The token is
+# only ever reported as set/unset; curl errors have it redacted.
+#
+# Exit codes:
+#   0 — bot and chat both resolve
+#   1 — a Bot API call failed (bad token, chat not found, network)
+#   2 — usage / config error (a variable is unset)
+#
+# Reads TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID, the same variables as
+# telegram-notify, telegram-ask and telegram-poll.
+
+set -euo pipefail
+
+UPDATES="false"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -u|--updates) UPDATES="true"; shift ;;
+    -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+    *) echo "telegram-check: unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
+
+echo "=== TELEGRAM CHECK ==="
+
+missing=0
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  if [[ -n "${!var:-}" ]]; then
+    echo "${var}=set"
+  else
+    echo "${var}=unset"
+    missing=1
+  fi
+done
+if [[ "$missing" -eq 1 ]]; then
+  echo "HINT=add the missing export to ~/.api_tokens (sourced by mise)"
+  echo "STATUS=FAIL"
+  exit 2
+fi
+
+TOKEN="$TELEGRAM_BOT_TOKEN"
+ERR_FILE="$(mktemp)"
+trap 'rm -f "$ERR_FILE"' EXIT
+
+# redact <text>: replace every occurrence of the token.
+redact() { printf '%s' "${1//"$TOKEN"/<redacted>}"; }
+
+# api <method> [curl args...]: call the Bot API. On ok:true sets API_BODY and
+# returns 0; otherwise sets API_ERROR (token redacted) and returns 1.
+# No -f: Telegram's 4xx bodies carry the error description we want to show.
+api() {
+  local method="$1"
+  shift
+  API_BODY=""
+  API_ERROR=""
+  if ! API_BODY="$(curl -sS --max-time 20 "$@" \
+      "https://api.telegram.org/bot${TOKEN}/${method}" 2>"$ERR_FILE")"; then
+    API_ERROR="$(redact "$(tr '\n' ' ' <"$ERR_FILE")")"
+    return 1
+  fi
+  if ! jq -e '.ok == true' >/dev/null 2>&1 <<<"$API_BODY"; then
+    API_ERROR="$(jq -r '"\(.error_code // "?") \(.description // "no description")"' \
+      2>/dev/null <<<"$API_BODY" || echo "unparseable response")"
+    API_ERROR="$(redact "$API_ERROR")"
+    return 1
+  fi
+}
+
+status="OK"
+
+if api getMe; then
+  jq -r '.result | "BOT_USERNAME=\(.username)", "BOT_ID=\(.id)"' <<<"$API_BODY"
+else
+  echo "GETME_ERROR=${API_ERROR}"
+  echo "HINT=a 401 means the token is wrong or revoked; re-issue it via @BotFather"
+  echo "STATUS=FAIL"
+  exit 1
+fi
+
+if api getChat -G --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}"; then
+  jq -r '.result
+    | "CHAT_ID=\(.id)",
+      "CHAT_TYPE=\(.type)",
+      "CHAT_TITLE=\(.title // ([.first_name, .last_name] | map(select(. != null)) | join(" ")))",
+      (if .username then "CHAT_USERNAME=\(.username)" else empty end)' <<<"$API_BODY"
+else
+  echo "CHAT_ID=${TELEGRAM_CHAT_ID}"
+  echo "CHAT_ERROR=${API_ERROR}"
+  echo "HINT=chat not found: the user has not sent /start to the bot, or a group became a supergroup (id gained a -100 prefix); send the bot a message, then run telegram-check --updates"
+  status="FAIL"
+fi
+
+if [[ "$UPDATES" == "true" ]]; then
+  # getUpdates without an offset confirms nothing, so pending updates stay
+  # available to telegram-ask / telegram-poll.
+  if api getUpdates; then
+    jq -r '[.result[]
+        | (.message, .edited_message, .channel_post, .my_chat_member, .callback_query.message)
+        | select(. != null) | .chat]
+      | unique_by(.id)
+      | ("UPDATE_CHATS=\(length)"),
+        (.[] | "UPDATE_CHAT=\(.id)\t\(.type)\t\(.title // .username // .first_name // "")")' <<<"$API_BODY"
+    echo "HINT=no chat listed? send the bot a fresh message and re-run; a running telegram-ask may have consumed it"
+  else
+    echo "UPDATES_ERROR=${API_ERROR}"
+    echo "HINT=409 Conflict means a webhook is set or another getUpdates (telegram-ask/poll) is running"
+    status="FAIL"
+  fi
+fi
+
+echo "STATUS=${status}"
+[[ "$status" == "OK" ]] || exit 1
