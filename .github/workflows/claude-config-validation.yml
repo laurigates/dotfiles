@@ -62,32 +62,22 @@ jobs:
 
             ### Scope
             Check these directories for compliance:
-            - `exact_dot_claude/agents/` - Agent definitions
-            - `exact_dot_claude/commands/` - Slash commands
             - `exact_dot_claude/skills/` - Skill definitions
-            - `exact_dot_claude/settings.json` - Settings file
+            - `exact_dot_claude/modify_settings.json` - Settings (a bash modify_ script whose overlay becomes ~/.claude/settings.json)
+
+            `tests/test-claude-config.sh` (run in smoke.yml) already checks the mechanical
+            parts: frontmatter `name`/`description`, accepted `model` values, and valid
+            settings JSON. Spend this run on what a script cannot judge.
 
             ### Validation Criteria
 
-            **1. Agent Files (*.md in agents/)**
-            - Required frontmatter: `name`, `model`, `color`, `description`, `tools`
-            - Model should be a value Claude Code accepts: an alias (`opus`, `sonnet`, `haiku`, `fable`, `inherit`) or a current full ID (e.g. `claude-opus-5`)
-            - Description should clearly state use case
-            - Tools should follow least-privilege principle
-            - Check for deprecated model names
-
-            **2. Command Files (*.md in commands/)**
-            - Required frontmatter: `description`, `allowed-tools`
-            - Optional: `argument-hint`
-            - Commands should have clear, actionable instructions
-            - Tool permissions should be minimal for the task
-
-            **3. Skill Files (SKILL.md in skills/*/)**
+            **1. Skill Files (SKILL.md in skills/*/)**
             - Required frontmatter: `name`, `description`, `allowed-tools`
+            - `model`, when present, should be a value Claude Code accepts: an alias (`opus`, `sonnet`, `haiku`, `fable`, `inherit`) or a current full ID (e.g. `claude-opus-5`)
             - Skills should have focused, specific expertise
             - Documentation should be accurate and useful
 
-            **4. Settings File (settings.json)**
+            **2. Settings (modify_settings.json overlay)**
             - Valid JSON schema
             - Reasonable permission defaults
             - No overly permissive configurations

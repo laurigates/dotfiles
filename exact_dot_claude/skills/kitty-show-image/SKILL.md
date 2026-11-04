@@ -1,6 +1,6 @@
 ---
 name: kitty-show-image
-description: Show an image (screenshot, render, diagram PNG) to the user with a note saying what to judge — SendUserFile first, or a labelled kitty tab via show-image.sh when they want it in the terminal. Use when the user should look at an image, for a visual gate, or when icat fails with "open /dev/tty: device not configured".
+description: 'Show an image (screenshot, render, diagram PNG) to the user with a note saying what to judge — SendUserFile first, or a labelled kitty tab via show-image.sh when they want it in the terminal. Use when the user should look at an image, for a visual gate, or when icat fails with "open /dev/tty: device not configured".'
 ---
 
 # Showing an Image to the User
