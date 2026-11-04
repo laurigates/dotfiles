@@ -56,7 +56,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 | FR-008 | Cross-platform templates | Chezmoi templates handle macOS/Linux differences for shell config, tool paths, platform-specific packages | P1 |
 | FR-009 | CI/CD pipeline | Smoke tests (Ubuntu/macOS), linting (shellcheck, luacheck, actionlint, stylua), secret scanning | P1 |
 | FR-010 | AI-assisted development | Claude Code claude.yml workflow for AI-assisted PRs/issues; auto plugin install in CI | P2 |
-| FR-011 | MCP server management | Dynamic MCP config from `.chezmoidata.toml`; enable/disable servers; per-project overrides | P1 |
+| FR-011 | MCP server management | Curated MCP server registry in `.chezmoidata.toml`; per-project install via `/configure-mcp` into `.mcp.json` | P1 |
 | FR-012 | Task runner | justfile with standard recipes: apply, diff, lint, test, plugin management, tool updates | P1 |
 
 ### User Stories
@@ -64,7 +64,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 - As a developer, I want `chezmoi apply` to fully configure a new machine so I can start working in under 10 minutes
 - As a developer, I want Neovim LSP to work for my primary languages (Lua, Python, Shell, Go) without manual setup
 - As a developer, I want Claude Code with all my plugins available on every machine without re-installing
-- As a developer, I want to enable/disable MCP servers in one config file that propagates everywhere
+- As a developer, I want a curated registry of MCP servers that I can install per project, so each repository loads only the servers it needs
 - As a developer, I want my shell to have consistent key bindings, aliases, and completions across machines
 - As a developer, I want secrets kept out of git while still being accessible to tools that need them
 

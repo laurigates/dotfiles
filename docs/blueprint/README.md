@@ -17,7 +17,6 @@ Blueprint development structure for this project.
 
 ```bash
 /blueprint-status          # Check configuration and task health
-/blueprint-derive-prd      # Generate PRD from existing docs/codebase
 /blueprint-derive-plans    # Derive docs from git history
 /blueprint-derive-rules    # Generate rules from git patterns
 /blueprint-generate-rules  # Generate rules from PRDs

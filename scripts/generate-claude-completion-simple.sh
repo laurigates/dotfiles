@@ -10,11 +10,11 @@ readonly GREEN='\033[0;32m'
 readonly BLUE='\033[0;34m'
 readonly NC='\033[0m'
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPT_DIR
-DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-readonly DOTFILES_DIR
-readonly COMPLETION_FILE="${DOTFILES_DIR}/dot_zfunc/_claude"
+# Write to the target, not the chezmoi source: a generated file in the source
+# tree leaves the checkout dirty after every apply that sees a new Claude CLI
+# (#542). ~/.zfunc is where run_onchange_02-generate-completions.sh.tmpl writes
+# every other completion; .chezmoiignore keeps chezmoi off this one.
+readonly COMPLETION_FILE="${CLAUDE_COMPLETION_FILE:-${HOME}/.zfunc/_claude}"
 
 log() { echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $*" >&2; }
 error() { echo -e "${RED}[ERROR]${NC} $*" >&2; exit 1; }
@@ -113,8 +113,8 @@ generate_completion() {
     [[ -n "$main_commands" ]] || error "No commands found in 'claude --help' output"
     [[ -n "$mcp_commands" ]] || error "No commands found in 'claude mcp --help' output"
 
-    # Build into a temporary file so a failed validation never leaves a
-    # broken completion behind in the source tree.
+    # Build into a temporary file so a failed validation never replaces the
+    # last good completion.
     local tmp
     tmp=$(mktemp "${TMPDIR:-/tmp}"/_claude.XXXXXX)
 
@@ -435,14 +435,15 @@ _claude_mcp_servers() {
 _claude "$@"
 COMPLETION_EOF
 
-    # Validate before publishing, so a syntax error never lands in the source
-    # tree. zsh's own diagnostic is the only thing that names the bad line.
-    # Keep the rejected output outside the chezmoi source tree: any file in
-    # dot_zfunc/ becomes a managed target on the next apply.
+    # Validate before publishing, so a syntax error never replaces the last
+    # good completion. zsh's own diagnostic is the only thing that names the
+    # bad line.
     if ! zsh -n "$tmp"; then
         error "Generated completion has syntax errors; kept for inspection at $tmp"
     fi
 
+    # mktemp creates 0600; match the 0644 chezmoi gave the old managed copy.
+    chmod 644 "$tmp"
     mv "$tmp" "$COMPLETION_FILE"
     success "Updated Claude CLI completion: $COMPLETION_FILE"
 }
@@ -451,13 +452,6 @@ main() {
     log "Starting Claude CLI completion generation (simple version)"
     check_claude_cli
     generate_completion
-
-    # Add to git if not tracked
-    if ! git -C "$DOTFILES_DIR" ls-files --error-unmatch "$COMPLETION_FILE" >/dev/null 2>&1; then
-        log "Adding completion file to git..."
-        git -C "$DOTFILES_DIR" add "$COMPLETION_FILE"
-        success "Added completion file to git tracking"
-    fi
 
     success "Claude CLI completion generation complete!"
     echo

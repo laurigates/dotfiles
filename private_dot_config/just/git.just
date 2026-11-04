@@ -262,6 +262,11 @@ pr-todo:
 # runtime bumps (`python to 3.15`, ...) are held however small. "Configure Renovate"
 # onboarding PRs are SAFE with no checks: no build reads renovate.json.
 #
+# PRs in archived repos are left out of the search (`--archived=false`): an
+# archived repo is read-only, so its PRs can be neither merged nor closed, and
+# counting them inflated every bucket (#538). `renovate-risk` lists them
+# separately under archived/.
+#
 # The update table's columns differ between Renovate configs, so it is parsed by
 # header (`Update`, `Change`), never by position.
 #
@@ -342,7 +347,7 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
     prs = sorted({(p["repository"]["nameWithOwner"], p["number"])
                   for o in OWNERS for a in AUTHORS
                   for p in gh("search", "prs", "--owner", o, "--author", a, "--state", "open",
-                              "--limit", "1000", "--json", "repository,number")})
+                              "--archived=false", "--limit", "1000", "--json", "repository,number")})
     if not prs:
         print("No open Renovate PRs for", " ".join(AUTHORS), "under", " ".join(OWNERS))
         sys.exit(0)

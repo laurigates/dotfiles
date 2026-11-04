@@ -27,6 +27,10 @@
 # A scratch source tree with one deliberate leak (the canary) must be reported;
 # that proves the run can see a leak, so a clean result is not vacuous.
 #
+# The same run checks the macOS-only Library/ tree (LaunchAgents): on darwin it
+# must be managed, on any other OS nothing under Library/ may be (#543). A
+# scratch source with a nested Library/ plist is the control for that check.
+#
 # Isolation: config, cache and persistent state are scratch files, and the
 # destination is an empty scratch dir. chezmoi only reads, so neither the real
 # $HOME nor the real chezmoi state is touched.
@@ -42,7 +46,7 @@ RED=$'\033[0;31m'; GREEN=$'\033[0;32m'; NC=$'\033[0m'
 
 # Plain-named source-root entries that really are targets in $HOME: "name|reason".
 INTENDED_ROOT_TARGETS=(
-    "Library|macOS LaunchAgents, applied to ~/Library/LaunchAgents"
+    "Library|macOS LaunchAgents, applied to ~/Library/LaunchAgents; macOS only, ignored on non-darwin (#543)"
     "aliases.zsh|sourced by ~/.zshrc (dot_zshrc.tmpl)"
     "scripts|\$HOME/scripts/*.sh run by maint.just and the reclaim LaunchAgent"
 )
@@ -69,22 +73,29 @@ root_names() {
         done
 }
 
-# leaks SRC: the root_names of SRC that `chezmoi managed` lists directly under the
-# destination (.tmpl is stripped from the target name).
-leaks() {
-    local src="$1" managed name
+# managed_paths SRC: every target path `chezmoi managed` lists for SRC, relative
+# to the scratch destination.
+managed_paths() {
+    local src="$1"
     # --exclude=scripts,externals: run_ scripts and downloads are not file targets.
-    managed=$(chezmoi managed \
+    chezmoi managed \
         --source="$src" \
         --destination="$tmp/home" \
         --config="$tmp/chezmoi.toml" \
         --cache="$tmp/cache" \
         --persistent-state="$tmp/chezmoistate.boltdb" \
-        --exclude=scripts,externals 2>"$tmp/stderr") || {
+        --exclude=scripts,externals 2>"$tmp/stderr" || {
         echo "chezmoi managed exited non-zero for $src:" >&2
         cat "$tmp/stderr" >&2
         return 2
     }
+}
+
+# leaks SRC: the root_names of SRC that `chezmoi managed` lists directly under the
+# destination (.tmpl is stripped from the target name).
+leaks() {
+    local src="$1" managed name
+    managed=$(managed_paths "$src") || return 2
     managed=$(grep -v / <<<"$managed")
     while IFS= read -r name; do
         [ -n "$name" ] || continue
@@ -150,6 +161,46 @@ if [ -n "$unexpected" ]; then
     exit 1
 fi
 
+# macOS-only targets under Library/ (LaunchAgents) must not reach other OSes:
+# without the darwin guard in .chezmoiignore, apply wrote
+# ~/Library/LaunchAgents/*.plist on Linux (#543). On darwin the same check
+# asserts the guard did not hide them there too.
+# Control: a nested Library/ path in a scratch source with no ignore file must
+# be listed, so an empty result below means "ignored", not "never listed".
+os_src="$tmp/os-src"
+mkdir -p "$os_src/Library/LaunchAgents"
+printf 'plist\n' > "$os_src/Library/LaunchAgents/os-guard-canary.plist"
+os_canary=$(managed_paths "$os_src") || { echo "${RED}FAIL${NC}: OS-guard control run failed"; exit 1; }
+if ! grep -qxF "Library/LaunchAgents/os-guard-canary.plist" <<<"$os_canary"; then
+    echo "${RED}FAIL${NC}: OS-guard control: chezmoi managed did not list a nested Library/ path,"
+    echo "      so this run cannot detect a macOS-only target leaking. Listed:"
+    printf '%s\n' "${os_canary:-(nothing)}" | sed 's/^/        /'
+    exit 1
+fi
+
+host_os=$(chezmoi execute-template \
+    --config="$tmp/chezmoi.toml" \
+    --cache="$tmp/cache" \
+    --persistent-state="$tmp/chezmoistate.boltdb" \
+    '{{ .chezmoi.os }}') || {
+    echo "${RED}FAIL${NC}: could not read .chezmoi.os"; exit 1;
+}
+all_managed=$(managed_paths "$REPO_DIR") || exit 1
+library_managed=$(grep -E '^Library(/|$)' <<<"$all_managed" || true)
+if [ "$host_os" = "darwin" ]; then
+    if ! grep -qxF "Library/LaunchAgents/com.lgates.notunes.plist" <<<"$library_managed"; then
+        echo "${RED}FAIL${NC}: on darwin, chezmoi no longer manages Library/LaunchAgents/com.lgates.notunes.plist."
+        echo "      The non-darwin Library/ guard in .chezmoiignore is hiding macOS targets on macOS."
+        exit 1
+    fi
+elif [ -n "$library_managed" ]; then
+    echo "${RED}FAIL${NC}: on $host_os, chezmoi apply would write these macOS-only targets (#543)."
+    echo "      Guard them in .chezmoiignore under {{ if ne .chezmoi.os \"darwin\" }}:"
+    printf '%s\n' "$library_managed" | sed 's/^/        /'
+    exit 1
+fi
+
 n_candidates=$(grep -c . <<<"$candidates")
 echo "${GREEN}PASS${NC}: none of $n_candidates plain-named source-root entries is applied to \$HOME" \
-    "except ${#INTENDED_ROOT_TARGETS[@]} intended targets (canary leak detected)"
+    "except ${#INTENDED_ROOT_TARGETS[@]} intended targets (canary leak detected);" \
+    "Library/ is managed only on darwin (host: $host_os)"

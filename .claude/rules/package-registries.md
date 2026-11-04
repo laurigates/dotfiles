@@ -30,6 +30,6 @@ Packages are managed through `.chezmoidata/packages.toml` with profile activatio
 ## MCP Server Management
 
 - Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`
-- Enable/disable per server — `enabled = true/false`
+- `enabled = true` selects which servers `cleanup-mcp-servers.sh` removes; it does not turn a server on
 - Servers are installed per-project into that project's `.mcp.json`
 - Use `/configure-mcp` to install servers into a project; `./cleanup-mcp-servers.sh` to remove them (run only when no Claude sessions are active)

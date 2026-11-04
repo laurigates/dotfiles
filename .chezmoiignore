@@ -45,3 +45,15 @@ tests/
 # ~/tmp is a scratch dir, not dotfiles state — chezmoi shouldn't manage it or the
 # one-off notes previously committed under tmp/.
 tmp/
+# Library/ holds only macOS LaunchAgents (notunes, kitty-snapshot, reclaim).
+# Unguarded, apply wrote ~/Library/LaunchAgents/*.plist on Linux (#543). Bare and
+# slash-free like the entries above. chezmoi never removes an ignored target, so
+# a plist already written on a Linux machine has to be deleted by hand.
+{{ if ne .chezmoi.os "darwin" }}
+Library/
+{{ end }}
+# Generated on the target by run_onchange_update-claude-completion.sh.tmpl,
+# never kept in the source: a source copy left the checkout dirty after every
+# apply that saw a new Claude CLI (#542). dot_zfunc is not exact_, so the
+# ignored target survives.
+.zfunc/_claude
