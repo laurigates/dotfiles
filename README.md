@@ -69,7 +69,7 @@ just plugins-list        # Show installed plugins and status
 
 ## AI Tools & MCP Configuration
 
-MCP (Model Context Protocol) servers are managed **per-project** via each project's `.mcp.json`. A curated registry of available servers lives in `.chezmoidata.toml` under `[mcp_servers]`, disabled by default to avoid bloating context in every repository.
+MCP (Model Context Protocol) servers are managed **per-project** via each project's `.mcp.json`. A curated registry of available servers lives in `.chezmoidata.toml` under `[mcp_servers]`. Nothing installs from it globally, so a server adds context only to the projects that install it.
 
 ### MCP Server Configuration
 
