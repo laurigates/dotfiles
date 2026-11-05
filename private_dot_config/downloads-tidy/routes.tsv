@@ -1,0 +1,6 @@
+# downloads-tidy routing rules: <glob><TAB><destination dir>
+# First match wins; globs are case-insensitive and match the top-level name.
+# A route applies only to entries no earlier bucket (secret, cert, installer,
+# redundant, junk) claimed. Unmatched entries are reported, never touched.
+# Example (tab-separated):
+# Invoice-E4A9CCC2-*.pdf	~/Documents/finance/anthropic

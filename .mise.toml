@@ -125,6 +125,10 @@ run = "tests/test-chezmoi-target-guard.sh"
 description = "Regression test: post-sync.sh applies a retired-clean deletion and reports strays, MD lines and state-read failures"
 run = "tests/test-post-sync.sh"
 
+[tasks."test:downloads-tidy"]
+description = "Regression test: downloads-tidy.sh rm's secrets only off-hours, reports gitleaks-only hits, trashes installers/duplicates, and prints no key material"
+run = "tests/test-downloads-tidy.sh"
+
 [tasks."test:mise-tasks"]
 description = "Regression test: repo tasks run in the checkout, and lint tasks fail on findings and on a broken linter (#398)"
 run = "tests/test-mise-tasks.sh"
