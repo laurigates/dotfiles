@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:telegram-check", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:telegram-check", "test:downloads-tidy", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"

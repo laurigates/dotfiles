@@ -100,18 +100,18 @@ fi
 
 applied=$(run 20 --apply)
 rc=$?
-[ "$rc" -eq 0 ] && pass "--apply exits 0" || fail "--apply exited $rc: $(tail -n 3 <<<"$applied")"
+if [ "$rc" -eq 0 ]; then pass "--apply exits 0"; else fail "--apply exited $rc: $(tail -n 3 <<<"$applied")"; fi
 if [ ! -e "$dl/app.2026-01-01.private-key.pem" ] && [ ! -e "$fx/trash/app.2026-01-01.private-key.pem" ]; then
     pass "secret hard-deleted, not in Trash"
 else
     fail "secret still on disk (Downloads or Trash)"
 fi
-[ -e "$fx/trash/setup.dmg" ] && pass "installer moved to Trash" || fail "installer not in Trash"
-[ -e "$dl/notes.md" ] && pass "gitleaks-only hit left in place" || fail "notes.md was removed"
-[ -e "$dl/fresh.private-key.pem" ] && pass "young secret left in place" || fail "young secret removed"
-[ -e "$dl/other (1).md" ] && pass "differing (1) copy kept" || fail "differing copy removed"
-[ -e "$fx/routed/Invoice-0001.pdf" ] && pass "route moved file" || fail "route did not move file"
-[ -s "$fx/state/downloads-tidy/log.tsv" ] && pass "action log written" || fail "no action log"
+if [ -e "$fx/trash/setup.dmg" ]; then pass "installer moved to Trash"; else fail "installer not in Trash"; fi
+if [ -e "$dl/notes.md" ]; then pass "gitleaks-only hit left in place"; else fail "notes.md was removed"; fi
+if [ -e "$dl/fresh.private-key.pem" ]; then pass "young secret left in place"; else fail "young secret removed"; fi
+if [ -e "$dl/other (1).md" ]; then pass "differing (1) copy kept"; else fail "differing copy removed"; fi
+if [ -e "$fx/routed/Invoice-0001.pdf" ]; then pass "route moved file"; else fail "route did not move file"; fi
+if [ -s "$fx/state/downloads-tidy/log.tsv" ]; then pass "action log written"; else fail "no action log"; fi
 
 [ "$failures" -eq 0 ] || { echo "${RED}$failures failure(s)${NC}"; exit 1; }
 echo "${GREEN}all passed${NC}"
