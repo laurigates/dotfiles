@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-19
+---
+
 # Agent and Tool Selection
 
 ## Use Plugin-Qualified Agent IDs

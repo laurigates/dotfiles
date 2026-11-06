@@ -1,4 +1,5 @@
 ---
+reviewed: 2026-07-04
 paths:
   - "**/*.zsh"
   - "**/*zshrc*"

@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # A Workflow's Cost Is Its Agent Count — Confirm the Scale Before Fanning Out
 
 Enforced by `hooks-plugin:workflow-scale-guard.sh` (`ask` above

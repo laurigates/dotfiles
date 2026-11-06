@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-29
+---
+
 # Communication Style
 
 ## Opening Responses

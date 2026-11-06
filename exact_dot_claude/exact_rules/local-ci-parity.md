@@ -1,4 +1,5 @@
 ---
+reviewed: 2026-09-29
 paths:
   - "**/.github/workflows/**"
   - "**/justfile"

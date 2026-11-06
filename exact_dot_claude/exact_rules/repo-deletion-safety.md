@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Repo Deletion Safety
 
 Promoted to a skill: invoke `git-plugin:git-repo-delete-check` before `rm -rf`'ing

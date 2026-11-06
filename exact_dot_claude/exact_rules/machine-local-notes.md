@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Machine-Local Notes Hold Environment Facts, Not Findings
 
 A `CLAUDE.local.md` is git-ignored, so nothing reviews it — no diff, no PR, no

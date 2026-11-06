@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Taskwarrior Bulk Operations
 
 Promoted to a skill: invoke `taskwarrior-plugin:task-bulk-ops` when closing,

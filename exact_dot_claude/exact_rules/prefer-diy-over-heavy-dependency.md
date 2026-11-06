@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Prefer a Transparent DIY Reimplementation Over a Heavy Single-Purpose Dependency
 
 Promoted to a skill: invoke `software-design-plugin:design-diy-vs-dependency`

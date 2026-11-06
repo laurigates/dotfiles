@@ -1,4 +1,5 @@
 ---
+reviewed: 2026-06-12
 paths:
   - ".claude/rules/**"
 ---

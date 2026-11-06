@@ -1,3 +1,7 @@
+---
+reviewed: 2026-02-16
+---
+
 # Code Quality & Design
 
 ## Core Principles

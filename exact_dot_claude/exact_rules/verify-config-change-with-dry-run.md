@@ -1,4 +1,5 @@
 ---
+reviewed: 2026-08-12
 paths:
   - "**/renovate.json"
   - "**/renovate.json5"

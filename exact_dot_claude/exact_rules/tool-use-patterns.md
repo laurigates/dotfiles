@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-24
+---
+
 # Tool Use Patterns
 
 Promoted to skills — invoke the one matching the moment:

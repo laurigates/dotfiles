@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-26
+---
+
 # PR & Merge Hazards — Exit 0 Is a Claim About Mechanics
 
 Promoted to a skill: invoke `git-plugin:git-merge-hazards` before merging a PR
