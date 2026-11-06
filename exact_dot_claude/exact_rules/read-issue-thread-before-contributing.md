@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Read the Full Issue Thread Before Scoping a Contribution
 
 Promoted to a skill: invoke `git-plugin:git-issue-scoping` before building a PR,

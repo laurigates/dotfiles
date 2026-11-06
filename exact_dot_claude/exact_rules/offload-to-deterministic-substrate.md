@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-29
+---
+
 # Offload Mechanical Work to a Deterministic Substrate
 
 The agent is good at **judgment** and bad at being **repeatable**; scripts,

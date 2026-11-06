@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Back-Port Instance Fixes Into Their Scaffold/Generator
 
 Promoted to a skill: invoke `code-quality-plugin:code-scaffold-backport` when

@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-02
+---
+
 # Decision Defaults
 
 Explicit defaults for common decisions. When you approve an approach with "go" or similar affirmation, Claude executes confidently using the approach already presented—no second-guessing or re-asking for confirmation.

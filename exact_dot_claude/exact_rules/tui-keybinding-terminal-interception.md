@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # TUI Keybinding "Does Nothing"
 
 Promoted to a skill: invoke `macos-plugin:tui-keybinding-debug` when a

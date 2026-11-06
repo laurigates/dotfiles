@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Git Hazards — Verify the Content, Not the Exit Code
 
 Promoted to a skill: invoke `git-plugin:git-local-hazards` when a local git

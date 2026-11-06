@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-02
+---
+
 # Development Process
 
 - **Documentation-first**: before implementing against any tool/framework,

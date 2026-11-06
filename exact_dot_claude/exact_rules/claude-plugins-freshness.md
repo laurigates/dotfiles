@@ -1,4 +1,5 @@
 ---
+reviewed: 2026-11-03
 paths:
   - "**/.claude/settings*.json"
   - "**/modify_settings.json"

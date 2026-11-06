@@ -1,3 +1,7 @@
+---
+reviewed: 2026-04-20
+---
+
 # Plan Mode
 
 Plan mode is for **change requests**, not questions, analysis, or execution.

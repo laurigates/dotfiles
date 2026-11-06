@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Verify Upstream Before Patching Vendored / Installed Code
 
 Promoted to a skill: invoke `git-plugin:git-upstream-fix-check` before patching

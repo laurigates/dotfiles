@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-29
+---
+
 # Dependency Management
 
 Tool installation priority (mise → uv → bun → cargo/go → brew) is defined

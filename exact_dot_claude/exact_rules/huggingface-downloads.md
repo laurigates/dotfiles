@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Hugging Face Downloads
 
 Promoted to a skill: invoke `tools-plugin:hf-downloads` before downloading

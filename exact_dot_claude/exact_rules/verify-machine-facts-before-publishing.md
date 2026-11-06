@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Verify Machine-Read Facts Against the Org Source-of-Truth Before Publishing
 
 Promoted to a skill: invoke `documentation-plugin:docs-verify-machine-facts`

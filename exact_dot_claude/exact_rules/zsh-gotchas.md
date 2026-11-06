@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Zsh Gotchas — Expansions That Rewrite the Command You Wrote
 
 Promoted to a skill: invoke `tools-plugin:zsh-gotchas` when a zsh command —

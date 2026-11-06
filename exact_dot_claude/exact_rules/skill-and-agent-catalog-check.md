@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-29
+---
+
 # Proactive Skill/Agent Catalog Checking
 
 Actively consult the skills/agents catalog; don't wait to be reminded. The

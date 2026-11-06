@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Verify the Licensing *Position*, Not Just the LICENSE File
 
 Promoted to a skill: invoke `code-quality-plugin:code-license-position` before
