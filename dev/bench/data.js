@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793805319713,
+  "lastUpdate": 1793967413233,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4267,6 +4267,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0111594558,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b1e81077178a2783dab01d4a56b57155bc71ec36",
+          "message": "chore(claude): enable software-design-plugin, date the rules, trim release-please (#567)\n\nThis PR fixes three things `config-drift` reported against the global\nrules. The project-rule half is laurigates/mcu-tinkering-lab#973.\n\n## Changes\n\n- **Broken stub (error).** `prefer-diy-over-heavy-dependency` points at\n`software-design-plugin:design-diy-vs-dependency`. The plugin was never\ndecided in `enabledPlugins`, so it defaulted off and the stub resolved\nto nothing. `modify_settings.json` now enables it. The other undecided\nplugins (cloud, foundryvtt, kernel, video, youtube) are left undecided.\n- **`reviewed:` dates (info, 52/52 missing).** Each rule in\n`exact_dot_claude/exact_rules/` now has a `reviewed:` date: the date its\ncurrent content first appeared, following renames. #558's move from\n`rules/` to `exact_rules/` does not count. Plain `git log -1` would have\ndated 50 rules to 2026-11-03 for that move alone. Dates range from\n2026-02-16 (`code-quality.md`) to 2026-11-04. `release-please.md` gets\n2026-11-06 because it was rewritten here.\n- **`release-please.md` (info, 71% covered by\n`git-plugin:release-please-protection`).** It is now a pointer stub (91\nlines to 23) that keeps the no-hand-edit invariant inline. The old\n\"Emergency Override\" section told the reader to disable protection. The\nstub instead follows the skill: override steps are the operator's to\nrun, never Claude's.\n- **`tests/test-claude-context-budget.sh`.** The test treated any rule\nstarting with `---` as path-scoped. A `reviewed:`-only block would then\nhave moved an unconditional rule out of the budget total and failed\nCheck D for having no `paths:`. A rule now counts as path-scoped only\nwhen its frontmatter has a `paths:` key. Frontmatter without `paths:`\nmay hold only `created`, `modified` or `reviewed`, so a `path:` typo\nstill fails.\n\n## Verification\n\n- `bash tests/test-claude-context-budget.sh`: PASS=4. The unconditional\ntotal went from 56,454 to 57,594 bytes (+1,140 for the frontmatter)\nagainst a budget of 78,400.\n- The test was also run against a scratch rules directory: a `path:`\ntypo fails Check D, a `reviewed:`-only rule counts as unconditional, and\na `paths:` rule counts as path-scoped.\n- `bash tests/test-claude-plugin-references.sh`: 4 passed, 0 skipped.\n- `echo '{}' | bash exact_dot_claude/modify_settings.json | jq` returns\n`true` for the new key.\n- `pre-commit run --files <staged>`: all hooks pass with\n`SKIP=stylua-github`. That hook's environment fails to build in the\ncloud session (it downloads a release binary), and no Lua changed.\n- `config-drift.py` was re-run with these rules as `~/.claude/rules`.\nThe `frontmatter_coverage` and `release-please` findings are gone. The\nbroken-stub error remains in that environment because\n`software-design-plugin` is not installed there; clearing it needs\n`chezmoi apply` and the plugin install on a real machine. **Pending\nverification.**\n- shellcheck is not installed in the cloud session, so it was not run on\nthe edited test.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99q2jE1nfWcTmmRwXt\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+          "timestamp": "2026-11-06T14:15:58+02:00",
+          "tree_id": "27587c7989173484529daf8564b381c2d8d45834",
+          "url": "https://github.com/laurigates/dotfiles/commit/b1e81077178a2783dab01d4a56b57155bc71ec36"
+        },
+        "date": 1793967412560,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11471503866666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013441638,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011436298,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009725133,
             "unit": "s"
           }
         ]
