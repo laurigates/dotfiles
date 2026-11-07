@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.lgates.downloads-tidy</string>
+
+  <!-- Daily ~/Downloads tidy: hard-deletes keys/recovery codes, trashes certs,
+       installers, redundant copies and junk; reports the rest. Secrets and certs
+       are acted on only outside 08-18 on weekdays, so a run missed while asleep
+       and fired on a morning wake skips them until the next evening. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>"$HOME/scripts/downloads-tidy.sh" --apply --notify</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>19</integer>
+    <key>Minute</key>
+    <integer>37</integer>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/lgates/Library/Logs/downloads-tidy.run.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/lgates/Library/Logs/downloads-tidy.run.log</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/lgates/.local/share/mise/shims:/Users/lgates/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>
