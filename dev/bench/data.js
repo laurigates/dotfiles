@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794221622566,
+  "lastUpdate": 1794221751616,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4531,6 +4531,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010307963600000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "67340a1dcda11364d9c46d5f4293d78e37eee19c",
+          "message": "chore(mise): track pi at latest via the mise registry instead of the npm pin (#574)\n\n## What\nIn `private_dot_config/mise/config.toml.tmpl`, replace\n`\"npm:@earendil-works/pi-coding-agent\" = \"1.4.0\"` with `pi = \"latest\"`.\n\n## Why\n`mise use -g pi` had written `pi = \"latest\"` into\n`~/.config/mise/config.toml` outside chezmoi, so `chezmoi apply`\nprompted to drop it. `mise registry pi` maps the short name to\n`aqua:earendil-works/pi`, the same agent as the npm pin. With both\ninstalled, `command -v pi` resolved to the npm 1.4.0 copy, so the\n`latest` entry had no effect. The template now keeps a single install\nthat tracks the latest release.\n\n## Verification\n`chezmoi --source <worktree> diff ~/.config/mise/config.toml` shows only\nthe moved `pi` line and the removed npm line. The `DOTFILES_DIR` line in\nthat diff comes from rendering from a worktree.\n\n## After merge\nThe old npm install stays on disk until `mise prune` removes it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BFSh78SGx7EQCMbvY\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-09T12:55:09+02:00",
+          "tree_id": "b719c57f1dc69e7b4ce7a2a2fb2cdd2cd0499cbe",
+          "url": "https://github.com/laurigates/dotfiles/commit/67340a1dcda11364d9c46d5f4293d78e37eee19c"
+        },
+        "date": 1794221751166,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10682505766666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013209648,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011110005999999998,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009299344400000001,
             "unit": "s"
           }
         ]
