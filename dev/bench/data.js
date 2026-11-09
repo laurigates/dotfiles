@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794205390984,
+  "lastUpdate": 1794221622566,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4487,6 +4487,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0079159742,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b8f4add79f7a2407e1df8f456de13bee619f3de6",
+          "message": "fix(claude): keep ~/.claude/workflows out of chezmoi's exact_ purge (#573)\n\n## What\nAdd `workflows/` to `exact_dot_claude/.chezmoiignore`, and a\n`workflows/` fixture to `tests/test-claude-runtime-ignored.sh`.\n\n## Why\nevaluate-plugin's SessionStart hook\n(`hooks/sync-evaluate-skill-workflow.sh` in claude-plugins) copies its\nbundled `evaluate-skill.workflow.js` into `~/.claude/workflows/` so the\nWorkflow tool can resolve it by name. `~/.claude` is an `exact_` dir and\n`workflows/` was unlisted, so `chezmoi apply` prompted\n`.claude/workflows has changed since chezmoi last wrote it?` (`chezmoi\nstatus`: `AD`). A forced apply deletes it, and `evaluate-plugin-batch`\ncannot find the workflow until the hook restores it next session. The\nplugin is the source of truth, so the directory is ignored rather than\nversioned here.\n\n## Verification\n- `bash tests/test-claude-runtime-ignored.sh` → `PASS: 48 runtime\nentries survive chezmoi apply`.\n- With the ignore line commented out, the same test fails with `chezmoi\napply would DELETE ... .claude/workflows`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BFSh78SGx7EQCMbvY\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-09T12:52:51+02:00",
+          "tree_id": "2b7dcb98062e4660824deffb13737d71da988964",
+          "url": "https://github.com/laurigates/dotfiles/commit/b8f4add79f7a2407e1df8f456de13bee619f3de6"
+        },
+        "date": 1794221622089,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11151597,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013584584,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011026744000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010307963600000001,
             "unit": "s"
           }
         ]
