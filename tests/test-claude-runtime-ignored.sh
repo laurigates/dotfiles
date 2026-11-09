@@ -42,6 +42,8 @@ RED=$'\033[0;31m'; GREEN=$'\033[0;32m'; NC=$'\033[0m'
 RUNTIME_ENTRIES=(
     # Claude Desktop local scheduled tasks (#399)
     scheduled-tasks/example-task/SKILL.md
+    # Saved workflows; evaluate-plugin's SessionStart hook writes one here
+    workflows/evaluate-skill.workflow.js
     # Claude Code
     state/mcp-discover-verdicts.json
     # Writer unknown
