@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794129077777,
+  "lastUpdate": 1794205390984,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4443,6 +4443,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.007920806200000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1822d2660fee6b99abdf42b8e1c064255b90ecbe",
+          "message": "docs(rules): prefer Claude Code schedulers over LaunchAgents (#572)\n\nAdds the global rule\n`exact_dot_claude/exact_rules/prefer-claude-schedulers.md`. Lauri wants\nworkflows that move between machines and operating systems. A\nLaunchAgent is macOS-only machine state that nothing restores on a new\nmachine.\n\nThe rule orders the substrates. A cloud routine comes first, then a\nDesktop local task, then a GitHub Actions `schedule:`. An OS scheduler\nis the last resort, and using one requires a recorded reason. The rule\nalso covers keeping a Claude task re-creatable: a versioned `PROMPT.md`\npointer, worktree on, permission mode auto, and the settings written\ndown next to the prompt. It says not to move a deterministic job onto an\nLLM unless the agent acts on the output.\n\nPlatform facts come from code.claude.com/docs (desktop-scheduled-tasks,\nroutines, desktop-linux), read 2026-11-09. Desktop runs on Linux in\nbeta. The Linux page does not list scheduled tasks among the beta\nexclusions, but it also does not confirm them explicitly.\n\nThe always-loaded context goes from 57,594 to 60,251 bytes against the\n78,400 budget (`tests/test-claude-context-budget.sh`, STATUS=PASS).\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AiPu1TmJF23zZrpZS\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-09T08:22:30+02:00",
+          "tree_id": "ab683e40b179d55017b89c04eb4031fdc177bd6c",
+          "url": "https://github.com/laurigates/dotfiles/commit/1822d2660fee6b99abdf42b8e1c064255b90ecbe"
+        },
+        "date": 1794205390511,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08768845900000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011838321999999997,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010406642,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0079159742,
             "unit": "s"
           }
         ]
