@@ -23,6 +23,14 @@ skills/notebooklm/
 # entry is DELETED on chezmoi apply.
 scheduled-tasks/
 
+# Saved workflows, resolved by name by the Workflow tool. evaluate-plugin's
+# SessionStart hook (hooks/sync-evaluate-skill-workflow.sh) copies its bundled
+# evaluate-skill.workflow.js here; other plugins may register workflows the
+# same way. Source of truth is the plugin, not this repo.
+# MUST stay ignored: ~/.claude is an exact_ dir, so an unlisted top-level
+# entry is DELETED on chezmoi apply.
+workflows/
+
 # Runtime directories created by Claude Code - don't manage or remove these
 cache/
 downloads/
