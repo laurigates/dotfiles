@@ -66,7 +66,8 @@ mkdir -p "$dl/bundle"; echo x > "$dl/bundle/a.txt"
 (cd "$dl" && zip -qr bundle.zip bundle)
 : > "$dl/empty.txt"
 echo pdf > "$dl/Invoice-0001.pdf"
-printf '# comment\nInvoice-*.pdf\t%s\n' "$fx/routed" > "$fx/routes.tsv"
+mkdir -p "$dl/Telegram Desktop" && echo m > "$dl/Telegram Desktop/clip.mov"
+printf '# comment\nTelegram Desktop\tkeep\nInvoice-*.pdf\t%s\n' "$fx/routed" > "$fx/routes.tsv"
 
 # Everything but fresh.private-key.pem is three days old.
 find "$dl" -mindepth 1 ! -name 'fresh.private-key.pem' -exec touch -t "$(date -v-3d +%Y%m%d%H%M)" {} +
@@ -103,6 +104,24 @@ expect "$eve" "tls.key" secret planned
 expect "$eve" "Deck.key" unrouted report
 expect "$eve" "le-bundle.zip" secret planned
 expect "$eve" "certs-only.zip" cert planned
+if line "$eve" "Telegram Desktop" >/dev/null || ! grep -q '^TIDY_KEPT=1$' <<<"$eve"; then
+    fail "keep route: Telegram Desktop should be absent from the report and counted in TIDY_KEPT"
+else
+    pass "keep route leaves Telegram Desktop out of the report"
+fi
+
+# The shipped routes file sends camera-named files to Pictures/Videos.
+shipped="$REPO_DIR/private_dot_config/downloads-tidy/routes.tsv"
+cam="$fx/cam"; mkdir -p "$cam"
+echo j > "$cam/20261013_125026.jpg"; echo v > "$cam/20261103_104650~2.mp4"; echo n > "$cam/2026-report.jpg"
+touch -t "$(date -v-3d +%Y%m%d%H%M)" "$cam"/*
+camout=$(env XDG_STATE_HOME="$fx/state" TIDY_HOUR=20 TIDY_DOW=3 bash "$TIDY" --root "$cam" --routes "$shipped" 2>&1)
+check() { # pattern message
+    if grep -q "$1" <<<"$camout"; then pass "$2"; else fail "$2: no line matching $1"; fi
+}
+check "path=$cam/20261013_125026.jpg dest=$HOME/Pictures\$" "camera jpg routed to ~/Pictures"
+check "path=$cam/20261103_104650~2.mp4 dest=$HOME/Videos\$" "camera mp4 routed to ~/Videos"
+check "bucket=unrouted .*path=$cam/2026-report.jpg\$" "non-camera jpg stays unrouted"
 
 if grep -q -- '-----BEGIN' <<<"$eve$work" || grep -qF -- "$key_line" <<<"$eve$work"; then
     fail "output contains key material"
