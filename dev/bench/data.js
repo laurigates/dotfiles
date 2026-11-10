@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794313082901,
+  "lastUpdate": 1794313265811,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4663,6 +4663,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010265397800000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "672963c2660333eab42f46121bfbeafbd20c5e01",
+          "message": "feat(maint): downloads-tidy routes for finance, camera files, and a keep destination (#577)\n\n## What\n\nRouting rules for `downloads-tidy` (#564), plus a `keep` destination.\n\n| Glob | Destination |\n|---|---|\n| `Telegram Desktop` | `keep`: stays in `~/Downloads`, left out of the\ndaily report |\n| `Invoice-E4A9CCC2-*.pdf`, `Receipt-*.pdf`, `eFina*Invoice*` |\n`~/Documents/finance/anthropic` |\n| `Tiliote *.pdf` | `~/Documents/finance/bank` |\n| `FVH ICT Billing_Reports*.csv` | `~/Documents/finance/fvh-billing` |\n| `YYYYMMDD_HHMMSS*.jpg` / `.mp4` (camera names) | `~/Pictures` /\n`~/Videos` |\n\n## Why\n\nLauri chose these destinations on 2026-11-10. Telegram Desktop is\nmaintained by hand, so it should not appear as \"to review\" every\nevening. `keep` is the only route that applies to directories, and the\nscript counts these entries as `TIDY_KEPT`.\n\n## Verification\n\n- `tests/test-downloads-tidy.sh` passes, with new checks for `keep` and\nfor the shipped routes file (camera jpg → Pictures, camera mp4 → Videos,\nnon-camera jpg stays unrouted). `shellcheck` is clean.\n- The finance rules were applied by hand on 2026-11-10: 19 files moved,\n`TIDY_FAILED=0`.\n- A dry run on the real `~/Downloads` reports `TIDY_REPORT=0\nTIDY_KEPT=1`. The one remaining file is a key waiting for the off-hours\nwindow.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD98xdr5u4uVnRuy29KY\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-10T14:20:16+02:00",
+          "tree_id": "85b83fb37e96e6b45eac9f28b65783ca7b45d46d",
+          "url": "https://github.com/laurigates/dotfiles/commit/672963c2660333eab42f46121bfbeafbd20c5e01"
+        },
+        "date": 1794313265319,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10786780833333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013335390000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010936792,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.04580142820000001,
             "unit": "s"
           }
         ]
