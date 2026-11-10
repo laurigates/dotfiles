@@ -32,6 +32,14 @@ copy-paste:
   on its own, and Claude starts answering the first before the rest have run.
   Keep the chain on one line. A `&& \` continuation hits the margin problem
   above.
+- **A command that reads the clipboard runs once, in Lauri's own terminal.**
+  When handing over `pbpaste | <cmd>` for a secret, say to run it there and
+  not to paste the result back under `!`: a pasted block that starts with the
+  command runs it again, and by then the clipboard holds the copied terminal
+  text. `pbpaste | gh secret set PORTFOLIO_ACTIONS_READ` pasted back with its
+  output replaced the token with that text, and the workflow reading it failed
+  20 s later (2026-11-10). Ask for a one-word confirmation, then check the
+  result with a call that does not read the clipboard.
 
 ```
 # Don't — the continuation line arrives with leading spaces inside the command
