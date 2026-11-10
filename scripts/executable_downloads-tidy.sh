@@ -24,7 +24,9 @@
 #   redundant       "X (N).ext" byte-identical to X; an archive whose every
 #                   member already exists extracted next to it
 #   junk            zero-byte files, stale partial downloads
-#   route           first matching glob in routes.tsv -> mv to its directory
+#   route           first matching glob in routes.tsv -> mv to its directory;
+#                   destination `keep` leaves it in place, out of the report
+#                   (the only route that applies to directories)
 #   unrouted        everything else -> report only
 #
 # installer/redundant/junk -> Trash once >= 24 h old, any time of day.
@@ -174,6 +176,7 @@ classify() {
     if [ -d "$p" ]; then
         if [[ "$name" == *.app ]]; then bucket=installer; action=trash
         elif gl_hit "$name"; then bucket=secret-suspect; action=report
+        elif dest=$(route_for "$name") && [ "$dest" = keep ]; then dest=""; bucket=kept; action=keep
         else bucket=unrouted; action=report; fi
         return
     fi
@@ -236,7 +239,12 @@ classify() {
         bucket=junk; action=trash; return
     fi
 
-    if dest=$(route_for "$name"); then bucket=route; action=move; return; fi
+    if dest=$(route_for "$name"); then
+        # Destination "keep": Lauri maintains it in place; not reported daily.
+        if [ "$dest" = keep ]; then dest=""; bucket=kept; action=keep
+        else bucket=route; action=move; fi
+        return
+    fi
 
     bucket=unrouted; action=report
 }
@@ -259,14 +267,16 @@ perform() {
 }
 
 # --- main loop ---------------------------------------------------------------
-n_done=0 n_planned=0 n_skipped=0 n_report=0 n_failed=0
+n_done=0 n_planned=0 n_skipped=0 n_report=0 n_failed=0 n_kept=0
 [ "$apply" -eq 1 ] && mkdir -p "$state_dir"
 
 while IFS= read -r -d '' p; do
     name="${p#"$root"/}"
     classify "$name"
     age=$(age_h "$p")
-    if [ "$action" = report ]; then
+    if [ "$action" = keep ]; then
+        n_kept=$((n_kept + 1)); continue
+    elif [ "$action" = report ]; then
         status=report; n_report=$((n_report + 1))
     elif [ "$window" = off ] && [ "$offhours" -eq 0 ]; then
         status=skipped:working-hours; n_skipped=$((n_skipped + 1))
@@ -295,6 +305,7 @@ echo "TIDY_DONE=$n_done"
 echo "TIDY_PLANNED=$n_planned"
 echo "TIDY_SKIPPED=$n_skipped"
 echo "TIDY_REPORT=$n_report"
+echo "TIDY_KEPT=$n_kept"
 echo "TIDY_FAILED=$n_failed"
 
 if [ "$notify" -eq 1 ]; then
