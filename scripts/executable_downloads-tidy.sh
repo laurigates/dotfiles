@@ -175,8 +175,8 @@ classify() {
 
     if [ -d "$p" ]; then
         if [[ "$name" == *.app ]]; then bucket=installer; action=trash
-        elif dest=$(route_for "$name") && [ "$dest" = keep ]; then dest=""; bucket=kept; action=keep
         elif gl_hit "$name"; then bucket=secret-suspect; action=report
+        elif dest=$(route_for "$name") && [ "$dest" = keep ]; then dest=""; bucket=kept; action=keep
         else bucket=unrouted; action=report; fi
         return
     fi

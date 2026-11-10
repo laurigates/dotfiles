@@ -67,7 +67,9 @@ mkdir -p "$dl/bundle"; echo x > "$dl/bundle/a.txt"
 : > "$dl/empty.txt"
 echo pdf > "$dl/Invoice-0001.pdf"
 mkdir -p "$dl/Telegram Desktop" && echo m > "$dl/Telegram Desktop/clip.mov"
-printf '# comment\nTelegram Desktop\tkeep\nInvoice-*.pdf\t%s\n' "$fx/routed" > "$fx/routes.tsv"
+# A kept dir that holds a key must still surface: gitleaks outranks keep.
+mkdir -p "$dl/Kept Leaky" && cp "$dl/app.2026-01-01.private-key.pem" "$dl/Kept Leaky/k.pem"
+printf '# comment\nTelegram Desktop\tkeep\nKept Leaky\tkeep\nInvoice-*.pdf\t%s\n' "$fx/routed" > "$fx/routes.tsv"
 
 # Everything but fresh.private-key.pem is three days old.
 find "$dl" -mindepth 1 ! -name 'fresh.private-key.pem' -exec touch -t "$(date -v-3d +%Y%m%d%H%M)" {} +
@@ -109,6 +111,7 @@ if line "$eve" "Telegram Desktop" >/dev/null || ! grep -q '^TIDY_KEPT=1$' <<<"$e
 else
     pass "keep route leaves Telegram Desktop out of the report"
 fi
+expect "$eve" "Kept Leaky" secret-suspect report
 
 # The shipped routes file sends camera-named files to Pictures/Videos.
 shipped="$REPO_DIR/private_dot_config/downloads-tidy/routes.tsv"
