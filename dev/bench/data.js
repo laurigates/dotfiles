@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794311695970,
+  "lastUpdate": 1794313082901,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4619,6 +4619,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009153924400000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f8f4cab09c01f6b51b53f7a092047debc510ed70",
+          "message": "docs(rules): run a clipboard-fed command once, in Lauri's own terminal (#576)\n\n## What\n\nAdds one bullet to `copy-paste-commands.md`: a command that reads the\nclipboard (`pbpaste | <cmd>`) is run once in Lauri's own terminal, and\nits result is confirmed with a word, not pasted back under `!`.\n\n## Why\n\nOn 2026-11-10 Claude handed over `! pbpaste | gh secret set\nPORTFOLIO_ACTIONS_READ … && pbcopy </dev/null && gh secret list …`. It\nwas run in a terminal, and the command plus its output was then pasted\ninto the prompt under `!`. The first pasted line ran the command again.\nThe clipboard then held the copied terminal text, so the secret was\nreplaced with that text, and the dispatched workflow failed at its sweep\nstep about 20 seconds later (laurigates/repos-claude-config run\n42782157522). No token leaked: the copied text had none.\n\nThe existing bullet about hidden-input prompts under `!` covers an empty\nstdin. This is the neighbouring case where stdin is the clipboard and\nits content changes between two runs.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BrPdq4Q5AyCSCjRvK\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-10T14:17:14+02:00",
+          "tree_id": "6da42130b4cf2e04fa93ce68459162673c59114c",
+          "url": "https://github.com/laurigates/dotfiles/commit/f8f4cab09c01f6b51b53f7a092047debc510ed70"
+        },
+        "date": 1794313082564,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11220479900000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013820388,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011647374,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010265397800000001,
             "unit": "s"
           }
         ]
