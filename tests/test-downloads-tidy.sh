@@ -51,6 +51,14 @@ openssl req -x509 -key "$dl/app.2026-01-01.private-key.pem" -subj /CN=t -days 1 
 openssl genrsa -out "$dl/fresh.private-key.pem" 2048 2>/dev/null
 key_line=$(sed -n 2p "$dl/app.2026-01-01.private-key.pem")
 
+cp "$dl/app.2026-01-01.private-key.pem" "$dl/tls.key"
+# Keynote's .key is a zip package; it must never hit the rm'd secret bucket.
+mkdir -p "$fx/kn" && echo slide > "$fx/kn/index.apxl" && (cd "$fx/kn" && zip -q "$dl/Deck.key" index.apxl)
+# Let's Encrypt naming: no member name says "private key", only the PEM label does.
+mkdir -p "$fx/le" && cp "$dl/app.2026-01-01.private-key.pem" "$fx/le/privkey.pem" && cp "$dl/chain.pem" "$fx/le/fullchain.pem"
+(cd "$fx/le" && zip -q "$dl/le-bundle.zip" privkey.pem fullchain.pem)
+(cd "$fx/le" && zip -q "$dl/certs-only.zip" fullchain.pem)
+
 echo installer > "$dl/setup.dmg"
 echo same > "$dl/report.md"; echo same > "$dl/report (1).md"
 echo a > "$dl/other.md"; echo b > "$dl/other (1).md"
@@ -91,6 +99,10 @@ expect "$eve" "other (1).md" unrouted report
 expect "$eve" "bundle.zip" redundant planned
 expect "$eve" "empty.txt" junk planned
 expect "$eve" "Invoice-0001.pdf" route planned
+expect "$eve" "tls.key" secret planned
+expect "$eve" "Deck.key" unrouted report
+expect "$eve" "le-bundle.zip" secret planned
+expect "$eve" "certs-only.zip" cert planned
 
 if grep -q -- '-----BEGIN' <<<"$eve$work" || grep -qF -- "$key_line" <<<"$eve$work"; then
     fail "output contains key material"

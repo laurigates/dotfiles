@@ -136,6 +136,14 @@ crypto_re='\.(pem|crt|cer|der|key|p12|pfx|p7b)$'
 key_member_re='(\.(key|p12|pfx)|private-key\.pem)$'
 installer_member_re='(\.app/|\.(exe|msi|pkg|mpkg|dmg)$)'
 
+# PEM label of .pem/.key members, piped straight into grep and never printed.
+# Catches privkey.pem / server.pem, which no member-name rule recognises. The
+# `|| true` keeps unzip's SIGPIPE (grep -q exits early) from failing pipefail.
+zip_has_private_key() {
+    { unzip -C -p "$1" '*.pem' '*.key' 2>/dev/null || true; } |
+        grep -aqE '^-----BEGIN ([A-Z0-9]+ )*PRIVATE KEY-----'
+}
+
 archive_all_extracted() {
     local a="$1" stem name m n=0
     name=$(basename "$a")
@@ -175,11 +183,12 @@ classify() {
 
     # T0 secret by name
     case "$name" in
-        *.private-key.pem|*.p12|*.pfx|*.jks|*.keystore|*.ppk|*.key|id_rsa*|id_ecdsa*|id_ed25519*|*recovery*code*|*backup*code*)
+        *.private-key.pem|*.p12|*.pfx|*.jks|*.keystore|*.ppk|id_rsa*|id_ecdsa*|id_ed25519*|*recovery*code*|*backup*code*)
             bucket=secret; action="rm"; window=off; min_age="$SECRET_MIN_AGE_H"; return ;;
     esac
-    # T1 PEM labels on small crypto-ish text files
-    if [[ "$ext" =~ ^(pem|crt|cer|txt)$ ]] && [ "$size" -lt 1048576 ]; then
+    # T1 PEM labels on small crypto-ish text files. .key is decided here, not by
+    # name: it is also Apple Keynote's extension (a zip package, no PEM label).
+    if [[ "$ext" =~ ^(pem|crt|cer|txt|key)$ ]] && [ "$size" -lt 1048576 ]; then
         if has_private_key_label "$p"; then
             bucket=secret; action="rm"; window=off; min_age="$SECRET_MIN_AGE_H"; return
         fi
@@ -194,7 +203,7 @@ classify() {
     if [[ "$ext" == zip ]]; then
         m=$(members "$p")
         if [ -n "$m" ] && ! grep -viqE "$crypto_re" <<<"$m"; then
-            if grep -iqE "$key_member_re" <<<"$m"; then bucket=secret; action="rm"
+            if grep -iqE "$key_member_re" <<<"$m" || zip_has_private_key "$p"; then bucket=secret; action="rm"
             else bucket=cert; action=trash; fi
             window=off; min_age="$SECRET_MIN_AGE_H"; return
         fi
