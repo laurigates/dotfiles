@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794313265811,
+  "lastUpdate": 1794329288540,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4707,6 +4707,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.04580142820000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "de075c5b1ef003ce1a70fc9b8490d310dd062c63",
+          "message": "docs(claude): file follow-ups as issues instead of only mentioning them (#578)\n\nFollow-ups discovered during work are now filed as GitHub issues before\nthe turn ends, and the PR body and report link them.\n\nNo linked issue: a standing preference stated in session on 2026-11-10.\n\n## Why\n\n`development-process.md` said pre-existing bugs \"go in the report as\nfollow-ups\", and `CLAUDE.md` required an issue only for post-merge\nactions. laurigates/claude-plugins#3570 followed both and ended up with\neleven follow-ups written as prose in the PR body and the chat. They\nwere filed only after being asked for.\n\n## What changed\n\n- `exact_dot_claude/exact_rules/development-process.md`: the\nscope-discipline bullet now only keeps pre-existing bugs out of the\ndiff. A new \"File follow-ups\" bullet covers what to file (pre-existing\nbugs, unverified claims, known limits, deferred work), when (before the\nturn ends, unasked), and how (duplicate search, mark unverified parts,\nthe repo's metadata and grouping rules).\n- `exact_dot_claude/CLAUDE.md` § Git Workflow: the issue-per-follow-up\nbullet covers every follow-up, not only post-merge actions. The tripwire\nexception under it is unchanged.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BuRTUP3Nwiwc3t92h\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-10T18:47:22+02:00",
+          "tree_id": "fd988aa88bff4b5c3c55b2230014f2364557530e",
+          "url": "https://github.com/laurigates/dotfiles/commit/de075c5b1ef003ce1a70fc9b8490d310dd062c63"
+        },
+        "date": 1794329288024,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10741962233333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013463862,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011037208,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009251373000000002,
             "unit": "s"
           }
         ]
