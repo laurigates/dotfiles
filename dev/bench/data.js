@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794221751616,
+  "lastUpdate": 1794311695970,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4575,6 +4575,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009299344400000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "831aef97e8087ae966c2a2a2ee686b11407282bd",
+          "message": "feat(maint): add downloads-tidy sweep for ~/Downloads (#564)\n\n## What\n\n`scripts/downloads-tidy.sh` assigns every top-level `~/Downloads` entry\none bucket and acts on it. It runs daily at 19:37 via\n`com.lgates.downloads-tidy`, with `just -g downloads-tidy-dry` /\n`downloads-tidy` recipes.\n\n| Bucket | Decided by | Action |\n|---|---|---|\n| secret | name (`*.private-key.pem`, `*.p12`, recovery codes, …) or PEM\n`PRIVATE KEY` label | `rm`, off-hours only, ≥ 2 h old |\n| cert | `.crt/.cer/.der`, cert-only PEM, zip of only certs | Trash,\noff-hours only |\n| secret-suspect | gitleaks hit not decided above | report only |\n| installer | `.dmg/.pkg/.mcpb/…`, `.app`, zip holding an `.app`/`.exe`\n| Trash, ≥ 24 h |\n| redundant | `X (N).ext` byte-identical to `X`; archive whose every\nmember exists extracted | Trash, ≥ 24 h |\n| junk | zero bytes, stale partial downloads | Trash, ≥ 24 h |\n| route | glob in `~/.config/downloads-tidy/routes.tsv` (ships empty) |\n`mv` |\n| unrouted | everything else | report only |\n\n## Why\n\nKeys and certs should only sit in Downloads until they are imported into\na secret manager. `home-audit.sh` excludes Downloads as a separate\nscope, and nothing covered it.\n\nNo tier prints file content. gitleaks runs with `--redact=100` into a\ntemp report, and only each finding's top-level path is read back before\nthe report is deleted. A gitleaks-only hit is reported rather than\ndeleted, so a document quoting a key is never removed. Age is\n`kMDItemDateAdded`, because browsers keep the server's `Last-Modified`\nas the file's mtime.\n\n`kitten notify` needs a kitty tty, so under launchd the summary goes\nthrough `osascript display notification`.\n\n## Verification\n\n- `tests/test-downloads-tidy.sh` (`mise run test:downloads-tidy`): 22\nchecks pass. A mutation that sends secrets to Trash instead of `rm`\nmakes it fail (`secret still on disk`).\n- `shellcheck` clean; `plutil -lint` OK; pre-commit (justfile parse,\ngitleaks) passed.\n- A dry run on the real `~/Downloads` classified 5 secrets, 4 certs, 8\ninstallers, 5 redundant copies, 2 junk files and 86 unrouted entries,\nand acted on none of them.\n\n## Follow-up\n\n- #563: load the LaunchAgent after merge (nothing in the repo runs\n`launchctl`).\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD98xdr5u4uVnRuy29KY\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>\nCo-authored-by: claude[bot] <41898282+claude[bot]@users.noreply.github.com>",
+          "timestamp": "2026-11-10T13:54:15+02:00",
+          "tree_id": "69880a2278f28e16d9675a6f93467046a3723876",
+          "url": "https://github.com/laurigates/dotfiles/commit/831aef97e8087ae966c2a2a2ee686b11407282bd"
+        },
+        "date": 1794311695737,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.102624639,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012810136,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010662244,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009153924400000001,
             "unit": "s"
           }
         ]
