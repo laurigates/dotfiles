@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Never Fabricate an Identifier You're About to Test Against
 
 Promoted to a skill: invoke `agent-patterns-plugin:probe-input-integrity` when

@@ -1,3 +1,7 @@
+---
+reviewed: 2026-07-07
+---
+
 # Telegram Communication
 
 `telegram-notify` (one-way), `telegram-ask` (blocks for a free-text reply),

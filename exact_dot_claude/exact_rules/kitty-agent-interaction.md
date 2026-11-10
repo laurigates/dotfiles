@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-24
+---
+
 # Kitty: Agent Interaction
 
 **Scope**: only when running inside kitty — `$KITTY_WINDOW_ID` set; remote

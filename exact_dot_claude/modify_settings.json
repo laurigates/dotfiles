@@ -334,7 +334,8 @@ read -r -d '' overlay <<'OVERLAY' || true
     "taskwarrior-plugin@laurigates-claude-plugins": true,
     "macos-plugin@laurigates-claude-plugins": true,
     "linux-plugin@laurigates-claude-plugins": true,
-    "session-plugin@laurigates-claude-plugins": true
+    "session-plugin@laurigates-claude-plugins": true,
+    "software-design-plugin@laurigates-claude-plugins": true
   },
   "extraKnownMarketplaces": {
     "laurigates-claude-plugins": {

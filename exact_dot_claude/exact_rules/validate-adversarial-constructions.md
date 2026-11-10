@@ -1,4 +1,5 @@
 ---
+reviewed: 2026-10-27
 paths:
   - "**/tests/**"
   - "**/*_test.*"

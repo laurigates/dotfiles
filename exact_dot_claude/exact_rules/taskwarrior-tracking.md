@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Taskwarrior — Cross-Session Work Tracking
 
 Promoted to skills. Invoke `taskwarrior-plugin:task-add` when filing a follow-up

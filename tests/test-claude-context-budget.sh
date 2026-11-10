@@ -208,8 +208,15 @@ log_test() { echo -e "${BLUE}TEST:${NC} $*"; }
 log_pass() { echo -e "${GREEN}✓ PASS:${NC} $*"; ((pass_count++)); }
 log_fail() { echo -e "${RED}✗ FAIL:${NC} $*"; ((fail_count++)); }
 
-# A file is path-scoped iff line 1 is exactly `---` (frontmatter opener).
-is_path_scoped() { [[ "$(head -1 "$1")" == "---" ]]; }
+# A file has frontmatter iff line 1 is exactly `---`. It is path-scoped iff that
+# frontmatter carries a `paths:` key: a block holding only metadata (`reviewed:`,
+# read by the config-drift staleness check) still loads unconditionally.
+has_frontmatter() { [[ "$(head -1 "$1")" == "---" ]]; }
+frontmatter() { awk 'NR==1 {next} /^---$/ {exit} {print}' "$1"; }
+is_path_scoped() { has_frontmatter "$1" && frontmatter "$1" | grep -q '^paths:'; }
+# Keys a frontmatter block may hold without `paths:`. Anything else (a `path:`
+# typo above all) would silently make the rule unconditional, so Check D fails it.
+METADATA_KEYS='created|modified|reviewed'
 
 # ----------------------------------------------------------------------------
 # Check A: total always-loaded budget
@@ -284,34 +291,33 @@ check_repo_specific_markers() {
 }
 
 # ----------------------------------------------------------------------------
-# Check D: frontmatter validity for path-scoped rules
+# Check D: frontmatter validity
 # ----------------------------------------------------------------------------
 check_frontmatter_validity() {
-    log_test "Path-scoped rules have valid, non-empty 'paths:' frontmatter"
-    local bad=0 f
+    log_test "Frontmatter closes; 'paths:' lists are non-empty; other blocks hold metadata only"
+    local bad=0 f stray
     for f in "$RULES_DIR"/*.md; do
-        is_path_scoped "$f" || continue
-        # Frontmatter = lines between the opening --- and the next ---.
-        # Require a paths: key and at least one "- " list entry inside it.
-        if ! awk 'NR==1 {next} /^---$/ {exit} {print}' "$f" \
-            | grep -q '^paths:'; then
-            log_fail "$(basename "$f"): frontmatter lacks a 'paths:' key"
-            bad=1
-            continue
-        fi
-        if ! awk 'NR==1 {next} /^---$/ {exit} {print}' "$f" \
-            | grep -qE '^[[:space:]]+-[[:space:]]+"'; then
-            log_fail "$(basename "$f"): 'paths:' list is empty"
-            bad=1
-            continue
-        fi
+        has_frontmatter "$f" || continue
         # The closing --- must exist within the first 30 lines.
         if ! awk 'NR>1 && NR<=30 && /^---$/ {found=1} END {exit !found}' "$f"; then
             log_fail "$(basename "$f"): frontmatter never closes (missing second '---')"
             bad=1
+            continue
+        fi
+        if is_path_scoped "$f"; then
+            if ! frontmatter "$f" | grep -qE '^[[:space:]]+-[[:space:]]+"'; then
+                log_fail "$(basename "$f"): 'paths:' list is empty"
+                bad=1
+            fi
+            continue
+        fi
+        stray=$(frontmatter "$f" | grep -vE "^(${METADATA_KEYS}):" | grep -v '^[[:space:]]*$' || true)
+        if [[ -n "$stray" ]]; then
+            log_fail "$(basename "$f"): frontmatter without 'paths:' holds non-metadata: ${stray%%$'\n'*}"
+            bad=1
         fi
     done
-    (( bad == 0 )) && log_pass "All path-scoped frontmatter blocks are well-formed"
+    (( bad == 0 )) && log_pass "All frontmatter blocks are well-formed"
 }
 
 # ----------------------------------------------------------------------------

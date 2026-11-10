@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-24
+---
+
 # Visualization & Diagrams
 
 Reach for a diagram when the **relationships are the answer** — 3+ entities

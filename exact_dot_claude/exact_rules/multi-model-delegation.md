@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Delegating to Other Models — the Disagreement Is the Payload
 
 Promoted to a skill: `agent-patterns-plugin:multi-model-delegation` auto-loads

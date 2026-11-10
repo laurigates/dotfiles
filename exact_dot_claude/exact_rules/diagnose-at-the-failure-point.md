@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-08
+---
+
 # Diagnose at the Failure Point — Sentinel Values and the Resource Reading
 
 Promoted to a skill: invoke `code-quality-plugin:debugging-methodology` when an

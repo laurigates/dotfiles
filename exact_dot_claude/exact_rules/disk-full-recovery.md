@@ -1,3 +1,7 @@
+---
+reviewed: 2026-10-30
+---
+
 # Disk-Full Recovery — When Bash Stops Working
 
 When root (`/`) fills up, the harness can't write Bash output files: **every**

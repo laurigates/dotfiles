@@ -1,3 +1,7 @@
+---
+reviewed: 2026-11-04
+---
+
 # Readable, Copy-Paste-Safe Shell Commands
 
 The Claude Code TUI renders assistant output with a two-column left margin, and

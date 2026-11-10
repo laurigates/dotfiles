@@ -1,3 +1,7 @@
+---
+reviewed: 2026-09-29
+---
+
 # Front-Load Executive Decisions
 
 When a task will run long enough that a mid-run question would stall it — a
