@@ -5,7 +5,7 @@ created: 2026-11-11
 modified: 2026-11-11
 deciders: "Lauri Gates"
 domain: context-engineering
-relates-to: [ADR-0007, ADR-0011]
+relates-to: [ADR-0007, ADR-0011, ADR-0020]
 ---
 
 # ADR-0018: Byte Budget for Always-Loaded Claude Context

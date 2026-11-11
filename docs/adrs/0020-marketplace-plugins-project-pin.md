@@ -5,7 +5,7 @@ created: 2026-11-11
 modified: 2026-11-11
 deciders: "Lauri Gates"
 domain: plugin-management
-relates-to: [ADR-0005, ADR-0003]
+relates-to: [ADR-0005, ADR-0003, ADR-0018]
 ---
 
 # ADR-0020: Marketplace Plugins with a Project-Level Pin

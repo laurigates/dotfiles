@@ -5,7 +5,7 @@ created: 2026-11-11
 modified: 2026-11-11
 deciders: "Lauri Gates"
 domain: pr-merging
-relates-to: [ADR-0009]
+relates-to: [ADR-0009, ADR-0021]
 ---
 
 # ADR-0024: The PR Decides Its Merge Method

@@ -112,12 +112,12 @@
     "adr-validate": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": "2026-11-11T09:43:50Z",
+      "last_completed_at": "2026-11-11T10:15:34Z",
       "last_result": "success",
       "schedule": "weekly",
       "stats": {
-        "runs_total": 1,
-        "items_processed": 17,
+        "runs_total": 2,
+        "items_processed": 25,
         "items_created": 0
       },
       "context": {}
@@ -322,7 +322,8 @@
         "domain": "context-engineering",
         "relates_to": [
           "ADR-0007",
-          "ADR-0011"
+          "ADR-0011",
+          "ADR-0020"
         ]
       },
       "ADR-0019": {
@@ -345,7 +346,8 @@
         "domain": "plugin-management",
         "relates_to": [
           "ADR-0005",
-          "ADR-0003"
+          "ADR-0003",
+          "ADR-0018"
         ]
       },
       "ADR-0021": {
@@ -357,7 +359,9 @@
         "domain": "ci-workflows",
         "relates_to": [
           "ADR-0009",
-          "ADR-0017"
+          "ADR-0017",
+          "ADR-0022",
+          "ADR-0024"
         ]
       },
       "ADR-0022": {
@@ -369,7 +373,8 @@
         "domain": "ci-toolchain",
         "relates_to": [
           "ADR-0002",
-          "ADR-0017"
+          "ADR-0017",
+          "ADR-0021"
         ]
       },
       "ADR-0023": {
@@ -391,7 +396,8 @@
         "status": "Accepted",
         "domain": "pr-merging",
         "relates_to": [
-          "ADR-0009"
+          "ADR-0009",
+          "ADR-0021"
         ]
       },
       "ADR-0025": {

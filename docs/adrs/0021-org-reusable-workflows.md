@@ -5,7 +5,7 @@ created: 2026-11-11
 modified: 2026-11-11
 deciders: "Lauri Gates"
 domain: ci-workflows
-relates-to: [ADR-0009, ADR-0017]
+relates-to: [ADR-0009, ADR-0017, ADR-0022, ADR-0024]
 ---
 
 # ADR-0021: Call Org Reusable Workflows Instead of Local Copies

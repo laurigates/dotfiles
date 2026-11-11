@@ -5,7 +5,7 @@ created: 2026-11-11
 modified: 2026-11-11
 deciders: "Lauri Gates"
 domain: ci-toolchain
-relates-to: [ADR-0002, ADR-0017]
+relates-to: [ADR-0002, ADR-0017, ADR-0021]
 ---
 
 # ADR-0022: Exact CI Toolchain Pins Instead of a Lockfile
