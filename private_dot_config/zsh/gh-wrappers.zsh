@@ -60,12 +60,17 @@ _gh_paint() {
 # external PRs are hidden from the picker by default (ghm -x opts in) and can
 # never be merged by a single keypress or swept up by `a`.
 
-# Your own login, resolved once per shell. A failure is cached too, so a
-# network-less shell doesn't re-probe per PR — it just fails closed below.
+# Your own login, resolved once per shell into $_GH_ME. A failure is cached
+# too, so a network-less shell doesn't re-probe per PR — it just fails closed
+# below.
+#
+# It prints nothing: call it, then read $_GH_ME. A lookup made inside $(...)
+# would cache in a subshell that is about to exit, so ghm and _gh_trust_gate
+# call it in their own shell before any substitution that needs the login.
 typeset -g _GH_ME= _GH_ME_TRIED=0
 _gh_me() {
   (( _GH_ME_TRIED )) || { _GH_ME=$(gh api user --jq '.login' 2>/dev/null); _GH_ME_TRIED=1 }
-  print -r -- "$_GH_ME"
+  return 0
 }
 
 # Classify a PR author → self | bot | external | unknown.
@@ -78,7 +83,7 @@ _gh_me() {
 # or no author) is treated as untrusted by callers — fail closed.
 _gh_trust() {
   local login="$1" is_bot="${2:-}" atype="${3:-}" me
-  me=$(_gh_me)
+  _gh_me; me=$_GH_ME
   [[ -z "$me" || -z "$login" ]] && { print -r -- unknown; return }
   [[ "$login" == "$me" ]] && { print -r -- self; return }
   [[ "$is_bot" == true || "$atype" == Bot || "$login" == *'[bot]' || "$login" == app/* ]] \
@@ -168,6 +173,7 @@ _gh_trust_gate() {
   fi
   IFS=$'\t' read -r login is_bot title <<< "$meta"
 
+  _gh_me   # here, not only inside the substitution below, so the result is kept
   local trust; trust=$(_gh_trust "$login" "$is_bot")
   case "$trust" in
     self|bot) return 0 ;;
@@ -665,7 +671,7 @@ _gh_pr_multi_select() {
   local -a fzf_extra=("$@")
   local repo me
   repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  me=$(_gh_me)
+  _gh_me; me=$_GH_ME
 
   # jq emits the raw author (login + is_bot) as fields 2-3; the awk pass below
   # turns them into a trust verdict. Classifying in awk rather than jq is
@@ -854,6 +860,7 @@ _gh_pull_if_base_of_merged() {
 ghm() {
   local cur_pr acted show_ext=
   while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
+  _gh_me   # before the picker's $(...), which needs the login to classify authors
   if [[ $# -eq 0 ]]; then
     local tsv; tsv=$(_gh_pr_multi_select rebase/squash "$show_ext" --layout=reverse)
     [[ -z "$tsv" ]] && return
@@ -1080,7 +1087,7 @@ ghrp() {
   # and login "app/<name>"), which is why the awk below keys on type as well.
   # Merging is gated regardless, in _gh_poll_merge.
   local me list
-  me=$(_gh_me)
+  _gh_me; me=$_GH_ME
   list=$(gh search prs --state open --label 'autorelease: pending' \
            "${owner_args[@]}" --limit 100 \
            --json repository,number,title,author \

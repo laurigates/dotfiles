@@ -351,6 +351,25 @@ uncalled "a failed merge does not count as moving the base" 'gh pr update-branch
 called "the batch continues after a failed merge" 'gh pr merge 6 --repo o/r --squash --delete-branch'
 
 # ---------------------------------------------------------------------------
+print -r -- "Own login lookup (_gh_me) is cached for the run"
+# ---------------------------------------------------------------------------
+# The picker and each PR's trust check need the login. A lookup made inside
+# $(...) cannot cache, so the wrappers resolve it in the calling shell (#590).
+reset; pr 5; pr 6; FZF_PICK=(5 6); answers a
+run ghm
+called "both PRs still merge" 'gh pr merge 6 --repo o/r --match-head-commit sha6b --squash --delete-branch'
+is "picker run with two PRs: one gh api user call" "$(grep -c '^gh api user' $W/calls)" 1
+
+reset; pr 5
+run ghm 5
+is "ghm <number>: one gh api user call" "$(grep -c '^gh api user' $W/calls)" 1
+
+reset; ME=; pr 5; pr 6; FZF_PICK=(5 6); answers a
+run ghm -x
+uncalled "login unresolvable: nothing merged" 'gh pr merge'
+is "a failed lookup is cached too: one gh api user call" "$(grep -c '^gh api user' $W/calls)" 1
+
+# ---------------------------------------------------------------------------
 print -r -- "ghm picker: external contributors"
 # ---------------------------------------------------------------------------
 reset; pr 5; pr 7 author=stranger; FZF_PICK=(7)
