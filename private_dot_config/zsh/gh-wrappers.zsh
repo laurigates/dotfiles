@@ -6,6 +6,30 @@
 # The completions and fzf-tab previews for these wrappers stay in ~/.zshrc,
 # because they need compinit to have run.
 
+# Colours for a function that prints status lines. Declare them with
+#   local $_GH_COLORS; _gh_palette <fd>
+# They stay empty unless <fd> (1 = stdout, 2 = stderr) is a terminal, so
+# redirected output carries no escapes.
+typeset -ga _GH_COLORS=(green red yellow cyan magenta dim bold rst alarm)
+_gh_palette() {
+  [[ -t ${1:-1} ]] || return 0
+  green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' magenta=$'\033[35m'
+  dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' alarm=$'\033[1;97;41m'
+}
+
+# jq functions for the PR pickers, prepended to their --jq programs: `ci` and
+# `rev` turn one PR object into the CI and review tokens _gh_paint colours.
+typeset -g _GH_JQ_PR_DEFS='
+  def ci: if (.statusCheckRollup | length) == 0 then "⏳CI"
+          elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
+          elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
+          else "⏳CI" end;
+  def rev: if .reviewDecision == "APPROVED" then "✓rev"
+           elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
+           elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
+           else "-rev" end;
+'
+
 # Colourise gh fzf-picker tables *after* `column -t` has aligned them, so the
 # padding widths are computed on plain text and the escapes (zero-width under
 # fzf --ansi) never shift a column. Shared by every gh picker below.
@@ -70,11 +94,9 @@ _gh_trust() {
 _gh_confirm_external() {
   local repo="$1" num="$2" login="$3" trust="$4" title="$5"
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
+  local id="${repo}#${num}"
 
-  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
-  local red='' yellow='' cyan='' dim='' bold='' rst='' alarm=''
-  [[ -t 1 ]] && { red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' alarm=$'\033[1;97;41m' }
+  local $_GH_COLORS; _gh_palette 1
 
   # author_association needs an owner/repo slug (gh pr view has no such field).
   local slug="$repo" assoc=
@@ -134,9 +156,8 @@ _gh_confirm_external() {
 _gh_trust_gate() {
   local repo="$1" num="$2"
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
-  local yellow='' dim='' rst=''
-  [[ -t 1 ]] && { yellow=$'\033[33m' dim=$'\033[2m' rst=$'\033[0m' }
+  local id="${repo}#${num}"
+  local $_GH_COLORS; _gh_palette 1
 
   local meta login is_bot title
   meta=$(gh pr view "$num" "${repo_flag[@]}" --json author,title \
@@ -277,17 +298,11 @@ ghpc() {
     # No args: interactive fzf selection
     local selection
     selection=$(gh pr list --limit 100 --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
-      --jq '.[] | [
+      --jq "${_GH_JQ_PR_DEFS}"'.[] | [
         "#\(.number)",
         (if .isDraft then "draft" else "ready" end),
-        (if (.statusCheckRollup | length) == 0 then "⏳CI"
-         elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
-         elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
-         else "⏳CI" end),
-        (if .reviewDecision == "APPROVED" then "✓rev"
-         elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
-         elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
-         else "-rev" end),
+        ci,
+        rev,
         .headRefName[:25],
         .title[:45]
       ] | @tsv' | \
@@ -349,8 +364,7 @@ _gh_merge_method() {
 #   _gh_ask_method <id> → prints rebase|squash, or nothing (= skip)
 _gh_ask_method() {
   local id="$1" ans
-  local yellow='' cyan='' green='' dim='' rst=''
-  [[ -t 2 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' green=$'\033[32m' dim=$'\033[2m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 2
   read -k 1 "ans?  ${yellow}?${rst} ${cyan}${id}${rst}: no merge method (no pr-merge-method.py, no merge:* label) — [${green}r${rst}=rebase/${green}s${rst}=squash/${dim}k${rst}=skip] "
   print -u2
   case "$ans" in
@@ -364,8 +378,7 @@ _gh_ask_method() {
 #   _gh_method_check <repo|""> <num> <rebase|squash>
 _gh_method_check() {
   local repo="$1" num="$2" want="$3" rec ans
-  local yellow='' cyan='' bold='' rst=''
-  [[ -t 1 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' bold=$'\033[1m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
   rec=$(_gh_merge_method "$repo" "$num")
   [[ -z "$rec" || "$rec" == "$want" ]] && return 0
   read -k 1 "ans?  ${yellow}⚠${rst} ${cyan}#${num}${rst} is recommended for ${bold}--${rec}${rst}, not --${want} (ghm picks it per PR). Merge with --${want} anyway? [y/N] "; print
@@ -391,10 +404,8 @@ _gh_poll_merge() {
   local repo="$1" num="$2" moved="$3"; shift 3
   REPLY=
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local id; [[ -n "$repo" ]] && id="${repo}#${num}" || id="#${num}"
-  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
-  local green='' red='' yellow='' cyan='' dim='' magenta='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' magenta=$'\033[35m' rst=$'\033[0m' }
+  local id="${repo}#${num}"
+  local $_GH_COLORS; _gh_palette 1
   # Contributor-trust gate FIRST, before the draft prompt or any merge: a
   # stranger's PR must not even reach "mark ready & merge". This is also what
   # makes `a`=all in _gh_batch_merge safe — `a` skips the per-PR y/N prompt but
@@ -482,8 +493,7 @@ _gh_poll_merge() {
 _gh_wait_mergeable() {
   local repo="$1" num="$2" id="$3"
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local yellow='' cyan='' rst=''
-  [[ -t 2 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 2
   local state tries=0
   while (( tries < 20 )); do
     state=$(gh pr view "$num" "${repo_flag[@]}" --json mergeable --jq '.mergeable' </dev/null 2>/dev/null)
@@ -502,8 +512,7 @@ _gh_wait_mergeable() {
 _gh_update_and_wait() {
   local repo="$1" num="$2" id="$3"; shift 3
   local -a repo_flag upd=("$@"); [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local green='' red='' yellow='' cyan='' dim='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
   REPLY=
   local old new out tries
   old=$(gh pr view "$num" "${repo_flag[@]}" --json headRefOid --jq .headRefOid </dev/null 2>/dev/null)
@@ -551,8 +560,7 @@ _gh_update_and_wait() {
 _gh_conflict_handoff() {
   local blob="$1"
   [[ -n "$blob" ]] || return 0
-  local yellow='' cyan='' dim='' bold='' rst=''
-  [[ -t 1 ]] && { yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
   local here; here=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   local r n b m id ans how
   print
@@ -562,7 +570,7 @@ _gh_conflict_handoff() {
   # and claude (Bun) crashes watching it ("EINVAL: invalid argument, kqueue").
   while IFS=$'\t' read -r -u 3 r n b m; do
     [[ -n "$n" ]] || continue
-    [[ -n "$r" ]] && id="${r}#${n}" || id="#${n}"
+    id="${r}#${n}"
     if [[ -n "$r" && "$r" != "$here" ]]; then
       print -r -- "  ${yellow}!${rst} ${cyan}${id}${rst}: not this checkout's repo — resolve it from a checkout of ${r}"
       continue
@@ -594,19 +602,17 @@ _gh_batch_merge() {
   local count=${#nums}
   (( count == 0 )) && { print -r -- "Nothing selected."; return 0 }
 
-  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
-  local green='' red='' yellow='' cyan='' dim='' bold='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
 
   local i lbl maxw=0
   # Pre-compute the widest label so the summary's title column lines up.
   for (( i = 1; i <= count; i++ )); do
-    [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
+    lbl="${repos[$i]}#${nums[$i]}"
     (( ${#lbl} > maxw )) && maxw=${#lbl}
   done
   print -r -- "${bold}Selected $count PR(s)${rst} — will merge (${yellow}${flags[*]}${rst}) in this order:"
   for (( i = 1; i <= count; i++ )); do
-    [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
+    lbl="${repos[$i]}#${nums[$i]}"
     printf "  %s%2d.%s %s%-*s%s  %s\n" "$dim" "$i" "$rst" "$cyan" "$maxw" "$lbl" "$rst" "${titles[$i]}"
   done
   print
@@ -616,7 +622,7 @@ _gh_batch_merge() {
   # Claude handoff after the loop.
   local all=false ans moved= conflicts= rc
   for (( i = 1; i <= count; i++ )); do
-    [[ -n "${repos[$i]}" ]] && lbl="${repos[$i]}#${nums[$i]}" || lbl="#${nums[$i]}"
+    lbl="${repos[$i]}#${nums[$i]}"
     if ! $all; then
       read -k 1 "ans?Merge ${cyan}${lbl}${rst}? [${green}y${rst}/${bold}N${rst}/${yellow}a${rst}=all/${red}q${rst}=quit] "; print
       case "$ans" in
@@ -660,20 +666,14 @@ _gh_pr_multi_select() {
   local rows
   rows=$(gh pr list --limit 100 \
       --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt,author,labels \
-      --jq 'sort_by(.createdAt) | .[] | [
+      --jq "${_GH_JQ_PR_DEFS}"'sort_by(.createdAt) | .[] | [
         "#\(.number)",
         (.author.login // "?"),
         (if .author.is_bot then "bot" else "user" end),
         ([.labels[].name | select(. == "merge:rebase" or . == "merge:squash")][0] // "merge:?" | ltrimstr("merge:")),
         (if .isDraft then "draft" else "ready" end),
-        (if (.statusCheckRollup | length) == 0 then "⏳CI"
-         elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
-         elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
-         else "⏳CI" end),
-        (if .reviewDecision == "APPROVED" then "✓rev"
-         elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
-         elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
-         else "-rev" end),
+        ci,
+        rev,
         .headRefName[:25],
         .title[:50]
       ] | @tsv' 2>/dev/null)
@@ -697,8 +697,7 @@ _gh_pr_multi_select() {
   ext_rows=$(print -r -- "$classed" | awk -F'\t' '$2 == "EXT"')
   vis_rows=$(print -r -- "$classed" | awk -F'\t' '$2 != "EXT"')
 
-  local yellow='' dim='' bold='' rst='' alarm=''
-  [[ -t 2 ]] && { yellow=$'\033[33m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' alarm=$'\033[1;97;41m' }
+  local $_GH_COLORS; _gh_palette 2
 
   local shown="$classed"
   if [[ -z "$show_ext" ]]; then
@@ -773,9 +772,7 @@ _gh_home_if_merged() {
   state="${info%%$'\t'*}"; info="${info#*$'\t'}"
   base="${info%%$'\t'*}"; merged_at="${info#*$'\t'}"
   [[ "$state" == MERGED && -n "$base" ]] || { _gh_pull_if_base_of_merged "$acted"; return }
-  # TTY-guarded ANSI palette (empty when stdout is redirected, so logs stay clean).
-  local green='' yellow='' cyan='' dim='' bold='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' yellow=$'\033[33m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
   local cur; cur=$(git symbolic-ref --short -q HEAD 2>/dev/null)
 
   # "by this run" is decided by membership in the acted-on set, never by clocks:
@@ -819,8 +816,7 @@ _gh_home_if_merged() {
 _gh_pull_if_base_of_merged() {
   local acted="$1" cur n base
   cur=$(git symbolic-ref --short -q HEAD 2>/dev/null) || return 0
-  local green='' cyan='' dim='' bold='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' cyan=$'\033[36m' dim=$'\033[2m' bold=$'\033[1m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
   for n in ${=acted}; do
     base=$(gh pr view "$n" --json state,baseRefName \
              --jq 'select(.state == "MERGED") | .baseRefName' </dev/null 2>/dev/null)
@@ -884,17 +880,11 @@ ghm() {
 _gh_pr_pick() {
   gh pr list --limit 100 \
       --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision \
-      --jq '.[] | [
+      --jq "${_GH_JQ_PR_DEFS}"'.[] | [
         "#\(.number)",
         (if .isDraft then "draft" else "ready" end),
-        (if (.statusCheckRollup | length) == 0 then "⏳CI"
-         elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
-         elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
-         else "⏳CI" end),
-        (if .reviewDecision == "APPROVED" then "✓rev"
-         elif .reviewDecision == "CHANGES_REQUESTED" then "✗rev"
-         elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
-         else "-rev" end),
+        ci,
+        rev,
         .headRefName[:25],
         .title[:50]
       ] | @tsv' | \
@@ -1014,8 +1004,7 @@ ghrr() {
   local run=
   while [[ "$1" == -r || "$1" == --run ]]; do run=1; shift; done
   local unticked='- [ ] <!-- rebase-check -->' ticked='- [x] <!-- rebase-check -->'
-  local green='' red='' cyan='' dim='' rst=''
-  [[ -t 1 ]] && { green=$'\033[32m' red=$'\033[31m' cyan=$'\033[36m' dim=$'\033[2m' rst=$'\033[0m' }
+  local $_GH_COLORS; _gh_palette 1
   local -a nums
   if (( $# )); then
     nums=("${@%%\[*}")

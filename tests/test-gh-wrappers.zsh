@@ -440,6 +440,36 @@ run ghi 42 '43[some title]' '#44'
 called "arguments: completion suffix and leading # stripped" 'claude /git-issue 42 43 44'
 
 # ---------------------------------------------------------------------------
+print -r -- "Single-PR pickers (shared jq ci/rev functions)"
+# ---------------------------------------------------------------------------
+reset; pr 5; pr 6; FZF_PICK=(6)
+is "_gh_pr_pick prints the picked PR's number" "$(_gh_pr_pick)" 6
+shown "_gh_pr_pick lists the CI and review tokens" '⏳CI  -rev'
+
+reset; pr 5; pr 6; FZF_PICK=(6)
+# ghpc's number extraction is a `bad pattern` under extended_glob (#586), which
+# would abort this script. Until that is fixed this case runs with the option
+# off; drop the wrapper function together with the fix.
+() { setopt local_options no_extended_glob; run ghpc }
+shown "ghpc lists the CI and review tokens" '⏳CI  -rev'
+if grep -q '^claude Check the PR #6 workflow results' $W/calls; then
+  ok "ghpc hands the picked PR to Claude"
+else
+  bad "ghpc hands the picked PR to Claude"
+fi
+
+# ---------------------------------------------------------------------------
+print -r -- "Colour variables"
+# ---------------------------------------------------------------------------
+# The wrappers set their colours through dynamic scope (_gh_palette), so a
+# name missing from a `local $_GH_COLORS` would become a global in the shell.
+leaked=()
+for c in $_GH_COLORS; do (( ${+parameters[$c]} )) && leaked+=($c); done
+is "no colour variable leaked into the shell after the runs above" "${leaked[*]}" ""
+palette_probe() { local $_GH_COLORS; _gh_palette 1; print -r -- "${#red}${#rst}" }
+is "colours are empty when stdout is not a terminal" "$(palette_probe)" "00"
+
+# ---------------------------------------------------------------------------
 print
 if grep -q '^UNSTUBBED' $W/calls; then
   print -r -- "  ✗ the last case made a gh call this harness does not stub"; (( fail++ ))
