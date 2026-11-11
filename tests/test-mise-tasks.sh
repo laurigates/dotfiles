@@ -321,7 +321,7 @@ HOOK_ONLY_TESTS="test-claude-runtime-ignored.sh|pre-commit hook claude-runtime-i
 test-git-identity.sh|pre-commit hook git-identity
 test-renovate-single-owner.sh|pre-commit hook renovate-single-owner
 test-ci-github-api-auth.py|pre-commit hook ci-github-api-auth"
-NOT_IN_TEST=""
+NOT_IN_TEST="test:gh-wrappers-teeth|runs the gh-wrappers suite once per mutation; smoke.yml runs it"
 
 cat >"$WORK/wiring.py" <<'PY'
 import os, re, subprocess, sys, tomllib

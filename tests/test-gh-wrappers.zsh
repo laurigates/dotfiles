@@ -37,7 +37,9 @@ emulate -R zsh
 setopt extended_glob   # on in the interactive shell these functions run in
 
 REPO_ROOT=${0:A:h:h}
-SRC=$REPO_ROOT/private_dot_config/zsh/gh-wrappers.zsh
+# GH_WRAPPERS_SRC points the run at another copy of the file; the mutation check
+# (tests/test-gh-wrappers-teeth.py) uses it to source a mutant.
+SRC=${GH_WRAPPERS_SRC:-$REPO_ROOT/private_dot_config/zsh/gh-wrappers.zsh}
 
 for tool in jq column; do
   (( $+commands[$tool] )) || { print -r -- "SKIP: $tool is not installed"; exit 0 }
