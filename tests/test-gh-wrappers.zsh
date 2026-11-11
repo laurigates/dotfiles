@@ -414,6 +414,54 @@ uncalled "update-branch reports a conflict: not merged" 'gh pr merge'
 printed "update-branch conflict is reported as conflicting" 'conflicting'
 
 # ---------------------------------------------------------------------------
+print -r -- "_gh_poll_merge: exit status and reply"
+# ---------------------------------------------------------------------------
+# poll <args...>: run it in this shell and print "<status> <reply...>".
+poll() { _gh_poll_merge "$@" > $W/out 2>&1; print -r -- "$? ${reply[*]}" }
+
+reset; pr 5 label=rebase base=dev
+poll o/r 5 "" auto --delete-branch > $W/res
+is "merged: 0, reply = base and method" "$(<$W/res)" "0 dev rebase"
+
+reset; pr 5 mergeable=CONFLICTING
+poll o/r 5 "" auto > $W/res
+is "conflicting: 2, reply = base and method" "$(<$W/res)" "2 main squash"
+
+reset; pr 5 merge=fail
+poll o/r 5 "" auto > $W/res
+is "merge failed: 1, empty reply" "$(<$W/res)" "1 "
+
+reset; pr 5 author=stranger; answers no
+poll o/r 5 "" auto > $W/res
+is "declined at the trust gate: 3 (skipped), empty reply" "$(<$W/res)" "3 "
+
+reset; pr 5 draft=true; answers s
+poll o/r 5 "" auto > $W/res
+is "draft skipped: 3" "$(<$W/res)" "3 "
+
+reset; pr 5 label=; answers k
+poll o/r 5 "" auto > $W/res
+is "no method chosen: 3" "$(<$W/res)" "3 "
+
+reset; pr 5 label=squash
+poll o/r 5 "" squash > $W/res
+is "explicit method matching the recommendation: merged" "$(<$W/res)" "0 main squash"
+uncalled "explicit method matching the recommendation: no prompt" 'PROMPT'
+
+reset; pr 5 label=rebase; answers n
+poll o/r 5 "" squash > $W/res
+is "explicit method against the recommendation, 'n': 3" "$(<$W/res)" "3 "
+uncalled "explicit method against the recommendation, 'n': not merged" 'gh pr merge'
+
+reset; pr 5 label=rebase; answers y
+poll o/r 5 "" squash > $W/res
+called "explicit method against the recommendation, 'y': merges with the explicit one" 'gh pr merge 5 --repo o/r --squash'
+
+reset; pr 5 base=dev; pr 6 base=main; FZF_PICK=(5 6); answers a
+run ghm
+uncalled "a merge into another base does not trigger an update" 'gh pr update-branch'
+
+# ---------------------------------------------------------------------------
 print -r -- "ghi: issues handed to Claude"
 # ---------------------------------------------------------------------------
 issues() {
