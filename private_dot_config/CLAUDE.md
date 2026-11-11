@@ -15,6 +15,7 @@ Application configuration files managed by chezmoi. Uses chezmoi naming conventi
 | `starship.toml` | Starship prompt theme |
 | `private_kitty/` | Kitty terminal emulator |
 | `zellij/` | Terminal multiplexer |
+| `zsh/` | Zsh files sourced by `~/.zshrc`: `gh-wrappers.zsh` (ghm, ghi, ghpc, ghrp and the pickers; tested by `tests/test-gh-wrappers.zsh`) |
 | `private_atuin/` | Shell history manager |
 | `ranger/` | File manager |
 | `rofi/` | Application launcher (Linux) |
