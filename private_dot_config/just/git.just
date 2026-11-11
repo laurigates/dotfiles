@@ -271,7 +271,8 @@ pr-todo:
 #
 # A real CI check is any check other than `renovate/stability-days` and PR-title
 # checks (a `conventional-commits` workflow, a `Fix PR title` job, ...). A PR
-# whose only passing checks are of those kinds is HOLD-nochecks (#532).
+# whose only passing checks are of those kinds is HOLD-nochecks (#532). A failing
+# or pending PR-title check still holds the PR as HOLD-failing or HOLD-pending.
 #
 # PRs in archived repos are left out of the search (`--archived=false`): an
 # archived repo is read-only, so its PRs can be neither merged nor closed, and
@@ -355,11 +356,13 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
         types = set(update_types(d["body"]))
         real = real_checks(d)
         stability = [s for n, _, s in all_checks(d) if n == "renovate/stability-days"]
+        # A PR-title check is not CI, but a failing or running one still holds the PR.
+        gating = [s for n, _, s in all_checks(d) if n != "renovate/stability-days"]
         if d["isDraft"]: return "HOLD-draft"
         if d["mergeable"] == "CONFLICTING" or d["mergeStateStatus"] == "DIRTY": return "HOLD-conflict"
         if d["mergeStateStatus"] == "BLOCKED": return "HOLD-blocked"
-        if any(s in BAD for _, s in real): return "HOLD-failing"
-        if any(s in WAIT for _, s in real): return "HOLD-pending"
+        if any(s in BAD for s in gating): return "HOLD-failing"
+        if any(s in WAIT for s in gating): return "HOLD-pending"
         if stability and stability[0] != "SUCCESS": return "HOLD-stability"
         if PLATFORM and PLATFORM.search(title): return "HOLD-platform"
         if not types and re.search(r"configure renovate", title, re.I): return "SAFE"
