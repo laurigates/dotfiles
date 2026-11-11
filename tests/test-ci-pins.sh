@@ -70,7 +70,7 @@
 #   --self-test  run the static and runtime checks against planted fixtures;
 #                every bad fixture must fail and the good one must pass.
 #
-# Needs bash, git, grep, sed and awk only: the Linters job has no rg or yq.
+# Needs bash, git, grep, sed and awk only; it does not call rg or yq.
 
 set -uo pipefail
 
