@@ -147,7 +147,9 @@ gh() {
       jq -r "${jqx:-.}" $f ;;
     'pr list')
       f=$(_pr_file $repo x)
-      jq -s '[.[] | select(.state == "OPEN")]' ${f:h}/*.json(nN) | jq -r "${jqx:-.}" ;;
+      # </dev/null: with no fixture the glob expands to nothing and jq would
+      # read the suite's stdin, which blocks on a terminal or an open pipe.
+      jq -s '[.[] | select(.state == "OPEN")]' ${f:h}/*.json(nN) </dev/null | jq -r "${jqx:-.}" ;;
     'search prs')
       # Open PRs of every repo carrying --label, in the --owner scopes (all
       # owners when none is given). The author is rewritten to what `gh search
@@ -162,7 +164,7 @@ gh() {
         | .author |= (if .is_bot
                       then {login: ((.login | ltrimstr("app/")) + "[bot]"), is_bot: false, type: "Bot"}
                       else . + {type: "User"} end)' \
-        $W/pr/*/*.json(nN) --args $owners | jq -s -r "${jqx:-.}" ;;
+        $W/pr/*/*.json(nN) --args $owners </dev/null | jq -s -r "${jqx:-.}" ;;
     'pr merge')
       n=${pos[3]}; f=$(_pr_file $repo "$n")
       [[ -f $f && $(_pr_get $f ._merge) == ok ]] || return 1
