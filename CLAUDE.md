@@ -79,7 +79,7 @@ checkout or worktree you invoke them from.
 - `private_dot_config/nvim/` — Neovim setup (see `nvim/CLAUDE.md`)
 - `private_dot_config/private_fish/` — Fish shell (experimental)
 - `justfile` — Task runner recipes (`just --list`); shared modules in `private_dot_config/just/*.just` (see `docs/justfile-architecture.md`)
-- No `mise.lock` is committed (none ever was). The CI linting toolchain is pinned to exact versions that Renovate bumps: chezmoi and shellcheck in `.mise.toml`; mise, Python, bun, pre-commit and the Claude Code CLI in the workflows. `tests/test-ci-pins.sh` fails on a floating one of these except shellcheck. Still floating: node (major-only), the `brew install` packages in the workflows, and the bunx/npx MCP servers in `.github/claude-mcp-ci.json` (see the 2026-10 note in [ADR-0002](docs/adrs/0002-unified-tool-version-management-mise.md))
+- No `mise.lock` is committed; the CI toolchain is pinned to exact versions instead, enforced by `tests/test-ci-pins.sh`. What is pinned and what still floats: the 2026-10 note in [ADR-0002](docs/adrs/0002-unified-tool-version-management-mise.md)
 
 ## CI Pipeline
 
