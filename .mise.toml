@@ -114,7 +114,7 @@ description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and sti
 run = "tests/test-gh-completion.sh"
 
 [tasks."test:gh-wrappers"]
-description = "Regression test: ghm merges with the PR's own method, gates external authors, updates and pins a PR whose base moved, and leaves draft/conflicting PRs; ghi hands the picked issues to Claude"
+description = "Regression test: ghm merges with the PR's own method, gates external authors, updates and pins a PR whose base moved, and leaves draft/conflicting PRs; ghrp squash-merges release PRs across repos with --repo and gates non-bot authors; ghi hands the picked issues to Claude"
 run = "tests/test-gh-wrappers.zsh"
 
 [tasks."test:chezmoi-exact-guard"]

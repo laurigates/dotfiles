@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Regression test for the gh* wrappers (private_dot_config/zsh/gh-wrappers.zsh):
-# what ghm merges, with which method, and what it refuses to merge; and what ghi
-# hands to Claude.
+# what ghm and ghrp merge, with which method, and what they refuse to merge; and
+# what ghi hands to Claude.
 #
 # What is being protected
 # -----------------------
@@ -18,8 +18,12 @@
 #           --jq program to them with the real jq, so the jq programs are
 #           exercised too. `pr merge`, `pr ready` and `pr update-branch` change
 #           the fixture. Fixtures are files because many calls run in $(...).
-#   fzf     returns the rows whose first column is in $FZF_PICK, and saves the
-#           table it was shown to $W/fzf.in.
+#           A fixture belongs to one repo: --repo picks it, and without --repo
+#           it is $REPO. `search prs` reads every repo's fixtures and applies
+#           its --label and --owner filters.
+#   fzf     returns the rows named in $FZF_PICK, and saves the table it was
+#           shown to $W/fzf.in. An entry is a number (rows starting "#<n>") or
+#           "<owner/repo>#<n>" (ghrp rows, which start with the repo).
 #   read    a prompt (`read "var?text"`) takes its answer from the queue in
 #           $W/answers. With no terminal the builtin would read nothing, and a
 #           prompt nobody queued an answer for is logged as UNANSWERED.
@@ -56,6 +60,7 @@ reset() {
   mkdir -p $W/pr
   : > $W/calls; : > $W/answers; : > $W/out
   ME=lauri REPO=o/r HEAD_BRANCH=main CUR_PR=
+  ORGS=(acme)
   FZF_PICK=()
   _GH_ME= _GH_ME_TRIED=0
 }
@@ -63,31 +68,42 @@ reset() {
 # pr <number> [key=value ...]: write one PR fixture. Keys and defaults below.
 #   label   rebase|squash|"" (the merge:* label)   update  ok|uptodate|conflict
 #   checks  pass|fail (CI on the updated head)     merge   ok|fail
+#   repo    owner/name (default $REPO)             release true = carries the
+#                                                  'autorelease: pending' label
+# author/bot are given as `gh pr list` and `gh pr view` report them: an App bot
+# is login "app/<name>" with is_bot true.
 pr() {
   local n=$1; shift
   local -A f=(
     author lauri bot false title "PR $n" label squash draft false base main
     head "feat-$n" sha "sha${n}a" mergeable MERGEABLE mss CLEAN state OPEN
-    update ok checks pass merge ok
+    update ok checks pass merge ok repo $REPO release false
   )
   local kv k v
   for kv in "$@"; do f[${kv%%=*}]=${kv#*=}; done
   local -a args
   for k v in "${(@kv)f}"; do args+=(--arg $k "$v"); done
+  local file=$(_pr_file $f[repo] $n)
+  mkdir -p ${file:h}
   jq -n --argjson number $n "${args[@]}" '{
     number: $number, title: $title, state: $state, mergedAt: null,
+    repository: {nameWithOwner: $repo},
     author: {login: $author, is_bot: ($bot == "true")},
     isDraft: ($draft == "true"), baseRefName: $base, headRefName: $head,
     headRefOid: $sha, mergeable: $mergeable, mergeStateStatus: $mss,
-    labels: (if $label == "" then [] else [{name: ("merge:" + $label)}] end),
+    labels: ((if $label == "" then [] else [{name: ("merge:" + $label)}] end)
+             + (if $release == "true" then [{name: "autorelease: pending"}] else [] end)),
     additions: 1, deletions: 1, changedFiles: 1, files: [{path: "README.md"}],
     statusCheckRollup: [], reviewDecision: "", createdAt: "2026-01-01T00:00:00Z",
     _update: $update, _checks: $checks, _merge: $merge
-  }' > $W/pr/$n.json
+  }' > $file
 }
 
-_pr_get() { jq -r "$2" $W/pr/$1.json }
-_pr_set() { jq "$2" $W/pr/$1.json > $W/pr/$1.tmp && mv $W/pr/$1.tmp $W/pr/$1.json }
+# _pr_file <owner/repo> <number>: where that PR's fixture lives.
+_pr_file() { print -r -- $W/pr/${1//\//__}/$2.json }
+# _pr_get / _pr_set <fixture file> <jq program>
+_pr_get() { jq -r "$2" $1 }
+_pr_set() { jq "$2" $1 > $1.tmp && mv $1.tmp $1 }
 
 # Queue answers for the prompts, one per prompt, in order.
 answers() { print -rl -- "$@" > $W/answers }
@@ -99,47 +115,69 @@ answers() { print -rl -- "$@" > $W/answers }
 gh() {
   # One line per call: a multi-line --jq program is logged by its first line.
   print -r -- "gh ${${@}%%$'\n'*}" >> $W/calls
-  local -a pos
-  local jqx=
+  local -a pos owners
+  local jqx= repo=$REPO label=
   while (( $# )); do
     case $1 in
       --jq|-q)                        jqx=$2; shift 2 ;;
-      --json|--limit|--repo|-R|--match-head-commit) shift 2 ;;
+      --repo|-R)                      repo=$2; shift 2 ;;
+      --owner)                        owners+=("$2"); shift 2 ;;
+      --label)                        label=$2; shift 2 ;;
+      --json|--limit|--state|--match-head-commit) shift 2 ;;
       *)                              pos+=("$1"); shift ;;
     esac
   done
-  local n
+  local n f
   case "${pos[1]} ${pos[2]}" in
     'api user')
       [[ -n $ME ]] || return 1
       jq -r "${jqx:-.}" <<< "{\"login\":\"$ME\"}" ;;
+    'api user/orgs')
+      jq -n '$ARGS.positional | map({login: .})' --args $ORGS | jq -r "${jqx:-.}" ;;
     'api repos/'*)
       jq -r "${jqx:-.}" <<< '{"author_association":"NONE"}' ;;
     'repo view')
       jq -r "${jqx:-.}" <<< "{\"nameWithOwner\":\"$REPO\"}" ;;
     'pr view')
       n=${pos[3]#\#}; [[ -n $n ]] || n=$CUR_PR
-      [[ -n $n && -f $W/pr/$n.json ]] || return 1
-      jq -r "${jqx:-.}" $W/pr/$n.json ;;
+      f=$(_pr_file $repo "$n")
+      [[ -n $n && -f $f ]] || return 1
+      jq -r "${jqx:-.}" $f ;;
     'pr list')
-      jq -s '[.[] | select(.state == "OPEN")]' $W/pr/*.json(nN) | jq -r "${jqx:-.}" ;;
+      f=$(_pr_file $repo x)
+      jq -s '[.[] | select(.state == "OPEN")]' ${f:h}/*.json(nN) | jq -r "${jqx:-.}" ;;
+    'search prs')
+      # Open PRs of every repo carrying --label, in the --owner scopes (all
+      # owners when none is given). The author is rewritten to what `gh search
+      # prs` reports for an App bot: login "<name>[bot]", is_bot false, type
+      # "Bot". That shape is taken from the comment on _gh_trust in the source.
+      jq -s --arg label "$label" '
+        $ARGS.positional as $owners
+        | .[] | select(.state == "OPEN")
+        | select($label == "" or any(.labels[]; .name == $label))
+        | select(($owners | length) == 0
+                 or ((.repository.nameWithOwner | split("/")[0]) as $o | any($owners[]; . == $o)))
+        | .author |= (if .is_bot
+                      then {login: ((.login | ltrimstr("app/")) + "[bot]"), is_bot: false, type: "Bot"}
+                      else . + {type: "User"} end)' \
+        $W/pr/*/*.json(nN) --args $owners | jq -s -r "${jqx:-.}" ;;
     'pr merge')
-      n=${pos[3]}
-      [[ $(_pr_get $n ._merge) == ok ]] || return 1
-      _pr_set $n '.state = "MERGED" | .mergedAt = "2026-01-02T03:04:05Z"' ;;
+      n=${pos[3]}; f=$(_pr_file $repo "$n")
+      [[ -f $f && $(_pr_get $f ._merge) == ok ]] || return 1
+      _pr_set $f '.state = "MERGED" | .mergedAt = "2026-01-02T03:04:05Z"' ;;
     'pr ready')
-      _pr_set ${pos[3]} '.isDraft = false' ;;
+      _pr_set $(_pr_file $repo "${pos[3]}") '.isDraft = false' ;;
     'pr update-branch')
-      n=${pos[3]}
-      case $(_pr_get $n ._update) in
+      n=${pos[3]}; f=$(_pr_file $repo "$n")
+      case $(_pr_get $f ._update) in
         conflict) print -r -- "Cannot update PR branch due to conflicts"; return 1 ;;
         uptodate) print -r -- "PR branch already up-to-date" ;;
-        *)        _pr_set $n ".headRefOid = \"sha${n}b\""; print -r -- "PR branch updated" ;;
+        *)        _pr_set $f ".headRefOid = \"sha${n}b\""; print -r -- "PR branch updated" ;;
       esac ;;
     'pr checks')
       n=${pos[3]}
       if [[ -n $jqx ]]; then jq -r "$jqx" <<< '[{"name":"ci"}]'
-      else [[ $(_pr_get $n ._checks) == pass ]]; fi ;;
+      else [[ $(_pr_get $(_pr_file $repo "$n") ._checks) == pass ]]; fi ;;
     'issue list')
       jq -r "${jqx:-.}" $W/issues.json ;;
     *)
@@ -166,7 +204,13 @@ fzf() {
   # fzf --ansi matches on, and returns, the text without the colour escapes.
   shown=$(sed $'s/\033\\[[0-9;]*m//g')
   print -r -- "$shown" > $W/fzf.in
-  for p in $FZF_PICK; do grep -E "^#$p( |\$)" <<< "$shown"; done
+  for p in $FZF_PICK; do
+    if [[ $p == */*\#* ]]; then
+      awk -v r="${p%%\#*}" -v n="#${p#*\#}" '$1 == r && $2 == n' <<< "$shown"
+    else
+      grep -E "^#$p( |\$)" <<< "$shown"
+    fi
+  done
   return 0
 }
 
@@ -479,6 +523,63 @@ called "explicit method against the recommendation, 'y': merges with the explici
 reset; pr 5 base=dev; pr 6 base=main; FZF_PICK=(5 6); answers a
 run ghm
 uncalled "a merge into another base does not trigger an update" 'gh pr update-branch'
+
+# ---------------------------------------------------------------------------
+print -r -- "ghrp: release PRs across repos"
+# ---------------------------------------------------------------------------
+# release <number> <owner/repo> [key=value ...]: a release-please PR as the
+# release bot opens it.
+release() {
+  local n=$1 r=$2; shift 2
+  pr $n repo=$r release=true author=app/release-please bot=true "$@"
+}
+
+# The same number in two repos: only --repo tells the two PRs apart.
+reset
+release 3 lauri/tool title='chore(main): release 1.2.0'
+release 3 acme/api   title='chore(main): release 2.0.0'
+pr 9 repo=lauri/tool
+FZF_PICK=('lauri/tool#3' 'acme/api#3'); answers a
+run ghrp
+shown   "a release bot's PR is listed as bot (search reports type Bot, is_bot false)" '#3  bot  chore(main): release 1.2.0'
+unshown "a bot row carries no warning marker" '⚠'
+unshown "a PR without the release label is not listed" '#9'
+printed "the selected row's title reaches the summary whole" '#3  chore(main): release 1.2.0'
+called  "release PR in the user's repo: --repo and --squash" 'gh pr merge 3 --repo lauri/tool --squash'
+called  "release PR in an org repo: --repo and --squash" 'gh pr merge 3 --repo acme/api --squash'
+uncalled "bot release PRs merge without the typed confirmation" 'merge>'
+uncalled "a merge in one repo does not update a PR in another" 'gh pr update-branch'
+
+reset
+pr 4 repo=acme/api release=true author=mallory
+pr 6 repo=lauri/tool release=true
+FZF_PICK=('acme/api#4'); answers a nope
+run ghrp
+shown    "a non-bot author is listed with the warning marker" '#4  ⚠mallory'
+shown    "own PR is listed as me" '#6  me '
+printed  "non-bot author: the external-contributor warning is printed" 'EXTERNAL CONTRIBUTOR'
+uncalled "non-bot author: 'a' (all) and a wrong word do not merge" 'gh pr merge'
+
+reset; pr 4 repo=acme/api release=true author=mallory
+FZF_PICK=('acme/api#4'); answers a merge
+run ghrp
+called "non-bot author: the typed word 'merge' merges" 'gh pr merge 4 --repo acme/api --squash'
+
+reset; release 3 acme/api; FZF_PICK=()
+run ghrp
+printed  "nothing picked: says so" 'Nothing selected.'
+uncalled "nothing picked: no merge" 'gh pr merge'
+
+reset
+run ghrp
+printed "empty search: names the owners searched" 'No open release-please PRs found in: lauri, acme'
+if [[ -e $W/fzf.in ]]; then bad "empty search: the picker is not opened"; else ok "empty search: the picker is not opened"; fi
+
+reset; release 3 other/x; FZF_PICK=()
+run ghrp
+printed "a PR outside the user's login and orgs is not found" 'No open release-please PRs found'
+run ghrp other
+shown "an owner given as an argument is searched too" 'other/x'
 
 # ---------------------------------------------------------------------------
 print -r -- "ghi: issues handed to Claude"

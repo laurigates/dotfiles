@@ -295,7 +295,7 @@ jobs:
             fi
           '
 
-      - name: Test the gh wrappers (ghm, ghi)
+      - name: Test the gh wrappers (ghm, ghrp, ghi)
         # Sources private_dot_config/zsh/gh-wrappers.zsh under the system zsh
         # with gh, git, fzf and claude stubbed; its inputs are in the repo.
         run: /bin/zsh tests/test-gh-wrappers.zsh
