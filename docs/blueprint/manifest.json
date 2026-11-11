@@ -1,7 +1,7 @@
 {
-  "format_version": "3.3.0",
+  "format_version": "3.4.0",
   "created_at": "2026-04-07T00:00:00Z",
-  "updated_at": "2026-06-03T00:00:00Z",
+  "updated_at": "2026-11-11T09:34:45Z",
   "created_by": {
     "blueprint_plugin": "3.2.0"
   },
@@ -13,6 +13,15 @@
       "changes": [
         "Added workspaces support for monorepo blueprints (standalone project: no workspaces block needed)",
         "Enabled cross-workspace cross-references (`<path>/ADR-NNN`, `/ADR-NNN`)"
+      ]
+    },
+    {
+      "from": "3.3.0",
+      "to": "3.4.0",
+      "date": "2026-11-11T09:34:45Z",
+      "changes": [
+        "Added automation block (autonomy_level, interaction_mode, work_orders)",
+        "task_registry auto_run/schedule contract now executed by blueprint-autorun"
       ]
     }
   ],
@@ -178,5 +187,13 @@
       }
     },
     "github_issues": {}
+  },
+  "automation": {
+    "autonomy_level": 1,
+    "interaction_mode": "normal",
+    "work_orders": {
+      "auto_draft": false,
+      "auto_execute": false
+    }
   }
 }
