@@ -268,11 +268,20 @@ In practice, plain text is almost always the right default.
 
 ## Why these tools and not `telegram-send`?
 
-`telegram-send` (the well-known Python tool) is **send-only**. It has
-no receive mode, no polling, no way to wait for a reply. The
-interactive flow needs `getUpdates` long-polling, which these
-thin curl+jq wrappers provide with no extra runtime dependencies
-beyond `curl` and `jq` (both already on the system).
+`telegram-send` (the third-party Python tool) is no longer installed by
+these dotfiles. It was retired for three reasons:
+
+- It is **send-only**: no receive mode, no polling, no way to wait for
+  a reply. `telegram-ask` and `telegram-poll` need `getUpdates`
+  long-polling.
+- Its one remaining use, sending a file, is covered by
+  `telegram-send-file`.
+- It keeps its own config file with a second copy of the bot token and
+  chat id, separate from `~/.api_tokens`, and v0.39.2 moved that file's
+  location on macOS so an existing config was no longer found.
+
+The scripts here are thin curl+jq wrappers with one credential source
+and no runtime dependencies beyond `curl`, `jq` and `file`.
 
 ## Rationale
 
