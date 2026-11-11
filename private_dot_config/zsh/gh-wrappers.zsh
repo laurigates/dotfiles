@@ -394,49 +394,52 @@ _gh_method_check() {
 # date (gh pr update-branch) and its CI re-run before it merges: its green CI
 # only ran against the old base, so a PR that merges cleanly could still break
 # it. So is one already BEHIND when the run starts, if the base's ruleset
-# requires up-to-date branches — gh pr merge refuses it otherwise. update-branch cannot fix a real conflict, so a CONFLICTING PR is returned
-# to the batch, which offers to hand it to Claude once the merges are done.
-#   _gh_poll_merge <repo|""> <num> <moved> <merge-flags...>   ("" repo = current repo)
-#   <moved> = space-separated "repo:base" keys that took a merge this run.
-#   → 0 + REPLY="repo:base": merged · 0 + REPLY="": skipped
-#     2 + REPLY="repo:base": conflicting · 1: failed
+# requires up-to-date branches — gh pr merge refuses it otherwise.
+# update-branch cannot fix a real conflict, so a CONFLICTING PR is reported to
+# the caller, which offers to hand it to Claude once the merges are done.
+#
+#   _gh_poll_merge <repo|""> <num> <moved> <auto|rebase|squash> [gh pr merge flags...]
+#   <repo>   "" = the current repo.
+#   <moved>  space-separated "repo:base" keys that took a merge this run.
+#   <method> auto = this PR's recommended method (ghm), so one batch can mix
+#            rebase and squash merges; with no recommendation, ask.
+#            rebase|squash = that method (ghrp), confirmed first if it differs
+#            from the recommendation.
+#   Exit status: 0 merged · 1 failed · 2 conflicting · 3 skipped.
+#   For 0 and 2 it also sets the array reply=(<base branch> <rebase|squash>):
+#   the caller needs the base to track what moved, and the method so the Claude
+#   handoff for a conflict rebases or merges to match.
 _gh_poll_merge() {
-  local repo="$1" num="$2" moved="$3"; shift 3
-  REPLY=
+  local repo="$1" num="$2" moved="$3" want="$4"; shift 4
+  reply=()
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id="${repo}#${num}"
   local $_GH_COLORS; _gh_palette 1
+
   # Contributor-trust gate FIRST, before the draft prompt or any merge: a
   # stranger's PR must not even reach "mark ready & merge". This is also what
   # makes `a`=all in _gh_batch_merge safe — `a` skips the per-PR y/N prompt but
   # still lands here, and an external PR demands a typed word regardless.
-  _gh_trust_gate "$repo" "$num" || { REPLY=; return 0 }
-  # ghm passes --auto-method: resolve this PR's own method here, so one batch
-  # can mix rebase and squash merges; with no recommendation, ask. An explicit
-  # --squash/--rebase (ghrp) is checked against the recommendation instead.
-  # _GH_POLL_METHOD tells _gh_batch_merge which method a conflicting PR used,
-  # so the Claude handoff rebases or merges to match.
-  typeset -g _GH_POLL_METHOD=
-  local am=${argv[(Ie)--auto-method]}
-  if (( am )); then
-    local m; m=$(_gh_merge_method "$repo" "$num")
-    [[ -n "$m" ]] || m=$(_gh_ask_method "$id")
-    if [[ -z "$m" ]]; then
-      print -r -- "  ${dim}– skipped ${id} (no merge method)${rst}"; REPLY=; return 0
+  _gh_trust_gate "$repo" "$num" || return 3
+
+  local method
+  if [[ "$want" == auto ]]; then
+    method=$(_gh_merge_method "$repo" "$num")
+    [[ -n "$method" ]] || method=$(_gh_ask_method "$id")
+    if [[ -z "$method" ]]; then
+      print -r -- "  ${dim}– skipped ${id} (no merge method)${rst}"; return 3
     fi
-    argv[am]="--$m"
-    print -r -- "  ${dim}${id}: --${m}${rst}"
-  elif (( ${argv[(Ie)--squash]} )); then
-    _gh_method_check "$repo" "$num" squash || { REPLY=; return 0 }
-  elif (( ${argv[(Ie)--rebase]} )); then
-    _gh_method_check "$repo" "$num" rebase || { REPLY=; return 0 }
+    print -r -- "  ${dim}${id}: --${method}${rst}"
+  else
+    _gh_method_check "$repo" "$num" "$want" || return 3
+    method="$want"
   fi
-  (( ${argv[(Ie)--rebase]} )) && _GH_POLL_METHOD=rebase || _GH_POLL_METHOD=squash
+
   local meta draft base
   meta=$(gh pr view "$num" "${repo_flag[@]}" --json isDraft,baseRefName \
            --jq '"\(.isDraft)\t\(.baseRefName)"' </dev/null 2>/dev/null)
   draft="${meta%%$'\t'*}" base="${meta#*$'\t'}"
-  local key="${repo}:${base}"
+
   # Draft PRs report mergeable=MERGEABLE (that field tracks conflicts, not draft
   # state), so the poll loop below never catches them — `gh pr merge` just fails.
   # Detect the draft up front and prompt: mark ready & merge, or skip.
@@ -450,39 +453,42 @@ _gh_poll_merge() {
         else
           print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: couldn't mark ready — skipped"; return 1
         fi ;;
-      *) print -r -- "  ${dim}– skipped draft ${id}${rst}"; return 0 ;;
+      *) print -r -- "  ${dim}– skipped draft ${id}${rst}"; return 3 ;;
     esac
   fi
+
   local state
   state=$(_gh_wait_mergeable "$repo" "$num" "$id")
   if [[ "$state" == CONFLICTING ]]; then
     print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — left open"
-    REPLY="$key"; return 2
+    reply=("$base" "$method"); return 2
   fi
+
   # BEHIND = the base ruleset requires up-to-date branches (strict status
   # checks) and this head is stale. It shows up only under that rule, so an
   # unprotected base keeps the moved-this-run-only behaviour.
   local -a pin
   local mss
   mss=$(gh pr view "$num" "${repo_flag[@]}" --json mergeStateStatus --jq .mergeStateStatus </dev/null 2>/dev/null)
-  if [[ " $moved " == *" ${key} "* || "$mss" == BEHIND ]]; then
-    local -a upd; (( ${argv[(Ie)--rebase]} )) && upd=(--rebase)
+  if [[ " $moved " == *" ${repo}:${base} "* || "$mss" == BEHIND ]]; then
+    local -a upd; [[ "$method" == rebase ]] && upd=(--rebase)
     _gh_update_and_wait "$repo" "$num" "$id" "${upd[@]}"
     case $? in
       0) ;;
       2) print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — left open"
-         REPLY="$key"; return 2 ;;
+         reply=("$base" "$method"); return 2 ;;
       *) return 1 ;;
     esac
-    # Merge exactly the head CI just passed on; a push landing in between fails
-    # the merge instead of slipping through untested.
+    # Merge exactly the head CI just passed on (REPLY, from _gh_update_and_wait);
+    # a push landing in between fails the merge instead of slipping through
+    # untested.
     [[ -n "$REPLY" ]] && pin=(--match-head-commit "$REPLY")
-    REPLY=
     _gh_wait_mergeable "$repo" "$num" "$id" >/dev/null
   fi
-  if gh pr merge "$num" "${repo_flag[@]}" "${pin[@]}" "$@" </dev/null; then
+
+  if gh pr merge "$num" "${repo_flag[@]}" "${pin[@]}" "--$method" "$@" </dev/null; then
     print -r -- "  ${green}✓ merged${rst} ${cyan}${id}${rst}"
-    REPLY="$key"
+    reply=("$base" "$method")
   else
     print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}merge failed${rst} (left open — re-run to retry)"; return 1
   fi
@@ -588,9 +594,10 @@ _gh_conflict_handoff() {
 
 # Confirm a selected set, then merge sequentially in selection order.
 # y = this · N/other = skip · a = all remaining · q = stop.
-#   _gh_batch_merge "<repo\tnum\ttitle lines>" <merge-flags...>
+#   _gh_batch_merge "<repo\tnum\ttitle lines>" <auto|rebase|squash> [gh pr merge flags...]
+# The method and flags go to _gh_poll_merge unchanged.
 _gh_batch_merge() {
-  local blob="$1"; shift
+  local blob="$1" method="$2"; shift 2
   local -a flags=("$@") repos nums titles
   local line r n t
   while IFS= read -r line; do
@@ -610,7 +617,7 @@ _gh_batch_merge() {
     lbl="${repos[$i]}#${nums[$i]}"
     (( ${#lbl} > maxw )) && maxw=${#lbl}
   done
-  print -r -- "${bold}Selected $count PR(s)${rst} — will merge (${yellow}${flags[*]}${rst}) in this order:"
+  print -r -- "${bold}Selected $count PR(s)${rst} — will merge (${yellow}${method}${flags:+ ${flags[*]}}${rst}) in this order:"
   for (( i = 1; i <= count; i++ )); do
     lbl="${repos[$i]}#${nums[$i]}"
     printf "  %s%2d.%s %s%-*s%s  %s\n" "$dim" "$i" "$rst" "$cyan" "$maxw" "$lbl" "$rst" "${titles[$i]}"
@@ -618,9 +625,9 @@ _gh_batch_merge() {
   print
 
   # moved: "repo:base" keys that took a merge this run (later PRs on the same
-  # base get updated before merging). conflicts: "repo\tnum\tbase" lines for the
-  # Claude handoff after the loop.
-  local all=false ans moved= conflicts= rc
+  # base get updated before merging). conflicts: "repo\tnum\tbase\tmethod" lines
+  # for the Claude handoff after the loop.
+  local all=false ans moved= conflicts= key
   for (( i = 1; i <= count; i++ )); do
     lbl="${repos[$i]}#${nums[$i]}"
     if ! $all; then
@@ -632,12 +639,12 @@ _gh_batch_merge() {
         *)   print -r -- "  ${dim}– skipped ${lbl}${rst}"; continue ;;
       esac
     fi
-    _gh_poll_merge "${repos[$i]}" "${nums[$i]}" "$moved" "${flags[@]}"; rc=$?
-    if (( rc == 0 )) && [[ -n "$REPLY" && " $moved " != *" $REPLY "* ]]; then
-      moved+=" $REPLY"
-    elif (( rc == 2 )); then
-      conflicts+="${repos[$i]}"$'\t'"${nums[$i]}"$'\t'"${REPLY#*:}"$'\t'"${_GH_POLL_METHOD}"$'\n'
-    fi
+    _gh_poll_merge "${repos[$i]}" "${nums[$i]}" "$moved" "$method" "${flags[@]}"
+    case $? in
+      0) key="${repos[$i]}:${reply[1]}"
+         [[ " $moved " == *" $key "* ]] || moved+=" $key" ;;
+      2) conflicts+="${repos[$i]}"$'\t'"${nums[$i]}"$'\t'"${reply[1]}"$'\t'"${reply[2]}"$'\n' ;;
+    esac
   done
   _gh_conflict_handoff "$conflicts"
 }
@@ -852,7 +859,7 @@ ghm() {
     [[ -z "$tsv" ]] && return
     cur_pr=$(_gh_current_pr)
     acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
-    _gh_batch_merge "$tsv" --auto-method --delete-branch
+    _gh_batch_merge "$tsv" auto --delete-branch
   else
     # Same engine as the picker path, minus the y/N/a/q prompt: naming the PR
     # is the confirmation. So the trust gate, the draft prompt, the
@@ -861,12 +868,12 @@ ghm() {
     local num="${1%%\[*}"
     cur_pr=$(_gh_current_pr)
     acted="$num"
-    _gh_poll_merge "" "$num" "" --auto-method --delete-branch
+    _gh_poll_merge "" "$num" "" auto --delete-branch
     if (( $? == 2 )); then
       # The handoff reads tab-separated fields, and a leading empty one would
       # collapse, so name the repo.
       local here; here=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-      _gh_conflict_handoff "${here}"$'\t'"${num}"$'\t'"${REPLY#*:}"$'\t'"${_GH_POLL_METHOD}"
+      _gh_conflict_handoff "${here}"$'\t'"${num}"$'\t'"${reply[1]}"$'\t'"${reply[2]}"
     fi
   fi
   _gh_home_if_merged "$cur_pr" "$acted"
@@ -1111,5 +1118,5 @@ ghrp() {
   local tsv
   tsv=$(print -r -- "$selections" | \
     awk '{repo=$1; num=$2; sub(/^#/,"",num); $1=$2=$3=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}')
-  _gh_batch_merge "$tsv" --squash
+  _gh_batch_merge "$tsv" squash
 }
