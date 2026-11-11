@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794329288540,
+  "lastUpdate": 1794385869688,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4751,6 +4751,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009251373000000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0442878ab8c6d8576540741ad5d1880a3adebc06",
+          "message": "docs(claude): move rule evidence and procedures off the always-loaded surface (#580)\n\n## What\n\nA context-diet pass over the every-turn rules and both CLAUDE.md files.\nDated incidents, graded-run tables and the scheduled-task setup\nprocedure move to `docs/rules-evidence.md` and `docs/scheduled-work.md`.\nEach rule keeps its invariant and links to the new doc.\n\n- `agent-and-tool-selection.md`: the § Evidence block becomes a pointer.\nAll model-tier bullets and § Sanctioned exception stay, because\nclaude-plugins scripts cite them.\n- `prefer-claude-schedulers.md`: keeps the 4-tier table and adds a\none-paragraph invariant. The machine-change and LLM-cost detail move to\n`docs/scheduled-work.md`.\n- `copy-paste-commands.md`: every bullet stays; the incident narratives\nmove to the evidence doc.\n- `disk-full-recovery.md`: drops the cleanup-command list, which\n`macos-disk-usage`, `linux-disk-usage` and `hf-downloads` already hold.\n- Global `CLAUDE.md` (PR Reviews incident, `just -g` recipe list) and\nproject `CLAUDE.md` (the mise.lock bullet, now a pointer to ADR-0002).\n\n## Why\n\nThese files load on every turn. The cut is about 3.7K chars (~900\ntokens) per turn net, measured from the `git diff` removed/added line\ncharacter counts.\n\n## Checks\n\n- `mise run lint:docs`: `DANGLING_COUNT=0`\n- `gitleaks dir .`: no leaks\n- `mise run lint`: fails only in `lint:lua`, because luacheck cannot run\non this machine. No Lua is changed.\n\n## Post-merge\n\nRun `chezmoi apply ~/.claude` from the main checkout. Run it as a full\napply, not from the worktree.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99EussZXCErBg8Vcqa\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T10:30:24+02:00",
+          "tree_id": "a2abaf9b5f2d2784dfb84780a3b4ab9115db21e6",
+          "url": "https://github.com/laurigates/dotfiles/commit/0442878ab8c6d8576540741ad5d1880a3adebc06"
+        },
+        "date": 1794385869057,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11072514200000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013474580000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011283596,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0095565466,
             "unit": "s"
           }
         ]
