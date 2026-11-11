@@ -272,7 +272,21 @@ jobs:
         # Same flags as the Ubuntu build: --source=. because chezmoi's default
         # source dir does not exist on a fresh runner, and --exclude=scripts to
         # skip the stateful run_once_/run_onchange_ installers.
-        run: chezmoi apply -v --source=. --exclude=scripts
+        #
+        # The git-repo externals are cloned with the job token. Anonymous
+        # clones from this runner were refused with "could not read Username
+        # for 'https://github.com'" on zsh/zsh-abbr (#608). The header is
+        # passed through GIT_CONFIG_* for this step only: apply rewrites
+        # ~/.gitconfig, so a `git config --global` entry would not survive it.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          auth=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0='http.https://github.com/.extraheader'
+          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+          chezmoi apply -v --source=. --exclude=scripts
 
       - name: Assert the rendered mise config pins the same chezmoi
         run: tests/test-ci-pins.sh --assert-installed --rendered
