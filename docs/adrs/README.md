@@ -14,7 +14,7 @@ An ADR is a document that captures an important architectural decision made alon
 | [0002](0002-unified-tool-version-management-mise.md) | Unified Tool Version Management with Mise | Accepted | 2024-12 |
 | [0003](0003-skill-activation-trigger-keywords.md) | Skill Activation via Trigger Keywords | Accepted | 2024-12 |
 | [0004](0004-subagent-first-delegation-strategy.md) | Subagent-First Delegation Strategy | Accepted | 2024-12 |
-| [0005](0005-namespace-based-command-organization.md) | Namespace-Based Command Organization | Accepted | 2024-12 |
+| [0005](0005-namespace-based-command-organization.md) | Namespace-Based Command Organization | Superseded | 2024-12 |
 | [0006](0006-documentation-first-development.md) | Documentation-First Development | Accepted | 2024-12 |
 | [0007](0007-layered-knowledge-distribution.md) | Layered Knowledge Distribution | Accepted | 2024-12 |
 | [0008](0008-project-scoped-mcp-servers.md) | Project-Scoped MCP Servers | Accepted | 2024-12 |

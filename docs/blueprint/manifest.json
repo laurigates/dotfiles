@@ -111,10 +111,14 @@
     "adr-validate": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": null,
-      "last_result": null,
+      "last_completed_at": "2026-11-11T09:43:50Z",
+      "last_result": "success",
       "schedule": "weekly",
-      "stats": {},
+      "stats": {
+        "runs_total": 1,
+        "items_processed": 17,
+        "items_created": 0
+      },
       "context": {}
     },
     "feature-tracker-sync": {
