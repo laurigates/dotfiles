@@ -494,11 +494,10 @@ reset; pr 5; pr 6; FZF_PICK=(6)
 is "_gh_pr_pick prints the picked PR's number" "$(_gh_pr_pick)" 6
 shown "_gh_pr_pick lists the CI and review tokens" '⏳CI  -rev'
 
-reset; pr 5; pr 6; FZF_PICK=(6)
-# ghpc's number extraction is a `bad pattern` under extended_glob (#586), which
-# would abort this script. Until that is fixed this case runs with the option
-# off; drop the wrapper function together with the fix.
-() { setopt local_options no_extended_glob; run ghpc }
+# The title's "#418" comes after the PR's own number in the row: the number
+# taken must be the first column's (#586).
+reset; pr 5; pr 6 title='fix #418 thing'; FZF_PICK=(6)
+run ghpc
 shown "ghpc lists the CI and review tokens" '⏳CI  -rev'
 if grep -q '^claude Check the PR #6 workflow results' $W/calls; then
   ok "ghpc hands the picked PR to Claude"
