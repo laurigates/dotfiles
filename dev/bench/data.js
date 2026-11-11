@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794392868938,
+  "lastUpdate": 1794393157065,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4971,6 +4971,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0102390324,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1fc574023f7ba7d2a0bb629a683e53473a16b06b",
+          "message": "chore(blueprint): upgrade manifest format to 3.4.0 at autonomy level 1 (#583)\n\n## What\n\nUpgrades `docs/blueprint/manifest.json` from blueprint format 3.3.0 to\n3.4.0 with `/blueprint-plugin:blueprint-upgrade` (blueprint-plugin\n3.51.6).\n\n- Adds the `automation` block: `autonomy_level: 1`, `interaction_mode:\n\"normal\"`, `work_orders.auto_draft` and `work_orders.auto_execute` both\n`false`.\n- Bumps `format_version` and `updated_at`, and appends the 3.3.0 to\n3.4.0 entry to `upgrade_history`.\n\n## Why\n\nFormat 3.4 is the version in which `blueprint-autorun.sh` reads the\n`task_registry` `auto_run`/`schedule` fields. Level 1 (ambient\nbookkeeping) lets the SessionStart probe run due deterministic tasks.\nThe migration suggested level 0 because no task has `auto_run: true`;\nlevel 1 was chosen in the upgrade prompt.\n\n## Effect today\n\n`blueprint-autorun.sh --report` against the upgraded manifest reports\n`AUTONOMY_LEVEL=1`, `RAN_COUNT=0`, `STATUS=OK`: seven tasks skipped as\n`manual` and two as `disabled`. Nothing runs until a task's `auto_run`\nis set to `true`.\n\n## Checks\n\n- Post-migration assertion: `jq -r .format_version\ndocs/blueprint/manifest.json` returns `3.4.0`.\n- `migrate-generated-rules-keys.sh --dry-run`: `ENTRIES=0`,\n`ISSUE_COUNT=0`, so no key migration was needed.\n- No deprecated generated commands were present.\n- Pre-commit hooks passed on the commit (check json, gitleaks, CI pins,\ndoc references).\n- `mise run test`: `lint:lua` fails locally because Homebrew's luacheck\n1.2.0 crashes on Lua 5.5 (lunarmodules/luacheck#147), which the task's\nown error message documents. This PR changes no Lua.\n\n`created_by.blueprint_plugin` stays at `3.2.0`; the 3.3 to 3.4 migration\ndocument does not touch it.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99gUXXG2VVjiXfA24z\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T12:31:48+02:00",
+          "tree_id": "e68dc99e5ed1a4d2441653d6a47716f4c35285d5",
+          "url": "https://github.com/laurigates/dotfiles/commit/1fc574023f7ba7d2a0bb629a683e53473a16b06b"
+        },
+        "date": 1794393156598,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13202585233333333,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015196454,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012884252000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0109196534,
             "unit": "s"
           }
         ]
