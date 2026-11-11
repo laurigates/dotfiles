@@ -1,3 +1,7 @@
+---
+id: ADR-0012
+---
+
 # ADR-0012: Justfile Command Runner
 
 ## Status

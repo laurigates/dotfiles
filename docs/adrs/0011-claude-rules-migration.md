@@ -1,3 +1,7 @@
+---
+id: ADR-0011
+---
+
 # ADR 0011: Migration to Claude Code Rules System
 
 ## Status

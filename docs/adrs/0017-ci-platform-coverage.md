@@ -1,3 +1,7 @@
+---
+id: ADR-0017
+---
+
 # ADR-0017: CI Platform Coverage — Test macOS and Ubuntu
 
 **Date**: 2026-08-19

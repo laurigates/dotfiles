@@ -1,3 +1,7 @@
+---
+id: ADR-0001
+---
+
 # ADR-0001: Chezmoi exact_ Directory Strategy for Claude Code Configuration
 
 ## Status

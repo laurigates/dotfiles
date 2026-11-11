@@ -1,3 +1,7 @@
+---
+id: ADR-0007
+---
+
 # ADR-0007: Layered Knowledge Distribution (CLAUDE.md Architecture)
 
 ## Status

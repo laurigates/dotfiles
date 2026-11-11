@@ -1,3 +1,7 @@
+---
+id: ADR-0010
+---
+
 # ADR-0010: Tiered Test Execution with Specialized Agents
 
 ## Status
