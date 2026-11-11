@@ -274,6 +274,38 @@ run ghm 5
 called "no method and 's' at the prompt: --squash" 'gh pr merge 5 --squash --delete-branch'
 
 # ---------------------------------------------------------------------------
+print -r -- "ghm <number>: same engine as the picker"
+# ---------------------------------------------------------------------------
+reset; pr 5 draft=true; answers s
+run ghm 5
+uncalled "draft, 's': not merged" 'gh pr merge'
+
+reset; pr 5 draft=true; answers r
+run ghm 5
+before "draft, 'r': marked ready, then merged" 'gh pr ready 5' 'gh pr merge 5 --squash --delete-branch'
+
+reset; pr 5 mss=BEHIND
+run ghm 5
+before "BEHIND: branch updated, then merged pinned to the new head" 'gh pr update-branch 5' 'gh pr merge 5 --match-head-commit sha5b --squash --delete-branch'
+
+reset; pr 5 mss=BEHIND checks=fail
+run ghm 5
+uncalled "CI fails on the updated head: not merged" 'gh pr merge'
+
+reset; pr 5 mergeable=CONFLICTING; answers n
+run ghm 5
+uncalled "conflicting: not merged" 'gh pr merge'
+printed "conflicting: reported" 'conflicting'
+
+reset; pr 5 mergeable=CONFLICTING; answers y
+run ghm 5
+if grep -Eq '^claude --worktree pr-5-conflicts .*merge origin/main into it' $W/calls; then
+  ok "conflicting, 'y' at the handoff: Claude gets a worktree and a merge brief"
+else
+  bad "conflicting, 'y' at the handoff: Claude gets a worktree and a merge brief"
+fi
+
+# ---------------------------------------------------------------------------
 print -r -- "ghm: after the merge"
 # ---------------------------------------------------------------------------
 reset; pr 5 base=main

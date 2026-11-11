@@ -840,14 +840,14 @@ _gh_pull_if_base_of_merged() {
 #
 # No args → multi-select picker (Tab to mark several) → sequential merge in
 # selection order. Arg form (ghm 123, via completion) merges that single PR
-# directly. If the branch you're on has a merged PR — merged by this run or
+# through the same engine, without the per-PR y/N prompt. If the branch you're on has a merged PR — merged by this run or
 # already merged when you started — you're left on an updated base branch, with
 # the what/why printed first (see _gh_home_if_merged). If you're on the base of
 # a PR this run merged, it pulls (see _gh_pull_if_base_of_merged).
 #
 # -x/--external includes external contributors' PRs in the picker (hidden by
 # default). Either way, merging one requires a typed confirmation — including on
-# the arg form, which skips the picker entirely and is therefore gated here.
+# the arg form, which skips the picker; the gate is in _gh_poll_merge.
 ghm() {
   local cur_pr acted show_ext=
   while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
@@ -858,15 +858,20 @@ ghm() {
     acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
     _gh_batch_merge "$tsv" --auto-method --delete-branch
   else
-    local num="${1%%\[*}" m
-    _gh_trust_gate "" "$num" || return 1
-    m=$(_gh_merge_method "" "$num")
-    [[ -n "$m" ]] || m=$(_gh_ask_method "#${num}")
-    [[ -n "$m" ]] || return 1
+    # Same engine as the picker path, minus the y/N/a/q prompt: naming the PR
+    # is the confirmation. So the trust gate, the draft prompt, the
+    # mergeability wait, the update of a BEHIND branch and the conflict handoff
+    # all apply here too.
+    local num="${1%%\[*}"
     cur_pr=$(_gh_current_pr)
     acted="$num"
-    print -r -- "#${num}: --${m}"
-    gh pr merge "$num" --"$m" --delete-branch
+    _gh_poll_merge "" "$num" "" --auto-method --delete-branch
+    if (( $? == 2 )); then
+      # The handoff reads tab-separated fields, and a leading empty one would
+      # collapse, so name the repo.
+      local here; here=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+      _gh_conflict_handoff "${here}"$'\t'"${num}"$'\t'"${REPLY#*:}"$'\t'"${_GH_POLL_METHOD}"
+    fi
   fi
   _gh_home_if_merged "$cur_pr" "$acted"
 }
