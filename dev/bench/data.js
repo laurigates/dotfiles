@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794389196039,
+  "lastUpdate": 1794390199603,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4839,6 +4839,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0075268362,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "40100e3924983ca3923e98bfb36aab3a0e477a27",
+          "message": "feat(zsh): let ghi hand several issues to one Claude session (#584)\n\n## What\n\n`ghi` can hand several issues to Claude at once.\n\n- The fzf picker is multi-select: Tab marks a row, `^a` selects all,\nEnter confirms. The header line lists the keys, as `ghm` does.\n- `ghi 12 34 '#56'` accepts several numbers as arguments. A leading `#`\nand the completion suffix (`123[title]`) are stripped from each.\n- All selected issues go to one session as `/git-issue 12 34 56`. The\n`git-issue` skill already takes several issue refs and groups them\nitself, so `ghi` does not start one session per issue.\n\nSelecting a single issue behaves as before.\n\n## Verification\n\n- A stubbed probe (`gh`, `fzf` and `claude` replaced by shell functions,\n`extended_glob` set, the function text extracted from `dot_zshrc.tmpl`\nwith `sed`) passed 6 of 6 cases: single and multi picker selection, a\ntitle containing a later `#418`, a cancelled picker, single and multiple\narguments.\n- `chezmoi execute-template < dot_zshrc.tmpl | zsh -n /dev/stdin` exits\n0.\n- `mise run lint`: every task passed except `lint:lua`, which fails on\nthis machine because `luacheck` is not installed. This PR changes no\nLua.\n- Not run: the live picker in an interactive shell.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BGPF6vuE13w7U1kpY\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T11:42:34+02:00",
+          "tree_id": "e296a1878b3c14032308dac1c10e8f24f6a7abc6",
+          "url": "https://github.com/laurigates/dotfiles/commit/40100e3924983ca3923e98bfb36aab3a0e477a27"
+        },
+        "date": 1794390199289,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.113520224,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013576446,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011704618,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0105221972,
             "unit": "s"
           }
         ]
