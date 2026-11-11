@@ -288,7 +288,7 @@ pr-todo:
 # the recipe cannot see what a check covers, and a platform component whose title
 # `platform` does not match still lands here.
 [group: "git"]
-renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovate-bot app/laurigates-renovate" jobs="8" platform='\b(argo-?cd|argo-rollouts|argo-workflows|cert-manager|external-dns|external-secrets|ingress-nginx|envoy-gateway|traefik|istio|cilium)\b':
+renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovate-bot app/laurigates-renovate" jobs="8" platform='\b(argo-?cd|argo-rollouts|argo-workflows|cert-manager|external-dns|external-secrets|ingress-nginx|envoy-gateway|traefik|istio|cilium|relay-proxy)\b':
     #!/usr/bin/env -S python3 -I
     import collections, json, re, subprocess, sys
     from concurrent.futures import ThreadPoolExecutor
