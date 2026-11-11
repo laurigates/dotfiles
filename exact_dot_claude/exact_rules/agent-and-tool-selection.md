@@ -74,47 +74,10 @@ one.
 
 ### Evidence
 
-> 2026-06 (dotfiles #237): Opus 4.8 at low effort beat Sonnet 4.6 at high effort
-> on quality and token efficiency. That result set the earlier Opus-only floor.
-> It compared those model versions and says nothing about later ones.
->
-> 2026-09-30 (FVH `infrastructure`): Sonnet 5.5 and Opus 5.5 got identical
-> read-only briefs against a frozen snapshot, at the same default effort, graded
-> against defects verified before the runs.
->
-> | Task | Sonnet 5.5 | Opus 5.5 |
-> |---|---|---|
-> | Diagnosis: why a classifier resolves nothing (4 known causes) | 4/4 | 4/4 |
-> | Review of three recipes (12 known defects) | 10/12 | 12/12 |
->
-> Token use was within 3% on both tasks, and neither run made a false claim.
-> Sonnet's one unique review find was a latent crash under macOS bash 3.2.
-> Opus's unique finds included the recipe's silent exit without a terminal, and
-> a plausible pattern (`client.id`) that would have rotated 14 third-party OAuth
-> client IDs. A separate Sonnet 5.5 implementation task (infrastructure
-> #2517–#2519) held on every claim re-run against the pushed branches. Four graded runs, scored by an Opus session, are
-> a small sample. Re-run the comparison when either model changes.
->
-> 2026-10-14 (claude-plugins #3088–#3090): three Sonnet 5.5 implementers at
-> `high` effort, each followed by a fresh Sonnet verifier that re-ran the gates
-> against the pushed branch. Not every claim held. A verifier caught a new helper
-> reporting an unrunnable gate (exit 127) as a caught mutation, and one
-> implementer's follow-up put a hook's timeout headroom at about 1 s when the
-> worst case overran the 5 s budget by about 3 s; the main loop found that while
-> checking the follow-up before filing it (claude-plugins #3093). The run had no
-> Opus arm and was not graded.
->
-> 2026-10-10 (claude-plugins `docs/audits/haiku-5.5-reevaluation-2026-10-10.md`):
-> 16 Haiku 5.5 classifiers at `medium` effort sorted claude-plugins skills, agents,
-> workflow harnesses and GitHub workflows into `haiku`, `haiku-stage`,
-> `needs-test` or `keep`. 6 Opus 5.5 verifiers at `high` re-read the files
-> behind all 204 non-`keep` verdicts and a control sample of 49 `keep` verdicts.
-> Opus confirmed 93 of the 204 (46%), adjusted 38 and rejected 73; all 49
-> control `keep` verdicts held. The verifiers found the files had been read,
-> with concrete details checking out line by line. Most rejections came from one
-> misreading (a skill's `model:` override lasts for the rest of the turn), and
-> the classifier often listed a risk and assigned `haiku` anyway. No agent or
-> GitHub workflow reached `haiku`.
+The graded runs behind these tiers (2026-06 Opus/Sonnet, 2026-09-30
+infrastructure 10/12 vs 12/12, 2026-10-14 Sonnet implementers, 2026-10-10 Haiku
+re-evaluation) are in `~/.local/share/chezmoi/docs/rules-evidence.md`
+§ agent-and-tool-selection.md.
 
 ### Sanctioned exception: cold-read gates run on Haiku
 

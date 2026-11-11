@@ -18,9 +18,7 @@ When debugging issues, do not assume the root cause without evidence. Verify hyp
 
 ## PR Reviews
 
-Verify review feedback against docs or source before acting on it — its **blockers** as much as its suggestions. A wrong "do not merge" kills good work silently and nothing downstream contradicts it, so control-test each blocker against the repo before it changes a merge decision. This bites hardest with a review delegated to another model, whose wrong findings arrive as well-formed as its right ones; when one contradicts the PR's own recorded measurements, re-derive them rather than splitting the difference.
-
-> 2026-09 (R4C-Cesium-Viewer #959): a delegated review returned **DO NOT MERGE** on three blockers. Each died to one read — `tsconfig.json` sets `checkJs: true`, the "missing symbols" list was an exact match against `src/`, and the claimed "1–3% bundle gain" was a measured −13.95%.
+Verify review feedback against docs or source before acting on it — its **blockers** as much as its suggestions. A wrong "do not merge" kills good work silently and nothing downstream contradicts it, so control-test each blocker against the repo before it changes a merge decision. This bites hardest with a review delegated to another model, whose wrong findings arrive as well-formed as its right ones; when one contradicts the PR's own recorded measurements, re-derive them rather than splitting the difference. (Incident: `~/.local/share/chezmoi/docs/rules-evidence.md` § PR Reviews.)
 
 ## Tool Installation Priority
 
@@ -51,4 +49,4 @@ When installing new tools, prefer earlier options:
 ## Development Notes
 
 - If a justfile exists, prefer its recipes (check `just --help`) over calling tools directly (e.g. use `just test` instead of `bun run test`); run `just --list` to discover recipes
-- Global recipes also exist at `~/.config/just/justfile`, invokable from **any** directory via `just -g <recipe>` (source: `private_dot_config/just/*.just` in the dotfiles repo). Run `just -g --list` to discover them before re-deriving mechanical work — they cover branch and worktree cleanup (`branch-audit`, `worktree-audit`), blocked-PR triage (`pr-todo`), Renovate PR sweeps (`renovate-triage`, and `renovate-risk` for per-PR dossiers to hand to extraction agents), Claude plugin management (`plugins-*`), MCP/Claude setup (`claude-setup`, `mcp-*`), settings hygiene (`settings-audit`), and disk reclaim (`reclaim-dry`/`reclaim`, `ollama-idle`/`ollama-prune`). Prefer an existing recipe over hand-rolling the equivalent (per the `offload-to-deterministic-substrate` rule).
+- Global recipes also exist at `~/.config/just/justfile`, invokable from **any** directory via `just -g <recipe>` (source: `private_dot_config/just/*.just` in the dotfiles repo). Run `just -g --list` to discover them before re-deriving mechanical work (branch/worktree cleanup, PR and Renovate triage, plugins, MCP, settings, disk reclaim). Prefer an existing recipe over hand-rolling the equivalent (per the `offload-to-deterministic-substrate` rule).
