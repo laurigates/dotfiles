@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794393312609,
+  "lastUpdate": 1794396435656,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5059,6 +5059,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0108191102,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b6e4f97a276f83d020b46f5a7fa61cc372ddc5f9",
+          "message": "fix(zsh): take the PR number from the first column in ghpc's picker (#591)\n\n## What\n\n`ghpc` with no argument could not read the PR number from the row picked\nin fzf. The extraction was `${selection##*#}`:\n\n- With `extendedglob` set, as `.zshrc` does, `*#` is a repeat operator\nand the expansion failed with `bad pattern: *#` for every row.\n- With the option off it stripped up to the last `#` in the row, so a PR\nwhose title mentions another number was mistaken for that number.\n\nIt now strips the single leading `#` and cuts at the first space, the\nform `ghi` already uses.\n\n## Verification\n\n- `tests/test-gh-wrappers.zsh`: the `ghpc` case runs under\n`extended_glob` again, on a PR titled `fix #418 thing`, and expects PR\n6. Against the old line the script aborted at that case (exit 1); with\nthe fix all 84 assertions pass.\n- Not run: `ghpc` in a live interactive shell.\n\nFixes #586\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BGPF6vuE13w7U1kpY\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T13:26:30+02:00",
+          "tree_id": "de6ef4695b8b0dfc706761c22d1206dea2d21c54",
+          "url": "https://github.com/laurigates/dotfiles/commit/b6e4f97a276f83d020b46f5a7fa61cc372ddc5f9"
+        },
+        "date": 1794396435171,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11695883266666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0014297988000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011473568000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0186580578,
             "unit": "s"
           }
         ]
