@@ -1,3 +1,7 @@
+---
+id: ADR-0015
+---
+
 # ADR-0015: Gitleaks for Secret Detection
 
 **Date**: 2026-04-08

@@ -129,10 +129,14 @@
     "sync-ids": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": null,
-      "last_result": null,
+      "last_completed_at": "2026-11-11T09:43:10Z",
+      "last_result": "success",
       "schedule": "on-change",
-      "stats": {},
+      "stats": {
+        "runs_total": 1,
+        "items_processed": 21,
+        "items_created": 17
+      },
       "context": {}
     },
     "claude-md": {
@@ -184,6 +188,125 @@
         "title": "Sketchybar macOS Integration",
         "github_issues": [],
         "created": "2026-04-08"
+      },
+      "ADR-0001": {
+        "path": "docs/adrs/0001-chezmoi-exact-directory-strategy.md",
+        "title": "Chezmoi exact_ Directory Strategy for Claude Code Configuration",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0002": {
+        "path": "docs/adrs/0002-unified-tool-version-management-mise.md",
+        "title": "Unified Tool Version Management with Mise",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted (Migration In Progress; lockfile not adopted)"
+      },
+      "ADR-0003": {
+        "path": "docs/adrs/0003-skill-activation-trigger-keywords.md",
+        "title": "Skill Activation via Trigger Keywords",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0004": {
+        "path": "docs/adrs/0004-subagent-first-delegation-strategy.md",
+        "title": "Subagent-First Delegation Strategy",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0005": {
+        "path": "docs/adrs/0005-namespace-based-command-organization.md",
+        "title": "Namespace-Based Command Organization",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Superseded"
+      },
+      "ADR-0006": {
+        "path": "docs/adrs/0006-documentation-first-development.md",
+        "title": "Documentation-First Development",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0007": {
+        "path": "docs/adrs/0007-layered-knowledge-distribution.md",
+        "title": "Layered Knowledge Distribution (CLAUDE.md Architecture)",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0008": {
+        "path": "docs/adrs/0008-project-scoped-mcp-servers.md",
+        "title": "Project-Scoped MCP Servers",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0009": {
+        "path": "docs/adrs/0009-conventional-commits-release-please.md",
+        "title": "Conventional Commits and Release-Please Automation",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0010": {
+        "path": "docs/adrs/0010-tiered-test-execution.md",
+        "title": "Tiered Test Execution with Specialized Agents",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted (command syntax superseded)"
+      },
+      "ADR-0011": {
+        "path": "docs/adrs/0011-claude-rules-migration.md",
+        "title": "Migration to Claude Code Rules System",
+        "github_issues": [],
+        "created": "2025-12-14",
+        "status": "Accepted"
+      },
+      "ADR-0012": {
+        "path": "docs/adrs/0012-justfile-command-runner.md",
+        "title": "Justfile Command Runner",
+        "github_issues": [],
+        "created": "2025-12-16",
+        "status": "Accepted"
+      },
+      "ADR-0013": {
+        "path": "docs/adrs/0013-nixos-declarative-system-configuration.md",
+        "title": "NixOS Configuration for Declarative System Management",
+        "github_issues": [],
+        "created": "2025-12-24",
+        "status": "Accepted"
+      },
+      "ADR-0014": {
+        "path": "docs/adrs/0014-profile-based-package-registry.md",
+        "title": "Profile-Based Package Registry",
+        "github_issues": [],
+        "created": "2026-04-08",
+        "status": "Accepted"
+      },
+      "ADR-0015": {
+        "path": "docs/adrs/0015-gitleaks-secret-detection.md",
+        "title": "Gitleaks for Secret Detection",
+        "github_issues": [],
+        "created": "2026-04-08",
+        "status": "Accepted"
+      },
+      "ADR-0016": {
+        "path": "docs/adrs/0016-shell-completion-auto-generation.md",
+        "title": "Shell Completion Auto-Generation Pattern",
+        "github_issues": [],
+        "created": "2026-04-08",
+        "status": "Accepted"
+      },
+      "ADR-0017": {
+        "path": "docs/adrs/0017-ci-platform-coverage.md",
+        "title": "CI Platform Coverage — Test macOS and Ubuntu",
+        "github_issues": [],
+        "created": "2026-08-19",
+        "status": "Accepted"
       }
     },
     "github_issues": {}

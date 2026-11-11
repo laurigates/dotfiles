@@ -1,3 +1,7 @@
+---
+id: ADR-0013
+---
+
 # ADR-0013: NixOS Configuration for Declarative System Management
 
 ## Status

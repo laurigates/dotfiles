@@ -1,3 +1,7 @@
+---
+id: ADR-0004
+---
+
 # ADR-0004: Subagent-First Delegation Strategy
 
 ## Status
