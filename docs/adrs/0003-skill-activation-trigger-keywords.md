@@ -1,3 +1,7 @@
+---
+id: ADR-0003
+---
+
 # ADR-0003: Skill Activation via Trigger Keywords
 
 ## Status

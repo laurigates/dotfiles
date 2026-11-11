@@ -1,3 +1,7 @@
+---
+id: ADR-0005
+---
+
 # ADR-0005: Namespace-Based Command Organization
 
 ## Status

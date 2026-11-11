@@ -1,3 +1,7 @@
+---
+id: ADR-0008
+---
+
 # ADR-0008: Project-Scoped MCP Servers
 
 ## Status

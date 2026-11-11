@@ -322,7 +322,7 @@ ghpc() {
           --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
 
     [[ -z "$selection" ]] && return 0
-    pr_num="${${selection##*#}%% *}"
+    pr_num="${${selection#\#}%% *}"
   else
     # Args provided: strip completion suffix (e.g. "123[branch]" -> "123")
     pr_num="${1%%\[*}"
