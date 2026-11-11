@@ -1,3 +1,7 @@
+---
+id: ADR-0014
+---
+
 # ADR-0014: Profile-Based Package Registry
 
 **Date**: 2026-04-08

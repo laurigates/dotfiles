@@ -1,3 +1,7 @@
+---
+id: ADR-0016
+---
+
 # ADR-0016: Shell Completion Auto-Generation Pattern
 
 **Date**: 2026-04-08

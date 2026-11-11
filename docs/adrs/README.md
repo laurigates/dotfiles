@@ -14,7 +14,7 @@ An ADR is a document that captures an important architectural decision made alon
 | [0002](0002-unified-tool-version-management-mise.md) | Unified Tool Version Management with Mise | Accepted | 2024-12 |
 | [0003](0003-skill-activation-trigger-keywords.md) | Skill Activation via Trigger Keywords | Accepted | 2024-12 |
 | [0004](0004-subagent-first-delegation-strategy.md) | Subagent-First Delegation Strategy | Accepted | 2024-12 |
-| [0005](0005-namespace-based-command-organization.md) | Namespace-Based Command Organization | Accepted | 2024-12 |
+| [0005](0005-namespace-based-command-organization.md) | Namespace-Based Command Organization | Superseded | 2024-12 |
 | [0006](0006-documentation-first-development.md) | Documentation-First Development | Accepted | 2024-12 |
 | [0007](0007-layered-knowledge-distribution.md) | Layered Knowledge Distribution | Accepted | 2024-12 |
 | [0008](0008-project-scoped-mcp-servers.md) | Project-Scoped MCP Servers | Accepted | 2024-12 |
@@ -27,6 +27,14 @@ An ADR is a document that captures an important architectural decision made alon
 | [0015](0015-gitleaks-secret-detection.md) | Gitleaks for Secret Detection | Accepted | 2026-04 |
 | [0016](0016-shell-completion-auto-generation.md) | Shell Completion Auto-Generation Pattern | Accepted | 2026-04 |
 | [0017](0017-ci-platform-coverage.md) | CI Platform Coverage — Test macOS and Ubuntu | Accepted | 2026-08 |
+| [0018](0018-always-loaded-context-budget.md) | Byte Budget for Always-Loaded Claude Context | Accepted | 2026-11 |
+| [0019](0019-worktree-first-changes-and-chezmoi-guards.md) | Worktree-First Changes and Guard Hooks Around chezmoi | Accepted | 2026-11 |
+| [0020](0020-marketplace-plugins-project-pin.md) | Marketplace Plugins with a Project-Level Pin | Accepted | 2026-11 |
+| [0021](0021-org-reusable-workflows.md) | Call Org Reusable Workflows Instead of Local Copies | Accepted | 2026-11 |
+| [0022](0022-exact-ci-toolchain-pins.md) | Exact CI Toolchain Pins Instead of a Lockfile | Accepted | 2026-11 |
+| [0023](0023-global-justfile-modules.md) | Global Justfile Built from Shared Modules | Accepted | 2026-11 |
+| [0024](0024-pr-decides-merge-method.md) | The PR Decides Its Merge Method | Accepted | 2026-11 |
+| [0025](0025-git-identity-and-hook-template.md) | Git Identity by Location and Hooks from a Template Directory | Accepted | 2026-11 |
 
 ## ADR Format
 
@@ -51,10 +59,16 @@ What is the change being proposed/made?
 What are the positive and negative results?
 ```
 
+ADR-0018 onward use the five-section blueprint template instead (Context,
+Decision, Consequences, Options Considered, Related ADRs), with `status`,
+`created` and `domain` in frontmatter. ADR-0001 to ADR-0017 keep the format
+above.
+
 ## Creating a New ADR
 
-1. Copy the template from an existing ADR
-2. Number sequentially (0003, 0004, etc.)
+1. Start from blueprint-plugin's `templates/adr-template.md`
+2. Number sequentially (0026, 0027, etc.) and set the frontmatter `id: ADR-NNNN` to match the filename
 3. Use lowercase-kebab-case for filenames
 4. Update this README's index table
-5. Link related ADRs in the "Related Decisions" section
+5. Link related ADRs in the "Related ADRs" section and the `relates-to` frontmatter
+6. Run `/blueprint:sync-ids` to register the ADR in `docs/blueprint/manifest.json`

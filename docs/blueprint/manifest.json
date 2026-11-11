@@ -71,32 +71,33 @@
     "derive-plans": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_completed_at": "2026-11-11T09:58:51Z",
       "last_result": "success",
       "schedule": "weekly",
       "stats": {
-        "runs_total": 1,
-        "items_processed": 200,
-        "items_created": 6
+        "runs_total": 2,
+        "items_processed": 377,
+        "items_created": 8
       },
       "context": {
-        "commits_analyzed_up_to": "afaec005957568bd34ddb0ffd2daa7b4a98a70c8",
-        "commits_analyzed_count": 200
+        "commits_analyzed_up_to": "1d6a8e3ca1cd0e886a461423a750fb967430feba",
+        "commits_analyzed_count": 377
       }
     },
     "derive-rules": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_completed_at": "2026-11-11T09:59:17Z",
       "last_result": "success",
       "schedule": "weekly",
       "stats": {
-        "runs_total": 1,
-        "items_processed": 200,
-        "items_created": 2
+        "runs_total": 2,
+        "items_processed": 377,
+        "items_created": 0
       },
       "context": {
-        "commits_analyzed_up_to": "e21bb5b"
+        "commits_analyzed_up_to": "1d6a8e3ca1cd0e886a461423a750fb967430feba",
+        "commits_analyzed_count": 377
       }
     },
     "generate-rules": {
@@ -111,10 +112,14 @@
     "adr-validate": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": null,
-      "last_result": null,
+      "last_completed_at": "2026-11-11T10:15:34Z",
+      "last_result": "success",
       "schedule": "weekly",
-      "stats": {},
+      "stats": {
+        "runs_total": 2,
+        "items_processed": 25,
+        "items_created": 0
+      },
       "context": {}
     },
     "feature-tracker-sync": {
@@ -129,10 +134,14 @@
     "sync-ids": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": null,
-      "last_result": null,
+      "last_completed_at": "2026-11-11T09:43:10Z",
+      "last_result": "success",
       "schedule": "on-change",
-      "stats": {},
+      "stats": {
+        "runs_total": 1,
+        "items_processed": 21,
+        "items_created": 17
+      },
       "context": {}
     },
     "claude-md": {
@@ -184,6 +193,223 @@
         "title": "Sketchybar macOS Integration",
         "github_issues": [],
         "created": "2026-04-08"
+      },
+      "ADR-0001": {
+        "path": "docs/adrs/0001-chezmoi-exact-directory-strategy.md",
+        "title": "Chezmoi exact_ Directory Strategy for Claude Code Configuration",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0002": {
+        "path": "docs/adrs/0002-unified-tool-version-management-mise.md",
+        "title": "Unified Tool Version Management with Mise",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted (Migration In Progress; lockfile not adopted)"
+      },
+      "ADR-0003": {
+        "path": "docs/adrs/0003-skill-activation-trigger-keywords.md",
+        "title": "Skill Activation via Trigger Keywords",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0004": {
+        "path": "docs/adrs/0004-subagent-first-delegation-strategy.md",
+        "title": "Subagent-First Delegation Strategy",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0005": {
+        "path": "docs/adrs/0005-namespace-based-command-organization.md",
+        "title": "Namespace-Based Command Organization",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Superseded"
+      },
+      "ADR-0006": {
+        "path": "docs/adrs/0006-documentation-first-development.md",
+        "title": "Documentation-First Development",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0007": {
+        "path": "docs/adrs/0007-layered-knowledge-distribution.md",
+        "title": "Layered Knowledge Distribution (CLAUDE.md Architecture)",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0008": {
+        "path": "docs/adrs/0008-project-scoped-mcp-servers.md",
+        "title": "Project-Scoped MCP Servers",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0009": {
+        "path": "docs/adrs/0009-conventional-commits-release-please.md",
+        "title": "Conventional Commits and Release-Please Automation",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted"
+      },
+      "ADR-0010": {
+        "path": "docs/adrs/0010-tiered-test-execution.md",
+        "title": "Tiered Test Execution with Specialized Agents",
+        "github_issues": [],
+        "created": "2025-12-13",
+        "status": "Accepted (command syntax superseded)"
+      },
+      "ADR-0011": {
+        "path": "docs/adrs/0011-claude-rules-migration.md",
+        "title": "Migration to Claude Code Rules System",
+        "github_issues": [],
+        "created": "2025-12-14",
+        "status": "Accepted"
+      },
+      "ADR-0012": {
+        "path": "docs/adrs/0012-justfile-command-runner.md",
+        "title": "Justfile Command Runner",
+        "github_issues": [],
+        "created": "2025-12-16",
+        "status": "Accepted"
+      },
+      "ADR-0013": {
+        "path": "docs/adrs/0013-nixos-declarative-system-configuration.md",
+        "title": "NixOS Configuration for Declarative System Management",
+        "github_issues": [],
+        "created": "2025-12-24",
+        "status": "Accepted"
+      },
+      "ADR-0014": {
+        "path": "docs/adrs/0014-profile-based-package-registry.md",
+        "title": "Profile-Based Package Registry",
+        "github_issues": [],
+        "created": "2026-04-08",
+        "status": "Accepted"
+      },
+      "ADR-0015": {
+        "path": "docs/adrs/0015-gitleaks-secret-detection.md",
+        "title": "Gitleaks for Secret Detection",
+        "github_issues": [],
+        "created": "2026-04-08",
+        "status": "Accepted"
+      },
+      "ADR-0016": {
+        "path": "docs/adrs/0016-shell-completion-auto-generation.md",
+        "title": "Shell Completion Auto-Generation Pattern",
+        "github_issues": [],
+        "created": "2026-04-08",
+        "status": "Accepted"
+      },
+      "ADR-0017": {
+        "path": "docs/adrs/0017-ci-platform-coverage.md",
+        "title": "CI Platform Coverage — Test macOS and Ubuntu",
+        "github_issues": [],
+        "created": "2026-08-19",
+        "status": "Accepted"
+      },
+      "ADR-0018": {
+        "path": "docs/adrs/0018-always-loaded-context-budget.md",
+        "title": "Byte Budget for Always-Loaded Claude Context",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "context-engineering",
+        "relates_to": [
+          "ADR-0007",
+          "ADR-0011",
+          "ADR-0020"
+        ]
+      },
+      "ADR-0019": {
+        "path": "docs/adrs/0019-worktree-first-changes-and-chezmoi-guards.md",
+        "title": "Worktree-First Changes and Guard Hooks Around chezmoi",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "chezmoi-workflow",
+        "relates_to": [
+          "ADR-0001"
+        ]
+      },
+      "ADR-0020": {
+        "path": "docs/adrs/0020-marketplace-plugins-project-pin.md",
+        "title": "Marketplace Plugins with a Project-Level Pin",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "plugin-management",
+        "relates_to": [
+          "ADR-0005",
+          "ADR-0003",
+          "ADR-0018"
+        ]
+      },
+      "ADR-0021": {
+        "path": "docs/adrs/0021-org-reusable-workflows.md",
+        "title": "Call Org Reusable Workflows Instead of Local Copies",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "ci-workflows",
+        "relates_to": [
+          "ADR-0009",
+          "ADR-0017",
+          "ADR-0022",
+          "ADR-0024"
+        ]
+      },
+      "ADR-0022": {
+        "path": "docs/adrs/0022-exact-ci-toolchain-pins.md",
+        "title": "Exact CI Toolchain Pins Instead of a Lockfile",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "ci-toolchain",
+        "relates_to": [
+          "ADR-0002",
+          "ADR-0017",
+          "ADR-0021"
+        ]
+      },
+      "ADR-0023": {
+        "path": "docs/adrs/0023-global-justfile-modules.md",
+        "title": "Global Justfile Built from Shared Modules",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "task-runner",
+        "relates_to": [
+          "ADR-0012"
+        ]
+      },
+      "ADR-0024": {
+        "path": "docs/adrs/0024-pr-decides-merge-method.md",
+        "title": "The PR Decides Its Merge Method",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "pr-merging",
+        "relates_to": [
+          "ADR-0009",
+          "ADR-0021"
+        ]
+      },
+      "ADR-0025": {
+        "path": "docs/adrs/0025-git-identity-and-hook-template.md",
+        "title": "Git Identity by Location and Hooks from a Template Directory",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "git-config",
+        "relates_to": [
+          "ADR-0015"
+        ]
       }
     },
     "github_issues": {}
