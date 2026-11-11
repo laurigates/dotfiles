@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:telegram-check", "test:downloads-tidy", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:renovate-triage-buckets", "test:telegram-check", "test:downloads-tidy", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -148,6 +148,10 @@ run = "tests/test-reclaim.sh"
 [tasks."test:renovate-triage"]
 description = "Regression test: `just renovate-triage` leaves archived repos out of its PR search (#538)"
 run = "tests/test-renovate-triage-archived.sh"
+
+[tasks."test:renovate-triage-buckets"]
+description = "Regression test: `just renovate-triage` holds platform-chart and title-check-only PRs, and names the checks behind SAFE (#532)"
+run = "tests/test-renovate-triage-buckets.sh"
 
 [tasks."test:telegram-check"]
 description = "Regression test: telegram-check reports the bot and chat, never prints the token, and passes the secret-protection hook (#518)"
