@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794385869688,
+  "lastUpdate": 1794389196039,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4795,6 +4795,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0095565466,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1d6a8e3ca1cd0e886a461423a750fb967430feba",
+          "message": "chore(blueprint): record the PRD's Draft status in the manifest (#582)\n\n## What\n\nAdds `\"status\": \"Draft\"` to the PRD-001 entry in\n`docs/blueprint/manifest.json`.\n\n## Why\n\n`docs/prds/project-overview.md` already has `status: Draft` in its\nfrontmatter (line 5). The manifest entry lacked the field.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99EussZXCErBg8Vcqa\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T11:25:44+02:00",
+          "tree_id": "4a29925052ef177fc89114fd1afe54a8657da36f",
+          "url": "https://github.com/laurigates/dotfiles/commit/1d6a8e3ca1cd0e886a461423a750fb967430feba"
+        },
+        "date": 1794389195550,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09001515166666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009568690000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008378652,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0075268362,
             "unit": "s"
           }
         ]
