@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794396435656,
+  "lastUpdate": 1794396589706,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5103,6 +5103,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0186580578,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d295defbf8ff86c81aeb24798d06ee8134e43ec4",
+          "message": "fix(zsh): keep the own-login cache across a ghm run (#592)\n\n## What\n\n`_gh_me` caches the user's login so the trust check does not call `gh\napi user` per PR. Every caller ran it inside `$(...)`, so the cache was\nwritten in a subshell and lost. A `ghm` picker run looked the login up\nonce for the picker and once more for each PR.\n\n- `_gh_me` now prints nothing. Callers call it and read `$_GH_ME`.\n- `ghm` and `_gh_trust_gate` call it in their own shell, before the\nsubstitutions that need the login.\n\nThe trust verdicts do not change.\n\n## Verification\n\n- `tests/test-gh-wrappers.zsh`, 89 assertions pass under mise's zsh and\n`/bin/zsh`. New cases count `gh api user` calls: a two-PR picker run\nmakes 1 (3 before the fix), `ghm <number>` makes 1, and a failed lookup\nis also cached (1, was 3).\n- Not run: `ghrp`, which reads the login the same way but has no test\nyet (#589), and a live run against GitHub.\n\nFixes #590\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BGPF6vuE13w7U1kpY\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T13:29:00+02:00",
+          "tree_id": "1fbef027726ace8edc75ccfdd0c59844d811e21a",
+          "url": "https://github.com/laurigates/dotfiles/commit/d295defbf8ff86c81aeb24798d06ee8134e43ec4"
+        },
+        "date": 1794396589061,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11869895733333335,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013914738000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011941532000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0090979052,
             "unit": "s"
           }
         ]
