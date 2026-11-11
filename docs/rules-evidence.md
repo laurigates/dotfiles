@@ -36,7 +36,7 @@ incidents and measurements that justify it.
 > checking the follow-up before filing it (claude-plugins #3093). The run had no
 > Opus arm and was not graded.
 >
-> 2026-10-10 (claude-plugins `docs/audits/haiku-5.5-reevaluation-2026-10-10.md`):
+> 2026-10-10 (claude-plugins audit `haiku-5.5-reevaluation-2026-10-10.md`):
 > 16 Haiku 5.5 classifiers at `medium` effort sorted claude-plugins skills, agents,
 > workflow harnesses and GitHub workflows into `haiku`, `haiku-stage`,
 > `needs-test` or `keep`. 6 Opus 5.5 verifiers at `high` re-read the files
