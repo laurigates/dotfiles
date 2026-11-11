@@ -80,23 +80,24 @@
         "items_created": 8
       },
       "context": {
-        "commits_analyzed_up_to": "40100e3924983ca3923e98bfb36aab3a0e477a27",
-        "commits_analyzed_count": 200
+        "commits_analyzed_up_to": "1d6a8e3ca1cd0e886a461423a750fb967430feba",
+        "commits_analyzed_count": 377
       }
     },
     "derive-rules": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_completed_at": "2026-11-11T09:59:17Z",
       "last_result": "success",
       "schedule": "weekly",
       "stats": {
-        "runs_total": 1,
-        "items_processed": 200,
-        "items_created": 2
+        "runs_total": 2,
+        "items_processed": 377,
+        "items_created": 0
       },
       "context": {
-        "commits_analyzed_up_to": "e21bb5b"
+        "commits_analyzed_up_to": "1d6a8e3ca1cd0e886a461423a750fb967430feba",
+        "commits_analyzed_count": 377
       }
     },
     "generate-rules": {
