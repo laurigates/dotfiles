@@ -71,16 +71,16 @@
     "derive-plans": {
       "enabled": true,
       "auto_run": false,
-      "last_completed_at": "2026-04-08T00:00:00Z",
+      "last_completed_at": "2026-11-11T09:58:51Z",
       "last_result": "success",
       "schedule": "weekly",
       "stats": {
-        "runs_total": 1,
-        "items_processed": 200,
-        "items_created": 6
+        "runs_total": 2,
+        "items_processed": 377,
+        "items_created": 8
       },
       "context": {
-        "commits_analyzed_up_to": "afaec005957568bd34ddb0ffd2daa7b4a98a70c8",
+        "commits_analyzed_up_to": "40100e3924983ca3923e98bfb36aab3a0e477a27",
         "commits_analyzed_count": 200
       }
     },
@@ -311,6 +311,98 @@
         "github_issues": [],
         "created": "2026-08-19",
         "status": "Accepted"
+      },
+      "ADR-0018": {
+        "path": "docs/adrs/0018-always-loaded-context-budget.md",
+        "title": "Byte Budget for Always-Loaded Claude Context",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "context-engineering",
+        "relates_to": [
+          "ADR-0007",
+          "ADR-0011"
+        ]
+      },
+      "ADR-0019": {
+        "path": "docs/adrs/0019-worktree-first-changes-and-chezmoi-guards.md",
+        "title": "Worktree-First Changes and Guard Hooks Around chezmoi",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "chezmoi-workflow",
+        "relates_to": [
+          "ADR-0001"
+        ]
+      },
+      "ADR-0020": {
+        "path": "docs/adrs/0020-marketplace-plugins-project-pin.md",
+        "title": "Marketplace Plugins with a Project-Level Pin",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "plugin-management",
+        "relates_to": [
+          "ADR-0005",
+          "ADR-0003"
+        ]
+      },
+      "ADR-0021": {
+        "path": "docs/adrs/0021-org-reusable-workflows.md",
+        "title": "Call Org Reusable Workflows Instead of Local Copies",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "ci-workflows",
+        "relates_to": [
+          "ADR-0009",
+          "ADR-0017"
+        ]
+      },
+      "ADR-0022": {
+        "path": "docs/adrs/0022-exact-ci-toolchain-pins.md",
+        "title": "Exact CI Toolchain Pins Instead of a Lockfile",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "ci-toolchain",
+        "relates_to": [
+          "ADR-0002",
+          "ADR-0017"
+        ]
+      },
+      "ADR-0023": {
+        "path": "docs/adrs/0023-global-justfile-modules.md",
+        "title": "Global Justfile Built from Shared Modules",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "task-runner",
+        "relates_to": [
+          "ADR-0012"
+        ]
+      },
+      "ADR-0024": {
+        "path": "docs/adrs/0024-pr-decides-merge-method.md",
+        "title": "The PR Decides Its Merge Method",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "pr-merging",
+        "relates_to": [
+          "ADR-0009"
+        ]
+      },
+      "ADR-0025": {
+        "path": "docs/adrs/0025-git-identity-and-hook-template.md",
+        "title": "Git Identity by Location and Hooks from a Template Directory",
+        "github_issues": [],
+        "created": "2026-11-11",
+        "status": "Accepted",
+        "domain": "git-config",
+        "relates_to": [
+          "ADR-0015"
+        ]
       }
     },
     "github_issues": {}
