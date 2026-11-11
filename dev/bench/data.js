@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794393157065,
+  "lastUpdate": 1794393312609,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5015,6 +5015,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0109196534,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1c34cb25c11d0a31f0f0a1db548f500f7b1bc1a4",
+          "message": "docs(blueprint): run overdue maintenance — ADR ids, index fix, ADR-0018 to ADR-0025 (#585)\n\nStacked on #583 (base branch `worktree-chore-blueprint-upgrade-3.4`).\nMerge #583 first.\n\n## What\n\nThe blueprint maintenance tasks that `/blueprint:status` reported as\nnever run or overdue, one commit each:\n\n1. **sync-ids** — the 17 existing ADRs had no frontmatter, so the id\nregistry held only PRD-001 and PRP-001..003. Each ADR now carries `id:\nADR-NNNN` and is registered in `docs/blueprint/manifest.json`.\n2. **adr-validate** — the README index listed ADR-0005 as Accepted; its\nown Status section says Superseded. Fixed.\n3. **derive-plans** — eight decisions made in the 377 commits since\n2026-04-08 had no ADR. They are written up as ADR-0018 to ADR-0025:\n\n   | ADR | Decision |\n   |---|---|\n   | 0018 | Byte budget for always-loaded Claude context |\n   | 0019 | Worktree-first changes and guard hooks around chezmoi |\n   | 0020 | Marketplace plugins with a project-level pin |\n   | 0021 | Call org reusable workflows instead of local copies |\n   | 0022 | Exact CI toolchain pins instead of a lockfile |\n   | 0023 | Global justfile built from shared modules |\n   | 0024 | The PR decides its merge method |\n| 0025 | Git identity by location and hooks from a template directory |\n\n4. **derive-rules** — run in gaps-only mode. It wrote no rule files; the\nlast commit message lists which existing rule or test covers each\nrepeated fix pattern.\n\n5. **Review fixes** — `/code-review` found that five new ADRs linked an\nADR in their Related ADRs section that the `relates-to` frontmatter\nomitted, and that the recorded adr-validate run covered 17 ADRs, not 25.\nThe last commit adds the missing `relates-to` entries (frontmatter and\nregistry) and re-records the validation over all 25.\n\n## For review\n\n- **Task-registry counters are per-run, as the blueprint skills write\nthem.** `stats.items_created` holds the last run's count (derive-rules\nwent from 2 to 0) while `runs_total` accumulates.\nlaurigates/claude-plugins#3553 tracks removing those counters.\n- **Registry `created` is the document date.** ADR-0001 to ADR-0010 are\nregistered as 2025-12-13, the day the files were added; the README index\nshows their 2024-12 decision date. Each of those ADRs states both\n(\"2024-12 (retroactively documented 2025-12)\").\n\n- **ADR-0020 reverses the reasoning in #286.** That PR made the plugin\npin exhaustive on the premise that a project `enabledPlugins` map\nreplaces the global one. The current configure-plugin reference (1.43.4,\n`references/settings-json.md`) describes per-key merging, and the pin\nlists 44 of the marketplace's 50 plugins while `linux-plugin`, one of\nthe six unlisted, still loads here. The ADR records the pin as\nnon-exhaustive and says the merge behaviour was not checked against\nClaude Code's own documentation.\n- **The eight ADRs are derived from commit messages and the current\ntree.** The Options Considered sections reconstruct alternatives from PR\nbodies. Where a PR did not state a rejected option, the rejection reason\nis my reading of it.\n- **ADR-0018 onward use the five-section blueprint template with\nfrontmatter.** ADR-0001 to ADR-0017 keep the Nygard format and gain only\nthe `id` frontmatter. The README says so.\n- **The README index stays hand-written.** `generate-adr-index.sh\n--check` reports `markers_absent`. Adopting the generated block would\ndrop the Date column and needs `status` in the frontmatter of the 17\nolder ADRs.\n\n## Checks\n\n- `check-adr-numbers.sh`: `ADR_COUNT=25`, `REGISTRY_ADR_COUNT=25`,\n`STATUS=OK`.\n- `blueprint-sync-ids.sh`: `ADR_WITH_ID=25`, `TOTAL_NEEDS_ID=0`,\n`STATUS=OK`.\n- `mise run lint:docs`: `DANGLING_COUNT=0`, `STATUS=OK`.\n- A script checked that 21 file paths and 15 identifiers cited in the\nnew ADRs exist in the tree. One did not: `worktree.baseRef` is set in no\ntracked file, so ADR-0019 calls it Claude Code's default.\n- `mise run test`: every test task passed. `lint:lua` fails locally\nbecause Homebrew's luacheck 1.2.0 crashes on Lua 5.5; this PR changes no\nLua.\n\n## Follow-up\n\n- laurigates/claude-plugins#3610 — the manifest schema rejects\n`structure.has_ai_docs`, which this repository's manifest has carried\nsince before the upgrade. `/blueprint:status` reports it as a schema\nviolation until that issue is resolved.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99gUXXG2VVjiXfA24z\n\n---------\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T12:34:27+02:00",
+          "tree_id": "bc6b35250654050413b6c3c52b185d16a378e037",
+          "url": "https://github.com/laurigates/dotfiles/commit/1c34cb25c11d0a31f0f0a1db548f500f7b1bc1a4"
+        },
+        "date": 1794393312311,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13162570733333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015410534,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012900163999999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0108191102,
             "unit": "s"
           }
         ]
