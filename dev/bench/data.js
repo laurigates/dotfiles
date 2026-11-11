@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794390199603,
+  "lastUpdate": 1794392690418,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4883,6 +4883,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0105221972,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9ddd7deffa5707343689077ebcb526851d432a59",
+          "message": "refactor(zsh): move the gh wrappers to their own file, test them, and dedupe (#587)\n\n## What\n\nFour commits, meant to be rebase-merged so each stays visible:\n\n1. **Move.** The `gh*` wrappers (pickers, the `ghm`/`ghrp` merge engine,\n`ghi`, `ghpc`) were 1113 lines of `dot_zshrc.tmpl`. They move verbatim\nto `private_dot_config/zsh/gh-wrappers.zsh`\n(`~/.config/zsh/gh-wrappers.zsh`), which `~/.zshrc` sources. Completions\nand fzf-tab previews stay in `.zshrc` because they need `compinit`.\n2. **Tests.** `tests/test-gh-wrappers.zsh` sources the shipped file with\n`gh`, `git`, `fzf`, `claude` and the prompts replaced by functions. `gh`\nanswers from per-PR JSON fixtures through the wrappers' own `--jq`\nprograms, run by the real `jq`. It is wired as `mise run\ntest:gh-wrappers`, into `mise run test`, and into the macOS CI job under\n`/bin/zsh`.\n3. **Behaviour change: `ghm <number>` uses the merge engine.** It used\nto check trust and method itself and call `gh pr merge` directly. It now\ngoes through `_gh_poll_merge`, so it gets the draft prompt, the\nmergeability wait, the update of a `BEHIND` branch (with CI wait and\nhead pin) and the conflict handoff to Claude. It still skips the per-PR\ny/N prompt.\n4. **Dedupe.** The CI/review jq expression (three copies) becomes jq\nfunctions `ci` and `rev`. The TTY colour block (13 copies) becomes\n`local $_GH_COLORS; _gh_palette <fd>`. The `repo#num` / `#num` branch\n(seven copies) becomes `\"${repo}#${num}\"`.\n\n## Verification\n\n- `tests/test-gh-wrappers.zsh`: 72 assertions pass under mise's zsh and\nunder `/bin/zsh`.\n- Teeth: a script broke eight guards one at a time (trust gate, head\npin, update-on-moved-base, hiding external PRs, conflict check, draft\ncheck, CI result, per-PR method). The suite failed for all eight, before\nand after the dedupe.\n- The seven assertions for commit 3 failed against the old `ghm` and\npass now.\n- `zsh -n` passes on the new file and on the rendered `.zshrc`.\n- `tests/test-mise-tasks.sh` (51 passed, 6 skipped),\n`tests/test-chezmoi-root-meta.sh`, `mise run lint:shell`, `mise run\nlint:docs` and `actionlint` exit 0.\n- Not run: the wrappers against live GitHub in an interactive shell, and\n`chezmoi apply` of the new target. The stub's `gh pr update-branch`\nmessages are taken from the strings the wrapper matches, not from a\nrecorded `gh` run.\n\n## Follow-ups\n\n- #586: `ghpc`'s picker fails with `bad pattern: *#` under\n`extended_glob`, found by the new test. It predates this PR and is not\nfixed here; the test's `ghpc` case turns the option off until it is.\n- A second PR, stacked on this branch, simplifies `_gh_poll_merge`'s\nreturn contract.\n\n## After merge\n\nFrom the main checkout: `chezmoi apply ~/.config/zsh/gh-wrappers.zsh\n~/.zshrc`, then `exec zsh`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BGPF6vuE13w7U1kpY\n\n---------\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T12:24:00+02:00",
+          "tree_id": "5dd20e5dbeff0a3c9d88eafe0659ffde5c6bc8c8",
+          "url": "https://github.com/laurigates/dotfiles/commit/9ddd7deffa5707343689077ebcb526851d432a59"
+        },
+        "date": 1794392690100,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.1385155856666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015539398000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.001363928,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010780305600000002,
             "unit": "s"
           }
         ]
