@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794392690418,
+  "lastUpdate": 1794392868938,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -4927,6 +4927,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.010780305600000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8163196cb2b9ae94fee581f36e32781946f45ebe",
+          "message": "refactor(zsh): give _gh_poll_merge one result channel (#588)\n\nStacked on #587 (base branch `refactor/gh-wrappers`). Merge #587 first.\n\n## What\n\n`_gh_poll_merge`, the per-PR step behind `ghm` and `ghrp`, reported its\noutcome four ways: an exit code, `REPLY` (the `repo:base` key, or empty\nto mean \"skipped\"), the global `_GH_POLL_METHOD`, and a rewritten `argv`\nin which `--auto-method` was replaced by the chosen flag. It also reused\n`REPLY` for the head SHA returned by `_gh_update_and_wait`.\n\nNow:\n\n- Signature: `_gh_poll_merge <repo|\"\"> <num> <moved>\n<auto|rebase|squash> [gh pr merge flags...]`.\n- Exit status: 0 merged, 1 failed, 2 conflicting, 3 skipped. A skip used\nto be status 0 with an empty `REPLY`.\n- For merged and conflicting it sets `reply=(<base branch> <method>)`.\n- `_gh_batch_merge` takes the method the same way. `ghm` passes `auto\n--delete-branch`, `ghrp` passes `squash`.\n\nNo behaviour change is intended. The batch summary line now prints `auto\n--delete-branch` where it printed `--auto-method --delete-branch`.\n\n## Verification\n\n- `tests/test-gh-wrappers.zsh`: 84 assertions pass under mise's zsh and\n`/bin/zsh`. The 72 from #587 are unchanged and pass against the new\ncode; 12 new ones pin each exit status, the `reply` array, the\nexplicit-method confirmation (`ghrp`'s path), and that a merge into one\nbase does not trigger an update of a PR on another base.\n- Teeth: breaking ten guards one at a time made the suite fail each\ntime, including \"a merge is not recorded as moving the base\" and\n\"explicit method not checked against the recommendation\".\n- Not run: `ghrp` end to end (its `gh search prs` listing is not\nstubbed), and the wrappers against live GitHub.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BGPF6vuE13w7U1kpY\n\n---------\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-11T12:27:06+02:00",
+          "tree_id": "b16b7f9d1409ece3636e7c31ab5e66c52a66e8fd",
+          "url": "https://github.com/laurigates/dotfiles/commit/8163196cb2b9ae94fee581f36e32781946f45ebe"
+        },
+        "date": 1794392868466,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.104831727,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001338638,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011442078000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0102390324,
             "unit": "s"
           }
         ]
