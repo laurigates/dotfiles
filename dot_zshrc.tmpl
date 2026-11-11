@@ -670,11 +670,13 @@ ghprls() {
 # GitHub Issues → Claude: select issue and process with git:issue skill
 # Sorted oldest-first by creation date (like ghm), with --layout=reverse so
 # the cursor starts on the oldest issue at the top.
+# Several issues (Tab-marked in the picker, or passed as args) go to one Claude
+# session as `/git-issue N M …`; the skill plans and groups them itself.
 ghi() {
-  local issue_num
+  local -a issue_nums
   if [[ $# -eq 0 ]]; then
-    # No args: interactive fzf selection
-    local selection
+    # No args: interactive fzf selection (Tab marks several, Enter confirms)
+    local selection line
     selection=$(gh issue list --limit 100 --json number,title,labels,createdAt \
       --jq 'sort_by(.createdAt) | .[] | [
         "#\(.number)",
@@ -684,22 +686,32 @@ ghi() {
       ] | @tsv' | \
       column -t -s $'\t' | \
       _gh_paint | \
-      fzf --ansi --layout=reverse \
-          --header '#       Labels               Created     Title' \
+      fzf --ansi --multi --layout=reverse \
+          --header $'Tab mark · ^a all · ⏎ hand to Claude · ^t toggle preview · ^d/u scroll\n#       Labels               Created     Title' \
           --preview 'GH_FORCE_TTY=1 gh issue view {1}' \
           --preview-window right:60%:wrap \
+          --bind 'tab:toggle+down,btab:toggle+up' \
+          --bind 'ctrl-a:select-all' \
           --bind 'ctrl-t:toggle-preview' \
           --bind 'ctrl-d:preview-page-down,ctrl-u:preview-page-up')
 
     [[ -z "$selection" ]] && return 0
-    issue_num="${${selection#\#}%% *}"
+    # One selected row per line; the number is the first column, "#123".
+    for line in "${(@f)selection}"; do
+      issue_nums+=("${${line#\#}%% *}")
+    done
   else
-    # Args provided: strip completion suffix (e.g. "123[title]" -> "123")
-    issue_num="${1%%\[*}"
+    # Args provided: strip a leading "#" and the completion suffix
+    # (e.g. "123[title]" -> "123") from each
+    local arg
+    for arg in "$@"; do
+      arg="${arg#\#}"
+      issue_nums+=("${arg%%\[*}")
+    done
   fi
 
-  echo "Processing issue #$issue_num with Claude..."
-  claude "/git-issue $issue_num"
+  print -r -- "Processing issue(s) #${(j:, #:)issue_nums} with Claude..."
+  claude "/git-issue ${issue_nums[*]}"
 }
 
 # Start Claude on a PR's branch in a worktree.
@@ -1953,7 +1965,7 @@ _GH_WRAPPER_DESC=(
   ghm  'gh pr merge --squash|--rebase per PR, --delete-branch (multi; -x = incl. external)'
   ghrp 'release-please merge across repos/orgs'
   ghpc 'gh pr → Claude feedback'
-  ghi  'gh issue → Claude'
+  ghi  'gh issue → Claude (multi)'
 )
 _GH_WRAPPER_DOC=(
   ghv  'fzf-pick a PR, then view it.'
@@ -1969,7 +1981,7 @@ _GH_WRAPPER_DOC=(
   ghm  'Multi-select open PRs; merge each sequentially with its recommended method (pr-merge-method.py, or the PR'\''s merge:* label, which the picker shows; a human-applied label overrides; with neither, ghm asks r/s/skip), delete branches. A PR whose base took a merge earlier in the run, or that a strict ruleset reports BEHIND, is updated (gh pr update-branch, --rebase for rebase merges) and waits for CI on the new head before merging; CONFLICTING PRs are left open, and after the run each can be handed to Claude (claude --worktree) to resolve. If the branch you are on has a merged PR (this run or earlier), land on the updated base; if you are on the base of a PR it merged (e.g. main, with the PR branch in a worktree), pull it — either way it prints what it is doing and why first, and keeps the local branch. External contributors are hidden (a banner counts them); -x includes them, marked ⚠, and merging one needs a typed "merge" — never a keypress, never swept up by a=all.'
   ghrp 'List open autorelease PRs across all your repos/orgs; multi-squash-merge. Author column marks ⚠ non-bot authors; merging one needs a typed "merge".'
   ghpc 'Pick an open PR and hand its feedback to Claude.'
-  ghi  'Pick a GitHub issue and hand it to Claude.'
+  ghi  'Pick one or more GitHub issues (Tab marks, ^a = all) and hand them to one Claude session as /git-issue N M …; also takes several numbers as arguments.'
 )
 
 # Inline description column: inject the wrappers (with descriptions) at the
