@@ -275,7 +275,7 @@ jobs:
         #
         # The git-repo externals are cloned with the job token. Anonymous
         # clones from this runner were refused with "could not read Username
-        # for 'https://github.com'" on zsh/zsh-abbr (#608). The header is
+        # for 'https://github.com'" on zsh/zsh-abbr (#606). The header is
         # passed through GIT_CONFIG_* for this step only: apply rewrites
         # ~/.gitconfig, so a `git config --global` entry would not survive it.
         env:
