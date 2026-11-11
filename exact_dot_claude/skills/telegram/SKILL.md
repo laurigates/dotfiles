@@ -1,6 +1,6 @@
 ---
 name: telegram
-description: Send notifications, interactive questions, or multiple-choice polls to the user via Telegram. Use when the user asks to be notified ("ping me", "notify me on Telegram", "ask me when..."), when a long-running task finishes and the user is likely away, when an irreversible action needs out-of-band confirmation, or when the user should pick among several fixed options ("ask me which one via poll"). Provides telegram-notify (one-way), telegram-ask (send + block for reply), and telegram-poll (send a multiple-choice poll + block for the vote).
+description: Send notifications, interactive questions, or multiple-choice polls to the user via Telegram. Use when the user asks to be notified ("ping me", "notify me on Telegram", "ask me when..."), when a long-running task finishes and the user is likely away, when an irreversible action needs out-of-band confirmation, when the user should pick among several fixed options ("ask me which one via poll"), or when a file, image or video should be sent to their phone ("send me the render"). Provides telegram-notify (one-way), telegram-send-file (upload a file), telegram-ask (send + block for reply), and telegram-poll (send a multiple-choice poll + block for the vote).
 ---
 
 # Telegram Communication
@@ -15,16 +15,17 @@ For the *when-to-use* policy (and when not to), see
 
 ## Tools
 
-Four scripts in `~/.local/bin`:
+Five scripts in `~/.local/bin`:
 
 | Script | Purpose | Blocks? |
 |---|---|---|
 | `telegram-notify` | Fire-and-forget message | No |
+| `telegram-send-file` | Upload a photo, video or any other file | No |
 | `telegram-ask` | Send a question, wait for reply, print reply to stdout | Yes |
 | `telegram-poll` | Send a multiple-choice poll, wait for the vote, print selected option(s) | Yes |
 | `telegram-check` | Diagnose the config: variables set, which bot, which chat | No |
 
-All four read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
+All five read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
 environment. They're sourced from `~/.api_tokens` by mise — if you
 hit `... not set`, the user needs to add them there.
 
@@ -56,6 +57,38 @@ echo "long stdout" | telegram-notify           # piped input
 ```
 
 Returns immediately. Exit 0 on send, 2 on config error.
+
+## telegram-send-file
+
+```
+telegram-send-file render.mp4                  # MP4 video  -> sendVideo
+telegram-send-file shot.png "Caption text"     # JPEG/PNG   -> sendPhoto
+telegram-send-file report.pdf                  # other      -> sendDocument
+telegram-send-file -d shot.png                 # image as an uncompressed document
+telegram-send-file -s build.log "Quiet upload" # silent (no sound)
+```
+
+Uploads one file with an optional plain-text caption (at most 1024
+characters). The method comes from the MIME type `file` reports: JPEG
+and PNG go to `sendPhoto`, MP4 to `sendVideo`, everything else to
+`sendDocument`. Telegram recompresses a photo; `-d` sends the original
+bytes as a document.
+
+Limits (Bot API, multipart upload): **50 MB per file, 10 MB for a
+photo**. A file over 50 MB is refused before any upload, with the limit
+in the message; make a smaller copy first (re-encode the video, or
+compress the archive). An image over 10 MB is sent as a document.
+
+Exit 0 on send, 1 when the Bot API call fails (the error code and
+description go to stderr), 2 on a usage or config error: no such file,
+empty file, file too large, or a variable unset. The token is never
+printed and is redacted from curl errors. A 50 MB upload can take
+minutes on a slow link, so give the Bash call a `timeout` to match or
+run it in the background.
+
+Send files through this script, never with a hand-written `curl`: the
+upload URL carries the token, and `secret-protection.sh` blocks a
+command that names it.
 
 ## telegram-ask
 
@@ -229,6 +262,8 @@ In practice, plain text is almost always the right default.
 | Bot in a group never sees replies | Bot **privacy mode** is on — bot only sees commands and direct mentions | In @BotFather: `/mybots` → bot → Bot Settings → Group Privacy → **Turn off**. Trade-off: bot now reads every message in the group |
 | Group chat id stops working with `400 chat not found` | Group was upgraded to a supergroup; chat id gained a `-100` prefix | Run `telegram-check --updates` after a fresh message in the group; the user updates `TELEGRAM_CHAT_ID` in `~/.api_tokens` to the listed `-100…` id |
 | `telegram-poll` never returns despite a vote | `poll_answer` wasn't in `allowed_updates`, or the vote landed on a different, older poll | Rare — the script always scopes `allowed_updates` and filters by `poll_id`; re-run if it happens |
+| `telegram-send-file: ... the Bot API upload limit is 50 MB` | The file is over the bot upload limit; nothing was sent | Send a smaller copy (re-encode or compress), or share a link with `telegram-notify` |
+| `telegram-send-file: sendPhoto failed: 400 ...` | Telegram rejected the image as a photo (width + height over 10000, or a ratio over 20) | Re-send with `-d` to deliver it as a document |
 | `telegram-poll: send failed` with a 400 | Question >300 chars, an option >100 chars, or fewer than 2 / more than 10 options | Shorten the text or the option count |
 
 ## Why these tools and not `telegram-send`?
