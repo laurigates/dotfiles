@@ -9,7 +9,7 @@ Personal configuration for Claude Code. Domain-specific skills and workflows are
 
 ## Git Workflow
 
-- When creating PRs that require post-merge follow-up actions (e.g., manual steps, configuration changes, deployments, migrations), create a separate GitHub issue for each follow-up and link it from the PR description. Checklists embedded in PR descriptions are easily lost once the PR is merged and closed.
+- File every follow-up as a GitHub issue and link it from the PR description: post-merge actions (manual steps, configuration changes, deployments, migrations) and anything else the work turned up (known limits, unverified claims, problems found along the way). A follow-up that exists only in a PR description or in the conversation is lost once the PR is merged and closed. See the "File follow-ups" bullet in `rules/development-process.md`.
   - Exception: a follow-up that waits on a condition visible in the source (a list outgrowing a limit, an enum gaining a member, a version bump) goes in the same PR as a tripwire test that fails when the condition comes true, not as an issue — see `testing-plugin:test-tripwire`.
 
 ## Debugging

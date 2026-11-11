@@ -22,6 +22,20 @@ reclaim-dry days="30":
 reclaim days="30":
     bash "$HOME/scripts/reclaim.sh" --days {{ days }} --apply
 
+# Buckets every top-level ~/Downloads entry (secret, cert, installer, redundant,
+# junk, route, unrouted) without printing file content; rules and tiers are in
+# the script header, routing globs in ~/.config/downloads-tidy/routes.tsv.
+# Preview the ~/Downloads tidy (never deletes)
+downloads-tidy-dry:
+    bash "$HOME/scripts/downloads-tidy.sh"
+
+# Secrets are rm'd, the rest goes to Trash. Secrets/certs wait for off-hours
+# unless --ignore-window is passed. Also runs daily at 19:37 via the
+# com.lgates.downloads-tidy launchd agent (log in ~/Library/Logs/).
+# Apply the ~/Downloads tidy
+downloads-tidy *args:
+    bash "$HOME/scripts/downloads-tidy.sh" --apply {{ args }}
+
 # Uses blob atime, not `ollama list`'s MODIFIED column — that shows when a model
 # was PULLED, which says nothing about whether you ever ran it.
 # Report ollama models by last actual use
