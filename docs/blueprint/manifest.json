@@ -155,7 +155,8 @@
         "path": "docs/prds/project-overview.md",
         "title": "Dotfiles — Product Requirements Document",
         "github_issues": [],
-        "created": "2026-04-07"
+        "created": "2026-04-07",
+        "status": "Draft"
       },
       "PRP-001": {
         "path": "docs/prps/fish-shell-migration.md",
