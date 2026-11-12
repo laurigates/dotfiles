@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794485546204,
+  "lastUpdate": 1794502013233,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5543,6 +5543,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0089199584,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "354b4714bc4cd96c1ec64296dcecb23a9c2cab52",
+          "message": "fix(zsh): name the gh wrappers' colour variables at each call site (#615)\n\n## What\n\nThe functions in `private_dot_config/zsh/gh-wrappers.zsh` that print\ncolours declared them with `local $_GH_COLORS`. Each call site now names\nthe nine variables:\n\n```\nlocal green red yellow cyan magenta dim bold rst alarm; _gh_palette 1\n```\n\nThe `_GH_COLORS` array is removed. Nothing else read it.\n\n## Why\n\nIn a shell that has the functions but not the array, `local $_GH_COLORS`\nis a bare `local`, and zsh prints every parameter in scope, exported\nvariables included (#612). With the names written out, the declaration\ndepends on no global.\n\nOf the three options in #612, this is the first. The issue records no\nchoice between them; Claude picked this one. The reasons:\n\n- The `:?` guard would stop the listing by aborting, so `ghm <pr>` would\nno longer work in the shell where the problem was seen. It merged there\nbefore.\n- An associative array owned by `_gh_palette` would change every\n`$green`-style reference in the file.\n\nThe cost is that the list of names is repeated at 13 call sites. The\nfirst new test below fails when one of them differs from what\n`_gh_palette` assigns.\n\n## Correction to #612\n\nThe issue counts 14 functions. `grep -n 'local $_GH_COLORS'` on `main`\nat 1f7eded returns 14 lines: 13 call sites and the usage comment on line\n10.\n\n## Tests\n\n`tests/test-gh-wrappers.zsh`:\n\n- Every `_gh_palette <fd>` call in the source follows a literal\ndeclaration of exactly the names `_gh_palette` assigns. This covers all\n13 call sites, including functions the suite does not run.\n- `ghm 5` run after `unset -m '_GH_*'` does not print an exported canary\nvariable, and still merges. This is the state from #612.\n\n`tests/test-gh-wrappers-teeth.py` gains one mutation for each check.\n\n| Command | Result |\n|---|---|\n| `LC_ALL=C.UTF-8 zsh tests/test-gh-wrappers.zsh`, new tests on the old\nsource | `Passed: 111 Failed: 2`; the two failures are the two new\nchecks |\n| same, on this branch | `Passed: 113  Failed: 0` |\n| `LC_ALL=C.UTF-8 python3 tests/test-gh-wrappers-teeth.py` | `All 24\nmutations killed.` |\n| `python3 scripts/check-doc-references.py --strict` (`lint:docs`) |\nexit 0 |\n| `zsh -n` on both zsh files | exit 0 |\n\nRun in a Linux cloud container with zsh 5.9.\n\nNot run locally: `mise run lint`, `mise run test`, `pre-commit` and\n`gitleaks`. Their tool installs need GitHub API access to other\nrepositories, which this session does not have. CI runs them.\n\n## Follow-ups\n\n- #616: apply the file on each machine after this merges.\n- #613: the pickers fail with a jq compile error in the same\nfunctions-only shell, because `_GH_JQ_PR_DEFS` is also absent there.\n- #614: the suite fails four assertions when no UTF-8 locale is set.\n\nFixes #612\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9DGRXqGUJ3jbPxnMhU\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+          "timestamp": "2026-11-12T18:46:07+02:00",
+          "tree_id": "7715348229f617495dee9096290be2f292e98842",
+          "url": "https://github.com/laurigates/dotfiles/commit/354b4714bc4cd96c1ec64296dcecb23a9c2cab52"
+        },
+        "date": 1794502012728,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.090464474,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012256372000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010484048,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.008919831,
             "unit": "s"
           }
         ]
