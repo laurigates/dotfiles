@@ -132,6 +132,24 @@ MUTATIONS = [
      '  if [[ -z "$list" ]]; then',
      '  if false; then',
      "empty search: the picker is not opened"),
+    # The two colour mutations change one of several identical declaration
+    # lines, so each target includes the lines above it to occur once.
+    ("a colour declaration expands an unset parameter (#612)",
+     '  reply=()\n'
+     '  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")\n'
+     '  local id="${repo}#${num}"\n'
+     '  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1',
+     '  reply=()\n'
+     '  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")\n'
+     '  local id="${repo}#${num}"\n'
+     '  local $_GH_COLORS; _gh_palette 1',
+     "without the file's globals: ghm does not print the shell's parameters"),
+    ("a colour is missing from one declaration",
+     '  local repo="$1" num="$2" want="$3" rec ans\n'
+     '  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1',
+     '  local repo="$1" num="$2" want="$3" rec ans\n'
+     '  local green red yellow cyan magenta dim bold rst; _gh_palette 1',
+     "every _gh_palette call follows a literal declaration of all colours"),
 ]
 
 SUMMARY = re.compile(r"^Passed: (\d+)  Failed: (\d+)$", re.M)

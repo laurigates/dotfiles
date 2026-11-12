@@ -7,10 +7,15 @@
 # because they need compinit to have run.
 
 # Colours for a function that prints status lines. Declare them with
-#   local $_GH_COLORS; _gh_palette <fd>
+#   local green red yellow cyan magenta dim bold rst alarm; _gh_palette <fd>
 # They stay empty unless <fd> (1 = stdout, 2 = stderr) is a terminal, so
 # redirected output carries no escapes.
-typeset -ga _GH_COLORS=(green red yellow cyan magenta dim bold rst alarm)
+#
+# The names are written out at each call site. `local $names` becomes a bare
+# `local` in a shell that has these functions without the array, and a bare
+# `local` prints every parameter in scope, exported tokens included (#612).
+# tests/test-gh-wrappers.zsh fails when a call site and the names assigned
+# below differ.
 _gh_palette() {
   [[ -t ${1:-1} ]] || return 0
   green=$'\033[32m' red=$'\033[31m' yellow=$'\033[33m' cyan=$'\033[36m' magenta=$'\033[35m'
@@ -101,7 +106,7 @@ _gh_confirm_external() {
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id="${repo}#${num}"
 
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
 
   # author_association needs an owner/repo slug (gh pr view has no such field).
   local slug="$repo" assoc=
@@ -162,7 +167,7 @@ _gh_trust_gate() {
   local repo="$1" num="$2"
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id="${repo}#${num}"
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
 
   local meta login is_bot title
   meta=$(gh pr view "$num" "${repo_flag[@]}" --json author,title \
@@ -370,7 +375,7 @@ _gh_merge_method() {
 #   _gh_ask_method <id> → prints rebase|squash, or nothing (= skip)
 _gh_ask_method() {
   local id="$1" ans
-  local $_GH_COLORS; _gh_palette 2
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 2
   read -k 1 "ans?  ${yellow}?${rst} ${cyan}${id}${rst}: no merge method (no pr-merge-method.py, no merge:* label) — [${green}r${rst}=rebase/${green}s${rst}=squash/${dim}k${rst}=skip] "
   print -u2
   case "$ans" in
@@ -384,7 +389,7 @@ _gh_ask_method() {
 #   _gh_method_check <repo|""> <num> <rebase|squash>
 _gh_method_check() {
   local repo="$1" num="$2" want="$3" rec ans
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   rec=$(_gh_merge_method "$repo" "$num")
   [[ -z "$rec" || "$rec" == "$want" ]] && return 0
   read -k 1 "ans?  ${yellow}⚠${rst} ${cyan}#${num}${rst} is recommended for ${bold}--${rec}${rst}, not --${want} (ghm picks it per PR). Merge with --${want} anyway? [y/N] "; print
@@ -420,7 +425,7 @@ _gh_poll_merge() {
   reply=()
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id="${repo}#${num}"
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
 
   # Contributor-trust gate FIRST, before the draft prompt or any merge: a
   # stranger's PR must not even reach "mark ready & merge". This is also what
@@ -505,7 +510,7 @@ _gh_poll_merge() {
 _gh_wait_mergeable() {
   local repo="$1" num="$2" id="$3"
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local $_GH_COLORS; _gh_palette 2
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 2
   local state tries=0
   while (( tries < 20 )); do
     state=$(gh pr view "$num" "${repo_flag[@]}" --json mergeable --jq '.mergeable' </dev/null 2>/dev/null)
@@ -524,7 +529,7 @@ _gh_wait_mergeable() {
 _gh_update_and_wait() {
   local repo="$1" num="$2" id="$3"; shift 3
   local -a repo_flag upd=("$@"); [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   REPLY=
   local old new out tries
   old=$(gh pr view "$num" "${repo_flag[@]}" --json headRefOid --jq .headRefOid </dev/null 2>/dev/null)
@@ -572,7 +577,7 @@ _gh_update_and_wait() {
 _gh_conflict_handoff() {
   local blob="$1"
   [[ -n "$blob" ]] || return 0
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   local here; here=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   local r n b m id ans how
   print
@@ -615,7 +620,7 @@ _gh_batch_merge() {
   local count=${#nums}
   (( count == 0 )) && { print -r -- "Nothing selected."; return 0 }
 
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
 
   local i lbl maxw=0
   # Pre-compute the widest label so the summary's title column lines up.
@@ -710,7 +715,7 @@ _gh_pr_multi_select() {
   ext_rows=$(print -r -- "$classed" | awk -F'\t' '$2 == "EXT"')
   vis_rows=$(print -r -- "$classed" | awk -F'\t' '$2 != "EXT"')
 
-  local $_GH_COLORS; _gh_palette 2
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 2
 
   local shown="$classed"
   if [[ -z "$show_ext" ]]; then
@@ -785,7 +790,7 @@ _gh_home_if_merged() {
   state="${info%%$'\t'*}"; info="${info#*$'\t'}"
   base="${info%%$'\t'*}"; merged_at="${info#*$'\t'}"
   [[ "$state" == MERGED && -n "$base" ]] || { _gh_pull_if_base_of_merged "$acted"; return }
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   local cur; cur=$(git symbolic-ref --short -q HEAD 2>/dev/null)
 
   # "by this run" is decided by membership in the acted-on set, never by clocks:
@@ -829,7 +834,7 @@ _gh_home_if_merged() {
 _gh_pull_if_base_of_merged() {
   local acted="$1" cur n base
   cur=$(git symbolic-ref --short -q HEAD 2>/dev/null) || return 0
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   for n in ${=acted}; do
     base=$(gh pr view "$n" --json state,baseRefName \
              --jq 'select(.state == "MERGED") | .baseRefName' </dev/null 2>/dev/null)
@@ -1018,7 +1023,7 @@ ghrr() {
   local run=
   while [[ "$1" == -r || "$1" == --run ]]; do run=1; shift; done
   local unticked='- [ ] <!-- rebase-check -->' ticked='- [x] <!-- rebase-check -->'
-  local $_GH_COLORS; _gh_palette 1
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   local -a nums
   if (( $# )); then
     nums=("${@%%\[*}")
