@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+# telegram-send-file — upload a file (photo, video or any document) to Telegram.
+#
+# Usage:
+#   telegram-send-file render.mp4                    # MP4 video  -> sendVideo
+#   telegram-send-file shot.png "Caption text"       # JPEG/PNG   -> sendPhoto
+#   telegram-send-file report.pdf                    # other      -> sendDocument
+#   telegram-send-file -d shot.png                   # image as an uncompressed document
+#   telegram-send-file -s build.log "Quiet upload"   # disable_notification
+#
+# The method is picked from the MIME type `file` reports. Limits (Bot API,
+# multipart upload): 50 MB per file, 10 MB for a photo. An image over 10 MB is
+# sent as a document; a file over 50 MB is refused before any upload. Captions
+# are plain text, at most 1024 characters.
+#
+# Exit codes:
+#   0 — sent
+#   1 — the Bot API call failed (bad token, chat not found, network)
+#   2 — usage / config error (no such file, file too large or empty, a
+#       variable is unset)
+#
+# Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID, the same variables as
+# telegram-notify. The token is never printed; curl errors have it redacted.
+
+set -euo pipefail
+
+MAX_FILE_BYTES=$((50 * 1024 * 1024))
+MAX_PHOTO_BYTES=$((10 * 1024 * 1024))
+
+SILENT="false"
+AS_DOCUMENT="false"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -d|--document) AS_DOCUMENT="true"; shift ;;
+    -s|--silent) SILENT="true"; shift ;;
+    -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+    --) shift; break ;;
+    -*) echo "telegram-send-file: unknown flag: $1" >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
+
+if [[ $# -lt 1 ]]; then
+  echo "telegram-send-file: no file (usage: telegram-send-file FILE [caption])" >&2
+  exit 2
+fi
+
+FILE="$1"
+shift
+CAPTION="$*"
+
+if [[ ! -f "$FILE" ]]; then
+  echo "telegram-send-file: not a file: $FILE" >&2
+  exit 2
+fi
+if [[ ! -r "$FILE" ]]; then
+  echo "telegram-send-file: cannot read: $FILE" >&2
+  exit 2
+fi
+
+size="$(wc -c <"$FILE")"
+size="${size//[[:space:]]/}"
+if [[ "$size" -eq 0 ]]; then
+  echo "telegram-send-file: file is empty: $FILE" >&2
+  exit 2
+fi
+if [[ "$size" -gt "$MAX_FILE_BYTES" ]]; then
+  echo "telegram-send-file: $FILE is $((size / 1024 / 1024)) MiB; the Bot API upload limit is 50 MB" >&2
+  exit 2
+fi
+
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  if [[ -z "${!var:-}" ]]; then
+    echo "telegram-send-file: ${var} not set (check ~/.api_tokens)" >&2
+    exit 2
+  fi
+done
+
+# Pick the method. sendPhoto takes JPEG/PNG up to 10 MB and recompresses them;
+# sendVideo plays MP4 inline. Everything else arrives as a plain document.
+mime="$(file -b -L --mime-type -- "$FILE" 2>/dev/null || true)"
+method="sendDocument"
+field="document"
+if [[ "$AS_DOCUMENT" == "false" ]]; then
+  case "$mime" in
+    image/jpeg|image/png)
+      if [[ "$size" -le "$MAX_PHOTO_BYTES" ]]; then
+        method="sendPhoto"
+        field="photo"
+      fi
+      ;;
+    video/mp4)
+      method="sendVideo"
+      field="video"
+      ;;
+  esac
+fi
+
+# curl -F reads `;` and `,` in a bare file name as separators. A name in double
+# quotes is taken whole, with `\` and `"` backslash-escaped.
+quoted="${FILE//\\/\\\\}"
+quoted="${quoted//\"/\\\"}"
+
+# --form-string sends the value as is; -F would read a leading @ or < in a
+# caption as a file to upload.
+args=(
+  --form-string "chat_id=${TELEGRAM_CHAT_ID}"
+  --form-string "disable_notification=${SILENT}"
+  -F "${field}=@\"${quoted}\""
+)
+[[ -n "$CAPTION" ]] && args+=(--form-string "caption=${CAPTION}")
+
+TOKEN="$TELEGRAM_BOT_TOKEN"
+ERR_FILE="$(mktemp)"
+trap 'rm -f "$ERR_FILE"' EXIT
+
+# redact <text>: replace every occurrence of the token.
+redact() { printf '%s' "${1//"$TOKEN"/<redacted>}"; }
+
+# No -f: Telegram's 4xx bodies carry the error description we want to show.
+if ! body="$(curl -sS --connect-timeout 20 --max-time 900 "${args[@]}" \
+    "https://api.telegram.org/bot${TOKEN}/${method}" 2>"$ERR_FILE")"; then
+  echo "telegram-send-file: ${method} failed: $(redact "$(tr '\n' ' ' <"$ERR_FILE")")" >&2
+  exit 1
+fi
+
+if ! jq -e '.ok == true' >/dev/null 2>&1 <<<"$body"; then
+  error="$(jq -r '"\(.error_code // "?") \(.description // "no description")"' \
+    2>/dev/null <<<"$body" || echo "unparseable response")"
+  echo "telegram-send-file: ${method} failed: $(redact "$error")" >&2
+  exit 1
+fi
