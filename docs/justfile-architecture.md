@@ -56,7 +56,7 @@ import the identical definitions. `claude_model` is defined inside `plugins.just
 
 > ⚠️ The global justfile is resolved from `~/.config/just/justfile`, **not**
 > `~/.user.justfile` (which is not on `just`'s search path). See the
-> chezmoi-conventions rule for the full search-path trap.
+> [`chezmoi-conventions.md`](chezmoi-conventions.md) for the full search-path trap.
 
 ## Recipe groups
 
@@ -146,6 +146,6 @@ shared rule set on every `chezmoi apply`.
 ## Related
 
 - [ADR-0012 — Justfile Command Runner](adrs/0012-justfile-command-runner.md)
-- `.claude/rules/chezmoi-conventions.md` — the `just -g` search-path trap and the source-root `justfile` leak
+- [`chezmoi-conventions.md`](chezmoi-conventions.md) — the `just -g` search-path trap and the source-root `justfile` leak (invariants in `.claude/rules/chezmoi-conventions.md`)
 - `claude-plugins` `tools-plugin:justfile-expert` — generic justfile authoring
 - `claude-plugins` `configure-plugin:configure-justfile` — justfile auditing

@@ -23,7 +23,9 @@
   # MCP Server Favorites Registry
   #
   # This section maintains a curated list of your favorite MCP servers.
-  # By default, all servers are DISABLED to avoid bloating context in every repo.
+  # `enabled` does not turn a server on: its only reader is
+  # executable_cleanup-mcp-servers.sh.tmpl, which removes the servers marked
+  # `enabled = true`. See README.md, "MCP Server Configuration".
   #
   # To install MCP servers for a specific project, use:
   #   - /configure-mcp command for interactive selection
