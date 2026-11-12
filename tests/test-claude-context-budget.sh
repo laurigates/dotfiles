@@ -181,7 +181,19 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 # Next cleanup candidates (largest unconditional, measured 2026-09-24):
 #   communication.md 6,284 B · offload-to-deterministic-substrate.md 5,378 B
 #   skill-and-agent-catalog-check.md 4,039 B
-TOTAL_BUDGET_BYTES=78400
+#
+# 2026-11-11 → 76,753 (RATCHET DOWN, -1,647). dotfiles #575 deleted
+# kitty-agent-interaction.md; kitty-plugin:kitty-remote-control carries its
+# content on demand. The two rules that name the image skill now use the
+# plugin-qualified name (+26 bytes). Measured on disk in a worktree off
+# origin/main at d295def:
+#
+#   before the change                    = 56,631
+#   after  the change (-1,647)           = 54,984
+#
+# The budget moves by the measured change only; the remaining margin is
+# unchanged at 21,769 bytes.
+TOTAL_BUDGET_BYTES=76753
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 
