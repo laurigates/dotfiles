@@ -632,13 +632,47 @@ fi
 # ---------------------------------------------------------------------------
 print -r -- "Colour variables"
 # ---------------------------------------------------------------------------
-# The wrappers set their colours through dynamic scope (_gh_palette), so a
-# name missing from a `local $_GH_COLORS` would become a global in the shell.
+# The wrappers set their colours through dynamic scope: _gh_palette assigns
+# them, and each function that prints colours declares them local first. The
+# names _gh_palette assigns are the reference for the checks below.
+palette_names=(${(f)"$(functions _gh_palette | grep -oE "[a-z]+=\\$'" | sed "s/=.*//")"})
+is "_gh_palette assigns at least one colour" "$(( $#palette_names > 0 ))" 1
+
+# Every call site declares exactly those names, written out. A declaration
+# that expanded a parameter (`local $names`) would turn into a bare `local`
+# in a shell where that parameter is unset, and a bare `local` prints every
+# parameter in scope, exported tokens included (#612). A name missing from
+# the declaration would become a global.
+want="local ${palette_names[*]}"
+call_sites=(${(f)"$(grep -E '^[^#]*_gh_palette [0-9]' $SRC)"})
+odd=()
+for line in $call_sites; do
+  [[ ${line##[[:space:]]#} == "$want; _gh_palette "[12] ]] || odd+=("$line")
+done
+is "the source has _gh_palette call sites to check" "$(( $#call_sites > 0 ))" 1
+is "every _gh_palette call follows a literal declaration of all colours" "${(F)odd}" ""
+
 leaked=()
-for c in $_GH_COLORS; do (( ${+parameters[$c]} )) && leaked+=($c); done
+for c in $palette_names; do (( ${+parameters[$c]} )) && leaked+=($c); done
 is "no colour variable leaked into the shell after the runs above" "${leaked[*]}" ""
-palette_probe() { local $_GH_COLORS; _gh_palette 1; print -r -- "${#red}${#rst}" }
+palette_probe() { local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1; print -r -- "${#red}${#rst}" }
 is "colours are empty when stdout is not a terminal" "$(palette_probe)" "00"
+
+# A shell can hold the functions without the file's globals: Claude Code's `!`
+# shell did on 2026-11-12, and `ghm <pr>` printed every parameter before it
+# merged (#612). The subshell drops the globals; the canary is an exported
+# variable that a parameter listing would print.
+reset; pr 5 label=squash
+export GH_WRAPPERS_CANARY=printed-by-a-bare-local
+( unset -m '_GH_*'; run ghm 5 )
+unset GH_WRAPPERS_CANARY
+if grep -Fq -- printed-by-a-bare-local $W/out; then
+  # Not bad(): it would copy the listing, the environment included, to the log.
+  print -r -- "  ✗ without the file's globals: ghm does not print the shell's parameters"; (( fail++ ))
+else
+  ok "without the file's globals: ghm does not print the shell's parameters"
+fi
+called "without the file's globals: ghm still merges" 'gh pr merge 5 --squash --delete-branch'
 
 # ---------------------------------------------------------------------------
 print
