@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794396589706,
+  "lastUpdate": 1794470711017,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5147,6 +5147,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0090979052,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "645c6a0160ae96d3bc475251eefa4d5a9f3c2bca",
+          "message": "fix(zsh): complete just module recipes after a non-matching root prefix (#611)\n\n## What\n\n`just labels::<TAB>` offered nothing in a justfile with modules.\n\n## Why\n\n- `_just_recipes_grouped` reads only the root `.recipes` of `just\n--dump`; module recipes are under `.modules` and come only from just's\nnative completer.\n- The function set `added=1` after every `_describe` call, so it\nreturned success for any justfile with a recipe and the native completer\nnever ran. A group now counts only when `_describe` added a match.\n- `emulate -L zsh` turned off `extendedglob`, which `_describe` uses to\nsplit `name:description`. Outside fzf-tab the completer added no match\nfor anything. It is removed; the completion system already sets its own\noptions.\n\n## Verification\n\n- `tests/test-just-completion.sh` (new, `mise run\ntest:just-completion`): drives a bare interactive zsh over a pty in a\nfixture justfile with one root recipe and one module. Before the change\n0 of 3 passed; with only the `emulate` line removed the control passed\nand both module cases failed; with both changes 3 of 3 pass.\n- Under the real zshrc with fzf-tab, loading the fixed file ahead of\n`~/.zfunc` in `laurigates/mcu-tinkering-lab`: `just build-a<TAB>` gives\n`build-all`, `just labels::bla<TAB>` gives `labels::blade`, `just\nlabels::test-<TAB>` gives `labels::test-cut`. Before the change `just\nlabels::bla<TAB>` inserted nothing.\n- `mise run test` (the full suite) was not run.\n\n## Follow-up\n\n- #610: `just <module> <TAB>` still lists root recipes, and module names\nare not offered as a group.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AH3eoKcUhnUnKZXc1\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-12T10:04:28+02:00",
+          "tree_id": "dd3ce7a13756987ec2d2f63ba90898f209d7b1f4",
+          "url": "https://github.com/laurigates/dotfiles/commit/645c6a0160ae96d3bc475251eefa4d5a9f3c2bca"
+        },
+        "date": 1794470710559,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13475306433333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015530548000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013054718,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010879277800000002,
             "unit": "s"
           }
         ]
