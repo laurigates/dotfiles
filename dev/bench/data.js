@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794502013233,
+  "lastUpdate": 1794510786490,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5587,6 +5587,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.008919831,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "96d72bfea0bc1c1fba85af4ca290afdfb6b8c44e",
+          "message": "docs(claude): add the bare-declaration symptom to the zsh-gotchas rule (#617)\n\n## What\n\n`exact_dot_claude/exact_rules/zsh-gotchas.md` gains a fifth symptom row:\n\n| Symptom | Mechanism |\n|---|---|\n| A function prints hundreds of `NAME=value` lines before its real\noutput | `local $names` with `names` empty is a bare `local`, which\nlists every parameter in scope, exported tokens included |\n\nThe paragraph below the table now says which of the five are zsh-only,\nand names the hooks-plugin guard that blocks writing such a line.\n\n## Why\n\nThis rule is the always-loaded pointer to `tools-plugin:zsh-gotchas`;\nits symptom table is what sends a session to the skill. The listing from\n#612 had no row, so a session seeing it had nothing pointing at the\ndeclaration.\n\nThe rule is the recognition half. The prevention half is a hook in\nlaurigates/claude-plugins#3630, which blocks an Edit or Write that adds\nsuch a line to a shell file, and which also adds the matching section to\nthe skill.\n\n## Merge order\n\nMerge after laurigates/claude-plugins#3630 is merged and released. Until\nthen the rule names a hook and a skill section that the installed\nplugins do not have.\n\n## Tests\n\n| Command | Result |\n|---|---|\n| `bash tests/test-claude-context-budget.sh` | `PASS=4 FAIL=0`,\n`STATUS=PASS` |\n| `bash tests/test-claude-config.sh` | `13 passed, 0 failed` |\n| `python3 scripts/check-doc-references.py --strict` | exit 0 |\n\n## Follow-ups\n\n- #618: apply `~/.claude` on each machine after this merges.\n\nRefs #612\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9DGRXqGUJ3jbPxnMhU\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+          "timestamp": "2026-11-12T21:12:11+02:00",
+          "tree_id": "f9ac04962a4f6e7ea9805d2f7556a81dc9af6942",
+          "url": "https://github.com/laurigates/dotfiles/commit/96d72bfea0bc1c1fba85af4ca290afdfb6b8c44e"
+        },
+        "date": 1794510785934,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.131579759,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015967479999999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013512806000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0109762516,
             "unit": "s"
           }
         ]
