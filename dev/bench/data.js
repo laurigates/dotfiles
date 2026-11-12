@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794480698952,
+  "lastUpdate": 1794481411809,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5235,6 +5235,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0116202982,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "noreply@anthropic.com",
+            "name": "Claude",
+            "username": "claude"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "18e3285181659237ee382facf4870ed622977f56",
+          "message": "docs(mcp): say what the registry's enabled field does\n\nThe [mcp_servers] comment said all servers are disabled by default to\nkeep context small, which reads as an on/off switch. Nothing installs\nfrom the registry. The only reader of `enabled` is\nexecutable_cleanup-mcp-servers.sh.tmpl, which removes the servers marked\n`enabled = true`. The comment now says that and points at the README\nsection that documents it.\n\nCloses #566\n\nCo-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9AyWjT3fSXTDy1sNHi",
+          "timestamp": "2026-11-12T13:02:41+02:00",
+          "tree_id": "8f76a019d895662461922607ea7afec52384ae33",
+          "url": "https://github.com/laurigates/dotfiles/commit/18e3285181659237ee382facf4870ed622977f56"
+        },
+        "date": 1794481411482,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.1313375476666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015387552,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013045196000000003,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011096823799999999,
             "unit": "s"
           }
         ]
