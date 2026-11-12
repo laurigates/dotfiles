@@ -118,8 +118,12 @@ description = "Regression test: `just <module>::<TAB>` completes module recipes 
 run = "tests/test-just-completion.sh"
 
 [tasks."test:gh-wrappers"]
-description = "Regression test: ghm merges with the PR's own method, gates external authors, updates and pins a PR whose base moved, and leaves draft/conflicting PRs; ghi hands the picked issues to Claude"
+description = "Regression test: ghm merges with the PR's own method, gates external authors, updates and pins a PR whose base moved, and leaves draft/conflicting PRs; ghrp squash-merges release PRs across repos with --repo and gates non-bot authors; ghi hands the picked issues to Claude"
 run = "tests/test-gh-wrappers.zsh"
+
+[tasks."test:gh-wrappers-teeth"]
+description = "Mutation check for test:gh-wrappers: breaks one guard at a time in a temporary copy of gh-wrappers.zsh and fails unless the suite notices. Not part of `test`: it runs the suite once per mutation"
+run = "tests/test-gh-wrappers-teeth.py"
 
 [tasks."test:chezmoi-exact-guard"]
 description = "Regression test: the chezmoi-exact-guard hook blocks a deleting apply wrapped in bash -c / sh -c, lets prose through, and lets only retired-clean deletions through"

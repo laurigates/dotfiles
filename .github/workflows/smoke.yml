@@ -295,7 +295,13 @@ jobs:
             fi
           '
 
-      - name: Test the gh wrappers (ghm, ghi)
+      - name: Test the gh wrappers (ghm, ghrp, ghi)
         # Sources private_dot_config/zsh/gh-wrappers.zsh under the system zsh
         # with gh, git, fzf and claude stubbed; its inputs are in the repo.
         run: /bin/zsh tests/test-gh-wrappers.zsh
+
+      - name: Check the gh wrappers test has teeth
+        # Breaks one guard at a time in a temporary copy of gh-wrappers.zsh and
+        # fails unless the suite above notices. It runs that suite once per
+        # mutation, which is why `mise run test` leaves it out.
+        run: python3 tests/test-gh-wrappers-teeth.py --zsh /bin/zsh
