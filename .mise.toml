@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:just-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:renovate-triage-buckets", "test:telegram-check", "test:downloads-tidy", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:just-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:renovate-triage-buckets", "test:telegram-check", "test:telegram-send-file", "test:downloads-tidy", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -160,6 +160,10 @@ run = "tests/test-renovate-triage-buckets.sh"
 [tasks."test:telegram-check"]
 description = "Regression test: telegram-check reports the bot and chat, never prints the token, and passes the secret-protection hook (#518)"
 run = "tests/test-telegram-check.sh"
+
+[tasks."test:telegram-send-file"]
+description = "Regression test: telegram-send-file picks sendPhoto/sendVideo/sendDocument by file type, refuses oversize files before any upload, and never prints the token (#519)"
+run = "tests/test-telegram-send-file.sh"
 
 # Every linter runs even after one fails; the task fails if any did.
 [tasks.lint]
