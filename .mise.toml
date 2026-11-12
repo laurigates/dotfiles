@@ -4,7 +4,7 @@
 # chezmoi skips dot-prefixed files at the source root, so this is never deployed.
 # tests/test-ci-pins.sh fails if chezmoi is installed any other way (#418).
 [tools]
-chezmoi = "2.73.3"
+chezmoi = "2.74.0"
 # lint:shell and the smoke Linters job use this shellcheck, so a local run and
 # CI report the same findings.
 shellcheck = "0.11.0"
@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:telegram-check", "test:downloads-tidy", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:just-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:telegram-check", "test:downloads-tidy", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -112,6 +112,10 @@ run = "tests/test-claude-completion-target.sh"
 [tasks."test:gh-completion"]
 description = "Regression test: `gh pr <sub> <TAB>` completes PR numbers and still delegates to gh's own completion"
 run = "tests/test-gh-completion.sh"
+
+[tasks."test:just-completion"]
+description = "Regression test: `just <module>::<TAB>` completes module recipes and the grouped root-recipe path still works"
+run = "tests/test-just-completion.sh"
 
 [tasks."test:gh-wrappers"]
 description = "Regression test: ghm merges with the PR's own method, gates external authors, updates and pins a PR whose base moved, and leaves draft/conflicting PRs; ghrp squash-merges release PRs across repos with --repo and gates non-bot authors; ghi hands the picked issues to Claude"
