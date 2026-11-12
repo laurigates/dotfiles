@@ -1,3 +1,7 @@
+---
+id: ADR-0009
+---
+
 # ADR-0009: Conventional Commits and Release-Please Automation
 
 ## Status

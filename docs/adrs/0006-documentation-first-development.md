@@ -1,3 +1,7 @@
+---
+id: ADR-0006
+---
+
 # ADR-0006: Documentation-First Development
 
 ## Status

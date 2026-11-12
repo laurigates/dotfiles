@@ -1,3 +1,7 @@
+---
+id: ADR-0002
+---
+
 # ADR-0002: Unified Tool Version Management with Mise
 
 ## Status

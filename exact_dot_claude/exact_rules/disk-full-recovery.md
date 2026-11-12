@@ -17,16 +17,12 @@ Bash call fails instantly with
 2. Hand the user recovery commands with the `! <cmd>` prefix so output lands
    in the conversation: start with `! df -h /` and
    `! du -shx ~/.cache/* 2>/dev/null | sort -h | tail -10`.
-3. Prefer tools' own cleanup commands over `rm -rf` (`uv cache clean`,
-   `pip cache purge`, `brew cleanup --prune=all -s` (plain `-s` left 2.5 GB
-   in `downloads/`), `go clean -cache`,
-   `docker system prune -a`, `journalctl --vacuum-size=1G`). A typical
-   uv/pip/HF session frees 30–50 GB.
-4. Fix the cause, not the symptom: redirect caches on small-root machines
-   (`HF_HOME` — see the `tools-plugin:hf-downloads` skill; `UV_CACHE_DIR`,
-   `PIP_CACHE_DIR`, `HOMEBREW_CACHE`), persisted in `.zshrc`/`~/.api_tokens`.
+3. Prefer tools' own cleanup commands over `rm -rf`, and redirect caches
+   afterwards so it does not recur (`HF_HOME`: `tools-plugin:hf-downloads`).
+   The Skill tool still works with Bash down, so load the platform skill for
+   the cleanup commands to hand over.
 
-For the full space-hunt playbook once Bash works again, pick by platform:
+For the full space-hunt playbook, pick by platform:
 
 - **macOS** — the `macos-plugin:macos-disk-usage` skill (APFS snapshots,
   OrbStack images, offender tables).

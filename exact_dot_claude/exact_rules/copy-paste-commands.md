@@ -22,9 +22,7 @@ copy-paste:
   icat`) fails there too; show images through the `kitty-show-image` skill.
 - **A prompt for hidden input gets nothing under `!`.** With no TTY, a command
   that would prompt for a value reads an empty stdin instead. It may succeed
-  silently with an empty value: `! gh secret set NAME -R <repo>` with no
-  `--body` stored an **empty** secret, and nothing failed until the workflow
-  that read it did (2026-11-04). Hand such a command over for Lauri's own
+  silently with an empty value (an empty `gh secret set`, 2026-11-04). Hand such a command over for Lauri's own
   terminal, or give it the value explicitly: `--body-file <path>`, or stdin
   from a command that reads the secret store.
 - **Several commands Lauri must run in sequence go in one `!` line**, chained
@@ -36,9 +34,7 @@ copy-paste:
   When handing over `pbpaste | <cmd>` for a secret, say to run it there and
   not to paste the result back under `!`: a pasted block that starts with the
   command runs it again, and by then the clipboard holds the copied terminal
-  text. `pbpaste | gh secret set PORTFOLIO_ACTIONS_READ` pasted back with its
-  output replaced the token with that text, and the workflow reading it failed
-  20 s later (2026-11-10). Ask for a one-word confirmation, then check the
+  text (a replaced token, 2026-11-10). Ask for a one-word confirmation, then check the
   result with a call that does not read the clipboard.
 
 ```
@@ -64,12 +60,5 @@ it does in one read:
   outside it, so the expansions in `tools-plugin:zsh-gotchas` and zsh's
   `nomatch` abort do not apply inside it.
 
-> Observed 2026-10-28: Lauri rejected a Bash call that created five test files,
-> ran a heredoc into a Python probe and printed the results in one command —
-> "that command was too complex to understand or even read". It was redone as
-> one action per call plus a commented script run by one command. Later in the
-> session compound one-liners hit zsh four times (`set -- $spec` and an unquoted
-> `$cmd` not word-splitting, a bare `=====` taken as a command lookup, a glob
-> with no matches aborting an `ls` under `nomatch`), `rg -rn` read `-r` as
-> `--replace`, and a trailing `&` backgrounded a whole `&&` chain over ssh.
-> Writing the multi-step and remote work as bash scripts avoided all of them.
+Incidents behind these bullets: `~/.local/share/chezmoi/docs/rules-evidence.md`
+§ copy-paste-commands.md.
