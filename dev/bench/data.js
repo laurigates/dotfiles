@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794485259395,
+  "lastUpdate": 1794485546204,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5499,6 +5499,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011753104400000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "noreply@anthropic.com",
+            "name": "Claude",
+            "username": "claude"
+          },
+          "committer": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "distinct": true,
+          "id": "1f7ededa13aaf5cf56ce162c8fef01436e42fb83",
+          "message": "docs(ci): cite the earlier issue for the macOS clone failure\n\n#606 was filed for the same failure a minute before #608, which is now\nclosed as its duplicate.\n\nRefs #606\n\nCo-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9AyWjT3fSXTDy1sNHi",
+          "timestamp": "2026-11-12T14:11:42+02:00",
+          "tree_id": "3e77ce28987659fcdb91aa62f1854aa7b62dfa4b",
+          "url": "https://github.com/laurigates/dotfiles/commit/1f7ededa13aaf5cf56ce162c8fef01436e42fb83"
+        },
+        "date": 1794485545898,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.12255675433333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011605072000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010243117999999998,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0089199584,
             "unit": "s"
           }
         ]
