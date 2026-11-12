@@ -257,10 +257,22 @@ pr-todo:
 # Every PR is fetched with `gh pr view` (the search index lags, so search is only
 # used to enumerate). SAFE means all of: mergeable and not BLOCKED, no failing or
 # pending checks, `renovate/stability-days` passed, at least one real CI check
-# passed, and every row of the Renovate update table is patch/minor/digest/pin/
-# lockfile. A minor bump on a 0.x version counts as major (semver), and language
-# runtime bumps (`python to 3.15`, ...) are held however small. "Configure Renovate"
-# onboarding PRs are SAFE with no checks: no build reads renovate.json.
+# passed, the title does not match `platform`, and every row of the Renovate
+# update table is patch/minor/digest/pin/lockfile. A minor bump on a 0.x version
+# counts as major (semver), and language runtime bumps (`python to 3.15`, ...) are
+# held however small. "Configure Renovate" onboarding PRs are SAFE with no checks:
+# no build reads renovate.json.
+#
+# `platform` is a case-insensitive regex searched in the PR title. A match is
+# HOLD-platform whatever the bump size: these are cluster-wide components that a
+# GitOps controller deploys on merge, so they get no merge line and need a read
+# of the release notes (#532). The default lists common public chart names; pass
+# your own to add components, or '' to switch the bucket off.
+#
+# A real CI check is any check other than `renovate/stability-days` and PR-title
+# checks (a `conventional-commits` workflow, a `Fix PR title` job, ...). A PR
+# whose only passing checks are of those kinds is HOLD-nochecks (#532). A failing
+# or pending PR-title check still holds the PR as HOLD-failing or HOLD-pending.
 #
 # PRs in archived repos are left out of the search (`--archived=false`): an
 # archived repo is read-only, so its PRs can be neither merged nor closed, and
@@ -271,11 +283,12 @@ pr-todo:
 # header (`Update`, `Change`), never by position.
 #
 # SAFE output is a list of literal `gh pr merge` lines; nothing is merged. The
-# external-PR merge guard refuses `$var` selectors, so run them as written. SAFE is
-# mechanical: a minor chart bump on a platform component (ArgoCD, Envoy Gateway,
-# cert-manager, external-dns) still needs a human read before it ships.
+# external-PR merge guard refuses `$var` selectors, so run them as written. Each
+# SAFE PR is listed with the names of its passing real checks. SAFE is mechanical:
+# the recipe cannot see what a check covers, and a platform component whose title
+# `platform` does not match still lands here.
 [group: "git"]
-renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovate-bot app/laurigates-renovate" jobs="8":
+renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovate-bot app/laurigates-renovate" jobs="8" platform='\b(argo-?cd|argo-rollouts|argo-workflows|cert-manager|external-dns|external-secrets|ingress-nginx|envoy-gateway|traefik|istio|cilium|relay-proxy)\b':
     #!/usr/bin/env -S python3 -I
     import collections, json, re, subprocess, sys
     from concurrent.futures import ThreadPoolExecutor
@@ -285,6 +298,10 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
     BAD = {"FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE"}
     WAIT = {"PENDING", "IN_PROGRESS", "QUEUED", "EXPECTED", ""}
     RUNTIME = re.compile(r"update (dependency )?(python|node|nodejs|golang|go|ruby|java)( docker tag)? to", re.I)
+    PLATFORM = r"""{{platform}}"""
+    PLATFORM = re.compile(PLATFORM, re.I) if PLATFORM else None
+    # Checks that pass or fail on the PR title alone, matched on check or workflow name.
+    TITLE_CHECK = re.compile(r"conventional[-_ ]?commits?|pr[-_ ]title|semantic[-_ ]pull[-_ ]request", re.I)
     FIELDS = "number,title,isDraft,mergeStateStatus,mergeable,body,statusCheckRollup"
 
     def gh(*args):
@@ -325,19 +342,29 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
                 return types
         return []
 
+    def all_checks(d):
+        return [(c.get("name") or c.get("context") or "", c.get("workflowName") or "",
+                 (c.get("conclusion") or c.get("state") or "").upper())
+                for c in d["statusCheckRollup"] or []]
+
+    def real_checks(d):
+        return [(n, s) for n, w, s in all_checks(d)
+                if n != "renovate/stability-days" and not TITLE_CHECK.search(n) and not TITLE_CHECK.search(w)]
+
     def verdict(d):
         title = d["title"]
         types = set(update_types(d["body"]))
-        checks = [(c.get("name") or c.get("context") or "", (c.get("conclusion") or c.get("state") or "").upper())
-                  for c in d["statusCheckRollup"] or []]
-        real = [(n, s) for n, s in checks if n != "renovate/stability-days" and not n.startswith("conventional-commits")]
-        stability = [s for n, s in checks if n == "renovate/stability-days"]
+        real = real_checks(d)
+        stability = [s for n, _, s in all_checks(d) if n == "renovate/stability-days"]
+        # A PR-title check is not CI, but a failing or running one still holds the PR.
+        gating = [s for n, _, s in all_checks(d) if n != "renovate/stability-days"]
         if d["isDraft"]: return "HOLD-draft"
         if d["mergeable"] == "CONFLICTING" or d["mergeStateStatus"] == "DIRTY": return "HOLD-conflict"
         if d["mergeStateStatus"] == "BLOCKED": return "HOLD-blocked"
-        if any(s in BAD for _, s in real): return "HOLD-failing"
-        if any(s in WAIT for _, s in real): return "HOLD-pending"
+        if any(s in BAD for s in gating): return "HOLD-failing"
+        if any(s in WAIT for s in gating): return "HOLD-pending"
         if stability and stability[0] != "SUCCESS": return "HOLD-stability"
+        if PLATFORM and PLATFORM.search(title): return "HOLD-platform"
         if not types and re.search(r"configure renovate", title, re.I): return "SAFE"
         if RUNTIME.search(title): return "HOLD-runtime"
         if not types or types & {"major", "unknown"}: return "HOLD-major"
@@ -373,10 +400,12 @@ renovate-triage owners="ForumViriumHelsinki laurigates" authors="app/fvh-renovat
     safe = [(r, d) for r, d, v in rows if v == "SAFE"]
     if safe:
         print("\n== SAFE (review titles, then run each line as written)")
-        print("#   SAFE is mechanical: a chart bump on a platform component (ArgoCD, gateway,")
-        print("#   cert-manager, external-dns, ingress) deploys to production on merge. Read it first.")
+        print("#   SAFE is mechanical. [passed: ...] names the real checks that passed; the recipe")
+        print("#   cannot see what they cover. Platform charts are in HOLD-platform when the title")
+        print("#   matches the `platform` regex; one it does not match is listed here.")
         for r, d in safe:
-            print(f"#   {r}#{d['number']}  {d['title']}")
+            passed = sorted({n for n, s in real_checks(d) if s == "SUCCESS"})
+            print(f"#   {r}#{d['number']}  {d['title']}  [passed: {', '.join(passed) or 'none'}]")
         for r, d in safe:
             print(f"gh pr merge {d['number']} -R {r} --squash --delete-branch")
         print("\n# Sibling PRs that touch one lockfile can conflict after the first merges;")
