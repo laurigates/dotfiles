@@ -19,7 +19,8 @@ copy-paste:
 - **Commands the user must run themselves** (interactive auth): hand them over
   single-line with the `!` prefix, e.g. `! gcloud auth login`. The `!` shell
   has no `/dev/tty`, so anything that opens the TTY directly (`kitty +kitten
-  icat`) fails there too; show images through the `kitty-show-image` skill.
+  icat`) fails there too; show images through the
+  `kitty-plugin:kitty-show-image` skill.
 - **A prompt for hidden input gets nothing under `!`.** With no TTY, a command
   that would prompt for a value reads an empty stdin instead. It may succeed
   silently with an empty value (an empty `gh secret set`, 2026-11-04). Hand such a command over for Lauri's own
