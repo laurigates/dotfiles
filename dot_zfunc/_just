@@ -9,8 +9,9 @@
 # "values" group, discarding the group metadata — so it is intentionally
 # NOT generated for `just` (see .chezmoidata/completions.toml).
 
-emulate -L zsh
-setopt local_options
+# No `emulate -L zsh` here: the completion system already runs this with its
+# own option set, and resetting it turns off `extendedglob`, which `_describe`
+# needs to add any match at all outside fzf-tab.
 
 # Lazily load just's native (clap) completer once, renamed to `_just_clap`
 # and with its own `compdef` stripped so it can't steal the binding back.
@@ -102,8 +103,10 @@ _just_recipes_grouped() {
     (( ${#items} )) || continue
     label=${g:-recipes}
     # Distinct description per call => distinct fzf-tab group (auto-colored).
-    _describe -t "just-grp-${label}" "$label" items
-    added=1
+    # Count a group only when something in it matched what was typed. Module
+    # recipes (`labels::build`) are not in the root `.recipes`, so a prefix
+    # that matches no root recipe must fall through to the native completer.
+    _describe -t "just-grp-${label}" "$label" items && added=1
   done
   (( added ))
 }
