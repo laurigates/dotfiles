@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794770288878,
+  "lastUpdate": 1794772551898,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5939,6 +5939,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0117569332,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7e0064435d29302d9590cf1d44216206c33ae3a5",
+          "message": "chore(deps): update anthropics/claude-code-action action to v1.0.273 (#628)\n\nThis PR contains the following updates:\n\n| Package | Type | Update | Change | Pending |\n|---|---|---|---|---|\n|\n[anthropics/claude-code-action](https://redirect.github.com/anthropics/claude-code-action)\n| action | patch | `v1.0.271` → `v1.0.273` | `v1.0.276` (+2) |\n\n---\n\n### Release Notes\n\n<details>\n<summary>anthropics/claude-code-action\n(anthropics/claude-code-action)</summary>\n\n###\n[`v1.0.273`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.273):\n(breaking changes)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.272...v1.0.273)\n\n##### What's Changed\n\n##### ⚠️ Breaking changes\n\n- Deny code-running commands on PRs from authors without write access by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2001](https://redirect.github.com/anthropics/claude-code-action/pull/2001)\n- Run sessions in auto mode by default by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2004](https://redirect.github.com/anthropics/claude-code-action/pull/2004)\n- Keep the token out of .git/config when bots are allowed by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2005](https://redirect.github.com/anthropics/claude-code-action/pull/2005)\n- Stop a session from leaving programs for later steps to run by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2003](https://redirect.github.com/anthropics/claude-code-action/pull/2003)\n- Keep fork branch names away from this repository's branches by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2007](https://redirect.github.com/anthropics/claude-code-action/pull/2007)\n- Stop forced pushes and file reads through the git allow rules by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2006](https://redirect.github.com/anthropics/claude-code-action/pull/2006)\n- Only trust text and runs from the person who passed the write check by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2002](https://redirect.github.com/anthropics/claude-code-action/pull/2002)\n\n##### Other changes\n\n- Call out breaking changes in release notes and titles by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2013](https://redirect.github.com/anthropics/claude-code-action/pull/2013)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.272...v1.0.273>\n\n##### ⚠️ Upgrade notes: new security defaults\n\nThis release tightens what a Claude session can do, especially on\ncontent from people without write access. Workflows on `@v1` get these\nchanges automatically. Most keep working as they are, but check the\nitems below if yours runs tests on outside pull requests, uses later\nsteps after the action, or relies on `--allowedTools` as a strict list.\n\n##### Sessions start in auto mode\n\nA safety review now decides tool calls that no allow rule covers. Calls\nthat used to be denied can run if the review passes, so `--allowedTools`\nis no longer a strict list. Workflows with a `prompt` can also edit\nworkspace files without an allow rule.\n\n**Opt out:** set the earlier mode in `claude_args`: `--permission-mode\nacceptEdits` for `@claude` mentions, or `--permission-mode default` for\nworkflows with a `prompt`.\n\nSessions keep the earlier defaults if you set `allowed_non_write_users`,\n`allowed_bots`, a custom `ANTHROPIC_BASE_URL` or\n`path_to_claude_code_executable`. The same applies if your `settings`\ninput is a file path, or sets a base URL or another permission mode.\n\n##### Code-running commands are denied on outside pull requests\n\nIf a pull request's author doesn't have write access, common commands\nsuch as `npm test` and `bun install` are denied, even if `claude_args`\nallows them. The run still succeeds, so check the log for a warning.\n\n**Opt out:** `restrict_untrusted_prs: false`. This lets code from that\npull request run in a job that holds your workflow's tokens.\n\n##### Only trusted text and runs start a session\n\n- Slash commands and the trusted request come only from text the person\nwho triggered the run wrote. Claude still reads a labeled or assigned\nissue's body for context.\n- Editing or deleting someone else's comment or review no longer starts\na run.\n- With `prompt` and `track_progress`, `label_trigger` and\n`assignee_trigger` now apply.\n- `workflow_run` also checks the owner of the fork the run came from.\n- A run started by a bot's activity on a pull request also needs that\npull request's author to have write access or be an allowed bot.\n\n**Adjust:**\n\n- If your workflow filters labels itself, set `label_trigger` to your\nlabel, or to `\"\"` to accept any label.\n- For `workflow_run` on outside contributions, add those users to\n`allowed_non_write_users` and pass `github_token`.\n\nThere's no opt-out for the rest.\n\n##### A session can't leave anything behind for later steps\n\n`GITHUB_ENV`, `GITHUB_PATH` and git config are restored when the session\nends, so a session's changes to them no longer reach later steps. Token\nrevocation also ignores `~/.curlrc`, including a proxy set there.\n\nGit hooks are also off from before the checkout on pull requests covered\nby `restrict_untrusted_prs`, so a push Claude makes on one of those\nwon't upload Git LFS objects.\n\n**Adjust:** pass values to later steps with `GITHUB_OUTPUT` or\n`--json-schema`. There's no opt-out.\n\n##### No token in `.git/config` when `allowed_bots` is set\n\nThese workflows now use the same credential helper as\n`allowed_non_write_users`, and it only answers for your GitHub server.\n\n**Adjust:** a later step that pushes through `origin`, or fetches from\nit on a private repository, needs its own credentials: `GH_TOKEN`,\n`GIT_ASKPASS`, a credential saved for the username `x-access-token`, or\nits own remote URL. There's no opt-out.\n\n##### Stricter git commands in `@claude` runs\n\n- Commits go through a wrapper that rejects flags outside a short list,\nincluding `--amend`, `--no-verify`, `--author` and flags that read a\nfile.\n- Pushes can't be forced and only update the branch the session was set\nup on: a new branch, or the open pull request's branch.\n- A deny rule for `git commit` or `git push` must be in `claude_args` to\ncover these wrappers. One in a settings file doesn't.\n\n**Opt out:** add your own rule in `claude_args`, such as `Bash(git\ncommit:*)` or `Bash(git push:*)`. This brings back what the wrappers\nblock for that workflow.\n\n##### Signed commits from `prompt` runs go to their own branch\n\nWith `use_commit_signing`, a run on an issue now commits to `issue-N`. A\nrun on a pull request commits to its branch, or to `pr-N` if that branch\nisn't known to be in this repository. They used to reach the default\nbranch or a branch named by a fork.\n\n**Opt out:** set `CLAUDE_BRANCH` in the step's `env` to choose the\nbranch.\n\n###\n[`v1.0.272`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.272)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.271...v1.0.272)\n\n##### What's Changed\n\n- Pass structured output to shell steps through env by\n[@&#8203;bogini](https://redirect.github.com/bogini) in\n[#&#8203;1963](https://redirect.github.com/anthropics/claude-code-action/pull/1963)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.271...v1.0.272>\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend\nRenovate](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0My4yODguMCIsInVwZGF0ZWRJblZlciI6IjQzLjI4OC4wIiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-11-15T19:55:10Z",
+          "tree_id": "14e7d8180b88328388cba7a1d2fa5187145f8911",
+          "url": "https://github.com/laurigates/dotfiles/commit/7e0064435d29302d9590cf1d44216206c33ae3a5"
+        },
+        "date": 1794772551608,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.134550121,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015197022,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013104798,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0111684534,
             "unit": "s"
           }
         ]
