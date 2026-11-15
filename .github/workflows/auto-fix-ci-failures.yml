@@ -30,7 +30,7 @@ jobs:
       (github.event.workflow_run.actor.type != 'Bot' ||
        github.event.workflow_run.actor.login == 'claude[bot]' ||
        github.event.workflow_run.actor.login == 'claude')
-    uses: laurigates/.github/.github/workflows/reusable-auto-fix.yml@77007a7fb1a39bf7fa800c02416cfe2cd187215d # main
+    uses: laurigates/.github/.github/workflows/reusable-auto-fix.yml@dbc1c7f628d547f1d327afcb26a8a62433ffd8b0 # main
     with:
       branch: ${{ github.event.workflow_run.head_branch }}
       run_id: "${{ github.event.workflow_run.id }}"
