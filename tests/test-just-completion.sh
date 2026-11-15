@@ -110,6 +110,18 @@ expect() {  # expect <typed> <wanted-line> <description>
     fi
 }
 
+expect_eol() {  # expect_eol <typed> <wanted-line-end> <description>
+    # Like expect, but the wanted text must end the line: catches a trailing
+    # space inserted after a completion that should continue the same word.
+    local out
+    out="$(run_pty "$1")"
+    if grep -q -- "$2\$" <<<"$out"; then
+        log_pass "$3"
+    else
+        log_fail "$3; got: $(tr '\n' ' ' <<<"$out" | cut -c1-160)"
+    fi
+}
+
 expect_not() {  # expect_not <typed> <unwanted-line> <description>
     local out
     out="$(run_pty "$1")"
@@ -125,8 +137,8 @@ expect 'just rootb' 'just rootbuild' \
     "CONTROL: just rootb<TAB> completes the root recipe (grouped path)"
 expect 'just labels::stick' 'just labels::stickerprint' \
     "just labels::stick<TAB> completes the module recipe (native fallback)"
-expect 'just lab' 'just labels::' \
-    "just lab<TAB> completes the module name from the modules group"
+expect_eol 'just lab' 'just labels::' \
+    "just lab<TAB> inserts labels:: with no trailing space (modules group)"
 expect 'just labels stick' 'just labels stickerprint' \
     "just labels stick<TAB> completes the module recipe (space form)"
 expect_not 'just labels rootb' 'just labels rootbuild' \
