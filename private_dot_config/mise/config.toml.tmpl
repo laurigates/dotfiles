@@ -118,8 +118,9 @@ rust = { version = "latest", components = "rust-analyzer" }
 {{- else }}
 # mise's aqua backend ignores the registry's linux -> unknown-linux-musl replacement and
 # installs the glibc asset, which needs GLIBC 2.38+ (Pop!_OS 22.04 ships 2.35). Pin the
-# musl asset explicitly via the github backend. Verified against mise 2026.9.3.
-"github:atuinsh/atuin" = { version = "latest", matching_regex = "^atuin-(x86_64|aarch64)-unknown-linux-musl", exe = "atuin" }
+# musl asset explicitly via the github backend. Verified against mise 2026.11.8, which
+# rejects the old `exe` option; the archive's single `atuin` binary is found without it.
+"github:atuinsh/atuin" = { version = "latest", matching_regex = "^atuin-(x86_64|aarch64)-unknown-linux-musl" }
 {{- end }}
 "aqua:junegunn/fzf" = "latest"
 "github:starship/starship" = "latest"
@@ -151,7 +152,9 @@ chezmoi = "{{ (fromToml (include ".mise.toml")).tools.chezmoi }}"
 usage = "latest"
 uv = "latest"
 "aqua:EmbarkStudios/cargo-deny" = "latest"    # Rust license/bans/sources gate (cargo deny)
-"npm:@gradient-tools/surface" = "0.9.0"       # docs-drift gate (see configure-plugin:configure-surface)
+# allow_low_downloads: mise's npm installer (aube) refuses a first install of any
+# package under 1000 weekly downloads; this one had 55 on 2026-11-15. Exempts this package only.
+"npm:@gradient-tools/surface" = { version = "0.9.0", allow_low_downloads = true }  # docs-drift gate (see configure-plugin:configure-surface)
 
 # npm-only CLI tools
 # Migrated out of a hand-maintained ~/package.json (2026-08-14); these ship
@@ -165,7 +168,11 @@ uv = "latest"
 # with its own provider), which breaks Claude Code. Do not re-add.
 "npm:@dotenvx/dotenvx" = "2.38.0"                # .env encryption/loading
 "npm:@google/gemini-cli" = "0.64.0"              # gemini
-"npm:@mermaid-js/mermaid-cli" = "12.0.0"         # mmdc (see tools-plugin:mermaid-diagrams)
+# trust_policy_excludes: chromium-bidi moved into the Chromium tree; since 2026-09-30 its
+# releases come from the chrome-devtools-npm maintainer account without provenance, which
+# mise's npm installer (aube) reads as a trust downgrade from the GitHub Actions-published
+# 17.x. Exempts that one version; drop it when mermaid-cli moves to another chromium-bidi.
+"npm:@mermaid-js/mermaid-cli" = { version = "12.0.0", trust_policy_excludes = ["chromium-bidi@157.0.8090-0"] }  # mmdc (see tools-plugin:mermaid-diagrams)
 "npm:@opencode/cli" = { version = "2.1.4", allow_builds = ["@opencode/cli"] }  # opencode (2.x; npm:opencode-ai stops at 1.19)
 "npm:@playwright/test" = "1.64.1"                # playwright (browsers need `playwright install`)
 "npm:jsonlint" = "1.6.3"
