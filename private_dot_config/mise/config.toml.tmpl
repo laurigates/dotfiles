@@ -152,7 +152,9 @@ chezmoi = "{{ (fromToml (include ".mise.toml")).tools.chezmoi }}"
 usage = "latest"
 uv = "latest"
 "aqua:EmbarkStudios/cargo-deny" = "latest"    # Rust license/bans/sources gate (cargo deny)
-"npm:@gradient-tools/surface" = "0.9.0"       # docs-drift gate (see configure-plugin:configure-surface)
+# allow_low_downloads: mise's npm installer (aube) refuses a first install of any
+# package under 1000 weekly downloads; this one had 55 on 2026-11-15. Exempts this package only.
+"npm:@gradient-tools/surface" = { version = "0.9.0", allow_low_downloads = true }  # docs-drift gate (see configure-plugin:configure-surface)
 
 # npm-only CLI tools
 # Migrated out of a hand-maintained ~/package.json (2026-08-14); these ship
