@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794738115682,
+  "lastUpdate": 1794770288878,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5895,6 +5895,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0089417816,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b042ec850c06f3b77d71464caf0265d35b1a6d4a",
+          "message": "fix(zsh): complete just module recipes in the space form and offer modules (#626)\n\n## What\n\n`dot_zfunc/_just` handles both gaps from #610:\n\n1. **Space form.** The positional words before the cursor are walked as\na module path and resolved against `.modules` of `just --dump\n--dump-format json`. When they resolve, the completer lists that\nmodule's recipes, grouped as at the root. When a prefix matches nothing\ninside a resolved module, completion ends there. Previously it fell back\nto the native completer, which offers root recipes. A word that is not a\nmodule (a recipe argument) still goes to the native completer.\n2. **Modules group.** At the recipe slot, module names appear in a\n`modules` group, placed last as in `just --list`. At the top level an\nentry inserts `labels::` with no trailing space, and the native\ncompleter continues from there. Inside a space-form path an entry\ninserts `sub ` (the name plus a space), because just rejects a mixed\nform: `just labels sub::deep` errors with `justfile does not contain\nrecipe`.\n\nA word containing `::` skips the grouped path and goes straight to the\nnative completer. Without that, `labels::` would match its own entry in\nthe modules group.\n\n## Tests\n\n`tests/test-just-completion.sh` (pty-driven zsh, zsh 5.9, just 1.59.0)\nnow uses a fixture with a nested submodule. Result: 7/7 pass.\n\n- New: `just lab<TAB>` gives `just labels::`. `just labels stick<TAB>`\ncompletes the module recipe. `just labels rootb<TAB>` does **not** offer\nthe root recipe. `just labels su<TAB>` gives `just labels sub `. `just\nlabels sub deep<TAB>` completes the nested recipe.\n- `just labels rootb` failed before the fallback fix (it offered\n`rootbuild`), so the test catches the original bug.\n- `shellcheck` (via `uvx --from shellcheck-py`) is clean on the test\nscript. `mise run lint` could not run in this session: a mise plugin\ninstall failed in the sandbox.\n\n## Follow-ups\n\n- #627: recipe arguments after a space-form module recipe, and\n`[private] mod` still listed. `just --dump` exposes no private flag for\nmodules.\n- Not checked: whether a newer just than 1.59.0 completes the space form\nnatively.\n\nCloses #610\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9Bmh7Co4FWdLNwMbmE\n\n---------\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+          "timestamp": "2026-11-15T21:17:17+02:00",
+          "tree_id": "a459ec51f48a5ab2ff5aa56ce40759298aade410",
+          "url": "https://github.com/laurigates/dotfiles/commit/b042ec850c06f3b77d71464caf0265d35b1a6d4a"
+        },
+        "date": 1794770288482,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13286319933333332,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0016964666,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.001452488,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0117569332,
             "unit": "s"
           }
         ]
