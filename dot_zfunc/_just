@@ -22,14 +22,17 @@ if (( ! $+functions[_just_clap] )); then
   [[ -n $_src ]] && eval "$_src"
 fi
 
-# Walk the words before the cursor. If they are *only* justfile-selecting
-# flags (`just -g <TAB>`, `just -f path/to/justfile <TAB>`, …), the cursor is
-# still at the recipe-name position: set `_just_dump_args` so `--dump` reads
-# the same justfile the recipe would run from, and return 0. Anything else
-# (a positional recipe already typed, an unrecognized flag) returns 1 so the
+# Walk the words before the cursor. Leading justfile-selecting flags
+# (`just -g <TAB>`, `just -f path/to/justfile <TAB>`, …) go into
+# `_just_dump_args`, so `--dump` reads the same justfile the recipe would run
+# from. The positional words after them go into `_just_mod_path`: they are a
+# module path in the space form (`just labels <TAB>`) when every one names a
+# module, which `_just_recipes_grouped` checks against the dump. Returns 1 for
+# an unrecognized flag, or a flag whose value is under the cursor, so the
 # native clap completer takes over.
 _just_recipe_position() {
   _just_dump_args=()
+  _just_mod_path=()
   local i=2 w
   while (( i < CURRENT )); do
     w=$words[i]
@@ -44,31 +47,60 @@ _just_recipe_position() {
         _just_dump_args+=($w $words[i+1])
         (( i += 2 ))
         ;;
-      *) return 1 ;;
+      -*) return 1 ;;
+      *) break ;;
     esac
+  done
+  while (( i < CURRENT )); do
+    w=$words[i]
+    [[ $w == -* ]] && return 1
+    _just_mod_path+=$w
+    (( i++ ))
   done
   return 0
 }
 
-# Add recipe names grouped by their `[group(...)]` attribute.
-# Returns 0 if it added at least one group of matches.
+# Add recipe names grouped by their `[group(...)]` attribute, plus a
+# `modules` group. Returns 0 if it added at least one match, 2 if the words
+# before the cursor are a module path but nothing in it matched, 1 otherwise.
 _just_recipes_grouped() {
   local json
   json="$(just $_just_dump_args --dump --dump-format json 2>/dev/null)" || return 1
   [[ -n $json ]] || return 1
 
-  # Emit  group<TAB>name<TAB>doc  (ungrouped recipes get an empty group).
+  # Descend into the module named by each word of `_just_mod_path`. A word
+  # that is not a module (a recipe argument: `just build <TAB>`) prints
+  # nothing, and the native completer takes over.
+  #
+  # Emit  group<TAB>name<TAB>doc  (ungrouped recipes get an empty group), and
+  # one row per submodule in a `modules` group. At the top level a module
+  # inserts `name::`, the form the native completer continues from; inside a
+  # space-form path it inserts `name` and a space, because just rejects a mix
+  # of the two forms (`just labels sub::deep`).
   local -a rows
-  rows=("${(@f)$(print -r -- "$json" | jq -r '
-    .recipes
+  rows=("${(@f)$(print -r -- "$json" | jq -r --args '
+    reduce $ARGS.positional[] as $m (.; .modules[$m]?) | select(. != null)
+    | (.modules // {} | to_entries | .[]
+        | "\u0001modules\t\(.key)\t\(((.value.doc // "") | gsub("\t"; " ")))"),
+      (.recipes
     | to_entries
     | map(select(.value.private != true))
     | .[]
     | (([.value.attributes[]?
           | if type == "object" then .group else empty end] | first) // "") as $g
-    | "\($g)\t\(.key)\t\(((.value.doc // "") | gsub("\t"; " ")))"
-  ' 2>/dev/null)}")
+    | "\($g)\t\(.key)\t\(((.value.doc // "") | gsub("\t"; " ")))")
+  ' "${_just_mod_path[@]}" 2>/dev/null)}")
   (( ${#rows} )) || return 1
+  # Inside a resolved module path, the native completer would offer the ROOT
+  # recipes, so a prefix that matches nothing here ends completion (status 2).
+  local miss=1
+  (( ${#_just_mod_path} )) && miss=2
+
+  # Split off the module rows (marked with a leading \x01 so a recipe group
+  # that happens to be named `modules` stays a recipe group).
+  local -a mods=()
+  mods=(${(M)rows:#$'\x01'*})
+  rows=(${rows:#$'\x01'*})
 
   # Ordered, unique group list: ungrouped first, then groups alphabetically
   # (mirrors `just --list`).
@@ -103,21 +135,44 @@ _just_recipes_grouped() {
     (( ${#items} )) || continue
     label=${g:-recipes}
     # Distinct description per call => distinct fzf-tab group (auto-colored).
-    # Count a group only when something in it matched what was typed. Module
-    # recipes (`labels::build`) are not in the root `.recipes`, so a prefix
-    # that matches no root recipe must fall through to the native completer.
+    # Count a group only when something in it matched what was typed.
     _describe -t "just-grp-${label}" "$label" items && added=1
   done
-  (( added ))
+
+  # Modules last, as in `just --list`. `_describe` splits on the first
+  # unescaped colon, so the `::` of an inserted name is escaped.
+  if (( ${#mods} )); then
+    local -a mitems=()
+    for r in $mods; do
+      local n=${${r#*$'\t'}%%$'\t'*}
+      local d=${r##*$'\t'}
+      if (( ${#_just_mod_path} )); then
+        mitems+=("${n}:${d}")
+      else
+        mitems+=("${n}\\:\\::${d}")
+      fi
+    done
+    if (( ${#_just_mod_path} )); then
+      _describe -t just-grp-modules modules mitems && added=1
+    else
+      _describe -t just-grp-modules modules mitems -S '' && added=1
+    fi
+  fi
+  (( added )) || return $miss
 }
 
 # Complete the recipe name in the first positional slot with groups — also
 # after leading justfile-selecting flags, so `just -g <TAB>` groups the global
-# justfile's recipes instead of falling through to the flat clap list.
+# justfile's recipes instead of falling through to the flat clap list, and
+# after a space-form module path, so `just labels <TAB>` lists that module's
+# recipes rather than the root's.
 # Delegate everything else (flags, recipe arguments) to the native completer.
-local -a _just_dump_args
-if [[ ${words[CURRENT]} != -* ]] && _just_recipe_position; then
-  _just_recipes_grouped && return
+# A word with `::` (`labels::b<TAB>`) is a module path in the `::` form, which
+# the native completer resolves itself.
+local -a _just_dump_args _just_mod_path
+if [[ ${words[CURRENT]} != -* && ${words[CURRENT]} != *::* ]] && _just_recipe_position; then
+  _just_recipes_grouped
+  (( $? != 1 )) && return
 fi
 
 (( $+functions[_just_clap] )) && _just_clap "$@"

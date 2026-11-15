@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regression test for `just <module>::<TAB>` completing module recipes.
+# Regression test for module completion in `just`: `just <module>::<TAB>`,
+# the space form `just <module> <TAB>`, and module names at the recipe slot.
 #
 # What is being protected
 # -----------------------
@@ -10,6 +11,11 @@
 # success whenever the justfile had any recipe at all, whether or not one
 # matched the typed prefix, so the native completer never ran and
 # `just labels::<TAB>` offered nothing, with no error to notice.
+#
+# The space form (`just labels <TAB>`) used to reach the native completer,
+# which offers the ROOT recipes there, and module names were never offered at
+# the recipe slot (issue #610). The completer now reads `.modules` of the dump
+# for both.
 #
 # Why the run is shaped this way
 # ------------------------------
@@ -39,7 +45,7 @@ for tool in just jq zsh; do
 done
 
 # The shipped completer, alone on fpath, so no installed ~/.zfunc/_just is used.
-mkdir -p "$WORK/zfunc" "$WORK/proj/tools/labels"
+mkdir -p "$WORK/zfunc" "$WORK/proj/tools/labels/sub"
 cp "$REPO_ROOT/dot_zfunc/_just" "$WORK/zfunc/_just"
 
 cat > "$WORK/proj/justfile" <<'JUST'
@@ -51,8 +57,14 @@ rootbuild:
     @true
 JUST
 cat > "$WORK/proj/tools/labels/justfile" <<'JUST'
-# Module recipe, completed only by the native completer
+mod sub
+
+# Module recipe
 stickerprint:
+    @true
+JUST
+cat > "$WORK/proj/tools/labels/sub/justfile" <<'JUST'
+deepthing:
     @true
 JUST
 
@@ -98,13 +110,43 @@ expect() {  # expect <typed> <wanted-line> <description>
     fi
 }
 
+expect_eol() {  # expect_eol <typed> <wanted-line-end> <description>
+    # Like expect, but the wanted text must end the line: catches a trailing
+    # space inserted after a completion that should continue the same word.
+    local out
+    out="$(run_pty "$1")"
+    if grep -q -- "$2\$" <<<"$out"; then
+        log_pass "$3"
+    else
+        log_fail "$3; got: $(tr '\n' ' ' <<<"$out" | cut -c1-160)"
+    fi
+}
+
+expect_not() {  # expect_not <typed> <unwanted-line> <description>
+    local out
+    out="$(run_pty "$1")"
+    if grep -qF -- "$2" <<<"$out"; then
+        log_fail "$3; got: $(tr '\n' ' ' <<<"$out" | cut -c1-160)"
+    else
+        log_pass "$3"
+    fi
+}
+
 echo "just completion (pty, fixture justfile with one module)"
 expect 'just rootb' 'just rootbuild' \
     "CONTROL: just rootb<TAB> completes the root recipe (grouped path)"
 expect 'just labels::stick' 'just labels::stickerprint' \
     "just labels::stick<TAB> completes the module recipe (native fallback)"
-expect 'just lab' 'just labels::stickerprint' \
-    "just lab<TAB> completes into the module (native fallback)"
+expect_eol 'just lab' 'just labels::' \
+    "just lab<TAB> inserts labels:: with no trailing space (modules group)"
+expect 'just labels stick' 'just labels stickerprint' \
+    "just labels stick<TAB> completes the module recipe (space form)"
+expect_not 'just labels rootb' 'just labels rootbuild' \
+    "just labels rootb<TAB> does not offer the root recipe (space form)"
+expect 'just labels su' 'just labels sub ' \
+    "just labels su<TAB> completes the submodule name (space form)"
+expect 'just labels sub deep' 'just labels sub deepthing' \
+    "just labels sub deep<TAB> completes the nested module recipe"
 
 echo
 echo "Passed: $pass_count  Failed: $fail_count"
