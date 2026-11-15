@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794735643964,
+  "lastUpdate": 1794736443623,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5807,6 +5807,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0091610602,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bb21ec0e3e3715978f726907fc4c3b9675ad241d",
+          "message": "fix(mise): unblock mise upgrade on Linux (atuin, surface, mermaid-cli) (#624)\n\n## What\n\nThree entries in `private_dot_config/mise/config.toml.tmpl` that make\n`mise upgrade` exit 1 on a Linux machine with mise 2026.11.8:\n\n1. Remove `exe = \"atuin\"` from the Linux `github:atuinsh/atuin` entry.\n2. Add `allow_low_downloads = true` to `npm:@gradient-tools/surface`.\n3. Add `trust_policy_excludes = [\"chromium-bidi@157.0.8090-0\"]` to\n`npm:@mermaid-js/mermaid-cli`.\n\n## Why\n\n`mise upgrade` reports:\n\n```\ngithub:atuinsh/atuin@latest: github:atuinsh/atuin: option `exe` is not used by the github backend\nnpm:@gradient-tools/surface@0.9.0: aube install failed: refusing to add @gradient-tools/surface: only 55 weekly downloads (threshold: 1000)\n```\n\nIt then exits 1, `run_onchange_01-update-packages.sh` fails under `set\n-e`, and `chezmoi apply` stops there. The later `run_onchange_*` scripts\nnever run.\n\nThe download gate applies to a first, unlocked install, which is why a\nmachine that already has surface installed does not hit it.\n`allow_low_downloads` exempts this one package; the threshold is\nunchanged for everything else ([mise npm backend\ndocs](https://mise.jdx.dev/dev-tools/backends/npm.html)).\n\n## Verification\n\nOn a Pop!_OS 22.04 x86-64 machine (glibc 2.35, mise 2026.11.8), each new\nentry was installed with `mise install` against a throwaway global\nconfig:\n\n- atuin: exit 0, asset `atuin-x86_64-unknown-linux-musl.tar.gz`, GitHub\nartifact attestations verified, `atuin --version` prints `atuin\n18.24.8`, `ldd` reports `statically linked`.\n- surface: exit 0, `mise ls` lists `npm:@gradient-tools/surface 0.9.0`.\n\nNot exercised: the aarch64 arm of the atuin regex, and a full `chezmoi\napply` from this branch. The macOS atuin branch of the template is\nunchanged.\n\n`mise run lint` on the authoring Mac: `lint:lua` fails because\n`luacheck` is not installed there; the other lint tasks pass. The\npre-commit hooks passed on both commits.\n\n## The chromium-bidi exemption\n\n`npm:@mermaid-js/mermaid-cli@12.0.0` failed with:\n\n```\ntrust downgrade for chromium-bidi@157.0.8090-0 (trustPolicy=no-downgrade): earlier published version 10.4.0 had trusted publisher but this version has no trust evidence\n```\n\nFrom the npm registry document for `chromium-bidi` (`curl\nhttps://registry.npmjs.org/chromium-bidi`, read 2026-11-15):\n\n- The last release with attestations is 17.0.2 (2026-07-06), published\nby GitHub Actions.\n- All 168 releases in majors 157–160, starting 2026-09-30, are published\nby `chrome-devtools-npm`, a listed maintainer, with no attestations.\n- The [upstream\nREADME](https://github.com/GoogleChromeLabs/chromium-bidi) states the\nsource moved into the Chromium tree.\n\nThe tarball contents were not compared against the Chromium source. The\nexemption names the single version `chromium-bidi@157.0.8090-0`, so a\nmermaid-cli bump that pulls another chromium-bidi version will hit the\ncheck again.\n\nWith the exemption, `mise install` on the same Linux machine exits 0 and\n`mmdc --version` prints `12.0.0`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9C5vDkC7HdzASJWoan\n\n---------\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-15T09:53:18Z",
+          "tree_id": "b285d8c02afc35da9e4920962f2610690ef82028",
+          "url": "https://github.com/laurigates/dotfiles/commit/bb21ec0e3e3715978f726907fc4c3b9675ad241d"
+        },
+        "date": 1794736443167,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11920859700000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012494762,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010273782,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.010944136400000002,
             "unit": "s"
           }
         ]
