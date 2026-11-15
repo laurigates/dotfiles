@@ -168,7 +168,11 @@ uv = "latest"
 # with its own provider), which breaks Claude Code. Do not re-add.
 "npm:@dotenvx/dotenvx" = "2.38.0"                # .env encryption/loading
 "npm:@google/gemini-cli" = "0.64.0"              # gemini
-"npm:@mermaid-js/mermaid-cli" = "12.0.0"         # mmdc (see tools-plugin:mermaid-diagrams)
+# trust_policy_excludes: chromium-bidi moved into the Chromium tree; since 2026-09-30 its
+# releases come from the chrome-devtools-npm maintainer account without provenance, which
+# mise's npm installer (aube) reads as a trust downgrade from the GitHub Actions-published
+# 17.x. Exempts that one version; drop it when mermaid-cli moves to another chromium-bidi.
+"npm:@mermaid-js/mermaid-cli" = { version = "12.0.0", trust_policy_excludes = ["chromium-bidi@157.0.8090-0"] }  # mmdc (see tools-plugin:mermaid-diagrams)
 "npm:@opencode/cli" = { version = "2.1.4", allow_builds = ["@opencode/cli"] }  # opencode (2.x; npm:opencode-ai stops at 1.19)
 "npm:@playwright/test" = "1.64.1"                # playwright (browsers need `playwright install`)
 "npm:jsonlint" = "1.6.3"
