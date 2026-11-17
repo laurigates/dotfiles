@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794772551898,
+  "lastUpdate": 1794903985204,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -5983,6 +5983,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0111684534,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9b46b7487f85bc9a3b937bf0912de009655c5c9d",
+          "message": "feat(claude): track skill-usage log and enable prose-check hook flags (#630)\n\n## What\n\nAdds `CLAUDE_HOOKS_ENABLE_SKILL_USAGE_LOG` and\n`CLAUDE_HOOKS_ENABLE_PROSE_CHECK` to the env overlay in\n`exact_dot_claude/modify_settings.json`, and to `RECOMMENDED_ENV_FLAGS`\nin `exact_dot_claude/hooks/executable_claude-plugins-audit.sh` (kept in\nsync with the overlay).\n\n## Why\n\nThe skill-usage flag existed only in the live `~/.claude/settings.json`:\nthe `modify_` deep-merge kept it across applies, but a fresh machine\nwould not get it. Prose-check is newly enabled; its sibling\n`prose-plugin` is already enabled at user scope.\n\n## Verification\n\n- `chezmoi --source <worktree> diff` on the two targets showed only the\nadded lines; applied as named targets, `chezmoi status` clean\nafterwards.\n- `shellcheck` on both files: clean. Pre-commit hooks passed.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9AUqKGKGsgWrbFVHzJ\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-17T10:25:33+02:00",
+          "tree_id": "ed2e9e55025081f423fce7babe8a3c394122af0e",
+          "url": "https://github.com/laurigates/dotfiles/commit/9b46b7487f85bc9a3b937bf0912de009655c5c9d"
+        },
+        "date": 1794903984887,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10479317833333335,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013419808,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.001101707,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0099580168,
             "unit": "s"
           }
         ]
