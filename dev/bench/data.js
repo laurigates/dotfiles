@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795088889498,
+  "lastUpdate": 1795089589850,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6115,6 +6115,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.009283504000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "47bc71ee3d7e0b3a336452458ec752733ee65a2f",
+          "message": "docs(rules): say Claude creates routines itself via the schedule skill (#635)\n\nSessions have kept telling Lauri to create routines by hand. They didn't\nknow the `schedule` skill (the deferred `RemoteTrigger` tool) creates\nroutines from the session, including in a **bridge** environment that\nruns on the local machine with its files.\n\nChanges to `exact_dot_claude/exact_rules/prefer-claude-schedulers.md`:\n\n- The substrate table gains row **1b**, a routine in a bridge\nenvironment, for local-file jobs Claude should create. Row 2 (Desktop\nlocal task) now says Lauri creates it, since no agent tool does.\n- A new section, **Claude creates routines itself**: offer to create the\nroutine, create it once Lauri approves, and don't hand over the steps.\nDeleting is the one action left to claude.ai/code/routines.\n\nUnverified: whether bridge runs succeed unattended (permission mode, Mac\nasleep). The first one is `context-diet` on 2026-11-24, tracked in\nlaurigates/repos-claude-config#162. The row says so.\n\nThe `check Claude global context budget` pre-commit hook passed.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99RwfCWYtKg2cynBHT\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-19T13:59:07+02:00",
+          "tree_id": "68f5d57d69557e4db155ab3c81b5e16c884a8d2c",
+          "url": "https://github.com/laurigates/dotfiles/commit/47bc71ee3d7e0b3a336452458ec752733ee65a2f"
+        },
+        "date": 1795089589269,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10800521766666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013412046,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011332824000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0093329014,
             "unit": "s"
           }
         ]
