@@ -674,6 +674,13 @@ else
 fi
 called "without the file's globals: ghm still merges" 'gh pr merge 5 --squash --delete-branch'
 
+# The pickers' jq programs must not depend on a global either: with the jq
+# defs in one, the program did not compile and the picker showed no PR (#613).
+reset; pr 5; pr 6; FZF_PICK=(6)
+( unset -m '_GH_*'; _gh_pr_pick > $W/out 2>&1 )
+is "without the file's globals: _gh_pr_pick prints the picked PR's number" "$(<$W/out)" 6
+shown "without the file's globals: _gh_pr_pick lists the PRs" '#5'
+
 # ---------------------------------------------------------------------------
 print
 if grep -q '^UNSTUBBED' $W/calls; then

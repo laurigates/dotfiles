@@ -24,7 +24,10 @@ _gh_palette() {
 
 # jq functions for the PR pickers, prepended to their --jq programs: `ci` and
 # `rev` turn one PR object into the CI and review tokens _gh_paint colours.
-typeset -g _GH_JQ_PR_DEFS='
+# A function, not a global: a shell can hold these functions without the
+# file's globals, and an empty prefix leaves `ci`/`rev` undefined (#613).
+_gh_jq_pr_defs() {
+  print -r -- '
   def ci: if (.statusCheckRollup | length) == 0 then "⏳CI"
           elif (.statusCheckRollup | all(.conclusion == "SUCCESS")) then "✓CI"
           elif (.statusCheckRollup | any(.conclusion == "FAILURE")) then "✗CI"
@@ -34,6 +37,7 @@ typeset -g _GH_JQ_PR_DEFS='
            elif .reviewDecision == "REVIEW_REQUIRED" then "⏳rev"
            else "-rev" end;
 '
+}
 
 # Colourise gh fzf-picker tables *after* `column -t` has aligned them, so the
 # padding widths are computed on plain text and the escapes (zero-width under
@@ -309,7 +313,7 @@ ghpc() {
     # No args: interactive fzf selection
     local selection
     selection=$(gh pr list --limit 100 --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,updatedAt \
-      --jq "${_GH_JQ_PR_DEFS}"'.[] | [
+      --jq "$(_gh_jq_pr_defs)"'.[] | [
         "#\(.number)",
         (if .isDraft then "draft" else "ready" end),
         ci,
@@ -684,7 +688,7 @@ _gh_pr_multi_select() {
   local rows
   rows=$(gh pr list --limit 100 \
       --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision,createdAt,author,labels \
-      --jq "${_GH_JQ_PR_DEFS}"'sort_by(.createdAt) | .[] | [
+      --jq "$(_gh_jq_pr_defs)"'sort_by(.createdAt) | .[] | [
         "#\(.number)",
         (.author.login // "?"),
         (if .author.is_bot then "bot" else "user" end),
@@ -899,7 +903,7 @@ ghm() {
 _gh_pr_pick() {
   gh pr list --limit 100 \
       --json number,title,headRefName,isDraft,statusCheckRollup,reviewDecision \
-      --jq "${_GH_JQ_PR_DEFS}"'.[] | [
+      --jq "$(_gh_jq_pr_defs)"'.[] | [
         "#\(.number)",
         (if .isDraft then "draft" else "ready" end),
         ci,
