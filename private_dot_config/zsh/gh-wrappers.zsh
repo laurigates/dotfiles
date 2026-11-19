@@ -820,6 +820,11 @@ _gh_pr_multi_select() {
   # Drop the raw login column, folding it into the trust token so the table stays
   # one-token-per-column (a `column -t` requirement — see the extraction caveat
   # in .claude/rules/fzf-picker-colorize-align.md). ⚠ is what _gh_paint reddens.
+  #
+  # Preview: PR body, then the non-passing checks (gh-pr-checks, in
+  # ~/.local/bin), then the diffstat. ^l swaps the pane to each failing Actions
+  # job's log, cut to the lines ending at its last ##[error]; ^o swaps back.
+  local overview='GH_FORCE_TTY=1 gh pr view {1} && echo && echo "── Checks ──" && gh-pr-checks summary {1}; echo && echo "── Files ──" && gh pr diff {1} | git apply --stat 2>/dev/null'
   print -r -- "$shown" | \
     awk -F'\t' '{ who = ($2 == "EXT") ? "⚠" $3 : $2
                   printf "%s\t%s", $1, who
@@ -828,12 +833,14 @@ _gh_pr_multi_select() {
     column -t -s $'\t' | \
     _gh_paint | \
     fzf --ansi --multi "${fzf_extra[@]}" \
-        --header "Tab mark · ^a all · ⏎ confirm ${verb}-merge · ^t toggle preview · ^d/u scroll${show_ext:+ · ⚠ = EXTERNAL, needs typed confirm}" \
+        --header "Tab mark · ^a all · ⏎ confirm ${verb}-merge · ^t toggle preview · ^l failed logs · ^o overview · ^d/u scroll${show_ext:+ · ⚠ = EXTERNAL, needs typed confirm}" \
         --bind 'tab:toggle+down,btab:toggle+up' \
         --bind 'ctrl-a:select-all' \
         --bind 'ctrl-t:toggle-preview' \
         --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up' \
-        --preview 'GH_FORCE_TTY=1 gh pr view {1} && echo && echo "── Files ──" && gh pr diff {1} | git apply --stat 2>/dev/null' \
+        --bind 'ctrl-l:change-preview(gh-pr-checks logs {1})' \
+        --bind "ctrl-o:change-preview(${overview})" \
+        --preview "$overview" \
         --preview-window right:60%:wrap | \
     awk -v repo="$repo" '{num=$1; sub(/^#/,"",num); $1=$2=$3=$4=$5=$6=$7=""; sub(/^ +/,""); printf "%s\t%s\t%s\n", repo, num, $0}'
 }
