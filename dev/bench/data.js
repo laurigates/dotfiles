@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795082766367,
+  "lastUpdate": 1795088889498,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6071,6 +6071,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.006641732,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "15758b3534d65d046e383af74af78f5babb63d09",
+          "message": "feat(zsh): ghm --auto, reject unknown options, and say why a merge is blocked (#634)\n\n## What\n\n- `ghm -a/--auto` passes `--auto` to `gh pr merge`, on both the picker\npath and `ghm <n>`. A PR still waiting on required checks gets GitHub\nauto-merge enabled and is reported as `⏳ auto-merge enabled`, not as\nmerged. `_gh_poll_merge` returns 4 for that case. A BEHIND branch is\nstill updated, because auto-merge doesn't do that, but the CI wait on\nthe new head is skipped.\n- Unknown options, a second positional argument, and a non-numeric PR\nargument now error out with a usage line (exit 2). Previously `ghm\n--auto 633` treated `--auto` as the PR number: the trust gate couldn't\nread an author for PR \"--auto\" and skipped it.\n- A failed or queued merge lists why GitHub is holding it, which `gh pr\nmerge` does not say (\"the base branch policy prohibits the merge\"):\n  - required checks that aren't passing yet (`gh pr checks --required`)\n  - `REVIEW_REQUIRED` / `CHANGES_REQUESTED`\n- unresolved review threads (GraphQL; the `main` ruleset requires thread\nresolution)\n  - a BEHIND / DIRTY / draft merge state\n\nIf none of these apply, it prints the merge state. A failure without\n`--auto` also suggests re-running with it.\n\n## Verification\n\n- `zsh tests/test-gh-wrappers.zsh`: 137 passed, 0 failed. The new cases\ncover the options, the queued exit status, BEHIND with `--auto`, and the\nblock reasons.\n- `mise run test:gh-wrappers-teeth`: all 34 mutations killed. Six of\nthem are new and target the new code. The #612 colour mutation was\nre-pointed past the new `queue` line.\n- Live, read-only: `_gh_block_reason` against #633 printed `merge state:\nUNSTABLE` (correct, since that PR is now mergeable). The review-thread\nGraphQL query returned `0` with exit 0. `ghm --bogus 5` and `ghm abc`\nexit 2 with the usage line.\n- Not exercised against GitHub: a real `ghm --auto` on a PR with pending\nchecks. After a successful `gh pr merge --auto`, the code reads the PR's\n`state`, so it reports correctly whether gh merged at once or only\nenabled auto-merge.\n- `mise run lint`: shell, actions and docs pass. `lint:lua` fails\nlocally because Homebrew luacheck crashes on Lua 5.5; no Lua files\nchanged.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BLXXsPUAHWV3uni4T\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-19T13:47:30+02:00",
+          "tree_id": "45e69bd7c2f7f21917a5ddc2906382b0af532b6b",
+          "url": "https://github.com/laurigates/dotfiles/commit/15758b3534d65d046e383af74af78f5babb63d09"
+        },
+        "date": 1795088888955,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09820293066666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013070109999999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011033456000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009283504000000001,
             "unit": "s"
           }
         ]
