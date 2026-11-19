@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795089589850,
+  "lastUpdate": 1795092243271,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6159,6 +6159,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0093329014,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "dde5a09ad3efab2e783a4bc0d775e571580c6322",
+          "message": "feat(zsh): show failing checks and their logs in the ghm picker preview (#633)\n\n## What\n\nThe `ghm` / `ghrp` picker preview now shows CI detail:\n\n- **Overview pane** (default): PR body, then a `── Checks ──` section\nlisting the non-passing checks (failed, cancelled, pending, skipped)\nwith their descriptions and one `✓ N passed` line, then the diffstat.\n- **`^l`**: swaps the pane to each failing GitHub Actions job's log (`gh\nrun view --job <id> --log-failed`), cut to the 40 lines ending at the\nlast `##[error]`. A failed check outside Actions (Vercel, other apps)\nshows its link. **`^o`** swaps back.\n\n## Why\n\nA `✗CI` row gave no hint of what failed without leaving the picker. The\nplain tail of `--log-failed` is post-job cleanup (checkout credential\nremoval), so the excerpt is anchored on the error line instead.\n\nThe logic is in a new script, `~/.local/bin/gh-pr-checks`, because fzf\nruns previews in a fresh shell that doesn't have the wrapper functions.\n\n## Verification\n\n- `zsh tests/test-gh-wrappers.zsh`: Passed 113, Failed 0\n- `mise run lint:shell`: exit 0; `shellcheck` clean on the new script\n- Ran by hand against real PRs: `summary` on a PR with a Vercel failure\nplus a skipped check; `logs` on laurigates/foundryvtt-mcp#285, where the\nexcerpt ends at the `bun audit` failure and `##[error]Process completed\nwith exit code 1.`\n- The fzf key bindings themselves have not been exercised interactively\nyet.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD98c9oBf71a578oiGpM\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-19T12:43:26Z",
+          "tree_id": "cc2491c476a4917307da90e907f153076dbbac0d",
+          "url": "https://github.com/laurigates/dotfiles/commit/dde5a09ad3efab2e783a4bc0d775e571580c6322"
+        },
+        "date": 1795092242952,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11035654266666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0013435746,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.001116878,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0133407452,
             "unit": "s"
           }
         ]
