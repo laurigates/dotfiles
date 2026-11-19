@@ -25,8 +25,10 @@
 #           shown to $W/fzf.in. An entry is a number (rows starting "#<n>") or
 #           "<owner/repo>#<n>" (ghrp rows, which start with the repo).
 #   read    a prompt (`read "var?text"`) takes its answer from the queue in
-#           $W/answers. With no terminal the builtin would read nothing, and a
-#           prompt nobody queued an answer for is logged as UNANSWERED.
+#           $W/answers. With no terminal the builtin would read nothing. Every
+#           prompt is logged as "PROMPT <text> <- <answer>", one nobody
+#           queued an answer for with UNANSWERED as the answer, so
+#           `uncalled ... PROMPT` fails whenever a prompt was shown (#598).
 #   git, claude, sleep   log the call and do nothing.
 # Every stub appends its call to $W/calls; the assertions read that log.
 #
@@ -239,7 +241,7 @@ read() {
   done
   [[ -n $_rs_name ]] || { builtin read "$@"; return }
   if [[ ! -s $W/answers ]]; then
-    print -r -- "UNANSWERED ${_rs_text[1,50]}" >> $W/calls
+    print -r -- "PROMPT ${_rs_text[1,50]} <- UNANSWERED" >> $W/calls
     eval "$_rs_name="
     return 1
   fi
@@ -579,10 +581,11 @@ FZF_PICK=('acme/api#4'); answers a merge
 run ghrp
 called "non-bot author: the typed word 'merge' merges" 'gh pr merge 4 --repo acme/api --squash'
 
-reset; release 3 acme/api; FZF_PICK=()
+# 'a' is queued so that a prompt reached after an empty pick would merge.
+reset; release 3 acme/api; FZF_PICK=(); answers a
 run ghrp
 printed  "nothing picked: says so" 'Nothing selected.'
-uncalled "nothing picked: no merge" 'gh pr merge'
+uncalled "nothing picked, 'a' queued: no merge" 'gh pr merge'
 
 reset
 run ghrp

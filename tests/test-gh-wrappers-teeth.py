@@ -52,6 +52,16 @@ MUTATIONS = [
      '    self|bot) return 0 ;;',
      '    self) return 0 ;;',
      "bot release PRs merge without the typed confirmation"),
+    # The next two are the same kind of break as the one above, each aimed at
+    # a "without a prompt" assertion (#598).
+    ("trust gate prompts for the user's own PR",
+     '    self|bot) return 0 ;;',
+     '    bot) return 0 ;;',
+     "own PR merges without a prompt"),
+    ("trust gate prompts for a bot PR",
+     '    self|bot) return 0 ;;',
+     '    self) return 0 ;;',
+     "bot PR merges without a prompt"),
     ("merge not pinned to the tested head",
      '    [[ -n "$REPLY" ]] && pin=(--match-head-commit "$REPLY")',
      '    :',
@@ -92,6 +102,10 @@ MUTATIONS = [
      '    _gh_method_check "$repo" "$num" "$want" || return 3',
      '    :',
      "explicit method against the recommendation, 'n': not merged"),
+    ("explicit method matching the recommendation still prompts",
+     '  [[ -z "$rec" || "$rec" == "$want" ]] && return 0',
+     '  [[ -z "$rec" ]] && return 0',
+     "explicit method matching the recommendation: no prompt"),
     ("ghrp merges with rebase",
      '  _gh_batch_merge "$tsv" squash',
      '  _gh_batch_merge "$tsv" rebase',
@@ -132,6 +146,10 @@ MUTATIONS = [
      '  if [[ -z "$list" ]]; then',
      '  if false; then',
      "empty search: the picker is not opened"),
+    ("ghrp: an empty pick falls through to every row",
+     '  [[ -z "$selections" ]] && { print -r -- "Nothing selected."; return 0 }',
+     '  [[ -z "$selections" ]] && selections=$display',
+     "nothing picked, 'a' queued: no merge"),
     # The two colour mutations change one of several identical declaration
     # lines, so each target includes the lines above it to occur once.
     ("a colour declaration expands an unset parameter (#612)",

@@ -11,6 +11,7 @@
 | Docs | `mise run lint:docs` | After renaming or moving files referenced by docs |
 | Secrets | `gitleaks dir . --config .gitleaks.toml` | Before committing (also a pre-commit hook) |
 | Full | `mise run test` | Before committing |
+| gh-wrappers teeth | `mise run test:gh-wrappers-teeth` | After changing `private_dot_config/zsh/gh-wrappers.zsh` or its tests; runs the suite once per mutation, so not part of Full |
 | Docker | `mise run docker` | For environment changes |
 
 ## Linting Standards
