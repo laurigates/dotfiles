@@ -81,7 +81,11 @@ reset() {
 
 # pr <number> [key=value ...]: write one PR fixture. Keys and defaults below.
 #   label   rebase|squash|"" (the merge:* label)   update  ok|uptodate|conflict
-#   checks  pass|fail (CI on the updated head)     merge   ok|fail
+#   checks  pass|fail (CI on the updated head)     merge   ok|fail|auto (auto =
+#                                                  --auto only enables auto-merge)
+#   required "<bucket>:<name>,..." — required checks gh pr checks --required
+#            reports (bucket pending|fail|pass)    review  the reviewDecision
+#   threads  number of unresolved review threads
 #   repo    owner/name (default $REPO)             release true = carries the
 #                                                  'autorelease: pending' label
 # author/bot are given as `gh pr list` and `gh pr view` report them: an App bot
@@ -92,6 +96,7 @@ pr() {
     author lauri bot false title "PR $n" label squash draft false base main
     head "feat-$n" sha "sha${n}a" mergeable MERGEABLE mss CLEAN state OPEN
     update ok checks pass merge ok repo $REPO release false
+    required "" review "" threads 0
   )
   local kv k v
   for kv in "$@"; do f[${kv%%=*}]=${kv#*=}; done
@@ -108,8 +113,11 @@ pr() {
     labels: ((if $label == "" then [] else [{name: ("merge:" + $label)}] end)
              + (if $release == "true" then [{name: "autorelease: pending"}] else [] end)),
     additions: 1, deletions: 1, changedFiles: 1, files: [{path: "README.md"}],
-    statusCheckRollup: [], reviewDecision: "", createdAt: "2026-01-01T00:00:00Z",
-    _update: $update, _checks: $checks, _merge: $merge
+    statusCheckRollup: [], reviewDecision: $review, createdAt: "2026-01-01T00:00:00Z",
+    autoMergeRequest: null,
+    _update: $update, _checks: $checks, _merge: $merge,
+    _required: ($required | if . == "" then [] else split(",") | map(split(":") | {bucket: .[0], name: .[1]}) end),
+    _threads: ($threads | tonumber)
   }' > $file
 }
 
@@ -129,7 +137,7 @@ answers() { print -rl -- "$@" > $W/answers }
 gh() {
   # One line per call: a multi-line --jq program is logged by its first line.
   print -r -- "gh ${${@}%%$'\n'*}" >> $W/calls
-  local -a pos owners
+  local -a pos owners fields
   local jqx= repo=$REPO label=
   while (( $# )); do
     case $1 in
@@ -137,6 +145,7 @@ gh() {
       --repo|-R)                      repo=$2; shift 2 ;;
       --owner)                        owners+=("$2"); shift 2 ;;
       --label)                        label=$2; shift 2 ;;
+      -f|-F)                          fields+=("$2"); shift 2 ;;
       --json|--limit|--state|--match-head-commit) shift 2 ;;
       *)                              pos+=("$1"); shift ;;
     esac
@@ -148,6 +157,17 @@ gh() {
       jq -r "${jqx:-.}" <<< "{\"login\":\"$ME\"}" ;;
     'api user/orgs')
       jq -n '$ARGS.positional | map({login: .})' --args $ORGS | jq -r "${jqx:-.}" ;;
+    'api graphql')
+      # Only _gh_block_reason's review-thread query: -F num=<n>, owner, name.
+      local num= owner= name= kv
+      for kv in $fields; do
+        case $kv in num=*) num=${kv#*=} ;; owner=*) owner=${kv#*=} ;; name=*) name=${kv#*=} ;; esac
+      done
+      f=$(_pr_file "$owner/$name" "$num")
+      [[ -f $f ]] || return 1
+      jq '{data: {repository: {pullRequest: {reviewThreads: {nodes:
+            ([range(._threads)] | map({isResolved: false})) + [{isResolved: true}]}}}}}' $f \
+        | jq -r "${jqx:-.}" ;;
     'api repos/'*)
       jq -r "${jqx:-.}" <<< '{"author_association":"NONE"}' ;;
     'repo view')
@@ -179,8 +199,13 @@ gh() {
         $W/pr/*/*.json(nN) --args $owners </dev/null | jq -s -r "${jqx:-.}" ;;
     'pr merge')
       n=${pos[3]}; f=$(_pr_file $repo "$n")
-      [[ -f $f && $(_pr_get $f ._merge) == ok ]] || return 1
-      _pr_set $f '.state = "MERGED" | .mergedAt = "2026-01-02T03:04:05Z"' ;;
+      [[ -f $f ]] || return 1
+      case $(_pr_get $f ._merge) in
+        ok)   _pr_set $f '.state = "MERGED" | .mergedAt = "2026-01-02T03:04:05Z"' ;;
+        auto) (( ${pos[(Ie)--auto]} )) || return 1
+              _pr_set $f '.autoMergeRequest = {enabledAt: "2026-01-02T03:04:05Z"}' ;;
+        *)    return 1 ;;
+      esac ;;
     'pr ready')
       _pr_set $(_pr_file $repo "${pos[3]}") '.isDraft = false' ;;
     'pr update-branch')
@@ -192,7 +217,8 @@ gh() {
       esac ;;
     'pr checks')
       n=${pos[3]}
-      if [[ -n $jqx ]]; then jq -r "$jqx" <<< '[{"name":"ci"}]'
+      if (( ${pos[(Ie)--required]} )); then jq -r "${jqx:-.}" <<< "$(_pr_get $(_pr_file $repo "$n") ._required)"
+      elif [[ -n $jqx ]]; then jq -r "$jqx" <<< '[{"name":"ci"}]'
       else [[ $(_pr_get $(_pr_file $repo "$n") ._checks) == pass ]]; fi ;;
     'issue list')
       jq -r "${jqx:-.}" $W/issues.json ;;
@@ -531,6 +557,70 @@ reset; pr 5 label=rebase; answers n
 poll o/r 5 "" squash > $W/res
 is "explicit method against the recommendation, 'n': 3" "$(<$W/res)" "3 "
 uncalled "explicit method against the recommendation, 'n': not merged" 'gh pr merge'
+
+reset; pr 5 merge=auto required='pending:Build (macOS)'
+poll o/r 5 "" auto --auto > $W/res
+is "--auto, requirements outstanding: 4 (queued), empty reply" "$(<$W/res)" "4 "
+
+# ---------------------------------------------------------------------------
+print -r -- "ghm: options"
+# ---------------------------------------------------------------------------
+reset; pr 5
+run ghm --auto 5
+called "--auto is passed to gh pr merge" 'gh pr merge 5 --squash --delete-branch --auto'
+
+reset; pr 5
+run ghm -a 5
+called "-a is --auto" 'gh pr merge 5 --squash --delete-branch --auto'
+
+reset; pr 5 merge=auto required='pending:Build (macOS)'
+run ghm --auto 5
+printed "--auto, checks outstanding: says auto-merge is enabled" 'auto-merge enabled'
+printed "--auto, checks outstanding: names the pending required check" 'required check pending: Build (macOS)'
+uncalled "--auto, checks outstanding: no pull, nothing merged" 'git pull'
+
+reset; pr 5 mss=BEHIND merge=auto
+run ghm --auto 5
+called "--auto, BEHIND: branch updated" 'gh pr update-branch 5'
+uncalled "--auto, BEHIND: no wait for CI on the updated head" 'gh pr checks 5 --watch'
+called "--auto, BEHIND: merge queued unpinned, since CI has not run on the new head" 'gh pr merge 5 --squash --delete-branch --auto'
+
+reset; pr 5; FZF_PICK=(5); answers y
+run ghm --auto
+called "picker with --auto: --auto passed to gh pr merge" 'gh pr merge 5 --repo o/r --squash --delete-branch --auto'
+
+reset; pr 5
+run ghm --bogus 5
+uncalled "unknown option: nothing merged" 'gh pr merge'
+uncalled "unknown option: not looked up as a PR" 'gh pr view'
+printed "unknown option: named in the error" "unknown option '--bogus'"
+
+reset; pr 5
+run ghm 5 --auto
+uncalled "option after the PR number: nothing merged" 'gh pr merge'
+
+reset
+run ghm abc
+uncalled "non-numeric PR: not looked up" 'gh pr view'
+printed "non-numeric PR: reported" "'abc' is not a PR number"
+
+# ---------------------------------------------------------------------------
+print -r -- "Merge refused: the reason is printed"
+# ---------------------------------------------------------------------------
+reset; pr 5 merge=fail mss=BLOCKED required='pending:Build (macOS),fail:Linters'
+run ghm 5
+printed "pending required check named" 'required check pending: Build (macOS)'
+printed "failing required check named" 'required check fail: Linters'
+printed "suggests --auto" 're-run with --auto'
+
+reset; pr 5 merge=fail mss=BLOCKED review=REVIEW_REQUIRED threads=2
+run ghm 5
+printed "review required reported" 'an approving review is required'
+printed "unresolved threads counted (resolved ones not)" '2 unresolved review thread(s)'
+
+reset; pr 5 merge=fail mss=BLOCKED required='pass:Linters'
+run ghm 5
+printed "nothing found: says so, with the merge state" 'merge state: BLOCKED'
 
 reset; pr 5 label=rebase; answers y
 poll o/r 5 "" squash > $W/res

@@ -150,14 +150,38 @@ MUTATIONS = [
      '  [[ -z "$selections" ]] && { print -r -- "Nothing selected."; return 0 }',
      '  [[ -z "$selections" ]] && selections=$display',
      "nothing picked, 'a' queued: no merge"),
+    ("ghm: --auto is dropped",
+     '      -a|--auto)     merge_flags+=(--auto) ;;',
+     '      -a|--auto)     : ;;',
+     "--auto is passed to gh pr merge"),
+    ("ghm: an unknown option is not reported",
+     '''      *)             print -r -- "ghm: unknown option '$1'" >&2; print -r -- "$usage" >&2; return 2 ;;''',
+     '      *)             break ;;',
+     "unknown option: named in the error"),
+    ("--auto: a queued merge is reported as merged",
+     '      if [[ "$st" != MERGED ]]; then',
+     '      if false; then',
+     "--auto, requirements outstanding: 4 (queued)"),
+    ("--auto: waits for CI on the updated head",
+     '    [[ -n "$queue" ]] && upd=(--no-wait "${upd[@]}")',
+     '    :',
+     "--auto, BEHIND: no wait for CI on the updated head"),
+    ("block reason: a pending required check is not named",
+     '      pending) why+=("required check ${yellow}pending${rst}: ${name}") ;;',
+     '      pending) ;;',
+     "pending required check named"),
+    ("block reason: resolved review threads are counted",
+     "      --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)] | length' \\",
+     "      --jq '[.data.repository.pullRequest.reviewThreads.nodes[]] | length' \\",
+     "unresolved threads counted (resolved ones not)"),
     # The two colour mutations change one of several identical declaration
     # lines, so each target includes the lines above it to occur once.
     ("a colour declaration expands an unset parameter (#612)",
-     '  reply=()\n'
+     '  local queue=; (( ${@[(Ie)--auto]} )) && queue=1\n'
      '  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")\n'
      '  local id="${repo}#${num}"\n'
      '  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1',
-     '  reply=()\n'
+     '  local queue=; (( ${@[(Ie)--auto]} )) && queue=1\n'
      '  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")\n'
      '  local id="${repo}#${num}"\n'
      '  local $_GH_COLORS; _gh_palette 1',

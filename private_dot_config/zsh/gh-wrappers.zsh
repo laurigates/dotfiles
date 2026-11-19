@@ -420,13 +420,19 @@ _gh_method_check() {
 #            rebase and squash merges; with no recommendation, ask.
 #            rebase|squash = that method (ghrp), confirmed first if it differs
 #            from the recommendation.
-#   Exit status: 0 merged · 1 failed · 2 conflicting · 3 skipped.
+#   Exit status: 0 merged · 1 failed · 2 conflicting · 3 skipped ·
+#   4 auto-merge enabled, not merged yet (only with --auto in the flags).
 #   For 0 and 2 it also sets the array reply=(<base branch> <rebase|squash>):
 #   the caller needs the base to track what moved, and the method so the Claude
 #   handoff for a conflict rebases or merges to match.
+#   A failed merge, or a queued one, prints why GitHub is holding it
+#   (_gh_block_reason); gh's own refusal does not name the rule.
 _gh_poll_merge() {
   local repo="$1" num="$2" moved="$3" want="$4"; shift 4
   reply=()
+  # --auto: GitHub merges once the requirements pass, so nothing here waits on
+  # CI. A BEHIND branch is still updated, since auto-merge does not do that.
+  local queue=; (( ${@[(Ie)--auto]} )) && queue=1
   local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local id="${repo}#${num}"
   local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
@@ -487,6 +493,7 @@ _gh_poll_merge() {
   mss=$(gh pr view "$num" "${repo_flag[@]}" --json mergeStateStatus --jq .mergeStateStatus </dev/null 2>/dev/null)
   if [[ " $moved " == *" ${repo}:${base} "* || "$mss" == BEHIND ]]; then
     local -a upd; [[ "$method" == rebase ]] && upd=(--rebase)
+    [[ -n "$queue" ]] && upd=(--no-wait "${upd[@]}")
     _gh_update_and_wait "$repo" "$num" "$id" "${upd[@]}"
     case $? in
       0) ;;
@@ -502,11 +509,78 @@ _gh_poll_merge() {
   fi
 
   if gh pr merge "$num" "${repo_flag[@]}" "${pin[@]}" "--$method" "$@" </dev/null; then
+    # With --auto, gh merges at once when nothing is outstanding and otherwise
+    # only enables auto-merge; its exit status is 0 either way.
+    if [[ -n "$queue" ]]; then
+      local st; st=$(gh pr view "$num" "${repo_flag[@]}" --json state --jq .state </dev/null 2>/dev/null)
+      if [[ "$st" != MERGED ]]; then
+        print -r -- "  ${yellow}⏳ auto-merge enabled${rst} ${cyan}${id}${rst} — GitHub merges it once these clear:"
+        _gh_block_reason "$repo" "$num"
+        return 4
+      fi
+    fi
     print -r -- "  ${green}✓ merged${rst} ${cyan}${id}${rst}"
     reply=("$base" "$method")
   else
-    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}merge failed${rst} (left open — re-run to retry)"; return 1
+    print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}merge failed${rst} (left open — re-run to retry)"
+    _gh_block_reason "$repo" "$num"
+    [[ -n "$queue" ]] || print -r -- "    ${dim}re-run with --auto to merge it once required checks and reviews pass${rst}"
+    return 1
   fi
+}
+
+# Why GitHub is holding a PR, one indented line per reason: merge state,
+# required checks not yet green, review decision, unresolved review threads.
+# gh pr merge only says "the base branch policy prohibits the merge".
+#   _gh_block_reason <repo|""> <num>
+_gh_block_reason() {
+  local repo="$1" num="$2"
+  local -a repo_flag; [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
+  local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
+  local -a why
+  local info mss rev
+  info=$(gh pr view "$num" "${repo_flag[@]}" --json mergeStateStatus,reviewDecision \
+           --jq '"\(.mergeStateStatus)\t\(.reviewDecision // "")"' </dev/null 2>/dev/null)
+  mss="${info%%$'\t'*}" rev="${info#*$'\t'}"
+  case "$mss" in
+    BEHIND) why+=("branch is behind its base, and the base requires up-to-date branches") ;;
+    DIRTY)  why+=("conflicts with its base") ;;
+    DRAFT)  why+=("is a draft") ;;
+  esac
+
+  # gh pr checks exits non-zero while a check is pending or failing, but still
+  # prints the JSON, so the output is read and the status ignored.
+  local bucket name
+  while IFS=$'\t' read -r bucket name; do
+    [[ -n "$name" ]] || continue
+    case "$bucket" in
+      pending) why+=("required check ${yellow}pending${rst}: ${name}") ;;
+      *)       why+=("required check ${red}${bucket}${rst}: ${name}") ;;
+    esac
+  done < <(gh pr checks "$num" "${repo_flag[@]}" --required --json name,bucket \
+             --jq '.[] | select(.bucket != "pass" and .bucket != "skipping") | "\(.bucket)\t\(.name)"' \
+             </dev/null 2>/dev/null)
+
+  case "$rev" in
+    REVIEW_REQUIRED)   why+=("an approving review is required") ;;
+    CHANGES_REQUESTED) why+=("a reviewer requested changes") ;;
+  esac
+
+  local nwo threads
+  nwo="$repo"; [[ -n "$nwo" ]] || nwo=$(gh repo view --json nameWithOwner -q .nameWithOwner </dev/null 2>/dev/null)
+  if [[ "$nwo" == */* ]]; then
+    threads=$(gh api graphql -F num="$num" -f owner="${nwo%%/*}" -f name="${nwo#*/}" \
+      -f query='query($owner:String!,$name:String!,$num:Int!){repository(owner:$owner,name:$name){pullRequest(number:$num){reviewThreads(first:100){nodes{isResolved}}}}}' \
+      --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)] | length' \
+      </dev/null 2>/dev/null)
+    [[ "$threads" == <1-> ]] && why+=("${threads} unresolved review thread(s)")
+  fi
+
+  if (( ${#why} == 0 )); then
+    why=("no failing required check or pending review found (merge state: ${mss:-unknown})")
+  fi
+  local w
+  for w in "${why[@]}"; do print -r -- "    ${dim}↳${rst} ${w}"; done
 }
 
 # Poll until GitHub settles a PR's mergeability; prints the final state.
@@ -527,11 +601,14 @@ _gh_wait_mergeable() {
 
 # Bring a PR up to date with its base, then block until CI on the new head
 # finishes. --rebase rebases the branch; the default merges the base in.
-#   _gh_update_and_wait <repo|""> <num> <id> [--rebase]
-#   → 0 + REPLY=<new head SHA> (REPLY="" if already up to date)
+#   _gh_update_and_wait <repo|""> <num> <id> [--no-wait] [--rebase]
+#   → 0 + REPLY=<new head SHA> (REPLY="" if already up to date, or --no-wait)
 #     2 conflicting · 1 update failed or CI failed
+#   --no-wait returns right after the update, for an auto-merge (which waits
+#   for CI itself).
 _gh_update_and_wait() {
   local repo="$1" num="$2" id="$3"; shift 3
+  local wait=1; [[ "$1" == --no-wait ]] && { wait=; shift }
   local -a repo_flag upd=("$@"); [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   REPLY=
@@ -545,6 +622,7 @@ _gh_update_and_wait() {
     print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: update-branch failed — ${out}"; return 1
   fi
   [[ "$out" == *up-to-date* ]] && { print -r -- "    ${dim}already up to date${rst}"; return 0 }
+  [[ -n "$wait" ]] || { print -r -- "    ${dim}updated; auto-merge waits for CI on the new head${rst}"; return 0 }
 
   tries=0
   while (( tries++ < 15 )); do
@@ -866,25 +944,45 @@ _gh_pull_if_base_of_merged() {
 # -x/--external includes external contributors' PRs in the picker (hidden by
 # default). Either way, merging one requires a typed confirmation — including on
 # the arg form, which skips the picker; the gate is in _gh_poll_merge.
+#
+# -a/--auto passes --auto to gh pr merge: a PR still waiting on required checks
+# or reviews gets GitHub auto-merge enabled instead of failing, and merges once
+# they pass. An unknown option, or a PR argument that is not a number, is an
+# error rather than being read as a PR number.
 ghm() {
-  local cur_pr acted show_ext=
-  while [[ "$1" == -x || "$1" == --external ]]; do show_ext=1; shift; done
+  local cur_pr acted show_ext= usage='usage: ghm [-x|--external] [-a|--auto] [<pr-number>]'
+  local -a merge_flags=(--delete-branch)
+  while [[ "$1" == -* ]]; do
+    case "$1" in
+      -x|--external) show_ext=1 ;;
+      -a|--auto)     merge_flags+=(--auto) ;;
+      --)            shift; break ;;
+      *)             print -r -- "ghm: unknown option '$1'" >&2; print -r -- "$usage" >&2; return 2 ;;
+    esac
+    shift
+  done
+  if (( $# > 1 )); then
+    print -r -- "ghm: one PR at a time (got $#); run ghm with no PR for the picker" >&2; return 2
+  fi
+  local num="${1%%\[*}"
+  if [[ $# -eq 1 && "$num" != <-> ]]; then
+    print -r -- "ghm: '$1' is not a PR number" >&2; print -r -- "$usage" >&2; return 2
+  fi
   _gh_me   # before the picker's $(...), which needs the login to classify authors
   if [[ $# -eq 0 ]]; then
     local tsv; tsv=$(_gh_pr_multi_select rebase/squash "$show_ext" --layout=reverse)
     [[ -z "$tsv" ]] && return
     cur_pr=$(_gh_current_pr)
     acted=$(print -r -- "$tsv" | awk -F'\t' '{print $2}')
-    _gh_batch_merge "$tsv" auto --delete-branch
+    _gh_batch_merge "$tsv" auto "${merge_flags[@]}"
   else
     # Same engine as the picker path, minus the y/N/a/q prompt: naming the PR
     # is the confirmation. So the trust gate, the draft prompt, the
     # mergeability wait, the update of a BEHIND branch and the conflict handoff
     # all apply here too.
-    local num="${1%%\[*}"
     cur_pr=$(_gh_current_pr)
     acted="$num"
-    _gh_poll_merge "" "$num" "" auto --delete-branch
+    _gh_poll_merge "" "$num" "" auto "${merge_flags[@]}"
     if (( $? == 2 )); then
       # The handoff reads tab-separated fields, and a leading empty one would
       # collapse, so name the repo.
