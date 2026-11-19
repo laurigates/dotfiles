@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794903985204,
+  "lastUpdate": 1795082766367,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6027,6 +6027,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0099580168,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8946c70c3be88fdf2f00063aee38b01d092c712e",
+          "message": "fix(zsh): gh pickers no longer depend on a global for their jq defs (#632)\n\n## What\n\nThree changes to the gh wrappers and their tests, one commit each:\n\n1. **#613**: `_GH_JQ_PR_DEFS`, a global holding the jq functions `ci`\nand `rev`, is replaced by the function `_gh_jq_pr_defs`. The three\npicker `--jq` sites now call `$(_gh_jq_pr_defs)`.\n2. **#614**: `tests/test-gh-wrappers.zsh` exports `LC_ALL` as C.UTF-8\nwhen `locale -a` lists it (`C.utf8` on Linux). Otherwise it uses the\nfirst UTF-8 locale listed. When there is none, it skips with a message,\nas it already does for a missing `jq` or `column`.\n3. **#598 (items 1, 2, 4)**: the `read` stub now logs every prompt as\n`PROMPT <text> <- ...`, using `UNANSWERED` when no answer was queued, so\nthe three `uncalled ... 'PROMPT'` assertions can fail. ghrp's \"nothing\npicked\" case now queues `a`. Four mutations aimed at those assertions\nare added to `tests/test-gh-wrappers-teeth.py`.\n`.claude/rules/testing.md` gets a row for `test:gh-wrappers-teeth`.\n\n## Why\n\nA shell can have the wrapper functions without the file's globals; #612\nsaw this in Claude Code's `!` shell. In such a shell the jq prefix was\nempty, the program failed to compile with `ci/0 is not defined`, and\n`ghm`, `ghpc` and the `_gh_*_pick` helpers showed no PRs. With no locale\nset on Linux, four assertions failed that were not regressions. The\nprompt assertions and the ghrp empty-pick case stayed green even when\nthe behaviour they name was broken.\n\n## How\n\n- I added a `_gh_pr_pick` call to the \"without the file's globals\" case.\nBefore the fix it failed (113 passed, 2 failed) with the jq compile\nerror #613 reports.\n- #614 reproduced in an `ubuntu:24.04` container: 111 passed and 4\nfailed with `LANG`/`LC_ALL` unset, and 115 passed after the change.\nmacOS passes either way. I did not narrow down which step mishandles the\nbytes (`column`, `_gh_paint`'s awk, or zsh). The skip path was checked\nby putting a fake `locale` that lists only C and POSIX first on PATH.\n- Each of the four new mutations was also run against the origin/main\nsuite. In every case the assertion it targets still passed, so those\nassertions could not fail before this change. All four are killed now.\n- #598 item 3, comparing the stub's `gh search prs` App-bot author shape\nwith a live `gh`, needs an authenticated machine and is not done here.\nFor that reason the PR uses `Refs #598` rather than closing it.\n\nCloses #613\nCloses #614\nRefs #598\n\n## Gates\n\n| Command | Exit | Result |\n|---|---|---|\n| `zsh tests/test-gh-wrappers.zsh`, new case, before fix | 1 | 113\npassed, 2 failed (RED) |\n| `/bin/zsh tests/test-gh-wrappers.zsh` | 0 | 115 passed, 0 failed |\n| `mise run test:gh-wrappers` | 0 | 115 passed, 0 failed |\n| `python3 tests/test-gh-wrappers-teeth.py --zsh /bin/zsh` | 0 | All 28\nmutations killed |\n| ubuntu:24.04, no locale, before / after | 1 / 0 | 111+4 failed / 115\npassed |\n| `pre-commit run --files <changed files>` | 0 | passed |\n| `mise run lint:shell` | 0 | passed |\n\n## Follow-ups\n\n- #631: check the real pickers render without a UTF-8 locale (the open\nhalf of #614)\n- #598 item 3 (live `gh search prs` bot shape) stays on #598\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-19T12:05:20+02:00",
+          "tree_id": "d60067622868650150defa5829e2b90525a2ab4d",
+          "url": "https://github.com/laurigates/dotfiles/commit/8946c70c3be88fdf2f00063aee38b01d092c712e"
+        },
+        "date": 1795082765885,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08938412400000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009499086000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008930392,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.006641732,
             "unit": "s"
           }
         ]
