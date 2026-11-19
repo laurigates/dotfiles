@@ -45,6 +45,16 @@ for tool in jq column; do
   (( $+commands[$tool] )) || { print -r -- "SKIP: $tool is not installed"; exit 0 }
 done
 
+# The picker tables carry multi-byte glyphs (⏳ ⚠ ✓). With no UTF-8 locale on
+# Linux, four `shown` checks fail on them; which of column, _gh_paint's awk or
+# zsh mishandles the bytes was not narrowed down (#614). Run under
+# C.UTF-8 when the system has it, else the first UTF-8 locale it lists.
+utf8_locales=(${(M)${(f)"$(locale -a 2>/dev/null)"}:#(#i)*.utf(-|)8})
+c_utf8=(${(M)utf8_locales:#(#i)C.utf(-|)8})
+utf8_locale=${c_utf8[1]:-$utf8_locales[1]}
+[[ -n $utf8_locale ]] || { print -r -- "SKIP: no UTF-8 locale is available"; exit 0 }
+export LC_ALL=$utf8_locale
+
 W=$(mktemp -d)
 trap 'rm -rf $W' EXIT
 export HOME=$W/home
