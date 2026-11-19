@@ -25,8 +25,10 @@
 #           shown to $W/fzf.in. An entry is a number (rows starting "#<n>") or
 #           "<owner/repo>#<n>" (ghrp rows, which start with the repo).
 #   read    a prompt (`read "var?text"`) takes its answer from the queue in
-#           $W/answers. With no terminal the builtin would read nothing, and a
-#           prompt nobody queued an answer for is logged as UNANSWERED.
+#           $W/answers. With no terminal the builtin would read nothing. Every
+#           prompt is logged as "PROMPT <text> <- <answer>", one nobody
+#           queued an answer for with UNANSWERED as the answer, so
+#           `uncalled ... PROMPT` fails whenever a prompt was shown (#598).
 #   git, claude, sleep   log the call and do nothing.
 # Every stub appends its call to $W/calls; the assertions read that log.
 #
@@ -44,6 +46,16 @@ SRC=${GH_WRAPPERS_SRC:-$REPO_ROOT/private_dot_config/zsh/gh-wrappers.zsh}
 for tool in jq column; do
   (( $+commands[$tool] )) || { print -r -- "SKIP: $tool is not installed"; exit 0 }
 done
+
+# The picker tables carry multi-byte glyphs (⏳ ⚠ ✓). With no UTF-8 locale on
+# Linux, four `shown` checks fail on them; which of column, _gh_paint's awk or
+# zsh mishandles the bytes was not narrowed down (#614). Run under
+# C.UTF-8 when the system has it, else the first UTF-8 locale it lists.
+utf8_locales=(${(M)${(f)"$(locale -a 2>/dev/null)"}:#(#i)*.utf(-|)8})
+c_utf8=(${(M)utf8_locales:#(#i)C.utf(-|)8})
+utf8_locale=${c_utf8[1]:-$utf8_locales[1]}
+[[ -n $utf8_locale ]] || { print -r -- "SKIP: no UTF-8 locale is available"; exit 0 }
+export LC_ALL=$utf8_locale
 
 W=$(mktemp -d)
 trap 'rm -rf $W' EXIT
@@ -229,7 +241,7 @@ read() {
   done
   [[ -n $_rs_name ]] || { builtin read "$@"; return }
   if [[ ! -s $W/answers ]]; then
-    print -r -- "UNANSWERED ${_rs_text[1,50]}" >> $W/calls
+    print -r -- "PROMPT ${_rs_text[1,50]} <- UNANSWERED" >> $W/calls
     eval "$_rs_name="
     return 1
   fi
@@ -569,10 +581,11 @@ FZF_PICK=('acme/api#4'); answers a merge
 run ghrp
 called "non-bot author: the typed word 'merge' merges" 'gh pr merge 4 --repo acme/api --squash'
 
-reset; release 3 acme/api; FZF_PICK=()
+# 'a' is queued so that a prompt reached after an empty pick would merge.
+reset; release 3 acme/api; FZF_PICK=(); answers a
 run ghrp
 printed  "nothing picked: says so" 'Nothing selected.'
-uncalled "nothing picked: no merge" 'gh pr merge'
+uncalled "nothing picked, 'a' queued: no merge" 'gh pr merge'
 
 reset
 run ghrp
@@ -673,6 +686,13 @@ else
   ok "without the file's globals: ghm does not print the shell's parameters"
 fi
 called "without the file's globals: ghm still merges" 'gh pr merge 5 --squash --delete-branch'
+
+# The pickers' jq programs must not depend on a global either: with the jq
+# defs in one, the program did not compile and the picker showed no PR (#613).
+reset; pr 5; pr 6; FZF_PICK=(6)
+( unset -m '_GH_*'; _gh_pr_pick > $W/out 2>&1 )
+is "without the file's globals: _gh_pr_pick prints the picked PR's number" "$(<$W/out)" 6
+shown "without the file's globals: _gh_pr_pick lists the PRs" '#5'
 
 # ---------------------------------------------------------------------------
 print
