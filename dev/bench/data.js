@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795092243271,
+  "lastUpdate": 1795173548562,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6203,6 +6203,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0133407452,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0ec1bafd29fe1f468419eb1694707500b8c7762d",
+          "message": "fix(zsh): say why ghm updates a branch instead of always \"base moved this run\" (#636)\n\n## What\n\n`_gh_update_and_wait` printed `base moved this run` for every branch\nupdate. That included a PR that was simply BEHIND its base when the run\nstarted, as `ghm --auto 633` showed. The caller now passes the reason,\nwhich goes on the `⟳` line:\n\n- `main took a merge earlier in this run`: another PR in the batch\nmerged into the same base.\n- `branch is behind main`: the ruleset requires up-to-date branches and\nthe head is stale.\n\n## Verification\n\n- `zsh tests/test-gh-wrappers.zsh`: 139 passed, 0 failed, including two\nnew assertions, one per wording.\n- `mise run test:gh-wrappers-teeth`: all 35 mutations killed. The new\nmutation swaps the BEHIND wording for the moved-base one.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BLXXsPUAHWV3uni4T\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-20T13:18:26+02:00",
+          "tree_id": "173c6e5e991a7ffe0b044167584268b7660e69ba",
+          "url": "https://github.com/laurigates/dotfiles/commit/0ec1bafd29fe1f468419eb1694707500b8c7762d"
+        },
+        "date": 1795173547942,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10938648133333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001358794,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.001110917,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.011521420000000001,
             "unit": "s"
           }
         ]
