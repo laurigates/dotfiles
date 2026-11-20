@@ -373,6 +373,7 @@ before "draft, 'r': marked ready, then merged" 'gh pr ready 5' 'gh pr merge 5 --
 reset; pr 5 mss=BEHIND
 run ghm 5
 before "BEHIND: branch updated, then merged pinned to the new head" 'gh pr update-branch 5' 'gh pr merge 5 --match-head-commit sha5b --squash --delete-branch'
+printed "BEHIND: the update says the branch is behind its base" '#5: branch is behind main'
 
 reset; pr 5 mss=BEHIND checks=fail
 run ghm 5
@@ -415,6 +416,7 @@ called "first PR merges with its own method" 'gh pr merge 5 --repo o/r --squash 
 called "second PR, same base: branch updated first (rebase for a rebase merge)" 'gh pr update-branch 6 --repo o/r --rebase'
 called "second PR merges pinned to the head CI ran on" 'gh pr merge 6 --repo o/r --match-head-commit sha6b --rebase --delete-branch'
 before "PRs merge in selection order" 'gh pr merge 5 --repo o/r --squash --delete-branch' 'gh pr update-branch 6 --repo o/r --rebase'
+printed "second PR: the update says the base took a merge this run" 'o/r#6: main took a merge earlier in this run'
 
 reset; pr 5; pr 6; FZF_PICK=(5 6); answers n y
 run ghm
