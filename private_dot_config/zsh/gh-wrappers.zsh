@@ -494,7 +494,9 @@ _gh_poll_merge() {
   if [[ " $moved " == *" ${repo}:${base} "* || "$mss" == BEHIND ]]; then
     local -a upd; [[ "$method" == rebase ]] && upd=(--rebase)
     [[ -n "$queue" ]] && upd=(--no-wait "${upd[@]}")
-    _gh_update_and_wait "$repo" "$num" "$id" "${upd[@]}"
+    local why="branch is behind ${base}"
+    [[ " $moved " == *" ${repo}:${base} "* ]] && why="${base} took a merge earlier in this run"
+    _gh_update_and_wait "$repo" "$num" "$id" "$why" "${upd[@]}"
     case $? in
       0) ;;
       2) print -r -- "  ${red}✗${rst} ${cyan}${id}${rst}: ${red}conflicting${rst} — left open"
@@ -601,20 +603,22 @@ _gh_wait_mergeable() {
 
 # Bring a PR up to date with its base, then block until CI on the new head
 # finishes. --rebase rebases the branch; the default merges the base in.
-#   _gh_update_and_wait <repo|""> <num> <id> [--no-wait] [--rebase]
+#   _gh_update_and_wait <repo|""> <num> <id> <why> [--no-wait] [--rebase]
+#   <why>  why the update is needed, printed on the ⟳ line (the base took a
+#          merge this run, or the branch is BEHIND).
 #   → 0 + REPLY=<new head SHA> (REPLY="" if already up to date, or --no-wait)
 #     2 conflicting · 1 update failed or CI failed
 #   --no-wait returns right after the update, for an auto-merge (which waits
 #   for CI itself).
 _gh_update_and_wait() {
-  local repo="$1" num="$2" id="$3"; shift 3
+  local repo="$1" num="$2" id="$3" why="$4"; shift 4
   local wait=1; [[ "$1" == --no-wait ]] && { wait=; shift }
   local -a repo_flag upd=("$@"); [[ -n "$repo" ]] && repo_flag=(--repo "$repo")
   local green red yellow cyan magenta dim bold rst alarm; _gh_palette 1
   REPLY=
   local old new out tries
   old=$(gh pr view "$num" "${repo_flag[@]}" --json headRefOid --jq .headRefOid </dev/null 2>/dev/null)
-  print -r -- "  ${yellow}⟳${rst} ${cyan}${id}${rst}: base moved this run — ${dim}gh pr update-branch${upd:+ ${upd[*]}}${rst}"
+  print -r -- "  ${yellow}⟳${rst} ${cyan}${id}${rst}: ${why} — ${dim}gh pr update-branch${upd:+ ${upd[*]}}${rst}"
   if ! out=$(gh pr update-branch "$num" "${repo_flag[@]}" "${upd[@]}" </dev/null 2>&1); then
     # gh prints "Cannot update PR branch due to conflicts" for both of its own
     # conflict checks (see update_branch.go); anything else is a real failure.
