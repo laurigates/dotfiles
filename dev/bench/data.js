@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795173548562,
+  "lastUpdate": 1795255495097,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6247,6 +6247,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011521420000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "293328251+laurigates-renovate[bot]@users.noreply.github.com",
+            "name": "laurigates-renovate[bot]",
+            "username": "laurigates-renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b49d709dd80fa6419ad6278afceada0aab6b9f9b",
+          "message": "chore(deps): update GitHub Actions (#640)\n\nThis PR contains the following updates:\n\n| Package | Type | Update | Change | Pending |\n|---|---|---|---|---|\n| [Homebrew/actions](https://redirect.github.com/Homebrew/actions) | |\npatch | `2026.11.09.1` → `2026.11.14.1` | |\n|\n[anthropics/claude-code-action](https://redirect.github.com/anthropics/claude-code-action)\n| action | patch | `v1.0.273` → `v1.0.281` | `v1.0.286` (+4) |\n\n---\n\n### Release Notes\n\n<details>\n<summary>Homebrew/actions</summary>\n\n###\n[`v2026.11.14.1`](https://redirect.github.com/Homebrew/actions/releases/tag/2026.11.14.1)\n\n[Compare\nSource](https://redirect.github.com/Homebrew/actions/compare/2026.11.09.1...2026.11.14.1)\n\n#### What's Changed\n\n- pre-build: make core and cask taps have better defaults by\n[@&#8203;shivammathur](https://redirect.github.com/shivammathur) in\n[#&#8203;964](https://redirect.github.com/Homebrew/actions/pull/964)\n- build(deps): bump the github-actions group across 1 directory with 2\nupdates by\n[@&#8203;dependabot](https://redirect.github.com/dependabot)\\[bot] in\n[#&#8203;968](https://redirect.github.com/Homebrew/actions/pull/968)\n- build(deps): bump the npm group with 2 updates by\n[@&#8203;dependabot](https://redirect.github.com/dependabot)\\[bot] in\n[#&#8203;967](https://redirect.github.com/Homebrew/actions/pull/967)\n- setup-homebrew: support shallow taps by\n[@&#8203;MikeMcQuaid](https://redirect.github.com/MikeMcQuaid) in\n[#&#8203;969](https://redirect.github.com/Homebrew/actions/pull/969)\n- create-or-update-issue: add `skip-if-unchanged` by\n[@&#8203;bevanjkay](https://redirect.github.com/bevanjkay) in\n[#&#8203;966](https://redirect.github.com/Homebrew/actions/pull/966)\n- remove-disabled-packages: don't remove partially disabled packages by\n[@&#8203;bevanjkay](https://redirect.github.com/bevanjkay) in\n[#&#8203;965](https://redirect.github.com/Homebrew/actions/pull/965)\n\n#### New Contributors\n\n- [@&#8203;shivammathur](https://redirect.github.com/shivammathur) made\ntheir first contribution in\n[#&#8203;964](https://redirect.github.com/Homebrew/actions/pull/964)\n\n**Full Changelog**:\n<https://github.com/Homebrew/actions/compare/2026.11.09.1...2026.11.14.1>\n\n</details>\n\n<details>\n<summary>anthropics/claude-code-action</summary>\n\n###\n[`v1.0.281`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.281)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.280...v1.0.281)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.281 -->\n\n#### What's Changed\n\n##### Other changes\n\n- Apply the session's git settings to the action's own commands by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2093](https://redirect.github.com/anthropics/claude-code-action/pull/2093)\n- Skip fork pull requests in claude.yml by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2092](https://redirect.github.com/anthropics/claude-code-action/pull/2092)\n- Add an allow_fork_prs input to skip pull requests from forks by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2094](https://redirect.github.com/anthropics/claude-code-action/pull/2094)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.280...v1.0.281>\n\n###\n[`v1.0.280`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.280)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.279...v1.0.280)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.280 -->\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.279...v1.0.280>\n\n###\n[`v1.0.279`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.279)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.278...v1.0.279)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.279 -->\n\n#### What's Changed\n\n##### Other changes\n\n- Use the default branch's config on pull requests from authors without\nwrite access by [@&#8203;mhegazy](https://redirect.github.com/mhegazy)\nin\n[#&#8203;2088](https://redirect.github.com/anthropics/claude-code-action/pull/2088)\n- Skip images when a description or comment has been edited by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2091](https://redirect.github.com/anthropics/claude-code-action/pull/2091)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.278...v1.0.279>\n\n###\n[`v1.0.278`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.278)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.277...v1.0.278)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.278 -->\n\n#### What's Changed\n\n##### Other changes\n\n- Read the run step's script whole and turn off Bun's transpiler cache\nby [@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2060](https://redirect.github.com/anthropics/claude-code-action/pull/2060)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.277...v1.0.278>\n\n###\n[`v1.0.277`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.277):\n(breaking changes)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.276...v1.0.277)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.277 -->\n\n#### What's Changed\n\n##### ⚠️ Breaking changes\n\n- Use the base branch's AGENTS.md on pull requests by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2059](https://redirect.github.com/anthropics/claude-code-action/pull/2059)\n\n##### Other changes\n\n- Use the base branch's npm and Bun config on outside pull requests by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2020](https://redirect.github.com/anthropics/claude-code-action/pull/2020)\n- Start Bun with the action's own tsconfig again by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2058](https://redirect.github.com/anthropics/claude-code-action/pull/2058)\n- Close gaps in using the base branch's npm and Bun config by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2026](https://redirect.github.com/anthropics/claude-code-action/pull/2026)\n- Keep deny rules that hold commas or parentheses by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2033](https://redirect.github.com/anthropics/claude-code-action/pull/2033)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.276...v1.0.277>\n\n###\n[`v1.0.276`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.276)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.275...v1.0.276)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.276 -->\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.275...v1.0.276>\n\n###\n[`v1.0.275`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.275)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.274...v1.0.275)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.275 -->\n\n#### What's Changed\n\n##### Other changes\n\n- Make the git wrappers independent of the session's environment by\n[@&#8203;mhegazy](https://redirect.github.com/mhegazy) in\n[#&#8203;2018](https://redirect.github.com/anthropics/claude-code-action/pull/2018)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.274...v1.0.275>\n\n###\n[`v1.0.274`](https://redirect.github.com/anthropics/claude-code-action/releases/tag/v1.0.274)\n\n[Compare\nSource](https://redirect.github.com/anthropics/claude-code-action/compare/v1.0.273...v1.0.274)\n\n<!-- Release notes generated using configuration in .github/release.yml\nat v1.0.274 -->\n\n#### What's Changed\n\n##### Other changes\n\n- Let Claude read CI results on outside pull requests by\n[@&#8203;qing-ant](https://redirect.github.com/qing-ant) in\n[#&#8203;2009](https://redirect.github.com/anthropics/claude-code-action/pull/2009)\n\n**Full Changelog**:\n<https://github.com/anthropics/claude-code-action/compare/v1.0.273...v1.0.274>\n\n</details>\n\n---\n\n- [ ] <!-- rebase-check -->If you want to rebase/retry this PR, check\nthis box\n\n---\n\nThis PR has been generated by [Mend Renovate\nCLI](https://redirect.github.com/renovatebot/renovate).\n\n<!--renovate-debug:eyJjcmVhdGVkSW5WZXIiOiI0NC4yNTcuNyIsInVwZGF0ZWRJblZlciI6IjQ0LjI1Ny43IiwidGFyZ2V0QnJhbmNoIjoibWFpbiIsImxhYmVscyI6WyJkZXBlbmRlbmNpZXMiLCJyZW5vdmF0ZSJdfQ==-->\n\nCo-authored-by: laurigates-renovate[bot] <293328251+laurigates-renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-11-21T10:04:13Z",
+          "tree_id": "8ffd2c9b8490c070a84fbe36e997ec8aedbb8671",
+          "url": "https://github.com/laurigates/dotfiles/commit/b49d709dd80fa6419ad6278afceada0aab6b9f9b"
+        },
+        "date": 1795255494776,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11549849533333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011962000000000001,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010634020000000002,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0093736572,
             "unit": "s"
           }
         ]
