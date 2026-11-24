@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795521758551,
+  "lastUpdate": 1795523995398,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6467,6 +6467,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.012627062599999999,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5e0192529fa553b31cda827d72df1d8d9f8e6ece",
+          "message": "fix(pi): bump pi-smart-fetch to 0.3.23 for peerDependencies fix (#654)\n\nBump `npm:pi-smart-fetch` pin in\n`private_dot_pi/agent/modify_settings.json.tmpl` from `0.3.17` to\n`0.3.23`.\n\n`pi-smart-fetch@0.3.17` declared host-provided packages\n(`@earendil-works/pi-tui`, `@sinclair/typebox`) under `dependencies`\ninstead of `peerDependencies: \"*\"`, triggering a Pi extension warning\nand installing duplicate copies under `~/.pi/agent/npm/node_modules/`.\nUpstream moved them to `peerDependencies` in `0.3.18+`.\n\nVerified with `bash tests/test-pi-settings-modify.sh` (10/10 pass),\n`shellcheck` on the rendered template, and `pi install\nnpm:pi-smart-fetch@0.3.23`.",
+          "timestamp": "2026-11-24T12:39:12Z",
+          "tree_id": "1b170423f95b4e2044f576edd2d227f116edba3a",
+          "url": "https://github.com/laurigates/dotfiles/commit/5e0192529fa553b31cda827d72df1d8d9f8e6ece"
+        },
+        "date": 1795523994803,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.083124919,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009426116,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008147289999999999,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0065217668,
             "unit": "s"
           }
         ]
