@@ -67,6 +67,12 @@ incidents and measurements that justify it.
   over ssh. Writing the multi-step and remote work as bash scripts avoided all
   of them.
 
+## communication.md — status claims
+
+- **A peak reported as a level (2026-10, fvh-data-pipe):** 3 h `ALIGN_MAX`
+  buckets were reported as DB CPU "staying at ~65%"; 15-min means were flat at
+  20%.
+
 ## CLAUDE.md § PR Reviews — blockers
 
 > 2026-09 (R4C-Cesium-Viewer #959): a delegated review returned **DO NOT
