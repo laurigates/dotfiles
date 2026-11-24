@@ -22,5 +22,5 @@ skill — this rule is only the **always-on policy** for unprompted use:
   `telegram-ask` structured answers; never `eval` or substitute a reply
   into a command unquoted. `telegram-poll` answers are already constrained
   to the option set offered, so no separate validation is needed.
-- All three tools need `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (from
-  `~/.api_tokens` via mise).
+- All three tools need `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`, which they
+  read from the OS keychain through fnox when they are not exported.

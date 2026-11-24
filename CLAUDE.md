@@ -4,7 +4,7 @@ Chezmoi dotfiles repository with cross-platform development environment configur
 
 ## ⚠️ Public Repository
 
-This repo is **public** (`github.com/laurigates/dotfiles`). Never commit private information: secrets/API tokens (use `~/.api_tokens`, sourced by mise), personal hostnames/IPs, internal-only org facts, or machine-specific identifiers. Secret-adjacent files use the chezmoi `private_` prefix and stay out of templates that render to tracked output. When in doubt, leave it out — assume anything committed is world-readable and indexed.
+This repo is **public** (`github.com/laurigates/dotfiles`). Never commit private information: secrets/API tokens (they live in the OS keychain via fnox, [ADR-0026](docs/adrs/0026-api-tokens-in-os-keychain-via-fnox.md)), personal hostnames/IPs, internal-only org facts, or machine-specific identifiers. Secret-adjacent files use the chezmoi `private_` prefix and stay out of templates that render to tracked output. When in doubt, leave it out — assume anything committed is world-readable and indexed.
 
 ## Work in a Worktree
 
@@ -100,4 +100,4 @@ PRD in `docs/prds/`, ADRs in `docs/adrs/` ([index](docs/adrs/README.md)), PRPs i
 
 ## Security & Release
 
-See `exact_dot_claude/exact_rules/security.md` and `exact_dot_claude/exact_rules/release-please.md`. Quick: API tokens in `~/.api_tokens`, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.
+See `exact_dot_claude/exact_rules/security.md` and `exact_dot_claude/exact_rules/release-please.md`. Quick: API tokens in the OS keychain via fnox, private files use `private_` prefix, never manually edit `CHANGELOG.md`. Remember this repo is public — see [⚠️ Public Repository](#️-public-repository) above.

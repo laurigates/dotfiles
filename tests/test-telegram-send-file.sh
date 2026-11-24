@@ -97,10 +97,22 @@ esac
 STUB
 chmod +x "$STUB_DIR/curl"
 
+# The fnox stub: `fnox get NAME` prints $FNOX_STUB_NAME, else fails. Without it
+# the scripts' keychain fallback would reach the real keychain from a test.
+cat >"$STUB_DIR/fnox" <<'STUB'
+#!/usr/bin/env bash
+[[ "${1:-}" == get && -n "${2:-}" ]] || exit 1
+var="FNOX_STUB_$2"
+[[ -n "${!var:-}" ]] || exit 1
+printf '%s\n' "${!var}"
+STUB
+chmod +x "$STUB_DIR/fnox"
+
 export PATH="$STUB_DIR:$PATH"
 export STUB_LOG="$WORK/curl.log"
 
 check "curl resolves to the executable stub" test "$(command -v curl)" = "$STUB_DIR/curl"
+check "fnox resolves to the executable stub" test "$(command -v fnox)" = "$STUB_DIR/fnox"
 check "telegram-send-file exists and is executable" test -x "$SCRIPT"
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
@@ -159,6 +171,15 @@ check "notoken: curl not called" test ! -s "$WORK/notoken.curl"
 check "nochat: exit 2" test "$(rc nochat)" = 2
 check "nochat: names the variable" has "$WORK/nochat.out" "TELEGRAM_CHAT_ID"
 check "nochat: curl not called" test ! -s "$WORK/nochat.curl"
+
+
+# ── Keychain fallback: unset in the environment, provided by fnox ─────────────
+(
+    unset TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID
+    FNOX_STUB_TELEGRAM_BOT_TOKEN="$FAKE_TOKEN" FNOX_STUB_TELEGRAM_CHAT_ID="$FAKE_CHAT" run fnox ok "$FIX/notes.txt"
+)
+check "fnox: exit 0" test "$(rc fnox)" = 0
+check "fnox: token reached curl" has "$WORK/fnox.curl" "$FAKE_TOKEN"
 
 export TELEGRAM_BOT_TOKEN="$FAKE_TOKEN"
 export TELEGRAM_CHAT_ID="$FAKE_CHAT"

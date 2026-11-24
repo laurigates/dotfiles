@@ -26,8 +26,9 @@ Five scripts in `~/.local/bin`:
 | `telegram-check` | Diagnose the config: variables set, which bot, which chat | No |
 
 All five read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
-environment. They're sourced from `~/.api_tokens` by mise — if you
-hit `... not set`, the user needs to add them there.
+environment when exported, and otherwise from the OS keychain through
+fnox. If you hit `... not set`, the user needs to store them with
+`fnox -c ~/.config/fnox/local.toml set TELEGRAM_BOT_TOKEN` (and `TELEGRAM_CHAT_ID`).
 
 ## telegram-check
 
@@ -117,7 +118,7 @@ Behaviour:
 4. On timeout: prints `TIMEOUT` to stderr, sends a "(timed out)"
    notice to the chat, and exits 1.
 5. On config error (missing token / chat id): exits 2 with a message
-   pointing at `~/.api_tokens`.
+   naming the fnox command that stores the missing variable.
 
 Calling pattern from a shell script:
 
@@ -254,7 +255,7 @@ In practice, plain text is almost always the right default.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `TELEGRAM_BOT_TOKEN not set` | mise env not loaded, or token absent in `~/.api_tokens` | `telegram-check` shows which is `unset`; add `export TELEGRAM_BOT_TOKEN=...` and `export TELEGRAM_CHAT_ID=...` there |
+| `TELEGRAM_BOT_TOKEN not set` | Not exported, and no keychain entry (or fnox not installed) | `telegram-check` shows which is `unset`; store it with `fnox -c ~/.config/fnox/local.toml set TELEGRAM_BOT_TOKEN` (the value goes through a hidden prompt) |
 | `curl: (22) ... 401` | Token revoked or wrong | `telegram-check` reports `GETME_ERROR=401`; re-issue via @BotFather |
 | `curl: (22) ... 400` on send | Bad chat id, or bot has not been started by the user | `telegram-check` reports `CHAT_ERROR=400 Bad Request: chat not found`; user must `/start` the bot once |
 | `telegram-ask` returns immediately with stale text | Another process drained updates between drain and poll | Rare; re-run |
@@ -277,7 +278,7 @@ these dotfiles. It was retired for three reasons:
 - Its one remaining use, sending a file, is covered by
   `telegram-send-file`.
 - It keeps its own config file with a second copy of the bot token and
-  chat id, separate from `~/.api_tokens`, and v0.39.2 moved that file's
+  chat id, separate from the keychain entries the scripts read, and v0.39.2 moved that file's
   location on macOS so an existing config was no longer found.
 
 The scripts here are thin curl+jq wrappers with one credential source

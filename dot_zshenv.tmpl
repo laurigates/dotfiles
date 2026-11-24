@@ -23,7 +23,9 @@ path+="/Applications/Obsidian.app/Contents/MacOS"
 
 export PATH
 
-source ~/.api_tokens
+# API tokens are deliberately NOT exported here: this file runs for every zsh,
+# including agents' non-interactive shells, so every child process would inherit
+# them. Commands get secrets per invocation from fnox (ADR-0026).
 
 export OLLAMA_KEEP_ALIVE=30m
 

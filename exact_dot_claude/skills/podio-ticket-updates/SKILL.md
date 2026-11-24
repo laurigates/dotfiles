@@ -10,11 +10,11 @@ Update my in-progress Podio tickets with progress from linked GitHub repositorie
 
 ## Configuration
 
-The board coordinates are not stored in this skill. Read them from the
-environment (set them in `~/.api_tokens`, which mise sources):
+The board coordinates are not stored in this skill. They are in the OS keychain
+through fnox (store one with `fnox -c ~/.config/fnox/local.toml set NAME`):
 
 ```bash
-printenv PODIO_ORG_LABEL PODIO_SPACE_LABEL PODIO_APP_LABEL PODIO_RESPONSIBLE PODIO_GITHUB_ORG
+fnox exec --only 'PODIO_*' -- printenv PODIO_ORG_LABEL PODIO_SPACE_LABEL PODIO_APP_LABEL PODIO_RESPONSIBLE PODIO_GITHUB_ORG
 ```
 
 | Variable | Meaning |

@@ -12,8 +12,8 @@
 #   1  — timeout (prints "TIMEOUT" to stderr)
 #   2  — usage / config error
 #
-# Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in the environment.
-# These are typically sourced from ~/.api_tokens via mise.
+# Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID, from the environment or
+# from the OS keychain through fnox.
 #
 # While waiting, re-pings with a reminder at exponentially increasing
 # intervals (default: 5m, then 10m, 20m, ... capped by --timeout) so a
@@ -52,8 +52,13 @@ fi
 
 QUESTION="$*"
 
-: "${TELEGRAM_BOT_TOKEN:?telegram-ask: TELEGRAM_BOT_TOKEN not set (check ~/.api_tokens)}"
-: "${TELEGRAM_CHAT_ID:?telegram-ask: TELEGRAM_CHAT_ID not set (check ~/.api_tokens)}"
+# Exported values win; otherwise read them from the OS keychain through fnox
+# (ADR-0026). A missing fnox or keychain entry leaves the variable empty.
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  [[ -n "${!var:-}" ]] || printf -v "$var" '%s' "$(fnox get "$var" 2>/dev/null || true)"
+done
+: "${TELEGRAM_BOT_TOKEN:?telegram-ask: TELEGRAM_BOT_TOKEN not set (store it with: fnox -c ~/.config/fnox/local.toml set TELEGRAM_BOT_TOKEN)}"
+: "${TELEGRAM_CHAT_ID:?telegram-ask: TELEGRAM_CHAT_ID not set (store it with: fnox -c ~/.config/fnox/local.toml set TELEGRAM_CHAT_ID)}"
 
 API="https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}"
 

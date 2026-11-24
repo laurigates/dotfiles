@@ -1,0 +1,8 @@
+# Machine-local fnox secret names, imported by config.toml (ADR-0026).
+# chezmoi creates this file once and never overwrites it. Add entries with:
+#
+#   fnox -c ~/.config/fnox/local.toml set NAME --provider keychain
+#
+# Names here stay out of the public dotfiles repo.
+
+[secrets]

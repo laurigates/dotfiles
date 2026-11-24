@@ -501,7 +501,7 @@ mise trust                   # In directory with .mise.toml
    mise trust                # Trust current directory's config
    ```
 
-2. **API Tokens**: Already configured to load from `~/.api_tokens` (gitignored)
+2. **API Tokens**: Not loaded into the environment; commands get them from the OS keychain through fnox (ADR-0026)
 
 3. **aqua Security Features**: Automatically verifies checksums, GitHub Attestations, SLSA provenance
 

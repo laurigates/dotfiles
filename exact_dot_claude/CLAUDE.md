@@ -44,7 +44,7 @@ When installing new tools, prefer earlier options:
 - **Search**: rg (ripgrep), fd, ast-grep, fzf
 - **Platform**: macOS (darwin/arm64) with Homebrew
 - **Dotfiles**: chezmoi — always edit source at `~/.local/share/chezmoi/`, never target files
-- **API tokens**: `~/.api_tokens` (sourced by mise), never committed
+- **API tokens**: OS keychain via fnox, never exported or committed; `fnox exec --only NAME -- cmd` (see `rules/security.md`)
 
 ## Development Notes
 
