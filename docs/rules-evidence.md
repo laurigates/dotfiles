@@ -67,6 +67,16 @@ incidents and measurements that justify it.
   over ssh. Writing the multi-step and remote work as bash scripts avoided all
   of them.
 
+## git-hazards.md — incidents
+
+- **Branch not re-read after a restart (2026-11-23):** a session committed
+  four fixes on a feature branch, then was restarted eleven days later. By
+  then the checkout was on `main` with the branch fast-forwarded into it. The
+  session made six more commits without checking, reported each as landing on
+  the feature branch, and found out only when asked to merge: `git log
+  main..<branch>` was empty and the branch was six commits behind `main`. The
+  repo had no remote, so nothing had been pushed to the wrong place.
+
 ## CLAUDE.md § PR Reviews — blockers
 
 > 2026-09 (R4C-Cesium-Viewer #959): a delegated review returned **DO NOT
