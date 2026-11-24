@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795380758750,
+  "lastUpdate": 1795521758551,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6423,6 +6423,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0104870108,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "178ce3124e1008f0520499055f82d5b46b884bb3",
+          "message": "feat(claude): route Claude Code web search through local SearXNG via ketch (#653)\n\npi reaches the local SearXNG through `pi-lean-search`. Claude Code had\nnothing pointing it there, so it always used the hosted WebSearch. ketch\nis already installed by mise with `KETCH_BACKEND=searxng` and\n`KETCH_SEARXNG_URL=http://127.0.0.1:<port>`. Claude Code only needs\npermission to run it and an instruction to prefer it.\n\n- `exact_dot_claude/modify_settings.json`: allow `Bash(ketch search *)`.\n- `exact_dot_claude/CLAUDE.md`: under Development Environment, prefer\n`ketch search`. Fall back to WebSearch when results are thin or SearXNG\nis down. WebSearch stays allowed.\n\nVerified: `ketch search \"searxng json api\"` from a Claude Code session\nreturned 5 results with `backend: searxng`.\n`tests/test-claude-config.sh` passed 13/13, and\n`tests/test-claude-context-budget.sh` returned `STATUS=PASS`. Piping\n`{}` through the modify script yields an allow list that contains the\nnew rule.\n\nAfter merge: `chezmoi apply ~/.claude/settings.json\n~/.claude/CLAUDE.md`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD98dxh7NqhUFr3Wvnkq\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-24T14:01:50+02:00",
+          "tree_id": "af28e0f85efaf56facf342b3d9fd5467df0a7f23",
+          "url": "https://github.com/laurigates/dotfiles/commit/178ce3124e1008f0520499055f82d5b46b884bb3"
+        },
+        "date": 1795521758138,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.137244226,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0017284566000000002,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0015708322,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.012627062599999999,
             "unit": "s"
           }
         ]
