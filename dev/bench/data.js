@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795523995398,
+  "lastUpdate": 1795609117019,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6511,6 +6511,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0065217668,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6ebf37a0acf3f9a0776ca6daa33e1ab84501dfd0",
+          "message": "chore(packages): install PAL as palaver-mcp-server from PyPI (#659)\n\nPAL was renamed from `pal-mcp-server` to `palaver-mcp-server`\n(laurigates/palaver-mcp-server#95). The MCP server key stays `pal`, so\ntools stay `mcp__pal__*`. The root `.mcp.json` is updated separately by\nthe gitops reconciler.\n\n## Changed\n- `.chezmoidata/uv_tools.toml`: the global uv tool install moves from\n`git_tools` (`git+https://github.com/laurigates/pal-mcp-server`) to the\nPyPI `tools` list as `palaver-mcp-server`. `git_tools` is for tools not\non PyPI, and 13.0.0 is published there. The console script is\n`palaver-mcp-server` (`[project.scripts]` on palaver main).\n- `.chezmoidata.toml`: `mcp_servers.pal` args `pal-mcp-server@latest` →\n`palaver-mcp-server@latest`. Key `pal` unchanged.\n- `.github/workflows/claude.yml`: comment names the new package.\n\n## Not done here\nA machine that already ran the old install keeps a git-installed\n`pal-mcp-server` uv tool. The install loop only adds tools, so that one\nstays until removed by hand (`uv tool uninstall pal-mcp-server`).\nTracked in #658.\n\n## Checks\n- `pre-commit run --files <changed files>`: exit 0 (actionlint,\nconventional commit, doc references, secrets)\n- `chezmoi execute-template --source . <\nrun_onchange_01-update-packages.sh.tmpl`: renders `uv tool install\npalaver-mcp-server --force`\n- TOML files parse with `tomllib`\n- `chezmoi apply` not run\n\nRefs laurigates/palaver-mcp-server#266\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD98a52YAtukgeGpBaPP\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-25T14:17:41+02:00",
+          "tree_id": "1a1efa5efc5b8c256bb13a4fe863b44c7016420c",
+          "url": "https://github.com/laurigates/dotfiles/commit/6ebf37a0acf3f9a0776ca6daa33e1ab84501dfd0"
+        },
+        "date": 1795609116424,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.132058997,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0016243780000000003,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0013161124,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0108204912,
             "unit": "s"
           }
         ]
