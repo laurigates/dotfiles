@@ -42,7 +42,7 @@
       "command": "sh",
       "args": [
         "-c",
-        "GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token) exec github-mcp-server stdio"
+        "set -e; GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token); export GITHUB_PERSONAL_ACCESS_TOKEN; exec github-mcp-server stdio"
       ]
     }
   }

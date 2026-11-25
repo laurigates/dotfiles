@@ -22,5 +22,5 @@ reviewed: 2026-02-16
 
 ## MCP Server Security
 
-- Use environment variable references for all tokens in `.mcp.json`
+- Never put a token value in `.mcp.json`; use the fnox patterns under API Token Management
 - Prefer project-scoped MCP servers for focused context

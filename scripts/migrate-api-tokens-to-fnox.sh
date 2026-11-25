@@ -46,6 +46,12 @@ command -v jq >/dev/null || die "jq not on PATH"
 
 # ── Step 1: tokens into the keychain ──────────────────────────────────────────
 echo "=== STEP 1: ~/.api_tokens -> keychain"
+# Preflight: the file must source cleanly under bash, or every later variable
+# would read as empty. Output is discarded so no value can be printed.
+# shellcheck disable=SC2016  # $1 is expanded by the inner bash, on purpose
+env -i HOME="$HOME" PATH="$PATH" bash -ec 'set -a; . "$1"' _ "$TOKENS_FILE" >/dev/null 2>&1 ||
+  die "$TOKENS_FILE does not source cleanly under bash (check it with: bash -n $TOKENS_FILE)"
+
 names="$(sed -nE 's/^[[:space:]]*(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p' "$TOKENS_FILE" | sort -u)"
 [[ -n "$names" ]] || die "no assignments found in $TOKENS_FILE"
 
@@ -81,16 +87,25 @@ echo "=== STEP 2: MCP entries"
 [[ -f "$CLAUDE_JSON" ]] || { echo "SKIP no $CLAUDE_JSON"; exit 0; }
 command -v claude >/dev/null || die "claude CLI not on PATH"
 
+# Each rewrite is a remove followed by an add; keep a copy to restore from if an
+# add fails half way.
+if [[ "$DRY_RUN" -eq 0 ]]; then
+  backup="$CLAUDE_JSON.pre-fnox.$(date +%Y%m%d%H%M%S)"
+  (umask 077 && cp "$CLAUDE_JSON" "$backup")
+  echo "BACKUP $backup"
+fi
+
 # google-dev-knowledge: one "${VAR}" header -> headersHelper via fnox-mcp-header.
 gdk="$(jq -c '.mcpServers["google-dev-knowledge"] // empty' "$CLAUDE_JSON")"
 if [[ -z "$gdk" ]]; then
   echo "SKIP google-dev-knowledge (not configured)"
 elif jq -e 'has("headersHelper")' >/dev/null <<<"$gdk"; then
   echo "SKIP google-dev-knowledge (already uses headersHelper)"
+elif ! jq -e '.headers // {} | to_entries | any(.value | test("^\\$\\{[A-Za-z_][A-Za-z0-9_]*\\}$"))' >/dev/null <<<"$gdk"; then
+  echo "SKIP google-dev-knowledge (no \${VAR} header to convert)"
 else
   new="$(jq -c '
     (.headers | to_entries | map(select(.value | test("^\\$\\{[A-Za-z_][A-Za-z0-9_]*\\}$"))) | first) as $h
-    | if $h == null then error("no ${VAR} header to convert") else . end
     | .headersHelper = "fnox-mcp-header \($h.key) \($h.value | ltrimstr("${") | rtrimstr("}"))"
     | .headers |= del(.[$h.key])
     | if .headers == {} then del(.headers) else . end' <<<"$gdk")"
@@ -101,8 +116,9 @@ else
   fi
 fi
 
-# podio-mcp: wrap each project's entry in `fnox exec --only 'PODIO_*'` and drop
-# its env block (its values were ${VAR} references or inherited).
+# podio-mcp: wrap each project's entry in `fnox exec --only 'PODIO_*'`. Env
+# entries that are ${VAR} references are dropped (fnox now supplies them);
+# literal values are kept.
 while IFS= read -r dir; do
   [[ -n "$dir" ]] || continue
   entry="$(jq -c --arg d "$dir" '.projects[$d].mcpServers["podio-mcp"]' "$CLAUDE_JSON")"
@@ -114,9 +130,15 @@ while IFS= read -r dir; do
     echo "SKIP podio-mcp in $dir (directory gone)"
     continue
   fi
-  new="$(jq -c '{type: (.type // "stdio"), command: "fnox",
-    args: (["exec", "--only", "PODIO_*", "--replace", "--", .command] + (.args // []))}' <<<"$entry")"
-  echo "REWRITE podio-mcp in $dir: $(jq -r '[.command] + .args | join(" ")' <<<"$new")"
+  new="$(jq -c '
+    ((.env // {}) | with_entries(select(.value | test("\\$\\{") | not))) as $kept
+    | {type: (.type // "stdio"), command: "fnox",
+       args: (["exec", "--only", "PODIO_*", "--replace", "--", .command] + (.args // []))}
+    | if $kept == {} then . else .env = $kept end' <<<"$entry")"
+  dropped="$(jq -r '(.env // {}) | to_entries | map(select(.value | test("\\$\\{")) | .key) | join(",")' <<<"$entry")"
+  note=""
+  [[ -z "$dropped" ]] || note=" (dropping \${VAR} env entries: $dropped)"
+  echo "REWRITE podio-mcp in $dir: $(jq -r '[.command] + .args | join(" ")' <<<"$new")$note"
   if [[ "$DRY_RUN" -eq 0 ]]; then
     (cd "$dir" && claude mcp remove -s local podio-mcp >/dev/null && claude mcp add-json -s local podio-mcp "$new" >/dev/null)
   fi

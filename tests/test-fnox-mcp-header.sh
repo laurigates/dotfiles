@@ -6,7 +6,7 @@
 #            with quotes and backslashes survives JSON encoding intact.
 #   Missing  fnox cannot resolve the secret: exit 1, nothing on stdout.
 #   Empty    fnox resolves to an empty value: exit 1, nothing on stdout.
-#   Usage    wrong argument count: exit 2.
+#   Usage    wrong argument count, or an empty HEADER or SECRET: exit 2.
 #
 # fnox is a stub on PATH, so the real keychain is never read.
 #
@@ -74,6 +74,10 @@ check "empty: stdout empty" test ! -s "$WORK/empty.out"
 
 run usage OnlyOneArg
 check "usage: exit 2" test "$(rc usage)" = 2
+
+FNOX_STUB_API_KEY=v run emptyheader "" API_KEY
+check "empty header: exit 2" test "$(rc emptyheader)" = 2
+check "empty header: stdout empty" test ! -s "$WORK/emptyheader.out"
 
 printf '%d checks, %d failed\n' "$checks" "$fails"
 [[ "$fails" -eq 0 ]]
