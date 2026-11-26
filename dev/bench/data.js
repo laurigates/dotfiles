@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795636538508,
+  "lastUpdate": 1795675237691,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6599,6 +6599,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0121362736,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "dfc16ddc24244611e200b5b7fa55d1dfb0458789",
+          "message": "docs(claude): context diet 2026-11-24 (#647)\n\nAlways-loaded bytes: 59,985 → 57,328 (−2,657 B, ≈ −664 tokens at\nchars/4). Measured with `wc -c` over `exact_dot_claude/CLAUDE.md`, every\n`exact_dot_claude/exact_rules/*.md` without `paths:`, and\n`private_repos/CLAUDE.md`. The first two make up the\n`tests/test-claude-context-budget.sh` surface, which went 56,554 →\n54,454.\n\n| Unit | Size before → after (B) | Disposition | Reason | Consumer-sweep\nhits repointed |\n|---|---|---|---|---|\n| `exact_rules/prefer-claude-schedulers.md` | 2,918 → 1,533 | Keep but\nlean | The substrate ordering and \"Claude creates routines itself\" are\nthe invariant. The limits table, `RemoteTrigger` mechanics and\n2026-11-19 evidence are setup detail and move to\n`docs/scheduled-work.md`. | 1 (`docs/scheduled-work.md`, which now holds\nthe moved table; tier 1b renumbered to 2, no external references to the\nnumbering) |\n| `exact_rules/code-quality.md` | 2,078 → 1,459 | Keep but lean | Seven\nsections restated the same principles (single responsibility ×3, pure\nfunctions ×2, composition ×2, fail-fast and error handling overlapped).\nMerged into three sections; every distinct principle kept. | 0 (only\n`docs/adrs/0011` names the file historically; the path is unchanged) |\n| `exact_rules/communication.md` § Status Claims | 4,937 → 4,893 | Keep\nbut lean | The fvh-data-pipe `ALIGN_MAX` incident moves to\n`docs/rules-evidence.md` § communication.md, following the #580 pattern.\n| 0 (path unchanged) |\n| `exact_rules/copy-paste-commands.md` | 3,304 → 3,252 | Keep but lean |\nTwo inline incident dates already recorded in `docs/rules-evidence.md` §\ncopy-paste-commands.md are removed. The rule's existing link stays. | 0\n(path unchanged) |\n| `private_repos/CLAUDE.md` § Scheduled Routines | 3,431 → 2,874 | Lean\nto pointer | `.routines/README.md` (laurigates/repos-claude-config)\nalready documents where each substrate keeps its state, in its Claude\nscheduled tasks section and § Choosing a scheduler. The section keeps\nthe pointer and the `just routines` coverage note. | 0 (no citations of\nthe heading in either repo) |\n| `tests/test-claude-context-budget.sh` | — | Budget ratchet |\n`TOTAL_BUDGET_BYTES` 76,753 → 74,653, the measured −2,100. The 20,199 B\nmargin is unchanged. | — |\n| All other always-loaded units | — | Keep | These are hard invariants\nor existing promoted-skill pointer stubs. | — |\n\nNo unit was promoted to a skill, so there is no linked claude-plugins\nPR. The diet's promote candidates were either already pointers or have a\n`docs/` path consumer, and the skill prefers a `docs/` move in that\ncase.\n\n### Not changed: close calls\n\n- **`exact_rules/agent-and-tool-selection.md` (5,055 B):** the Haiku\nsanctioned-shapes sub-list, the Sonnet 5.5 specifics and the cold-read\nexception could lean to a `docs/` page. It was tuned recently (Haiku 5.5\nalias; evidence moved in #580), and claude-plugins#3116, which\nrecalibrates these tiers, is still open. Revisit after #3116 lands.\n- **`exact_rules/dependency-management.md` § uvx `@latest` (~650 B):**\nit is triggered by intent (writing uvx into `.mcp.json`), but it is also\na write-time invariant a skill would not fire for. A candidate for\n`paths: [\"**/.mcp.json\", ...]` or for consolidation into\n`agent-patterns-plugin:mcp-management`.\n- **`exact_rules/offload-to-deterministic-substrate.md` (2,606 B):** the\nrouting table could move to `docs/`, leaving the litmus test. Kept\nbecause the table rows are the actionable part.\n- **`private_repos/CLAUDE.md` § Work in a Worktree, \"The reason is\nmechanical\" paragraph (~550 B):** this is explanation rather than\ninvariant, but the reason probably drives compliance in the one repo\nwhere a dirty checkout disables the freshness auto-pull.\n- **`exact_dot_claude/CLAUDE.md` § Tool Installation Priority (~700\nB):** triggered by intent (\"when installing\"), but tool installs are\nfrequent and the fallback default (brew) is the wrong one, so it stays\nalways-loaded.\n\n### Merge order\n\nNo dependency. This PR stands alone.\n\nOpened by the context-diet routine (.routines/context-diet/PROMPT.md in\nlaurigates/repos-claude-config).\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-26T06:39:51Z",
+          "tree_id": "480156bb3fbdc0bb932eda14e0a7ee1159cc3236",
+          "url": "https://github.com/laurigates/dotfiles/commit/dfc16ddc24244611e200b5b7fa55d1dfb0458789"
+        },
+        "date": 1795675237247,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08597708833333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009567654,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008232194,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0066612534,
             "unit": "s"
           }
         ]
