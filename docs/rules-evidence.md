@@ -79,3 +79,15 @@ incidents and measurements that justify it.
 > MERGE** on three blockers. Each died to one read — `tsconfig.json` sets
 > `checkJs: true`, the "missing symbols" list was an exact match against
 > `src/`, and the claimed "1–3% bundle gain" was a measured −13.95%.
+
+## development-process.md — follow-up routing
+
+> 2026-11-25 (mcu-tinkering-lab): 183 open issues; the previous four weeks
+> opened 162 and closed 67, while the median closed issue lived 2 days. The
+> growth came from what sessions filed: one hardware-check issue per PR (16
+> open), plans split one issue per idea (26), review findings one issue each
+> (one PR filed 8). Folding those into 8 checklist issues and shipping six fix
+> batches as one PR took the count to 100 in a day. The batch agents returned 36
+> follow-ups; checked once against `main`, the real ones became one rollup
+> instead of 14 issues. The earlier "file every follow-up as an issue" rule
+> was the inflow this replaced.
