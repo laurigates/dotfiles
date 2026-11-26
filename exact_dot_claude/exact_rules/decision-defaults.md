@@ -16,6 +16,7 @@ When committing changes with "go" (no specific instruction):
 - **Preserve existing patterns** — maintain vars/secrets split, configuration conventions
 - **Pass secrets through unchanged** — don't modify secret handling or token patterns
 - Rationale: Easier review, clearer intent, maintains consistency
+- **Exception: batched issue fixes** — issues fixed together in one backlog pass ship as one PR, one commit per issue, merged by the repo's merge-method label (`git-plugin:git-issue-converge`)
 
 ## Refactoring
 
