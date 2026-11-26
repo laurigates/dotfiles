@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795675237691,
+  "lastUpdate": 1795697573645,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6643,6 +6643,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0066612534,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ccf17e7e4a95a8af5d43ad8cfaf9067b90e1fa0a",
+          "message": "feat(secrets): move API tokens to the OS keychain via fnox (#652)\n\n~/.api_tokens was sourced by .zshenv and mise's [env], so every process,\nincluding agents' non-interactive shells and every MCP server, inherited\nevery token. An environment dump on error or an agent's `env` put them in\ntranscripts.\n\nTokens now live in the macOS Keychain / Linux Secret Service through fnox\nand nothing exports them globally. Consumers get only what they name:\n- stdio MCP servers: `fnox exec --only ... --replace --` wrapper (pal)\n- github MCP server: token from `gh auth token`, failing closed under set -e\n- HTTP MCP servers: headersHelper via new fnox-mcp-header\n- telegram-* scripts: exported value, else `fnox get`\n\n~/.config/fnox/config.toml is chezmoi-managed with only names already\npublic in this repo; machine-local names go in local.toml (create_ once).\nscripts/migrate-api-tokens-to-fnox.sh moves the file's values into the\nkeychain without printing them, backs up ~/.claude.json and rewrites its\nMCP entries. Post-merge steps per machine: #649.\n\nDecision record: docs/adrs/0026-api-tokens-in-os-keychain-via-fnox.md\nRefs #579\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-26T14:52:09+02:00",
+          "tree_id": "9e6f8b9d9a4197a897c99dceeaaa6e6b55e9698d",
+          "url": "https://github.com/laurigates/dotfiles/commit/ccf17e7e4a95a8af5d43ad8cfaf9067b90e1fa0a"
+        },
+        "date": 1795697573317,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.11753104600000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.001394433,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011260314000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.021311760000000003,
             "unit": "s"
           }
         ]
