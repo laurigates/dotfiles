@@ -109,10 +109,10 @@ if [ "$tip" = "$(g rev-parse local)" ]; then pass "TIP column holds the full tip
 # The paste line names MERGED branches only.
 del=$(grep '^git branch -D ' <<<"$out" || true)
 for b in landed squashed fix-9 pr-12; do
-  grep -qw -- "$b" <<<"$del" && pass "-D line has $b" || bad "-D line lacks $b"
+  if grep -qw -- "$b" <<<"$del"; then pass "-D line has $b"; else bad "-D line lacks $b"; fi
 done
 for b in past-head pushed local; do
-  grep -qw -- "$b" <<<"$del" && bad "-D line has $b" || pass "-D line omits $b"
+  if grep -qw -- "$b" <<<"$del"; then bad "-D line has $b"; else pass "-D line omits $b"; fi
 done
 
 [ "$fail" -eq 0 ] || { printf '\n%s\n' "$out"; exit 1; }
