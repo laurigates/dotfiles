@@ -35,6 +35,7 @@ An ADR is a document that captures an important architectural decision made alon
 | [0023](0023-global-justfile-modules.md) | Global Justfile Built from Shared Modules | Accepted | 2026-11 |
 | [0024](0024-pr-decides-merge-method.md) | The PR Decides Its Merge Method | Accepted | 2026-11 |
 | [0025](0025-git-identity-and-hook-template.md) | Git Identity by Location and Hooks from a Template Directory | Accepted | 2026-11 |
+| [0026](0026-api-tokens-in-os-keychain-via-fnox.md) | API Tokens in the OS Keychain via fnox, Injected per Command | Accepted | 2026-11 |
 
 ## ADR Format
 

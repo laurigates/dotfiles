@@ -45,7 +45,7 @@ When installing new tools, prefer earlier options:
 - **Web search**: prefer `ketch search "<query>"` (local SearXNG, the backend pi uses); fall back to WebSearch when it returns thin results or SearXNG is down (`just -g searxng-up`)
 - **Platform**: macOS (darwin/arm64) with Homebrew
 - **Dotfiles**: chezmoi — always edit source at `~/.local/share/chezmoi/`, never target files
-- **API tokens**: `~/.api_tokens` (sourced by mise), never committed
+- **API tokens**: OS keychain via fnox, never exported or committed; `fnox exec --only NAME -- cmd` (see `rules/security.md`)
 
 ## Development Notes
 

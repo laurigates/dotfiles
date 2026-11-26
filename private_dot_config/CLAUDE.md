@@ -10,6 +10,7 @@ Application configuration files managed by chezmoi. Uses chezmoi naming conventi
 | `private_fish/` | Fish shell (experimental) |
 | `git/` | Git config, ignore, attributes |
 | `mise/` | Tool version manager (`config.toml.tmpl`) |
+| `fnox/` | Secrets from the OS keychain (`config.toml` managed; `local.toml` created once, machine-local; ADR-0026) |
 | `chezmoi/` | Chezmoi self-config |
 | `gh-dash/` | GitHub dashboard TUI |
 | `starship.toml` | Starship prompt theme |
