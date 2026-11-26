@@ -68,10 +68,9 @@ shows it (command + exit/output, PR URL, file path); a check that was not run
 is marked as pending verification, not reported done. A number in a PR, issue,
 commit, or summary names the command that produced it, or is labelled as an
 estimate. A level read off a time series names its aligner and resolution: the
-max over a coarse bucket is a peak, not a level. (2026-10, fvh-data-pipe: 3 h
-`ALIGN_MAX` buckets were reported as DB CPU "staying at ~65%"; 15-min means
-were flat at 20%.) A question gets an answer — report findings and stop, don't
-also fix them unless asked.
+max over a coarse bucket is a peak, not a level (incident:
+`~/.local/share/chezmoi/docs/rules-evidence.md` § communication.md). A question
+gets an answer — report findings and stop, don't also fix them unless asked.
 
 ## TL;DR Footer on Complex Answers
 

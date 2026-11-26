@@ -42,6 +42,7 @@ When installing new tools, prefer earlier options:
 - **Task runner**: `just` for project tasks; `mise run` for dotfiles tasks
 - **Version control**: git with delta (diff pager), lazygit (TUI), gh (GitHub CLI)
 - **Search**: rg (ripgrep), fd, ast-grep, fzf
+- **Web search**: prefer `ketch search "<query>"` (local SearXNG, the backend pi uses); fall back to WebSearch when it returns thin results or SearXNG is down (`just -g searxng-up`)
 - **Platform**: macOS (darwin/arm64) with Homebrew
 - **Dotfiles**: chezmoi — always edit source at `~/.local/share/chezmoi/`, never target files
 - **API tokens**: OS keychain via fnox, never exported or committed; `fnox exec --only NAME -- cmd` (see `rules/security.md`)

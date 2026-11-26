@@ -23,7 +23,7 @@
         "--replace",
         "--",
         "uvx",
-        "pal-mcp-server@latest"
+        "palaver-mcp-server@latest"
       ],
       "env": {
         "CUSTOM_API_URL": "http://localhost:11434/v1",
