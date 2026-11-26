@@ -26,8 +26,9 @@ Five scripts in `~/.local/bin`:
 | `telegram-check` | Diagnose the config: variables set, which bot, which chat | No |
 
 All five read `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` from the
-environment. They're sourced from `~/.api_tokens` by mise — if you
-hit `... not set`, the user needs to add them there.
+environment when exported, and otherwise from the OS keychain through
+fnox. If you hit `... not set`, the user needs to store them with
+`fnox -c ~/.config/fnox/local.toml set TELEGRAM_BOT_TOKEN` (and `TELEGRAM_CHAT_ID`).
 
 ## telegram-check
 
@@ -117,7 +118,7 @@ Behaviour:
 4. On timeout: prints `TIMEOUT` to stderr, sends a "(timed out)"
    notice to the chat, and exits 1.
 5. On config error (missing token / chat id): exits 2 with a message
-   pointing at `~/.api_tokens`.
+   naming the fnox command that stores the missing variable.
 
 Calling pattern from a shell script:
 
@@ -254,13 +255,13 @@ In practice, plain text is almost always the right default.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `TELEGRAM_BOT_TOKEN not set` | mise env not loaded, or token absent in `~/.api_tokens` | `telegram-check` shows which is `unset`; add `export TELEGRAM_BOT_TOKEN=...` and `export TELEGRAM_CHAT_ID=...` there |
+| `TELEGRAM_BOT_TOKEN not set` | Not exported, and no keychain entry (or fnox not installed) | `telegram-check` shows which is `unset`; store it with `fnox -c ~/.config/fnox/local.toml set TELEGRAM_BOT_TOKEN` (the value goes through a hidden prompt) |
 | `curl: (22) ... 401` | Token revoked or wrong | `telegram-check` reports `GETME_ERROR=401`; re-issue via @BotFather |
 | `curl: (22) ... 400` on send | Bad chat id, or bot has not been started by the user | `telegram-check` reports `CHAT_ERROR=400 Bad Request: chat not found`; user must `/start` the bot once |
 | `telegram-ask` returns immediately with stale text | Another process drained updates between drain and poll | Rare; re-run |
 | Reply never arrives despite user typing | User typed in a different chat than `TELEGRAM_CHAT_ID` | Have the user send the bot a fresh message, then run `telegram-check --updates` and compare `CHAT_ID` with the `UPDATE_CHAT` lines |
 | Bot in a group never sees replies | Bot **privacy mode** is on — bot only sees commands and direct mentions | In @BotFather: `/mybots` → bot → Bot Settings → Group Privacy → **Turn off**. Trade-off: bot now reads every message in the group |
-| Group chat id stops working with `400 chat not found` | Group was upgraded to a supergroup; chat id gained a `-100` prefix | Run `telegram-check --updates` after a fresh message in the group; the user updates `TELEGRAM_CHAT_ID` in `~/.api_tokens` to the listed `-100…` id |
+| Group chat id stops working with `400 chat not found` | Group was upgraded to a supergroup; chat id gained a `-100` prefix | Run `telegram-check --updates` after a fresh message in the group; the user stores the listed `-100…` id with `fnox -c ~/.config/fnox/local.toml set TELEGRAM_CHAT_ID` |
 | `telegram-poll` never returns despite a vote | `poll_answer` wasn't in `allowed_updates`, or the vote landed on a different, older poll | Rare — the script always scopes `allowed_updates` and filters by `poll_id`; re-run if it happens |
 | `telegram-send-file: ... the Bot API upload limit is 50 MB` | The file is over the bot upload limit; nothing was sent | Send a smaller copy (re-encode or compress), or share a link with `telegram-notify` |
 | `telegram-send-file: sendPhoto failed: 400 ...` | Telegram rejected the image as a photo (width + height over 10000, or a ratio over 20) | Re-send with `-d` to deliver it as a document |
@@ -277,7 +278,7 @@ these dotfiles. It was retired for three reasons:
 - Its one remaining use, sending a file, is covered by
   `telegram-send-file`.
 - It keeps its own config file with a second copy of the bot token and
-  chat id, separate from `~/.api_tokens`, and v0.39.2 moved that file's
+  chat id, separate from the keychain entries the scripts read, and v0.39.2 moved that file's
   location on macOS so an existing config was no longer found.
 
 The scripts here are thin curl+jq wrappers with one credential source

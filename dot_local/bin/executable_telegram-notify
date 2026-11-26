@@ -40,8 +40,13 @@ else
   exit 2
 fi
 
-: "${TELEGRAM_BOT_TOKEN:?telegram-notify: TELEGRAM_BOT_TOKEN not set (check ~/.api_tokens)}"
-: "${TELEGRAM_CHAT_ID:?telegram-notify: TELEGRAM_CHAT_ID not set (check ~/.api_tokens)}"
+# Exported values win; otherwise read them from the OS keychain through fnox
+# (ADR-0026). A missing fnox or keychain entry leaves the variable empty.
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  [[ -n "${!var:-}" ]] || printf -v "$var" '%s' "$(fnox get "$var" 2>/dev/null || true)"
+done
+: "${TELEGRAM_BOT_TOKEN:?telegram-notify: TELEGRAM_BOT_TOKEN not set (store it with: fnox -c ~/.config/fnox/local.toml set TELEGRAM_BOT_TOKEN)}"
+: "${TELEGRAM_CHAT_ID:?telegram-notify: TELEGRAM_CHAT_ID not set (store it with: fnox -c ~/.config/fnox/local.toml set TELEGRAM_CHAT_ID)}"
 
 args=(
   -d "chat_id=${TELEGRAM_CHAT_ID}"

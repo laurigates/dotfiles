@@ -154,7 +154,7 @@ Servers requiring API tokens reference environment variables:
 ```
 
 **Token storage:**
-- `~/.api_tokens` - Sourced by shell (gitignored)
+- `~/.api_tokens` - Sourced by shell (gitignored); superseded by fnox and the OS keychain in ADR-0026
 - Project `.env` - Local overrides (gitignored)
 
 **Never hardcode tokens in `.mcp.json`**

@@ -135,7 +135,7 @@ if ! chezmoi execute-template --source="$REPO" --config="$WORK/chezmoi/chezmoi.t
     exit 1
 fi
 # Only [tasks.*] tables go to the isolated global config: no [tools] to
-# install, no [env] reading ~/.api_tokens. The parse check proves nothing
+# install, no [env]. The parse check proves nothing
 # was lost.
 if ! python3 - "$WORK/global-full.toml" "$WORK/global-tasks.toml" <<'PY'
 import re, sys, tomllib

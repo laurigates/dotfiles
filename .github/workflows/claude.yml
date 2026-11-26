@@ -11,7 +11,7 @@ name: Claude Code
 #
 # MCP servers are scoped to .github/claude-mcp-ci.json via --strict-mcp-config.
 # The project .mcp.json declares five servers, but CI only ever installed the
-# runtimes -- never the server binaries: `pal-mcp-server` (no `uv tool install`)
+# runtimes -- never the server binaries: `palaver-mcp-server` (no `uv tool install`)
 # and `github-mcp-server` (no `go install`) could not start, and `playwright`
 # would launch without browsers. Rather than install three more things the CI
 # job does not need, CI runs the two that work: context7 and

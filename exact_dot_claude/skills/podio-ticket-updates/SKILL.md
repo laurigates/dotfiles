@@ -1,7 +1,7 @@
 ---
 name: podio-ticket-updates
 description: Sync in-progress Podio Kanban tickets with progress from their linked GitHub repos — propose description updates and progress comments, apply after approval. Use when the user asks to update Podio tickets, sync ticket progress, or post status updates to the Kanban board.
-allowed-tools: mcp__podio-mcp__list_items, mcp__podio-mcp__get_item_by_app_item_id, mcp__podio-mcp__list_item_comments, mcp__podio-mcp__update_item_by_app_item_id, mcp__podio-mcp__create_item_comment, mcp__podio-mcp__inspect_field_structure, Bash(printenv *), Bash(gh api *), Bash(gh search *), Read, Grep, Glob
+allowed-tools: mcp__podio-mcp__list_items, mcp__podio-mcp__get_item_by_app_item_id, mcp__podio-mcp__list_item_comments, mcp__podio-mcp__update_item_by_app_item_id, mcp__podio-mcp__create_item_comment, mcp__podio-mcp__inspect_field_structure, Bash(fnox exec --only PODIO_ORG_LABEL,PODIO_SPACE_LABEL,PODIO_APP_LABEL,PODIO_RESPONSIBLE,PODIO_GITHUB_ORG -- printenv *), Bash(gh api *), Bash(gh search *), Read, Grep, Glob
 ---
 
 # Podio Ticket Progress Updates
@@ -10,11 +10,11 @@ Update my in-progress Podio tickets with progress from linked GitHub repositorie
 
 ## Configuration
 
-The board coordinates are not stored in this skill. Read them from the
-environment (set them in `~/.api_tokens`, which mise sources):
+The board coordinates are not stored in this skill. They are in the OS keychain
+through fnox (store one with `fnox -c ~/.config/fnox/local.toml set NAME`):
 
 ```bash
-printenv PODIO_ORG_LABEL PODIO_SPACE_LABEL PODIO_APP_LABEL PODIO_RESPONSIBLE PODIO_GITHUB_ORG
+fnox exec --only PODIO_ORG_LABEL,PODIO_SPACE_LABEL,PODIO_APP_LABEL,PODIO_RESPONSIBLE,PODIO_GITHUB_ORG -- printenv PODIO_ORG_LABEL PODIO_SPACE_LABEL PODIO_APP_LABEL PODIO_RESPONSIBLE PODIO_GITHUB_ORG
 ```
 
 | Variable | Meaning |
@@ -55,14 +55,14 @@ For each ticket, use `mcp__podio-mcp__get_item_by_app_item_id` to fetch:
 
 For each ticket, determine the related GitHub repo by:
 1. Checking for explicit GitHub URLs in the description
-2. Searching the `$PODIO_GITHUB_ORG` org for repos matching the ticket title keywords
+2. Searching the `{org}` org (the `PODIO_GITHUB_ORG` value read above) for repos matching the ticket title keywords
 3. Asking the user if no match is found
 
 ### 4. Fetch Git History
 
 For each identified repo, get recent commits:
 ```bash
-gh api "repos/$PODIO_GITHUB_ORG/{repo}/commits" --jq '.[:20] | .[] | "[\(.commit.author.date | split("T")[0])] \(.commit.message | split("\n")[0])"'
+gh api "repos/{org}/{repo}/commits" --jq '.[:20] | .[] | "[\(.commit.author.date | split("T")[0])] \(.commit.message | split("\n")[0])"'
 ```
 
 ### 5. Get Last Comments
