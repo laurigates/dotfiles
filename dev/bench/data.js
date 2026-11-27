@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795810123717,
+  "lastUpdate": 1795810632461,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6995,6 +6995,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0112479152,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "777b03b1772738f8fce381c6e6d482979a7b5f72",
+          "message": "docs(rules): bridge routines fire on schedule while the machine is awake (#657)\n\nUpdates row 1b of `prefer-claude-schedulers.md`. Bridge routines were\nmarked unverified until their first run. `context-diet`\n(`trig_01L4HWmQxsXr43jExQpiFkGQ`) started at its 09:00 Helsinki slot on\n2026-11-24: `RemoteTrigger list_runs` shows the session created at 07:02\nUTC. What happens to a fire while the machine sleeps is still\nunverified, and the row now says so.\n\nFour more bridge routines were created on 2026-11-24\n(laurigates/repos-claude-config#180). Their first runs are tracked in\nrepos-claude-config#177, #178 and #179.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-27T22:16:16+02:00",
+          "tree_id": "1471b49509405af1d4cf0aa2d2acaa11de00b55f",
+          "url": "https://github.com/laurigates/dotfiles/commit/777b03b1772738f8fce381c6e6d482979a7b5f72"
+        },
+        "date": 1795810631877,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.13210367266666667,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0015103264,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0012740334,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0108760144,
             "unit": "s"
           }
         ]
