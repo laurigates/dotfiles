@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795724915795,
+  "lastUpdate": 1795764534116,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6731,6 +6731,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.011834032800000002,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9a6d273bec122d650acea3f7a11d9c249a5ebc7e",
+          "message": "docs(secrets): point remaining secret guidance at fnox (#661)\n\ndocs(secrets): point remaining secret guidance at fnox\n\nFollow-up sweep to ADR-0026. Docs, skills and the MCP registry still told\nreaders to keep workstation tokens in the environment or ~/.api_tokens:\n\n- chezmoi-expert REFERENCE: replace the `{{ env \"GITHUB_TOKEN\" }}` recipe\n  with fnox guidance (templating a token needs it exported and writes it\n  to disk)\n- mise migration guide: no API token loading; per-project secrets via\n  `fnox exec` in a task, not [env]\n- MCP registry: github entry takes its token from `gh auth token`;\n  consult7 gets its key through `fnox exec` and sh instead of a\n  `${OPENROUTER_API_KEY}` reference; package-registries rule says how\n  env_vars are resolved\n- ADR-0008: note that its ${VAR} pattern is superseded by ADR-0026\n- sketchybar PRP: the GitHub plugin already authenticates via gh\n- daily-catchup PRD: credentials from the keychain, MCP examples wrapped\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9CgNR9s9Kir3RgGRoR",
+          "timestamp": "2026-11-27T09:28:15+02:00",
+          "tree_id": "209cd89b960f61ab19c53a02b8f39024d2744d4d",
+          "url": "https://github.com/laurigates/dotfiles/commit/9a6d273bec122d650acea3f7a11d9c249a5ebc7e"
+        },
+        "date": 1795764533718,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.08329760933333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011793016,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009536880000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.007702416000000001,
             "unit": "s"
           }
         ]
