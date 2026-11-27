@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# fnox-mcp-header — print one HTTP header as JSON for a Claude Code MCP
+# headersHelper, with the value read from fnox (OS keychain), so an HTTP MCP
+# server's API key never sits in ~/.claude.json or the environment (ADR-0026).
+#
+# Usage: fnox-mcp-header HEADER SECRET
+#   fnox-mcp-header X-Goog-Api-Key GOOGLE_DEV_KNOWLEDGE_API_KEY
+#   → {"X-Goog-Api-Key":"<value>"}
+#
+# In an MCP server entry:
+#   "headersHelper": "fnox-mcp-header X-Goog-Api-Key GOOGLE_DEV_KNOWLEDGE_API_KEY"
+#
+# Exit codes: 0 printed, 1 fnox could not resolve SECRET, 2 usage error.
+
+set -euo pipefail
+
+if [[ $# -ne 2 || -z "$1" || -z "$2" ]]; then
+  echo "usage: fnox-mcp-header HEADER SECRET" >&2
+  exit 2
+fi
+
+value="$(fnox get "$2")" || exit 1
+if [[ -z "$value" ]]; then
+  echo "fnox-mcp-header: $2 resolved to an empty value" >&2
+  exit 1
+fi
+
+# Pass the value through the environment, not argv, so it never shows up in a
+# process listing.
+FNOX_MCP_HEADER_VALUE="$value" jq -cn --arg h "$1" '{($h): env.FNOX_MCP_HEADER_VALUE}'

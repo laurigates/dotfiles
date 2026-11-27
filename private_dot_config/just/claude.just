@@ -20,7 +20,7 @@ mcp-sentry:
 # Add GitHub MCP server to project
 [group: "claude"]
 mcp-github:
-    claude mcp add-json -s project github '{"command": "go", "args": ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"], "env": {"GITHUB_PERSONAL_ACCESS_TOKEN": "$GITHUB_PERSONAL_ACCESS_TOKEN"}}'
+    claude mcp add-json -s project github '{"command": "sh", "args": ["-c", "set -e; GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token); export GITHUB_PERSONAL_ACCESS_TOKEN; exec go run github.com/github/github-mcp-server/cmd/github-mcp-server@latest stdio"]}'
 
 # Add Context7 MCP server (documentation lookup)
 [group: "claude"]

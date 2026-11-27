@@ -193,7 +193,21 @@ GLOBAL_CLAUDE_MD="exact_dot_claude/CLAUDE.md"
 #
 # The budget moves by the measured change only; the remaining margin is
 # unchanged at 21,769 bytes.
-TOTAL_BUDGET_BYTES=76753
+#
+# 2026-11-24 → 74,653 (RATCHET DOWN, -2,100). The 2026-11-24 context diet
+# leaned prefer-claude-schedulers.md (table to docs/scheduled-work.md),
+# merged duplicate principles in code-quality.md, and moved inline incident
+# notes from communication.md and copy-paste-commands.md to
+# docs/rules-evidence.md. Measured on disk in a worktree off origin/main at
+# d7ae157:
+#
+#   before the change                    = 56,554
+#   after  the change (-2,100)           = 54,454
+#
+# The budget moves by the measured change only; the remaining margin is
+# unchanged at 20,199 bytes (additions since the 2026-11-11 entry had taken
+# it down from 21,769).
+TOTAL_BUDGET_BYTES=74653
 # Largest unconditional rule at introduction: 8,758 bytes.
 PER_FILE_CAP_BYTES=10000
 

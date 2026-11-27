@@ -32,4 +32,5 @@ Packages are managed through `.chezmoidata/packages.toml` with profile activatio
 - Registry of available servers in `.chezmoidata.toml` under `[mcp_servers]`
 - `enabled = true` selects which servers `cleanup-mcp-servers.sh` removes; it does not turn a server on
 - Servers are installed per-project into that project's `.mcp.json`
+- `env_vars` names the secrets a server needs; they come from the OS keychain, not the environment. Wrap the server: `fnox exec --only VAR1,VAR2 --replace -- <command> <args>`, or for HTTP servers `"headersHelper": "fnox-mcp-header HEADER VAR"` (ADR-0026). A `${VAR}` reference has nothing to expand
 - Use `/configure-mcp` to install servers into a project; `./cleanup-mcp-servers.sh` to remove them (run only when no Claude sessions are active)

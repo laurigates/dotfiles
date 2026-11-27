@@ -1,5 +1,8 @@
 ---
 id: ADR-0014
+status: Accepted
+created: 2026-04-08
+modified: 2026-11-11
 ---
 
 # ADR-0014: Profile-Based Package Registry

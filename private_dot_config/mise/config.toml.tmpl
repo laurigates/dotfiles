@@ -137,6 +137,7 @@ harper-ls = "latest"                          # Harper language server (in-edito
 pi = "latest"                                 # pi coding agent (registry: aqua:earendil-works/pi)
 "aqua:tmux/tmux-builds" = "latest"
 "aqua:gitleaks/gitleaks" = "latest"
+fnox = "latest"                               # secrets from the OS keychain per command (ADR-0026)
 "aqua:tree-sitter/tree-sitter" = "latest"     # tree-sitter CLI (required by nvim-treesitter main branch)
 # ketch — stateless web search/scrape CLI for agents (https://github.com/1broseidon/ketch).
 # Pinned like the agent CLIs below; backend is set to the local SearXNG in [env].
@@ -206,8 +207,8 @@ XDG_CACHE_HOME = "{{ .chezmoi.homeDir }}/.cache"
 KETCH_BACKEND = "searxng"
 KETCH_SEARXNG_URL = "http://127.0.0.1:{{ .searxng.port }}"
 
-# Load API tokens from secure file (gitignored)
-_.file = "~/.api_tokens"
+# API tokens are not loaded into the environment. Commands that need one get it
+# from the OS keychain through fnox: `fnox exec --only NAME -- cmd` (ADR-0026).
 
 # ============================================================================
 # mise Tasks (replaces Makefile functionality)
