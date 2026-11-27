@@ -1,5 +1,8 @@
 ---
 id: ADR-0013
+status: Accepted
+created: 2025-12-24
+modified: 2026-11-11
 ---
 
 # ADR-0013: NixOS Configuration for Declarative System Management

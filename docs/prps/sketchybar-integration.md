@@ -1,10 +1,12 @@
 ---
 id: PRP-003
 created: 2026-04-08
-modified: 2026-04-08
-status: Draft
+modified: 2026-11-27
+reviewed: 2026-04-08
+status: draft
 confidence: 6
-source: git history (sketchybar scope: 5 commits in last 200)
+domain: macos
+source: "git history (sketchybar scope: 5 commits in last 200)"
 relates-to: [PRD-001]
 ---
 
