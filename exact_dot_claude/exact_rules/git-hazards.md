@@ -1,5 +1,5 @@
 ---
-reviewed: 2026-10-08
+reviewed: 2026-11-24
 ---
 
 # Git Hazards — Verify the Content, Not the Exit Code
@@ -21,6 +21,10 @@ is a claim about mechanics, not content. Gates to apply inline:
   pathspec stages nothing.
 - **`git status` before `reset --hard`/`checkout`/`restore`/`clean`**;
   `git stash -u` anything present.
+- **After a session restart or resume, re-read the branch before committing
+  and before reporting where commits landed:** `git branch --show-current`.
+  The checkout may have moved while the session was away (evidence:
+  `docs/rules-evidence.md` § git-hazards.md).
 - **A staged file "vanished"** → `git log --oneline -3` and
   `git log -1 -- <path>` first; a coworker probably committed it. Don't
   blind-restore.
