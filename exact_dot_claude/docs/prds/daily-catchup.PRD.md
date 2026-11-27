@@ -306,7 +306,7 @@ Fetching from services:
 
 **Podio Integration (via MCP):**
 - Use `mcp__podio-mcp` server configured in `.claude/settings.json`
-- Authentication via environment variables: `PODIO_CLIENT_ID`, `PODIO_CLIENT_SECRET`, `PODIO_APP_ID`, `PODIO_APP_TOKEN`
+- Authentication: `PODIO_CLIENT_ID`, `PODIO_CLIENT_SECRET`, `PODIO_APP_ID`, `PODIO_APP_TOKEN` from the OS keychain, injected by wrapping the server in `fnox exec --only 'PODIO_*' --replace --` (dotfiles ADR-0026)
 - Fetch assigned tasks: Query app items with filter `{"filters": {"assigned_to": "current_user"}}`
 - Fetch updated tickets: Query items with `last_event_on > {last_run}`
 - Handle OAuth2 token refresh automatically
@@ -317,13 +317,8 @@ Fetching from services:
 - **Configuration**: Add to `.claude/settings.json`:
   ```json
   "gmail": {
-    "command": "npx",
-    "args": ["-y", "gmail-mcp-server"],
-    "env": {
-      "GMAIL_CLIENT_ID": "${GMAIL_CLIENT_ID}",
-      "GMAIL_CLIENT_SECRET": "${GMAIL_CLIENT_SECRET}",
-      "GMAIL_REFRESH_TOKEN": "${GMAIL_REFRESH_TOKEN}"
-    }
+    "command": "fnox",
+    "args": ["exec", "--only", "GMAIL_*", "--replace", "--", "npx", "-y", "gmail-mcp-server"]
   }
   ```
 - Fetch unread emails: `GET /users/me/messages?q=is:unread after:{last_run_date}`
@@ -335,13 +330,8 @@ Fetching from services:
 - **Configuration**: Add to `.claude/settings.json`:
   ```json
   "google-chat": {
-    "command": "npx",
-    "args": ["-y", "google-chat-mcp-server"],
-    "env": {
-      "GCHAT_CLIENT_ID": "${GCHAT_CLIENT_ID}",
-      "GCHAT_CLIENT_SECRET": "${GCHAT_CLIENT_SECRET}",
-      "GCHAT_REFRESH_TOKEN": "${GCHAT_REFRESH_TOKEN}"
-    }
+    "command": "fnox",
+    "args": ["exec", "--only", "GCHAT_*", "--replace", "--", "npx", "-y", "google-chat-mcp-server"]
   }
   ```
 - Fetch unread mentions: `GET /spaces/{space}/messages?filter=mention:{user} AND read=false`
@@ -719,7 +709,7 @@ OPTIONS:
 ### NFR-3: Security
 
 **Credential Management:**
-- Store API credentials in environment variables (never in config files)
+- Store API credentials in the OS keychain via fnox, never exported or in config files (dotfiles ADR-0026)
 - Use MCP server authentication mechanisms (configured in `.claude/settings.json`)
 - State file permissions: 600 (owner read/write only)
 - Config file permissions: 644 (owner read/write, others read)
@@ -1386,7 +1376,7 @@ Continuing with GitHub and Podio only...
 **Not Responsible For:**
 - ❌ MCP server installation (user must configure)
 - ❌ Obsidian installation (user must have vault)
-- ❌ API credential management (use environment variables)
+- ❌ API credential management (fnox and the OS keychain handle it)
 - ❌ Service authentication flows (handled by MCP servers)
 - ❌ Data synchronization across devices (Obsidian handles)
 - ❌ Backup and recovery of daily notes (user's responsibility)
@@ -1989,7 +1979,7 @@ chezmoi apply  # If not using symlink
 
 3. **Environment Setup**
    - Create directories: `~/.config/claude-code/`, `~/.local/state/claude-code/`
-   - Add environment variables for Podio credentials (if not already set)
+   - Store Podio credentials with `fnox -c ~/.config/fnox/local.toml set NAME` (if not already stored)
    - Test write permissions to Obsidian vault
 
 4. **Development Kickoff**

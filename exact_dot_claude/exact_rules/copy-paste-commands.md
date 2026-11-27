@@ -23,8 +23,8 @@ copy-paste:
   `kitty-plugin:kitty-show-image` skill.
 - **A prompt for hidden input gets nothing under `!`.** With no TTY, a command
   that would prompt for a value reads an empty stdin instead. It may succeed
-  silently with an empty value (an empty `gh secret set`, 2026-11-04). Hand such a command over for Lauri's own
-  terminal, or give it the value explicitly: `--body-file <path>`, or stdin
+  silently with an empty value (`gh secret set`). Hand such a command over for
+  Lauri's own terminal, or give it the value explicitly: `--body-file <path>`, or stdin
   from a command that reads the secret store.
 - **Several commands Lauri must run in sequence go in one `!` line**, chained
   with ` && `, never as separate `!` commands. Each `!` result reaches Claude
@@ -35,8 +35,8 @@ copy-paste:
   When handing over `pbpaste | <cmd>` for a secret, say to run it there and
   not to paste the result back under `!`: a pasted block that starts with the
   command runs it again, and by then the clipboard holds the copied terminal
-  text (a replaced token, 2026-11-10). Ask for a one-word confirmation, then check the
-  result with a call that does not read the clipboard.
+  text. Ask for a one-word confirmation, then check the result with a call
+  that does not read the clipboard.
 
 ```
 # Don't — the continuation line arrives with leading spaces inside the command

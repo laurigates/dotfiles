@@ -32,6 +32,12 @@ done
 
 echo "=== TELEGRAM CHECK ==="
 
+# Exported values win; otherwise read them from the OS keychain through fnox
+# (ADR-0026). A missing fnox or keychain entry leaves the variable empty.
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  [[ -n "${!var:-}" ]] || printf -v "$var" '%s' "$(fnox get "$var" 2>/dev/null || true)"
+done
+
 missing=0
 for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
   if [[ -n "${!var:-}" ]]; then
@@ -42,7 +48,7 @@ for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
   fi
 done
 if [[ "$missing" -eq 1 ]]; then
-  echo "HINT=add the missing export to ~/.api_tokens (sourced by mise)"
+  echo "HINT=export it, or store it with: fnox -c ~/.config/fnox/local.toml set NAME"
   echo "STATUS=FAIL"
   exit 2
 fi
