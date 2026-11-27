@@ -9,8 +9,6 @@ set -x OLLAMA_ORIGINS "app://obsidian.md*"
 set -x HOMEBREW_BUNDLE_FILE "~/Brewfile"
 
 if status is-interactive
-  touch ~/.api_tokens
-  source ~/.api_tokens
   fish_vi_key_bindings
   fish_add_path ~/.local/bin
 # Load brew and related completions if it is installed

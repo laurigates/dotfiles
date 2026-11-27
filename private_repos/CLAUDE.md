@@ -39,6 +39,12 @@ This does **not** extend to the nested project repos underneath: those are
 separate checkouts with their own conventions, and `~/repos` deliberately
 ignores them.
 
+That ignore also hides them from search: `fd` and `rg` run from `~/repos`
+respect `~/repos/.gitignore` and skip every nested checkout, so a search for a
+repo by name finds nothing. Pass `-I` (`fd`) / `--no-ignore` (`rg`), or use the
+path directly. (2026-11-24: `fd '^dust$' ~/repos` missed
+`~/repos/external/dust`, and the session cloned dust into the scratchpad.)
+
 ## Key Workflows
 
 ### Repository Activity
@@ -47,9 +53,7 @@ Run `/repo-activity` (user-global skill) to scan all repos and see recent activi
 
 ### Scheduled Routines
 
-Scheduled work runs on two substrates: **macOS LaunchAgents** defined in `.routines/`, and **Claude scheduled tasks** (Desktop local tasks, with prompts in `~/.claude/scheduled-tasks/`). `.routines/README.md` inventories both, and documents how to choose a substrate (LaunchAgent vs cloud routine vs Desktop task).
-
-`just routines` lists the LaunchAgents with live status — schedule, load state, run count, last exit, last run, log path. It does not cover the Claude scheduled tasks. Cloud routines keep their schedule and run history at claude.ai/code/routines. Desktop local tasks keep their schedule, folder, model and enabled state in the Desktop app's registry, shown with their run history under Code tab > Routines (only the prompt is in `~/.claude/scheduled-tasks/<name>/SKILL.md`). These are experimental/stop-gap; promote useful ones to a cloud routine or CI.
+`.routines/README.md` inventories scheduled work (LaunchAgents in `.routines/`, Claude scheduled tasks in `~/.claude/scheduled-tasks/`), says where each keeps its schedule and run history, and has § Choosing a scheduler. `just routines` lists the LaunchAgents with live status; it does not cover the Claude tasks.
 
 ### Podio Ticket Management
 

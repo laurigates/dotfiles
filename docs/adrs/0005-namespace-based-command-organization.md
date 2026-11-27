@@ -1,5 +1,8 @@
 ---
 id: ADR-0005
+status: Superseded
+created: 2025-12-13
+modified: 2026-11-11
 ---
 
 # ADR-0005: Namespace-Based Command Organization

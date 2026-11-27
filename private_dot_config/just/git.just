@@ -6,73 +6,111 @@
 #
 # chezmoi applies this to ~/.config/just/git.just. Edit here, then `chezmoi apply`.
 
-# Classify local branches as MERGED (safe to delete) or REVIEW (keep). Read-only.
+# Classify local branches as MERGED, ONREMOTE or REVIEW. Read-only.
 #
-# Three "definitely merged" signals, checked in ORDER OF AUTHORITY — the order
-# matters, see ~/.claude/rules/pr-merge-hazards.md #1:
-#   1. a MERGED pull request for the branch's head ref. GitHub is authoritative;
-#      the merge (squash or rebase) landed the work even if the default branch drifted since.
-#   2. `git cherry` reports no '+' commits — every commit has a patch-equivalent
-#      already upstream. Survives squash-merge, rebase-merge (new SHAs) AND cherry-pick, and unlike
-#      merge-tree it does NOT care that the base drifted over the same files.
-#   3. merge-tree no-op — merging the branch changes nothing. Positive proof of
-#      containment only: a NON-match proves nothing, because once the base moves
-#      on over the same files the trees differ for work that fully landed.
-# Anything matching none is REVIEW: genuine unmerged work or scratch.
-# Prints a table and a copy-paste `git branch -D ...` for the MERGED set.
+# Compares against origin/<default> as last fetched (local <default> when there
+# is no remote). A MERGED verdict needs one of, cheapest first:
+#   1. merge-tree no-op, or `git cherry` with no '+': every commit has a
+#      patch-equivalent upstream (survives rebase-merge and cherry-pick).
+#   2. a MERGED pull request whose head is the branch TIP, or has the tip among
+#      its commits. Matched by the local name, then by the upstream's name (a
+#      branch pushed as `git push origin fix-9:feat/nine`), then by asking
+#      GitHub which merged PR contains the tip commit (`commits/{sha}/pulls`,
+#      which finds fetched `pr-NN` heads and renamed branches).
+# A merged PR whose head is BEHIND the tip is REVIEW: the commits after the PR
+# head did not ride the merge. Before 2026-11 any merged PR for the head name
+# counted, and `git branch -D` on that verdict would have lost those commits.
 #
-# Both #1 and #2 were added 2026-08-04 after this recipe misclassified 174 of
-# 191 REVIEW rows (91%) on laurigates/claude-plugins: merge-tree alone lost 132
-# to base drift, and the PR window was capped at 500 on a repo with 1881 PRs, so
-# every older merged PR read as "no merged PR".
+# ONREMOTE: not merged, but the tip is contained in a remote-tracking ref, so
+# deleting the local branch loses nothing. The work may still be unmerged on
+# the remote; the ref is named in REASON.
+# REVIEW: none of the above — genuine local-only work or scratch.
+#
+# Columns: BRANCH VERDICT TIP PR REASON. TIP is the full SHA, so a deleted
+# branch can be restored with `git branch <name> <sha>`. PR is `#N:STATE` or —.
+# Prints a copy-paste `git branch -D ...` for the MERGED set only.
+#
+# History: the PR and cherry signals were added 2026-08-04 after merge-tree
+# alone misclassified 174 of 191 REVIEW rows on laurigates/claude-plugins; the
+# PR window is uncapped because a capped one reads old merged PRs as absent.
 [group: "git"]
 branch-audit:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Default branch: origin/HEAD if known, else main/master fallback.
-    base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@' || true)
-    [ -z "${base:-}" ] && base=$(git rev-parse --verify --quiet main >/dev/null 2>&1 && echo main || echo master)
+    # Base: origin/<default> if known, else origin/main|master, else local main|master.
+    base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+    for c in origin/main origin/master main master; do
+      [ -n "$base" ] && break
+      git rev-parse --verify --quiet "$c" >/dev/null && base=$c
+    done
+    [ -n "$base" ] || { echo "error: no origin/HEAD, main or master" >&2; exit 128; }
     base_tree=$(git rev-parse "$base^{tree}")
-    protected="^(${base}|master|develop|staging|production)$"
+    defb=${base#origin/}
+    protected="^(${defb}|main|master|develop|staging|production)$"
 
-    # Pull PR head->state once (best effort; empty without gh / remote).
-    # NO SMALL --limit: the cap is silent and one-directional — a branch whose
-    # merged PR falls outside the window reads as "no merged PR" and lands in
-    # REVIEW. gh paginates internally, so this costs a few seconds on big repos
-    # and buys a correct answer.
-    prs=$(mktemp)
-    gh pr list --state all --limit 10000 --json number,headRefName,state \
-      --jq '.[] | [.headRefName, "#"+(.number|tostring), .state] | @tsv' >"$prs" 2>/dev/null || true
+    # PR head -> number, state, head SHA, once (best effort; empty without gh).
+    # No small --limit: a capped window silently reads old merged PRs as absent.
+    prs=$(mktemp); trap 'rm -f "$prs"' EXIT
+    gh pr list --state all --limit 10000 --json number,headRefName,state,headRefOid \
+      --jq '.[] | [.headRefName, "#"+(.number|tostring), .state, .headRefOid] | @tsv' >"$prs" 2>/dev/null || true
+    nwo=$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)
+
+    # True when $1 (tip) is the head of PR $2 (#N), an ancestor of its head, or one of its commits.
+    tip_in_pr() {
+      local tip=$1 num=${2#\#} head=$3
+      [ "$tip" = "$head" ] && return 0
+      git merge-base --is-ancestor "$tip" "$head" 2>/dev/null && return 0
+      [ -n "$nwo" ] && gh api "repos/$nwo/pulls/$num/commits" --paginate --jq '.[].sha' 2>/dev/null | grep -qx "$tip"
+    }
 
     merged=()
-    printf '%-44s %-9s %-16s %s\n' BRANCH VERDICT PR REASON
-    printf '%.0s-' {1..90}; echo
-    for b in $(git for-each-ref --format='%(refname:short)' refs/heads/ | grep -vE "$protected"); do
-      pr=$(awk -F'\t' -v b="$b" '$1==b{p=$2" "$3} END{print p}' "$prs")
+    row() { printf '%-44s %-9s %-40s %-14s %s\n' "$1" "$2" "$3" "$4" "$5"; }
+    row BRANCH VERDICT TIP PR REASON
+    printf '%.0s-' {1..120}; echo
+    while IFS=$'\t' read -r b tip up; do
+      [[ "$b" =~ $protected ]] && continue
+      up=${up#origin/}
 
-      # 1. A MERGED PR is authoritative — check it before any git-side test.
-      if printf '%s' "${pr:-}" | grep -q ' MERGED$'; then
-        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "$pr" "PR merged (authoritative)"; merged+=("$b"); continue
+      # 1. git-side proof: merge-tree no-op, or no '+' from git cherry.
+      mt=$(git merge-tree --write-tree "$base" "$tip" 2>/dev/null) && rc=0 || rc=$?
+      if [ "$rc" -eq 0 ] && [ "$mt" = "$base_tree" ]; then
+        row "$b" MERGED "$tip" — "contained in $base"; merged+=("$b"); continue
+      fi
+      crc=0; cout=$(git cherry "$base" "$tip" 2>/dev/null) || crc=$?
+      if [ "$crc" -eq 0 ] && ! grep -q '^+' <<<"$cout"; then
+        row "$b" MERGED "$tip" — "patch-equivalent in $base"; merged+=("$b"); continue
       fi
 
-      # 2. git cherry: '+' marks a commit with no patch-equivalent upstream.
-      #    A non-zero exit is NOT containment (no merge base, bad ref), so
-      #    require rc 0 before reading an empty '+' set as "landed".
-      crc=0; cout=$(git cherry "$base" "$b" 2>/dev/null) || crc=$?
-      if [ "$crc" -eq 0 ] && ! printf '%s\n' "$cout" | grep -c '^+' >/dev/null; then
-        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "${pr:-—}" "patch-equivalent in $base"; merged+=("$b"); continue
-      fi
+      # 2. merged PR by local name, then upstream name; the tip must be inside it.
+      pr="—"; behind=""; verdict=""
+      for name in "$b" ${up:+"$up"}; do
+        while IFS=$'\t' read -r _ num state head; do
+          [ -n "$num" ] || continue
+          [ "$pr" = "—" ] && pr="$num:$state"
+          [ "$state" = MERGED ] || continue
+          pr="$num:MERGED"
+          if tip_in_pr "$tip" "$num" "$head"; then verdict="PR $num merged at tip"; break 2; fi
+          behind="tip is past the head of merged PR $num"
+        done < <(awk -F'\t' -v n="$name" '$1==n' "$prs")
+      done
 
-      # 3. merge-tree no-op — positive proof only; a non-match proves nothing.
-      mt=$(git merge-tree --write-tree "$base" "$b" 2>/dev/null) && rc=0 || rc=$?
-      if [ "${rc:-1}" -eq 0 ] && [ "$mt" = "$base_tree" ]; then
-        printf '%-44s %-9s %-16s %s\n' "$b" MERGED "${pr:-—}" "contained in $base"; merged+=("$b"); continue
+      # 3. which merged PR contains the tip commit itself (renamed / fetched heads).
+      if [ -z "$verdict" ] && [ -z "$behind" ] && [ -n "$nwo" ]; then
+        via=$(gh api "repos/$nwo/commits/$tip/pulls" --jq '[.[] | select(.merged_at != null) | .number][0] // empty' 2>/dev/null) || via=""
+        [[ "$via" =~ ^[0-9]+$ ]] && { pr="#$via:MERGED"; verdict="tip is a commit of merged PR #$via"; }
       fi
+      if [ -n "$verdict" ]; then row "$b" MERGED "$tip" "$pr" "$verdict"; merged+=("$b"); continue; fi
 
-      printf '%-44s %-9s %-16s %s\n' "$b" REVIEW "${pr:-—}" "no merged PR, not patch-equivalent"
-    done
-    rm -f "$prs"
+      # 4. not merged: is the tip safe on a remote-tracking ref?
+      rref=$(git for-each-ref --contains "$tip" --format='%(refname:short)' refs/remotes 2>/dev/null \
+        | grep -vxF -e "$base" | grep -v '/HEAD$' | head -1 || true)
+      n=$(grep -c '^+' <<<"$cout" || true)
+      if [ -n "$rref" ]; then
+        row "$b" ONREMOTE "$tip" "$pr" "tip on $rref, $n commit(s) not in $base${behind:+; $behind}"; continue
+      fi
+      row "$b" REVIEW "$tip" "$pr" "${behind:-no merged PR}, $n commit(s) not in $base"
+    done < <(git for-each-ref --format='%(refname:short)%09%(objectname)%09%(upstream:short)' refs/heads/)
 
     if [ ${#merged[@]} -gt 0 ]; then
       echo

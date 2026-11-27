@@ -119,6 +119,7 @@ read -r -d '' overlay <<'OVERLAY' || true
       "Bash(helm template *)",
       "Bash(jq *)",
       "Bash(just *)",
+      "Bash(ketch search *)",
       "Bash(kubectl config current-context *)",
       "Bash(kubectl config get-contexts *)",
       "Bash(kubectl describe *)",

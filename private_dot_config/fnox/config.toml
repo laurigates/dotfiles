@@ -1,0 +1,35 @@
+# Global fnox config: secrets for every directory on this machine (ADR-0026).
+#
+# Values live in the OS keychain (macOS Keychain, Linux Secret Service), never
+# in this file or in the shell environment. A command gets only the secrets it
+# names:
+#
+#   fnox exec --only TELEGRAM_BOT_TOKEN -- some-command
+#
+# chezmoi manages this file, so `fnox set --global` must not write here: fnox
+# rewrites the whole file and the next `chezmoi apply` reverts it. Add secrets to
+# the machine-local file instead:
+#
+#   fnox -c ~/.config/fnox/local.toml set NAME --provider keychain
+#
+# Only secrets whose names this public repo already uses are declared here.
+
+# Without this, `fnox set` with no provider stores the value in plain text.
+default_provider = "keychain"
+
+# Machine-local secret names; chezmoi creates the file once and never touches it.
+import = ["local.toml"]
+
+[providers.keychain]
+type = "keychain"
+service = "fnox"
+
+[secrets]
+# telegram-notify, -ask, -poll, -send-file, -check
+TELEGRAM_BOT_TOKEN = { provider = "keychain", value = "TELEGRAM_BOT_TOKEN" }
+TELEGRAM_CHAT_ID = { provider = "keychain", value = "TELEGRAM_CHAT_ID" }
+# pal MCP server (.mcp.json)
+GEMINI_API_KEY = { provider = "keychain", value = "GEMINI_API_KEY" }
+OPENAI_API_KEY = { provider = "keychain", value = "OPENAI_API_KEY", if_missing = "ignore" }
+# google-dev-knowledge MCP server (headersHelper)
+GOOGLE_DEV_KNOWLEDGE_API_KEY = { provider = "keychain", value = "GOOGLE_DEV_KNOWLEDGE_API_KEY" }
