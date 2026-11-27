@@ -23,7 +23,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 - **Faster machine setup**: New machines fully configured via `chezmoi init && chezmoi apply` in minutes
 - **Consistency**: Identical tool versions, key bindings, editor settings, and shell behavior across all machines
 - **AI-augmented workflow**: Claude Code with plugins and MCP servers available consistently everywhere
-- **Security**: Secrets managed via `~/.api_tokens` (never committed); gitleaks scanning on every commit
+- **Security**: Secrets kept in the OS keychain via fnox, never exported or committed; gitleaks scanning on every commit
 
 ## Stakeholders & Personas
 
@@ -52,7 +52,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 | FR-004 | Tool version management | mise manages Node, Python, Go, Rust, Bun and CLI tools via pipx/aqua backends | P0 |
 | FR-005 | Package management | Profile-based Homebrew registry (`.chezmoidata/packages.toml`) with package selection by profile (core, dev, infra, gui) | P0 |
 | FR-006 | Claude Code integration | Plugins from laurigates/claude-plugins; MCP server registry in `.chezmoidata.toml`; per-project `.mcp.json` | P1 |
-| FR-007 | Secret management | API tokens in `~/.api_tokens` (sourced by mise); private files use `private_` prefix; gitleaks scanning | P0 |
+| FR-007 | Secret management | API tokens in the OS keychain via fnox, injected per command (ADR-0026); private files use `private_` prefix; gitleaks scanning | P0 |
 | FR-008 | Cross-platform templates | Chezmoi templates handle macOS/Linux differences for shell config, tool paths, platform-specific packages | P1 |
 | FR-009 | CI/CD pipeline | Smoke tests (Ubuntu/macOS), linting (shellcheck, luacheck, actionlint, stylua), secret scanning | P1 |
 | FR-010 | AI-assisted development | Claude Code claude.yml workflow for AI-assisted PRs/issues; auto plugin install in CI | P2 |
@@ -76,7 +76,7 @@ A chezmoi-managed dotfiles repository that declaratively configures the full dev
 - Neovim startup: < 200ms for daily use
 
 ### Security
-- No secrets in git — API tokens, credentials via `~/.api_tokens`
+- No secrets in git — API tokens, credentials via fnox and the OS keychain
 - Private files use `private_` chezmoi prefix (mode 600)
 - gitleaks on every commit via pre-commit hook (see ADR 0015)
 

@@ -29,7 +29,9 @@ verbatim from the skill body — edit both copies together.
 The method comes from claude-plugins `git-plugin/scripts/pr-merge-method.py`,
 whose rule table is `git-plugin/skills/github-pr-title/merge-strategies.md`.
 Two or more independent conventional commits rebase; everything else squashes,
-including single commits, merge-synced branches, fixups and bot PRs. The git-plugin hook
+including single commits, merge-synced branches, fixups and bot PRs. Commits that
+all share one `type(scope)` count as a single concern and squash (`single_concern`),
+however many there are. The git-plugin hook
 blocks a `gh pr merge` whose `--squash`/`--rebase` disagrees. On the PR, the
 `merge-method` check and the `merge:*` label show the method, and `ghm` merges
 with it. A `merge:*` label a human applies is the override.

@@ -1,5 +1,8 @@
 ---
 id: ADR-0008
+status: Accepted
+created: 2025-12-13
+modified: 2026-11-27
 ---
 
 # ADR-0008: Project-Scoped MCP Servers
@@ -145,6 +148,11 @@ The **mcp-management skill** suggests servers based on project structure:
 
 ### Environment Variables
 
+> **Superseded for secrets by [ADR-0026](0026-api-tokens-in-os-keychain-via-fnox.md).** Tokens are no
+> longer exported, so a `${VAR}` reference has nothing to expand. Wrap a stdio server's command in
+> `fnox exec --only VAR --replace --`, or give an HTTP server `"headersHelper": "fnox-mcp-header HEADER VAR"`.
+> The original text follows.
+
 Servers requiring API tokens reference environment variables:
 
 ```json
@@ -154,7 +162,7 @@ Servers requiring API tokens reference environment variables:
 ```
 
 **Token storage:**
-- `~/.api_tokens` - Sourced by shell (gitignored)
+- `~/.api_tokens` - Sourced by shell (gitignored); superseded by fnox and the OS keychain in ADR-0026
 - Project `.env` - Local overrides (gitignored)
 
 **Never hardcode tokens in `.mcp.json`**
