@@ -19,13 +19,13 @@ Sketchybar is a highly customizable macOS menu bar replacement. The dotfiles inc
 Sketchybar configuration is present but:
 - Not documented in README or docs/
 - Depends on yabai (tiling WM) for some features that were removed
-- GitHub plugin requires a token — integration with `~/.api_tokens` not verified
+- GitHub plugin needs GitHub auth; it calls `gh`, which keeps its token in the OS keyring (no environment token)
 - No smoke test validates Sketchybar config
 
 ## Proposed Approach
 
 1. **Document current state**: Audit what plugins/widgets are active and their dependencies
-2. **Verify GitHub token integration**: Ensure the GitHub repos plugin reads from `~/.api_tokens` (never hardcoded)
+2. **Verify GitHub auth**: Ensure the GitHub repos plugin keeps using `gh auth` (never a hardcoded or exported token)
 3. **Create Sketchybar ADR**: Document the decision to use Sketchybar vs. alternatives (Raycast bar, default menu bar)
 4. **Add to README**: Document Sketchybar as optional macOS-only component
 5. **Consider yabai reintegration**: Decide whether to add yabai back or keep Sketchybar standalone
@@ -34,7 +34,7 @@ Sketchybar configuration is present but:
 ## Success Criteria
 
 - Sketchybar config applies cleanly via `chezmoi apply`
-- GitHub plugin displays PR/issue counts using `~/.api_tokens` token
+- GitHub plugin displays PR/issue counts through `gh auth`
 - Configuration documented in README as macOS-only optional component
 - Separate ADR for Sketchybar architectural decision
 

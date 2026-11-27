@@ -230,13 +230,17 @@ chezmoi add --encrypt ~/.ssh/id_rsa
 # Results in: encrypted_private_dot_ssh/private_id_rsa.asc
 ```
 
-### Environment Variable Secrets
+### API Tokens: fnox, Not Templates or the Environment
 
-```go
-# Store in environment, reference in templates
-{{ env "GITHUB_TOKEN" }}
-{{ env "AWS_SECRET_KEY" }}
-```
+Workstation API tokens live in the OS keychain through fnox and are never
+exported (ADR-0026). Do not render them into managed files with `{{ env "…" }}`:
+that needs the variable exported at apply time and writes the value to disk in
+plain text.
+
+- A command that needs a token: `fnox exec --only NAME -- cmd`
+- A script: use the exported value if set, else `fnox get NAME`
+- Store one: `fnox -c ~/.config/fnox/local.toml set NAME` (hidden prompt)
+- Secrets that must sit in a file: `chezmoi add --encrypt` (above)
 
 ## Multi-Machine Configuration
 
