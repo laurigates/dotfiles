@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795810632461,
+  "lastUpdate": 1795810977334,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -7039,6 +7039,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0108760144,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c81f98951d0f2ade6bba3e3833f787772e00cf4e",
+          "message": "docs(rules): capture the browser's request before replaying a web form (#656)\n\n## What\n\nAdds a user-global rule, `capture-the-real-web-request.md`: before\nwriting or fixing an HTTP client for a server-rendered web app, record\none real submission in the browser and copy its charset, script-added\nheaders and field set.\n\n## Why\n\nIn one session a hand-written client differed from the browser's request\nin three ways (body charset, a missing `X-Requested-With` header, and\nwhich fields were sent). The server answered each with HTTP 200 and\nsaved nothing. A fix inferred from the form's HTML made the request less\nlike the browser's. The fix copied from one recorded submission worked\non its first live run. The incidents are in `docs/rules-evidence.md` §\ncapture-the-real-web-request.md.\n\n## Notes\n\n- The rule is always loaded and is 30 lines (`wc -l`). The pre-commit\n\"check Claude global context budget\" hook passed. If it reads as too\nnarrow for an always-loaded rule, it is a candidate for a pointer stub\nplus a skill.\n- The evidence section is appended at the end of\n`docs/rules-evidence.md` so that it does not conflict with #655, which\nadds a section in the middle.\n- The repo is public: the evidence names no organisation, host or\nproduct beyond \"a server-rendered CakePHP 2.x app\".\n- Not verified: `chezmoi apply` was not run from this branch.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99yPWXdM4CwM4RjnnW\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-27T22:22:12+02:00",
+          "tree_id": "ba6ffa3453cd1dea4efb92127f8cf369721eee50",
+          "url": "https://github.com/laurigates/dotfiles/commit/c81f98951d0f2ade6bba3e3833f787772e00cf4e"
+        },
+        "date": 1795810977014,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10952017366666666,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012977645999999998,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010847086,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0095323272,
             "unit": "s"
           }
         ]
