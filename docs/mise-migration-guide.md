@@ -11,7 +11,7 @@ A comprehensive mise configuration that includes:
 - **Runtime Versions**: Python (3.11, 3.13), Node (22), Bun, Go (1.23), Rust (stable)
 - **Python Tools**: All 18 tools from `.chezmoidata.toml` via `pipx:` backend (automatically uses uvx!)
 - **CLI Tools**: Kubernetes, Terraform, search tools via `aqua:` backend (security-focused)
-- **Environment Variables**: Editor settings, XDG directories, API token loading
+- **Environment Variables**: Editor settings, XDG directories (API tokens are not loaded; see ADR-0026)
 - **Tasks**: Complete replacement for all Makefile targets
 - **Settings**: Aggressive activation, legacy version file support, telemetry disabled
 - **Hooks**: Optional security and cleanup automation (commented out)
@@ -357,7 +357,11 @@ run = "mise watch -- npm run dev"
 [env]
 DATABASE_URL = "postgresql://localhost/myproject"
 DEBUG = "true"
-API_KEY = "{{ env.MY_SECRET_KEY }}"
+
+# Secrets do not go in [env]: mise exports it to every process under this
+# directory. Inject them per task from the OS keychain instead (ADR-0026).
+[tasks.dev]
+run = "fnox exec --only API_KEY -- npm run dev"
 ```
 
 ## 🐛 Troubleshooting
