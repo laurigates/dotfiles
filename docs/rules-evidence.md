@@ -80,6 +80,28 @@ incidents and measurements that justify it.
 > `checkJs: true`, the "missing symbols" list was an exact match against
 > `src/`, and the claimed "1–3% bundle gain" was a measured −13.95%.
 
+## capture-the-real-web-request.md — incidents
+
+One session (2026-11-11 to 2026-11-23), one hand-written HTTP client for a
+server-rendered CakePHP 2.x app, three requests that differed from what the
+browser sends. Each was answered with HTTP 200.
+
+- **Charset:** the login page is ISO-8859-15 and the server dispatches on the
+  submit button's value, which contains `ä`. Sent as UTF-8 the value was not
+  recognised and the server returned a generic error page without checking the
+  credentials. The client reported "bad credentials". A control with a
+  nonexistent username in both encodings separated the two cases.
+- **Header and fields:** the page posts a form row through jQuery, with
+  `X-Requested-With`, with one field at a default the HTML leaves to script,
+  and without a select the user left empty. The client sent none of that
+  correctly. The server answered with a row showing amount `0,00` and saved
+  nothing.
+- **A wrong inference from the HTML:** the form contained a field the client
+  did not send, so the client was changed to send every field. The browser
+  does not send that field when it is empty. Three live attempts failed before
+  one real submission was recorded in the browser; the fix copied from that
+  recording worked on its first live run.
+
 ## development-process.md — follow-up routing
 
 > 2026-11-25 (mcu-tinkering-lab): 183 open issues; the previous four weeks
