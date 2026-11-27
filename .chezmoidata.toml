@@ -47,7 +47,7 @@
     enabled = false
     scope = "project"
     command = "uvx"
-    args = ["pal-mcp-server@latest"]
+    args = ["palaver-mcp-server@latest"]
     description = "PAL (Provider Abstraction Layer) - Multi-provider LLM integration"
     category = "productivity"
 
@@ -70,11 +70,11 @@
   [mcp_servers.github]
     enabled = false
     scope = "project"
-    command = "go"
-    args = ["run", "github.com/github/github-mcp-server/cmd/github-mcp-server@latest", "stdio"]
+    # Token from gh's keyring, not the environment; set -e stops on a failed `gh auth token` (ADR-0026).
+    command = "sh"
+    args = ["-c", "set -e; GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token); export GITHUB_PERSONAL_ACCESS_TOKEN; exec go run github.com/github/github-mcp-server/cmd/github-mcp-server@latest stdio"]
     description = "GitHub API integration (issues, PRs, repos)"
     category = "vcs"
-    env_vars = ["GITHUB_TOKEN"]
 
   [mcp_servers.podio-mcp]
     enabled = false
@@ -114,8 +114,10 @@
   [mcp_servers.consult7]
     enabled = false
     scope = "project"
-    command = "uvx"
-    args = ["consult7", "${OPENROUTER_API_KEY}"]
+    # consult7 takes the key as an argument: fnox injects it from the keychain
+    # and sh passes it on. No braces, so Claude Code leaves $VAR to sh (ADR-0026).
+    command = "fnox"
+    args = ["exec", "--only", "OPENROUTER_API_KEY", "--replace", "--", "sh", "-c", 'exec uvx consult7 "$OPENROUTER_API_KEY"']
     description = "Consult large context window LLMs via OpenRouter for analyzing extensive codebases"
     category = "ai"
     env_vars = ["OPENROUTER_API_KEY"]

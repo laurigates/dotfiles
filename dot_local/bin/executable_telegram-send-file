@@ -70,9 +70,14 @@ if [[ "$size" -gt "$MAX_FILE_BYTES" ]]; then
   exit 2
 fi
 
+# Exported values win; otherwise read them from the OS keychain through fnox
+# (ADR-0026). A missing fnox or keychain entry leaves the variable empty.
+for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+  [[ -n "${!var:-}" ]] || printf -v "$var" '%s' "$(fnox get "$var" 2>/dev/null || true)"
+done
 for var in TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
   if [[ -z "${!var:-}" ]]; then
-    echo "telegram-send-file: ${var} not set (check ~/.api_tokens)" >&2
+    echo "telegram-send-file: ${var} not set (store it with: fnox -c ~/.config/fnox/local.toml set ${var})" >&2
     exit 2
   fi
 done

@@ -427,8 +427,11 @@ doctor:
     else \
         echo "  {{YELLOW}}!{{NORMAL}} mise is not activated (run: eval \"\$(mise activate bash)\")"; \
     fi
-    @if [ -f ~/.api_tokens ]; then \
-        echo "  {{GREEN}}✓{{NORMAL}} API tokens file exists"; \
+    @if command -v fnox >/dev/null && [ -f ~/.config/fnox/config.toml ]; then \
+        echo "  {{GREEN}}✓{{NORMAL}} fnox configured (API tokens from the OS keychain)"; \
     else \
-        echo "  {{YELLOW}}○{{NORMAL}} No ~/.api_tokens file"; \
+        echo "  {{YELLOW}}○{{NORMAL}} fnox not set up (docs/adrs/0026-api-tokens-in-os-keychain-via-fnox.md)"; \
+    fi
+    @if [ -f ~/.api_tokens ]; then \
+        echo "  {{YELLOW}}!{{NORMAL}} ~/.api_tokens still exists; migrate with scripts/migrate-api-tokens-to-fnox.sh, then delete it"; \
     fi

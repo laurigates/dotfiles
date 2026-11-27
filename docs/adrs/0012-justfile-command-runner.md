@@ -1,5 +1,8 @@
 ---
 id: ADR-0012
+status: Accepted
+created: 2025-12-16
+modified: 2026-11-11
 ---
 
 # ADR-0012: Justfile Command Runner
