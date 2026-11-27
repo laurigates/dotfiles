@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795764534116,
+  "lastUpdate": 1795765862102,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -6775,6 +6775,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.007702416000000001,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a56f16423d583a76c91b5a708e4f80e72987e125",
+          "message": "docs(blueprint): complete ADR and PRP frontmatter for the schemas (#666)\n\ndocs(blueprint): complete ADR and PRP frontmatter for the schemas\n\nThe blueprint schema check fails 20 of 30 docs:\n\n- ADR-0001 to ADR-0017 had only `id`. Added `status` from each ADR's own\n  Status section, `created` from the commit that added the file and\n  `modified` from its latest commit. Their Date sections give months only\n  (\"2024-12 (retroactively documented 2025-12)\"), which the date format\n  does not accept.\n- The three PRPs used `status: Draft` (the PRP enum is lowercase) and\n  lacked `domain` and `reviewed`. `reviewed` is set to each PRP's created\n  date, since none has been refreshed against the code since. The\n  sketchybar PRP's unquoted `source:` value contained a colon, a YAML\n  parse error; it is now quoted, and its `modified` reflects the #661\n  edit.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01JkCD9CgNR9s9Kir3RgGRoR",
+          "timestamp": "2026-11-27T09:50:19+02:00",
+          "tree_id": "c321f88caaebd5d4510e7abb013dfab13e5373fb",
+          "url": "https://github.com/laurigates/dotfiles/commit/a56f16423d583a76c91b5a708e4f80e72987e125"
+        },
+        "date": 1795765861569,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.112371944,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012993648,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0010703164000000001,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.008576964,
             "unit": "s"
           }
         ]
