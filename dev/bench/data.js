@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795810977334,
+  "lastUpdate": 1795811450361,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -7083,6 +7083,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0095323272,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "24ab5b1f6cb71f7a2beebe2c6c8fa830b870412f",
+          "message": "docs(rules): re-read the branch after a session restart (#655)\n\n## What\n\nAdds one gate to the user-global `git-hazards.md` rule: after a session\nrestart or resume, run `git branch --show-current` before committing and\nbefore reporting where commits landed.\n\n## Why\n\nA session was restarted eleven days into a task. The checkout had moved\nfrom the feature branch to `main` in the meantime, and the session made\nsix commits while reporting each as landing on the feature branch. The\nmismatch surfaced only at merge time. The incident is recorded in\n`docs/rules-evidence.md` § git-hazards.md.\n\n## Notes\n\n- The rule gains four lines; `reviewed:` is bumped to today because the\ntext changed.\n- The pre-commit hooks passed on commit, including \"check Claude global\ncontext budget\".\n- Not verified: `chezmoi apply` was not run from this branch.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99yPWXdM4CwM4RjnnW\n\nCo-authored-by: Claude Fable 5.2 <noreply@anthropic.com>",
+          "timestamp": "2026-11-27T22:30:13+02:00",
+          "tree_id": "b14e48ca430effb9c2db2cdfb0ed59bd66457839",
+          "url": "https://github.com/laurigates/dotfiles/commit/24ab5b1f6cb71f7a2beebe2c6c8fa830b870412f"
+        },
+        "date": 1795811450143,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.09017633900000001,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0009754778,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0008195518,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0066866726000000005,
             "unit": "s"
           }
         ]
