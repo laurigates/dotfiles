@@ -1,5 +1,8 @@
 ---
 id: ADR-0016
+status: Accepted
+created: 2026-04-08
+modified: 2026-11-11
 ---
 
 # ADR-0016: Shell Completion Auto-Generation Pattern

@@ -1,5 +1,8 @@
 ---
 id: ADR-0011
+status: Accepted
+created: 2025-12-14
+modified: 2026-11-11
 ---
 
 # ADR 0011: Migration to Claude Code Rules System

@@ -1,5 +1,8 @@
 ---
 id: ADR-0017
+status: Accepted
+created: 2026-08-19
+modified: 2026-11-11
 ---
 
 # ADR-0017: CI Platform Coverage — Test macOS and Ubuntu

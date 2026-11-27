@@ -1,5 +1,8 @@
 ---
 id: ADR-0008
+status: Accepted
+created: 2025-12-13
+modified: 2026-11-27
 ---
 
 # ADR-0008: Project-Scoped MCP Servers
