@@ -1,5 +1,5 @@
 ---
-reviewed: 2026-09-29
+reviewed: 2026-11-26
 ---
 
 # Front-Load Executive Decisions
@@ -54,6 +54,20 @@ Never front-load (or ask at all):
    as given and attributed (`Lauri chose: two PRs`) rather than widening it
    into a mandate, and never write the brief in Lauri's voice — the delegate
    must be able to tell Lauri's decision from Claude's own.
+
+## Decisions that surface mid-run
+
+Some questions appear only once the work is under way: a design choice an
+issue leaves open, a file that exists only on Lauri's machine, a capture only
+Lauri can take. Collect them, finish everything that does not depend on them,
+then ask them together:
+
+- One question per item, two to four options, each with its consequence, one
+  marked recommended with a one-line reason.
+- An item that needs Lauri's hands rather than a choice gets the options do
+  it now, defer or drop.
+- Keep working on recommended options that can be undone while the answers
+  arrive, and act on each answer as it comes.
 
 When the same question gets front-loaded across multiple sessions, promote the
 answer into `decision-defaults.md` so it stops being asked.
