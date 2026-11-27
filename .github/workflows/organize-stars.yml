@@ -2,8 +2,9 @@ name: Organize GitHub Stars
 
 on:
   schedule:
-    # Run every Monday at 9:00 AM UTC
-    - cron: '0 9 * * 1'
+    # Mondays 09:17 UTC: off the :00 scheduler surge, and not in the same
+    # minute as link-checker (laurigates/repos-claude-config .routines/routines.toml).
+    - cron: '17 9 * * 1'
   workflow_dispatch:
     inputs:
       process_all:
