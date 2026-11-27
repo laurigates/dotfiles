@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795811450361,
+  "lastUpdate": 1795811934187,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -7127,6 +7127,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0066866726000000005,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5a77fcbb69a6c2308b8ea08060869f86d3592f5b",
+          "message": "docs(repos): note that fd and rg from ~/repos skip nested checkouts (#648)\n\nAdds one paragraph to `private_repos/CLAUDE.md`: `~/repos/.gitignore`\nexcludes the nested checkouts, and `fd`/`rg` respect it, so a search by\nrepo name from `~/repos` finds nothing. The fix is `-I`/`--no-ignore` or\nthe direct path.\n\nChecked: `fd -t d -d 3 '^dust$' ~/repos` prints nothing; with `-I` it\nprints `~/repos/external/dust/`.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD9BsT8uMni2ee62httW\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-27T22:38:11+02:00",
+          "tree_id": "3c3b4d888d904d2190cd49d0a6471ede6158f9f2",
+          "url": "https://github.com/laurigates/dotfiles/commit/5a77fcbb69a6c2308b8ea08060869f86d3592f5b"
+        },
+        "date": 1795811933670,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.07888775233333334,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0011502166,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0009714879999999998,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.0075821476,
             "unit": "s"
           }
         ]
