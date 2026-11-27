@@ -2,9 +2,11 @@
 id: PRP-001
 created: 2026-04-08
 modified: 2026-04-08
-status: Draft
+reviewed: 2026-04-08
+status: draft
 confidence: 6
-source: git history (private_dot_config/private_fish/ directory existence)
+domain: shell
+source: "git history (private_dot_config/private_fish/ directory existence)"
 relates-to: [PRD-001]
 ---
 

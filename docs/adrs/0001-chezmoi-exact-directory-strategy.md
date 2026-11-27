@@ -1,5 +1,8 @@
 ---
 id: ADR-0001
+status: Accepted
+created: 2025-12-13
+modified: 2026-11-11
 ---
 
 # ADR-0001: Chezmoi exact_ Directory Strategy for Claude Code Configuration
