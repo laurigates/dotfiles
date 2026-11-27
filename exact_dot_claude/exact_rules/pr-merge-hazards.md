@@ -43,6 +43,6 @@ refused) from merely-present ones (`UNSTABLE` — plain `gh pr merge` works), so
 `--admin` on an `UNSTABLE` PR takes a privilege you didn't need. Read it first.
 
 Merging over red needs **two** checks: `--json files` (config/docs can't break
-a compile) **and** the same check already failing on `main`. Either alone is a
+a compile) **and** the same tests already failing on `main`. Either alone is a
 guess — and a stale-green `main` lies, so check `createdAt` (2026-07: a "green"
 run was 21 days old; main hadn't compiled for three weeks).
