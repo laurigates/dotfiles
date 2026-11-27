@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795811934187,
+  "lastUpdate": 1795812477632,
   "repoUrl": "https://github.com/laurigates/dotfiles",
   "entries": {
     "Benchmark": [
@@ -7171,6 +7171,50 @@ window.BENCHMARK_DATA = {
           {
             "name": "nvim startup",
             "value": 0.0075821476,
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lauri.gates@gmail.com",
+            "name": "Lauri Gates",
+            "username": "laurigates"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d82098ca81567a4d63adc7c20b33711ff0780c80",
+          "message": "docs(rules): compare failing tests, not check names, before merging red (#638)\n\nMirrors laurigates/claude-plugins#3756 in the inline copy of\n`git-merge-hazards` §4 in `pr-merge-hazards.md`: merging over red needs\nthe same **tests** already failing on `main`, not just the same check,\nbecause a job already red on `main` hides a new failure inside it. The\nrule says to edit both copies together; this is the one-word edit to the\nrule copy.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_01JkCD99eM2h2rKZL22EGPUw\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-27T22:47:11+02:00",
+          "tree_id": "595aacc52547f213678c1ad3c9d5efaae14207b9",
+          "url": "https://github.com/laurigates/dotfiles/commit/d82098ca81567a4d63adc7c20b33711ff0780c80"
+        },
+        "date": 1795812477256,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "chezmoi apply --dry-run",
+            "value": 0.10538450966666668,
+            "unit": "s"
+          },
+          {
+            "name": "zsh startup",
+            "value": 0.0012968528,
+            "unit": "s"
+          },
+          {
+            "name": "bash startup",
+            "value": 0.0011104864,
+            "unit": "s"
+          },
+          {
+            "name": "nvim startup",
+            "value": 0.009603216000000001,
             "unit": "s"
           }
         ]
