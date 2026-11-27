@@ -2,9 +2,11 @@
 id: PRP-002
 created: 2026-04-08
 modified: 2026-04-08
-status: Draft
+reviewed: 2026-04-08
+status: draft
 confidence: 5
-source: ADR-0013 (NixOS Declarative System Configuration)
+domain: nixos
+source: "ADR-0013 (NixOS Declarative System Configuration)"
 relates-to: [PRD-001, ADR-0013]
 ---
 
