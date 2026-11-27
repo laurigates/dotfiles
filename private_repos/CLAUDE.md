@@ -39,6 +39,12 @@ This does **not** extend to the nested project repos underneath: those are
 separate checkouts with their own conventions, and `~/repos` deliberately
 ignores them.
 
+That ignore also hides them from search: `fd` and `rg` run from `~/repos`
+respect `~/repos/.gitignore` and skip every nested checkout, so a search for a
+repo by name finds nothing. Pass `-I` (`fd`) / `--no-ignore` (`rg`), or use the
+path directly. (2026-11-24: `fd '^dust$' ~/repos` missed
+`~/repos/external/dust`, and the session cloned dust into the scratchpad.)
+
 ## Key Workflows
 
 ### Repository Activity
