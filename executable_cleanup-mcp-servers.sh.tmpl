@@ -1,5 +1,8 @@
 #!/bin/sh
-# Cleanup MCP servers - removes all MCP servers from user and project scope
+# Cleanup MCP servers - removes the [mcp_servers] registry entries marked
+# `enabled = true` in .chezmoidata.toml, each from its configured scope.
+# Entries with `enabled = false` are left alone; with none enabled, the
+# rendered script removes nothing.
 #
 # NOTE: MCP servers are now managed project-by-project.
 # This script is primarily for cleanup of old user-scoped installations.
@@ -15,7 +18,7 @@
 
 set -e
 
-echo "⚠️  WARNING: This will disconnect all active MCP servers!"
+echo "⚠️  WARNING: This will disconnect the MCP servers marked enabled = true in .chezmoidata.toml!"
 echo "Make sure no Claude Code sessions are running."
 echo ""
 printf "Continue? (y/N) "

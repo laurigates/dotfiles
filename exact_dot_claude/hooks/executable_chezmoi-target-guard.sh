@@ -5,8 +5,9 @@
 # ~/.claude is rendered from exact_dot_claude/ in the chezmoi source repo.
 # A direct edit to a target there is clobbered by the next `chezmoi apply`
 # (or, for a NEW file in rules/ or skills/, silently loads forever without
-# ever being captured in version control — see chezmoi-conventions.md,
-# "A rule created directly in the target is never captured to source").
+# ever being captured in version control — see docs/chezmoi-apply-hazards.md
+# ("exact_ Dirs DELETE Unmanaged Files"), whose last bullet covers this
+# inverse leak).
 # This guard blocks the write and computes the exact source path to edit,
 # so the correct move is one step away.
 #
