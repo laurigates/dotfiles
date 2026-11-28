@@ -7,7 +7,7 @@
 # <dir>` does not recurse, so it hides them (`chezmoi diff -r <dir>` shows
 # them); `chezmoi status` D-lines show them too. This guard runs that status
 # check so an apply never silently deletes a stray or an edited target.
-# Incident reference: ~/.local/share/chezmoi/.claude/rules/chezmoi-conventions.md
+# Incident reference: ~/.local/share/chezmoi/docs/chezmoi-apply-hazards.md
 # ("exact_ Dirs DELETE Unmanaged Files").
 #
 # Registered user-globally (modify_settings.json) so it fires regardless of
@@ -112,7 +112,7 @@ Before re-running, register or resolve each one:
   - keep, unmanaged:   add a commented entry to the exact_ dir's .chezmoiignore
   - deletion intended: rm the target file yourself, then apply
 
-See ~/.local/share/chezmoi/.claude/rules/chezmoi-conventions.md ("exact_ Dirs
+See ~/.local/share/chezmoi/docs/chezmoi-apply-hazards.md ("exact_ Dirs
 DELETE Unmanaged Files") for the full guard rationale.
 EOF
 exit 2

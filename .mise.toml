@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------
 [tasks.test]
 description = "Run all tests (linting + setup verification + plugin refs + context budget + container testing)"
-depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:just-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:branch-audit", "test:renovate-triage-buckets", "test:telegram-check", "test:telegram-send-file", "test:fnox-mcp-header", "test:downloads-tidy", "docker"]
+depends = ["lint", "test:setup", "test:plugin-refs", "test:context-budget", "test:shell-precedence", "test:ci-pins", "test:mise-tasks", "test:pi-settings", "test:gh-completion", "test:just-completion", "test:gh-wrappers", "test:chezmoi-exact-guard", "test:chezmoi-target-guard", "test:hook-doc-citations", "test:post-sync", "test:chezmoi-root-meta", "test:claude-completion", "test:organize-stars", "test:cloud-env", "test:reclaim", "test:claude-config", "test:renovate-triage", "test:branch-audit", "test:renovate-triage-buckets", "test:telegram-check", "test:telegram-send-file", "test:fnox-mcp-header", "test:downloads-tidy", "docker"]
 
 [tasks."test:setup"]
 description = "Test initial setup script handles missing commands gracefully (Issue #128)"
@@ -136,6 +136,10 @@ run = "tests/test-chezmoi-exact-guard.sh"
 [tasks."test:chezmoi-target-guard"]
 description = "Regression test: the chezmoi-target-guard hook blocks file-tool and shell writes into ~/.claude rules, skills and CLAUDE.md and lets reads and ignored paths through"
 run = "tests/test-chezmoi-target-guard.sh"
+
+[tasks."test:hook-doc-citations"]
+description = "Regression test: every Claude hook that cites <path>.md (\"<heading>\") names a file and heading that exist in this repo (#595)"
+run = "tests/test-hook-doc-citations.sh"
 
 [tasks."test:post-sync"]
 description = "Regression test: post-sync.sh applies a retired-clean deletion and reports strays, MD lines and state-read failures"
