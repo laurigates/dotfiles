@@ -98,7 +98,7 @@ Example configuration:
 ./cleanup-mcp-servers.sh  # Run only when no Claude sessions are active
 ```
 
-> **Note**: `cleanup-mcp-servers.sh` removes MCP servers from user and project scope, so run it only when no Claude Code sessions are active. Afterwards, reinstall per-project with `/configure-mcp`.
+> **Note**: `cleanup-mcp-servers.sh` removes only the registry entries marked `enabled = true`, each from its configured scope; with every entry `enabled = false` it removes nothing. Run it only when no Claude Code sessions are active. Afterwards, reinstall per-project with `/configure-mcp`.
 
 ## Claude Code Configuration
 
